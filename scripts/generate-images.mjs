@@ -46,9 +46,9 @@ console.log('Updated src/assets/images/index.ts');
 // --- generate names.ts ---
 const namesContent = `import type { ImageName } from './index';
 
-const imageNames: ImageName[] = [
-${entries.map(({ name }) => `  '${name}',`).join('\n')}
-];
+const imageNames = {
+${entries.map(({ name }) => `  ${name}: '${name}',`).join('\n')}
+} as const satisfies Record<string, ImageName>;
 
 export default imageNames;
 `;

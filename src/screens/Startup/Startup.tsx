@@ -11,7 +11,7 @@ function Startup({ navigation }: RootScreenProps<Paths.Startup>) {
     const timer = setTimeout(() => {
       navigation.reset({
         index: 0,
-        routes: [{ name: Paths.Example }],
+        routes: [{ name: Paths.Welcome }],
       });
     }, 1500);
     return () => {

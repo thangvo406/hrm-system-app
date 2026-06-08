@@ -64,6 +64,7 @@ export default defineConfig(
       '@typescript-eslint/consistent-type-definitions': [ERROR, 'type'],
       '@typescript-eslint/dot-notation': [ERROR, { allowKeywords: true }],
       '@typescript-eslint/no-empty-function': OFF,
+      '@typescript-eslint/no-unsafe-assignment': OFF,
       '@typescript-eslint/no-useless-default-assignment': OFF,
       '@typescript-eslint/restrict-template-expressions': OFF,
       'import/no-unresolved': OFF, // handled by TypeScript
@@ -73,6 +74,7 @@ export default defineConfig(
         { ignore: [-1, 0, 1, 2, 3, 4, 5, 6], ignoreArrayIndexes: true },
       ],
       'perfectionist/sort-imports': OFF,
+      'perfectionist/sort-objects': OFF,
 
       'react-refresh/only-export-components': OFF,
       'react/forbid-component-props': OFF,
@@ -124,6 +126,7 @@ export default defineConfig(
       'no-undef': OFF,
       'perfectionist/sort-object-types': OFF,
       'unicorn/prefer-module': OFF,
+      'perfectionist/sort-object': OFF,
     },
   },
   {

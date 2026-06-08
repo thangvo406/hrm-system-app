@@ -15,8 +15,8 @@
     "test:report": "jest --collectCoverage --coverageDirectory=\"./coverage\" --ci --reporters=default --reporters=jest-junit --coverage",
     "pod-install": "npx pod-install",
     "pod": "cd ios && pod install",
-    "generate:images": "node scripts/generate-images.mjs",
-    "generate:icons": "node scripts/generate-icons.mjs",
+    "images": "node scripts/generate-images.mjs",
+    "icons": "node scripts/generate-icons.mjs",
     "xc": "cd ios && open CoopUse.xcworkspace && cd ..",
     "postinstall": "npx patch-package"
   },
