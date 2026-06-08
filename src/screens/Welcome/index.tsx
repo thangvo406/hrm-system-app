@@ -1,5 +1,8 @@
-import Image from '@components/Image';
+import type { RootScreenProps } from '@navigation/types';
+
 import imageNames from '@assets/images/names';
+import Image from '@components/Image';
+import { Paths } from '@navigation/paths';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -7,8 +10,15 @@ const BANNER_HEIGHT = 100;
 const BANNER_WIDTH = 200;
 const MASCOT_SIZE = 220;
 
-function Welcome() {
+function Welcome({ navigation }: RootScreenProps<Paths.Welcome>) {
   const { t } = useTranslation();
+
+  const goToAuthorise = (isLogin: boolean) => () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: Paths.Authorization, params: { isLogin } }],
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -27,6 +37,7 @@ function Welcome() {
       <View style={styles.actions}>
         <TouchableOpacity
           activeOpacity={0.8}
+          onPress={goToAuthorise(true)}
           style={[styles.button, styles.buttonPrimary]}
           testID="welcome-login-button"
         >
@@ -37,6 +48,7 @@ function Welcome() {
 
         <TouchableOpacity
           activeOpacity={0.8}
+          onPress={goToAuthorise(false)}
           style={[styles.button, styles.buttonSecondary]}
           testID="welcome-register-button"
         >

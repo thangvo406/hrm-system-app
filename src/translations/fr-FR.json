@@ -14,6 +14,23 @@
       "login": "Connexion",
       "register": "Nouvelle inscription"
     },
+    "authorisation": {
+      "tab_login": "Connexion",
+      "tab_registration": "Inscription",
+      "name_label": "Nom",
+      "name_placeholder": "Hong Gildong",
+      "email_label": "E-mail",
+      "email_placeholder": "exemple@email.com",
+      "password_label": "Mot de passe",
+      "password_placeholder": "mot de passe",
+      "forgot_password": "Mot de passe oublié ?",
+      "login": "Connexion",
+      "register": "S'inscrire",
+      "or": "Ou",
+      "continue_kakao": "Continuer avec Kakao",
+      "continue_naver": "Continuer avec Naver",
+      "continue_google": "Continuer avec Google"
+    },
     "error_boundary": {
       "title": "Oups ! Quelque chose s'est mal passé.",
       "description": "Nous sommes désolés pour le désagrément. Veuillez réessayer plus tard.",

@@ -5,9 +5,12 @@ import { Paths } from '@navigation/paths';
 import { useEffect } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import FastImage from '@d11/react-native-fast-image';
 
 function Startup({ navigation }: RootScreenProps<Paths.Startup>) {
   useEffect(() => {
+    FastImage.clearDiskCache().then(() => null);
+    FastImage.clearMemoryCache().then(() => null);
     const timer = setTimeout(() => {
       navigation.reset({
         index: 0,

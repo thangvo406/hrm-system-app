@@ -14,6 +14,23 @@
       "login": "Login",
       "register": "New Registration"
     },
+    "authorisation": {
+      "tab_login": "Login",
+      "tab_registration": "Registration",
+      "name_label": "Name",
+      "name_placeholder": "Hong Gildong",
+      "email_label": "Email",
+      "email_placeholder": "example@email.com",
+      "password_label": "Password",
+      "password_placeholder": "password",
+      "forgot_password": "Forgot your password?",
+      "login": "Login",
+      "register": "Sign Up",
+      "or": "Or",
+      "continue_kakao": "Continue with Kakao",
+      "continue_naver": "Continue with Naver",
+      "continue_google": "Continue with Google"
+    },
     "error_boundary": {
       "title": "Oops! Something went wrong.",
       "description": "We are sorry for the inconvenience. Please try again later.",
