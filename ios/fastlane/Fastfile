@@ -1,0 +1,365 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+require('dotenv')
+require 'xcodeproj'
+
+# Dotenv.load './Appfile'
+
+default_platform(:ios)
+def teams_url = "https://dtpeducationvn.webhook.office.com/webhookb2/8d1bdeab-5e7f-4499-bde1-355f512a6e4e@cc1c7f2f-c062-49ab-9800-8b7bdb4f8a93/IncomingWebhook/67eb38906694412aa81bf281ad40f092/05f57c89-2792-4d03-b715-0a7da6e4cc82/V28rCnZ6x-px5hrrR2ZvThJcxUf6qIRW8SBAnxGZ1n5r41"
+def post_teams_card(title:, message:, facts: [])
+  require 'net/http'
+  require 'json'
+  require 'uri'
+  require 'openssl'
+
+  payload = {
+    "@type" => "MessageCard",
+    "@context" => "http://schema.org/extensions",
+    "themeColor" => "0078D7",
+    "title" => title,
+    "summary" => title,
+    "sections" => [{ "text" => message, "facts" => facts }]
+  }
+
+  uri = URI.parse(teams_url)
+  headers = { 'Content-Type' => 'application/json' }
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = uri.scheme == "https"
+  # CI hosts fail CRL checks against the Teams webhook, so skip verification unless explicitly enabled.
+  verify_ssl = ENV.fetch("TEAMS_VERIFY_SSL", "false") != "false"
+  http.verify_mode = OpenSSL::SSL::VERIFY_NONE unless verify_ssl
+
+  response = http.post(uri.request_uri, payload.to_json, headers)
+  unless response.code.to_i == 200 && response.body.to_i == 1
+    UI.error("Teams notification failed (#{response.code}): #{response.body}")
+  end
+rescue => e
+  UI.error("Teams notification error: #{e.message}")
+end
+platform :ios do
+  desc "Description of what the lane does"
+  lane :beta do |options|
+   versionCode = prepare_package(options)
+    sh "cp ../../../../../../CoopUse/.dev ../../env/.dev"
+    # react-native-config reads the env file via /tmp/envfile (highest priority)
+    # then ENVFILE. xcodebuild does not run scheme pre-actions, so set both here
+    # to make the gym build deterministic.
+    sh "echo 'env/.dev' > /tmp/envfile"
+    ENV["ENVFILE"] = "env/.dev"
+    Dotenv.overload '../../env/.dev'
+    prefixAppName = "CoopUse_DEV_v"
+    branchName = options[:branchName]
+
+    puts "Endpoint => #{ENV["BASE_URL"]}"
+
+    appId = ENV["APP_ID"]
+    appName = "#{prefixAppName}#{versionCode}.ipa"
+
+    # build = options[:build_number]
+    api_key = app_store_connect_api_key(
+      key_id: ENV["KEY_ID"],
+      issuer_id: ENV["ISSUER_ID"],
+      key_filepath: "./AuthKey_ZPCY58L4X5.p8",
+      duration: 1200, # optional (maximum 1200)
+      in_house: false # optional but may be required if using match/sigh
+    )
+
+    build = latest_testflight_build_number(
+      api_key: api_key,
+      app_identifier: appId,
+      version: versionCode,
+      )
+    if build.nil?
+      build = options[:build_number]
+    else
+      build = build + 1
+    end
+
+    puts "versionCode => #{versionCode}"
+    puts "build => #{build}"
+    puts " ENV[KEY_ID] => #{ENV["APP_ID"]}"
+
+    increment_build_number(
+      build_number: build,
+      xcodeproj: "./CoopUse.xcodeproj"
+    )
+     # 1. Ép buộc bật Automatic Signing trong Xcode Project file
+    update_code_signing_settings(
+      use_automatic_signing: true,
+      path: "./CoopUse.xcodeproj" # Đường dẫn tới file xcodeproj của bạn
+    )
+
+  # 2. Ép buộc tải Provisioning Profile về máy trước khi build
+    # Bước này sẽ giải quyết lỗi "No profiles found"
+    # get_provisioning_profile(
+    #   app_identifier: "#{ENV['APP_ID']}",
+    #   provisioning_name: "CoopUse test", # Tên bạn đặt trên portal
+    #   development: false, # Chế độ Distribution
+    #   force: false,
+    #   skip_certificate_verification: true,
+    #   api_key: api_key
+    # )
+    #     get_provisioning_profile(
+    #   app_identifier: "#{ENV['APP_ID']}.CoopUseNotificationService",
+    #   provisioning_name: "XC com CoopUse debug iSchoolNotificationService", # Tên bạn đặt trên portal
+    #   development: false, # Chế độ Distribution
+    #   force: true,
+    #   api_key: api_key
+    # )
+
+    # 3. Chạy lệnh Build
+    gym(
+      scheme: "CoopUse",
+      clean: true,
+      workspace: "./CoopUse.xcworkspace",
+      export_method: "app-store",
+      output_directory: "./builds",
+      output_name: appName,
+      silent: true,
+      # Thêm tham số này để Xcode được phép cập nhật profile
+      # xcargs: "-allowProvisioningUpdates",
+      # export_options: {
+      #   provisioningProfiles: {
+      #     "#{ENV['APP_ID']}" => "CoopUse test",
+      #     "#{ENV['APP_ID']}.CoopUseNotificationService" => "XC com CoopUse debug CoopUseNotificationService",
+      #   },
+      #   signingStyle: "automatic",
+      #   teamID: ENV['TEAM_ID'] # Điền Team ID của bạn vào đây
+      # },
+      # skip_build_archive: true,
+      # archive_path: "/Users/admin/Library/Developer/Xcode/Archives/2025-12-31/CoopUse_DEV_v1.0.24 2025-12-31 15.06.02.xcarchive"
+    )
+  
+      pilot(
+        api_key: api_key,
+        app_identifier: appId,
+        changelog: "Dev => #{branchName}",
+        ipa: "./builds/#{appName}")
+  
+    send_message_success(branchName, "#{versionCode}.#{build}", "[CoopUse-DEV] Testflight was built")
+  end
+  
+  lane :release do |options|
+    versionCode = prepare_package(options)
+    sh "cp ../../../../../../CoopUse/.prod ../../env/.prod"
+    # See beta lane: set env file for xcodebuild deterministically.
+    sh "echo 'env/.prod' > /tmp/envfile"
+    ENV["ENVFILE"] = "env/.prod"
+    Dotenv.overload '../../env/.prod'
+    prefixAppName = "CoopUse_PRD_v"
+    branchName = options[:branchName]
+    sh "cp ../../../../../../CoopUse/GoogleService-Pro.plist ../../ios/GoogleService-Info.plist"
+
+    puts "Endpoint => #{ENV["BASE_URL"]}"
+
+    appId = ENV["APP_ID"]
+    appName = "#{prefixAppName}#{versionCode}.ipa"
+
+    # build = options[:build_number]
+    api_key = app_store_connect_api_key(
+      key_id: ENV["KEY_ID"],
+      issuer_id: ENV["ISSUER_ID"],
+      key_filepath: "./AuthKey_ZPCY58L4X5.p8",
+      duration: 1200, # optional (maximum 1200)
+      in_house: false # optional but may be required if using match/sigh
+    )
+
+
+    build = latest_testflight_build_number(
+      api_key: api_key,
+      app_identifier: appId,
+      version: versionCode,
+    )
+
+    if build.nil?
+      build = options[:build_number]
+    else
+      build = build + 1
+    end
+
+    puts "versionCode => #{versionCode}"
+    puts "build => #{build}"
+    puts "options[:version_number] => #{options[:version_number]}"
+    # update_notification_service_id(appId)
+
+    # Update main app target
+    update_target_bundle_id(
+      target_name: "CoopUse",
+      plist_path: "./CoopUse/Info.plist",
+      bundle_id: appId
+    )
+
+    # Update Notification Service target
+    update_target_bundle_id(
+      target_name: "CoopUseNotificationService",
+      plist_path: "./CoopUseNotificationService/Info.plist",
+      bundle_id: "#{appId}.CoopUseNotificationService"
+    )
+
+    # update_app_identifier(
+    #   xcodeproj: "CoopUse.xcodeproj", # Optional path to xcodeproj, will use the first .xcodeproj if not set
+    #   plist_path: "CoopUse/Info.plist", # Path to info plist file, relative to xcodeproj
+    #   target: "CoopUse",   
+    #   app_identifier: appId # The App Identifier
+    # )
+    increment_version_number(
+      version_number: versionCode,      # specify specific version number (optional, omitting it increments patch version number)
+      xcodeproj: "./CoopUse.xcodeproj"  # (optional, you must specify the path to your main Xcode project if it is not in the project root directory)
+    )
+    increment_build_number(
+      build_number: build,
+      xcodeproj: "./CoopUse.xcodeproj"
+    )
+      # 1. Ép buộc bật Automatic Signing trong Xcode Project file
+    update_code_signing_settings(
+      use_automatic_signing: true,
+      path: "./CoopUse.xcodeproj" # Đường dẫn tới file xcodeproj của bạn
+    )
+
+  
+  # 2. Ép buộc tải Provisioning Profile về máy trước khi build
+    # Bước này sẽ giải quyết lỗi "No profiles found"
+    # get_certificates(
+    #   generate_apple_certs: true,
+    #   api_key: api_key
+    # )
+    # get_provisioning_profile(
+    #   app_identifier: "#{ENV['APP_ID']}",
+    #   provisioning_name: "CoopUse prod", # Tên bạn đặt trên portal
+    #   development: false, # Chế độ Distribution
+    #   force: false,
+    #   skip_certificate_verification: true,
+    #   api_key: api_key
+    # )
+    #     get_provisioning_profile(
+    #   app_identifier: "#{ENV['APP_ID']}.CoopUseNotificationService",
+    #   provisioning_name: "XC com CoopUse debug CoopUseNotificationService", # Tên bạn đặt trên portal
+    #   development: false, # Chế độ Distribution
+    #   force: true,
+    #   api_key: api_key
+    # )
+
+    # 3. Chạy lệnh Build
+    gym(
+      scheme: "CoopUse",
+      clean: true,
+      workspace: "./CoopUse.xcworkspace",
+      export_method: "app-store",
+      output_directory: "./builds",
+      output_name: appName,
+      silent: true,
+      # # Thêm tham số này để Xcode được phép cập nhật profile
+      # xcargs: "-allowProvisioningUpdates",
+      # export_options: {
+      #   provisioningProfiles: {
+      #     "#{ENV['APP_ID']}" => "CoopUse prod",
+      #     "#{ENV['APP_ID']}.CoopUseNotificationService" => "CoopUse NotificationService AppStore",
+      #   },
+      #   signingStyle: "automatic",
+      #   teamID: ENV['TEAM_ID'] # Điền Team ID của bạn vào đây
+      # },
+      # skip_build_archive: true,
+      # archive_path: "/Users/admin/Library/Developer/Xcode/Archives/2025-12-31/CoopUse_DEV_v1.0.24 2025-12-31 15.06.02.xcarchive"
+    )
+  
+      pilot(
+        api_key: api_key,
+        app_identifier: appId,
+        changelog: "PROD => #{branchName}",
+        ipa: "./builds/#{appName}")
+  
+    send_message_success(branchName, "#{versionCode}.#{build}", "[CoopUse-PROD] Testflight was built")
+  end
+end
+
+def update_target_bundle_id(target_name:, plist_path:, bundle_id:)
+  require 'xcodeproj'
+
+  project_path = "../CoopUse.xcodeproj"
+
+  puts "🔧 Updating target '#{target_name}' with bundle ID '#{bundle_id}'"
+
+  # Open Xcode project
+  project = Xcodeproj::Project.open(project_path)
+  target = project.targets.find { |t| t.name == target_name }
+
+  if target.nil?
+    UI.user_error!("❌ Target '#{target_name}' not found in #{project_path}")
+  end
+
+  # Update build settings
+  target.build_configurations.each do |config|
+    config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = bundle_id
+  end
+
+  project.save
+  UI.success("✅ Updated PRODUCT_BUNDLE_IDENTIFIER for target '#{target_name}'")
+
+  # Optionally update Info.plist too
+  update_info_plist(
+    plist_path: plist_path,
+    app_identifier: bundle_id
+  )
+end
+
+
+def prepare_package(options)
+  ENV["PATH"] = "#{ENV["HOME"]}/.nvm/versions/node/v20.9.0/bin:/usr/local/bin:#{ENV["PATH"]}"
+  sh "cp ../../../../../../CoopUse/yarn.lock ../../yarn.lock"
+  versionCode = options[:version_number]
+  increment_version_number(
+    version_number: versionCode,      # specify specific version number (optional, omitting it increments patch version number)
+    xcodeproj: "./CoopUse.xcodeproj"  # (optional, you must specify the path to your main Xcode project if it is not in the project root directory)
+  )
+  sh "yarn install --no-immutable"
+  # cocoapods(
+  #   clean_install: true,
+  #   podfile: "./Podfile",
+  #   silent: true,
+  #   try_repo_update_on_error: true,
+  # )
+  sh "yarn pod"
+
+  sh "rm -rf ../../ios/.xcode.env.local"
+  sh "cp ../../../../../../AuthKey_ZPCY58L4X5.p8 ../../ios/AuthKey_ZPCY58L4X5.p8"
+  return versionCode
+end
+
+
+def send_message_success(branchName, buildNumber, message = "App successfully released to AppCenter")
+  post_teams_card(
+    title: "App build successfully",
+    message: message,
+    facts:[
+      {
+        "name"=>"App",
+        "value"=>"i-School",
+     },
+      {
+        "name"=>"Branch",
+        "value"=>"#{branchName}",
+     },
+      {
+        "name"=>"Platform",
+        "value"=>"iOS"
+      },
+      {
+          "name"=>"Build number",
+          "value"=>"#{buildNumber}",
+      },
+    ]
+  )
+end
