@@ -1,7 +1,11 @@
 import TextField from '@components/TextField';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 
 export type RegisterValues = {
   readonly email: string;
@@ -10,24 +14,29 @@ export type RegisterValues = {
 };
 
 type RegisterFormProps = {
-  readonly onSubmit?: (values: RegisterValues) => void;
+  readonly loading?: boolean;
+  readonly onChange: (field: keyof RegisterValues) => (value: string) => void;
+  readonly onSubmit: () => void;
+  readonly values: RegisterValues;
 };
 
-function RegisterForm({ onSubmit = undefined }: RegisterFormProps) {
+function RegisterForm({
+  loading = false,
+  onChange,
+  onSubmit,
+  values,
+}: RegisterFormProps) {
   const { t } = useTranslation();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
   return (
     <>
       <TextField
         iconName="user"
         label={t('authorisation.name_label')}
-        onChangeText={setName}
+        onChangeText={onChange('name')}
         placeholder={t('authorisation.name_placeholder')}
         testID="auth-name-input"
-        value={name}
+        value={values.name}
       />
 
       <TextField
@@ -35,34 +44,37 @@ function RegisterForm({ onSubmit = undefined }: RegisterFormProps) {
         iconName="email"
         keyboardType="email-address"
         label={t('authorisation.email_label')}
-        onChangeText={setEmail}
+        onChangeText={onChange('email')}
         placeholder={t('authorisation.email_placeholder')}
         testID="auth-email-input"
-        value={email}
+        value={values.email}
       />
 
       <TextField
         autoCapitalize="none"
         iconName="lock"
         label={t('authorisation.password_label')}
-        onChangeText={setPassword}
+        onChangeText={onChange('password')}
         placeholder={t('authorisation.password_placeholder')}
         secureTextEntry
         testID="auth-password-input"
-        value={password}
+        value={values.password}
       />
 
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => {
-          onSubmit?.({ email, name, password });
-        }}
+        disabled={loading}
+        onPress={onSubmit}
         style={styles.submitButton}
         testID="auth-login-button"
       >
-        <Text style={styles.submitButtonText}>
-          {t('authorisation.register')}
-        </Text>
+        {loading ? (
+          <ActivityIndicator color="#FFFFFF" />
+        ) : (
+          <Text style={styles.submitButtonText}>
+            {t('authorisation.register')}
+          </Text>
+        )}
       </TouchableOpacity>
     </>
   );

@@ -8,7 +8,8 @@ import { store } from '@services/common/store';
 import axios from 'axios';
 import Config from 'react-native-config';
 
-const baseURL = `${Config.API_URL}/`;
+// const baseURL = `${Config.API_URL}/`;
+const baseURL = `http://15.164.215.12/`;
 
 const HTTP_UNAUTHORIZED = 401;
 
@@ -62,7 +63,7 @@ export const instance = axios.create({
   },
 });
 
-instance.interceptors.request.use((config) => {
+instance.interceptors.request.use(config => {
   const accessToken = store.getState().auth.accessToken;
   if (accessToken !== undefined) {
     config.headers.set('Authorization', `Bearer ${accessToken}`);
@@ -71,7 +72,7 @@ instance.interceptors.request.use((config) => {
 });
 
 instance.interceptors.response.use(
-  (response) => response,
+  response => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as
       | ({ _retry?: boolean } & InternalAxiosRequestConfig)

@@ -1,22 +1,20 @@
 import type { AxiosRequestConfig } from 'axios';
-import type { ZodType } from 'zod';
 
 import { instance } from '@services/common/instance';
 import axios from 'axios';
 
-type RequestOptions<T> = {
+type RequestOptions = {
   // Số lần thử lại khi gặp lỗi network. 0 = không retry.
   retry?: number;
   // Khoảng cách giữa các lần retry (ms).
   retryDelay?: number;
-  schema?: ZodType<T>;
 } & AxiosRequestConfig;
 
 const DEFAULT_RETRY = 0;
 const DEFAULT_RETRY_DELAY = 500;
 
 const delay = (ms: number) =>
-  new Promise((resolve) => {
+  new Promise(resolve => {
     setTimeout(resolve, ms);
   });
 
@@ -25,20 +23,17 @@ const delay = (ms: number) =>
 const isNetworkError = (error: unknown): boolean =>
   axios.isAxiosError(error) && error.response === undefined;
 
-const parse = <T>(data: unknown, schema?: ZodType<T>): T =>
-  schema ? schema.parse(data) : (data as T);
-
 const request = async <T>(
   config: AxiosRequestConfig,
-  options: { retry: number; retryDelay: number; schema?: ZodType<T> },
+  options: { retry: number; retryDelay: number },
 ): Promise<T> => {
-  const { retry, retryDelay, schema } = options;
+  const { retry, retryDelay } = options;
 
   let attempt = 0;
   for (;;) {
     try {
-      const response = await instance.request<unknown>(config);
-      return parse(response.data, schema);
+      const response = await instance.request<T>(config);
+      return response.data;
     } catch (error) {
       if (attempt >= retry || !isNetworkError(error)) {
         throw error;
@@ -49,23 +44,22 @@ const request = async <T>(
   }
 };
 
-const buildOptions = <T>(options: RequestOptions<T>) => {
+const buildOptions = (options: RequestOptions) => {
   const {
     retry = DEFAULT_RETRY,
     retryDelay = DEFAULT_RETRY_DELAY,
-    schema,
     ...config
   } = options;
-  return { config, retry, retryDelay, schema };
+  return { config, retry, retryDelay };
 };
 
 export const httpRequest = {
-  delete: <T = unknown>(url: string, options: RequestOptions<T> = {}) => {
+  delete: <T = unknown>(url: string, options: RequestOptions = {}) => {
     const { config, ...rest } = buildOptions(options);
     return request<T>({ ...config, method: 'DELETE', url }, rest);
   },
 
-  get: <T = unknown>(url: string, options: RequestOptions<T> = {}) => {
+  get: <T = unknown>(url: string, options: RequestOptions = {}) => {
     const { config, ...rest } = buildOptions(options);
     return request<T>({ ...config, method: 'GET', url }, rest);
   },
@@ -73,7 +67,7 @@ export const httpRequest = {
   patch: <T = unknown>(
     url: string,
     body?: unknown,
-    options: RequestOptions<T> = {},
+    options: RequestOptions = {},
   ) => {
     const { config, ...rest } = buildOptions(options);
     return request<T>({ ...config, data: body, method: 'PATCH', url }, rest);
@@ -82,7 +76,7 @@ export const httpRequest = {
   post: <T = unknown>(
     url: string,
     body?: unknown,
-    options: RequestOptions<T> = {},
+    options: RequestOptions = {},
   ) => {
     const { config, ...rest } = buildOptions(options);
     return request<T>({ ...config, data: body, method: 'POST', url }, rest);
@@ -91,7 +85,7 @@ export const httpRequest = {
   put: <T = unknown>(
     url: string,
     body?: unknown,
-    options: RequestOptions<T> = {},
+    options: RequestOptions = {},
   ) => {
     const { config, ...rest } = buildOptions(options);
     return request<T>({ ...config, data: body, method: 'PUT', url }, rest);

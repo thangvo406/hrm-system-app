@@ -56,7 +56,8 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, 'auth/loginRequest', 'auth/registerRequest'],
+        ignoredActionPaths: ['payload.onSuccess', 'payload.onFailure'],
       },
       thunk: false,
     }).concat(sagaMiddleware),

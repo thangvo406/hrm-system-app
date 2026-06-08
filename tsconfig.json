@@ -13,7 +13,8 @@
       "@services/*": ["./src/services/*"],
       "@translations": ["./src/translations"],
       "@translations/*": ["./src/translations/*"],
-      "@tests/*": ["./src/tests/*"]
+      "@tests/*": ["./src/tests/*"],
+      "@kits/*": ["./kits/*"]
     },
     "noUnusedLocals": true
   },

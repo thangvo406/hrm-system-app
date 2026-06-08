@@ -1,7 +1,11 @@
 import TextField from '@components/TextField';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 
 export type LoginValues = {
   readonly email: string;
@@ -9,17 +13,21 @@ export type LoginValues = {
 };
 
 type LoginFormProps = {
+  readonly loading?: boolean;
+  readonly onChange: (field: keyof LoginValues) => (value: string) => void;
   readonly onForgotPassword?: () => void;
-  readonly onSubmit?: (values: LoginValues) => void;
+  readonly onSubmit: () => void;
+  readonly values: LoginValues;
 };
 
 function LoginForm({
+  loading = false,
+  onChange,
   onForgotPassword = undefined,
-  onSubmit = undefined,
+  onSubmit,
+  values,
 }: LoginFormProps) {
   const { t } = useTranslation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
   return (
     <>
@@ -28,21 +36,21 @@ function LoginForm({
         iconName="email"
         keyboardType="email-address"
         label={t('authorisation.email_label')}
-        onChangeText={setEmail}
+        onChangeText={onChange('email')}
         placeholder={t('authorisation.email_placeholder')}
         testID="auth-email-input"
-        value={email}
+        value={values.email}
       />
 
       <TextField
         autoCapitalize="none"
         iconName="lock"
         label={t('authorisation.password_label')}
-        onChangeText={setPassword}
+        onChangeText={onChange('password')}
         placeholder={t('authorisation.password_placeholder')}
         secureTextEntry
         testID="auth-password-input"
-        value={password}
+        value={values.password}
       />
 
       <TouchableOpacity
@@ -57,13 +65,18 @@ function LoginForm({
 
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => {
-          onSubmit?.({ email, password });
-        }}
+        disabled={loading}
+        onPress={onSubmit}
         style={styles.submitButton}
         testID="auth-login-button"
       >
-        <Text style={styles.submitButtonText}>{t('authorisation.login')}</Text>
+        {loading ? (
+          <ActivityIndicator color="#FFFFFF" />
+        ) : (
+          <Text style={styles.submitButtonText}>
+            {t('authorisation.login')}
+          </Text>
+        )}
       </TouchableOpacity>
     </>
   );

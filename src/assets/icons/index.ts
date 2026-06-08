@@ -1,3 +1,4 @@
+import AlertCircleIcon from './alert-circle.svg';
 import EmailIcon from './email.svg';
 import EyeOffIcon from './eye-off.svg';
 import EyeIcon from './eye.svg';
@@ -9,8 +10,10 @@ import LockIcon from './lock.svg';
 import NaverIcon from './naver.svg';
 import SendIcon from './send.svg';
 import UserIcon from './user.svg';
+import XCircleIcon from './x-circle.svg';
 
 const icons = {
+  'alert-circle': AlertCircleIcon,
   email: EmailIcon,
   'eye-off': EyeOffIcon,
   eye: EyeIcon,
@@ -22,6 +25,7 @@ const icons = {
   naver: NaverIcon,
   send: SendIcon,
   user: UserIcon,
+  'x-circle': XCircleIcon,
 } as const;
 
 export type IconName = keyof typeof icons;

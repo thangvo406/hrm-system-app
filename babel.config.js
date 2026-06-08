@@ -13,6 +13,7 @@ module.exports = {
           '@services': './src/services',
           '@tests': './src/tests',
           '@translations': './src/translations',
+          '@kits': './kits',
         },
         extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
         root: ['./src'],

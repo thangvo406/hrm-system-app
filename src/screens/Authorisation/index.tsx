@@ -2,8 +2,9 @@ import type { RootScreenProps } from '@navigation/types';
 import type { LayoutChangeEvent } from 'react-native';
 
 import Image from '@components/Image';
+import Snackbar from '@components/Snackbar';
 import { Paths } from '@navigation/paths';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   KeyboardAvoidingView,
@@ -24,6 +25,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useAuthorization } from '@hooks';
+
 import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import SocialButtons from './components/SocialButtons';
@@ -43,6 +46,19 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     isLogin ? 'login' : 'registration',
   );
   const [tabsWidth, setTabsWidth] = useState(0);
+
+  const {
+    loading,
+    login,
+    loginWithSocial,
+    onLoginChange,
+    onRegisterChange,
+    register,
+    error,
+    cleanError,
+    submitLogin,
+    submitRegister,
+  } = useAuthorization();
 
   const isRegister = activeTab === 'registration';
   const progress = useSharedValue(isRegister ? 1 : 0);
@@ -65,6 +81,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
 
   return (
     <SafeAreaView mode="padding" style={styles.container}>
+      <Snackbar message={error} visible={!!error} onDismiss={cleanError} />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.flex}
@@ -135,19 +152,29 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
               entering={FadeInRight.duration(FORM_FADE_DURATION)}
               key="register"
             >
-              <RegisterForm />
+              <RegisterForm
+                loading={loading}
+                onChange={onRegisterChange}
+                onSubmit={submitRegister}
+                values={register}
+              />
             </Animated.View>
           ) : (
             <Animated.View
               entering={FadeInLeft.duration(FORM_FADE_DURATION)}
               key="login"
             >
-              <LoginForm />
+              <LoginForm
+                loading={loading}
+                onChange={onLoginChange}
+                onSubmit={submitLogin}
+                values={login}
+              />
             </Animated.View>
           )}
 
           <Animated.View layout={LinearTransition.duration(FORM_FADE_DURATION)}>
-            <SocialButtons />
+            <SocialButtons onPress={loginWithSocial} />
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>

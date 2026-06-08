@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Cho phép HTTP (cleartext) chỉ tới API server theo IP, kể cả ở release. -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">15.164.215.12</domain>
+    </domain-config>
+</network-security-config>

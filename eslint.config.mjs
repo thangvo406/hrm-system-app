@@ -83,6 +83,7 @@ export default defineConfig(
       'react/jsx-sort-props': OFF, // Handled by perfectionist
       'react/no-multi-comp': OFF,
       'react/no-unescaped-entities': OFF,
+      'perfectionist/sort-jsx-props': OFF,
       'react/require-default-props': [
         ERROR,
         {
@@ -93,6 +94,9 @@ export default defineConfig(
       'unicorn/filename-case': OFF,
       'unicorn/no-keyword-prefix': OFF,
       'unicorn/no-useless-undefined': OFF,
+      'perfectionist/sort-modules': OFF,
+      'perfectionist/sort-object-types': OFF,
+      'react-hooks/use-memo': OFF,
       'unicorn/prefer-top-level-await': 0, // not valid on RN for the moment
       'unicorn/prevent-abbreviations': [
         ERROR,
@@ -124,6 +128,7 @@ export default defineConfig(
       'perfectionist/sort-object-types': OFF,
       'unicorn/prefer-module': OFF,
       'perfectionist/sort-object': OFF,
+      'perfectionist/sort-modules': OFF,
     },
   },
   {
