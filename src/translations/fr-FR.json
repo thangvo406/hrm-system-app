@@ -29,7 +29,12 @@
       "or": "Ou",
       "continue_kakao": "Continuer avec Kakao",
       "continue_naver": "Continuer avec Naver",
-      "continue_google": "Continuer avec Google"
+      "continue_google": "Continuer avec Google",
+      "error_name_required": "Veuillez saisir votre nom",
+      "error_email_required": "Veuillez saisir votre e-mail",
+      "error_email_invalid": "Veuillez saisir un e-mail valide",
+      "error_password_required": "Veuillez saisir votre mot de passe",
+      "error_password_min": "Le mot de passe doit contenir au moins 6 caractères"
     },
     "error_boundary": {
       "title": "Oups ! Quelque chose s'est mal passé.",

@@ -1,11 +1,8 @@
-import TextField from '@components/TextField';
+import { Button, TextField } from '@components';
+import type { LoginErrors } from '@hooks';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import React from 'react';
 
 export type LoginValues = {
   readonly email: string;
@@ -13,18 +10,22 @@ export type LoginValues = {
 };
 
 type LoginFormProps = {
+  readonly errors: LoginErrors;
   readonly loading?: boolean;
   readonly onChange: (field: keyof LoginValues) => (value: string) => void;
   readonly onForgotPassword?: () => void;
   readonly onSubmit: () => void;
+  readonly valid: boolean;
   readonly values: LoginValues;
 };
 
 function LoginForm({
+  errors,
   loading = false,
   onChange,
   onForgotPassword = undefined,
   onSubmit,
+  valid,
   values,
 }: LoginFormProps) {
   const { t } = useTranslation();
@@ -33,6 +34,7 @@ function LoginForm({
     <>
       <TextField
         autoCapitalize="none"
+        error={errors.email}
         iconName="email"
         keyboardType="email-address"
         label={t('authorisation.email_label')}
@@ -44,6 +46,7 @@ function LoginForm({
 
       <TextField
         autoCapitalize="none"
+        error={errors.password}
         iconName="lock"
         label={t('authorisation.password_label')}
         onChangeText={onChange('password')}
@@ -63,21 +66,14 @@ function LoginForm({
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        activeOpacity={0.8}
-        disabled={loading}
+      <Button
+        disabled={!valid}
+        title={t('authorisation.login')}
+        loading={loading}
         onPress={onSubmit}
-        style={styles.submitButton}
+        type="rounded"
         testID="auth-login-button"
-      >
-        {loading ? (
-          <ActivityIndicator color="#FFFFFF" />
-        ) : (
-          <Text style={styles.submitButtonText}>
-            {t('authorisation.login')}
-          </Text>
-        )}
-      </TouchableOpacity>
+      />
     </>
   );
 }
@@ -92,23 +88,6 @@ const styles = StyleSheet.create({
     color: '#2F6BFF',
     fontSize: 13,
   },
-  submitButton: {
-    alignItems: 'center',
-    backgroundColor: '#5BB85C',
-    borderRadius: 12,
-    elevation: 4,
-    height: 50,
-    justifyContent: 'center',
-    shadowColor: '#5BB85C',
-    shadowOffset: { height: 4, width: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-  },
-  submitButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
-  },
 });
 
-export default LoginForm;
+export default React.memo(LoginForm);

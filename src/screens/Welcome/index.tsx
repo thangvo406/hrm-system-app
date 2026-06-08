@@ -4,7 +4,8 @@ import imageNames from '@assets/images/names';
 import Image from '@components/Image';
 import { Paths } from '@navigation/paths';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Button from '@components/Button';
 
 const BANNER_HEIGHT = 100;
 const BANNER_WIDTH = 200;
@@ -35,27 +36,19 @@ function Welcome({ navigation }: RootScreenProps<Paths.Welcome>) {
       />
 
       <View style={styles.actions}>
-        <TouchableOpacity
-          activeOpacity={0.8}
+        <Button
+          title={t('welcome.login')}
           onPress={goToAuthorise(true)}
-          style={[styles.button, styles.buttonPrimary]}
+          type="rounded"
           testID="welcome-login-button"
-        >
-          <Text style={[styles.buttonText, styles.buttonTextPrimary]}>
-            {t('welcome.login')}
-          </Text>
-        </TouchableOpacity>
+        />
 
-        <TouchableOpacity
-          activeOpacity={0.8}
+        <Button
+          title={t('welcome.register')}
           onPress={goToAuthorise(false)}
-          style={[styles.button, styles.buttonSecondary]}
+          type="outline"
           testID="welcome-register-button"
-        >
-          <Text style={[styles.buttonText, styles.buttonTextSecondary]}>
-            {t('welcome.register')}
-          </Text>
-        </TouchableOpacity>
+        />
       </View>
     </View>
   );

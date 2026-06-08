@@ -1,11 +1,8 @@
-import TextField from '@components/TextField';
+import { Button, TextField } from '@components';
+import type { RegisterErrors } from '@hooks';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import React from 'react';
+import { StyleSheet } from 'react-native';
 
 export type RegisterValues = {
   readonly email: string;
@@ -14,16 +11,20 @@ export type RegisterValues = {
 };
 
 type RegisterFormProps = {
+  readonly errors: RegisterErrors;
   readonly loading?: boolean;
   readonly onChange: (field: keyof RegisterValues) => (value: string) => void;
   readonly onSubmit: () => void;
+  readonly valid: boolean;
   readonly values: RegisterValues;
 };
 
 function RegisterForm({
+  errors,
   loading = false,
   onChange,
   onSubmit,
+  valid,
   values,
 }: RegisterFormProps) {
   const { t } = useTranslation();
@@ -31,6 +32,7 @@ function RegisterForm({
   return (
     <>
       <TextField
+        error={errors.name}
         iconName="user"
         label={t('authorisation.name_label')}
         onChangeText={onChange('name')}
@@ -41,6 +43,7 @@ function RegisterForm({
 
       <TextField
         autoCapitalize="none"
+        error={errors.email}
         iconName="email"
         keyboardType="email-address"
         label={t('authorisation.email_label')}
@@ -52,6 +55,7 @@ function RegisterForm({
 
       <TextField
         autoCapitalize="none"
+        error={errors.password}
         iconName="lock"
         label={t('authorisation.password_label')}
         onChangeText={onChange('password')}
@@ -61,44 +65,23 @@ function RegisterForm({
         value={values.password}
       />
 
-      <TouchableOpacity
-        activeOpacity={0.8}
-        disabled={loading}
+      <Button
+        disabled={!valid}
+        title={t('authorisation.register')}
+        loading={loading}
+        style={styles.submit}
         onPress={onSubmit}
-        style={styles.submitButton}
+        type="rounded"
         testID="auth-login-button"
-      >
-        {loading ? (
-          <ActivityIndicator color="#FFFFFF" />
-        ) : (
-          <Text style={styles.submitButtonText}>
-            {t('authorisation.register')}
-          </Text>
-        )}
-      </TouchableOpacity>
+      />
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  submitButton: {
-    alignItems: 'center',
-    backgroundColor: '#5BB85C',
-    borderRadius: 12,
-    elevation: 4,
-    height: 50,
-    justifyContent: 'center',
+  submit: {
     marginTop: 16,
-    shadowColor: '#5BB85C',
-    shadowOffset: { height: 4, width: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-  },
-  submitButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '600',
   },
 });
 
-export default RegisterForm;
+export default React.memo(RegisterForm);

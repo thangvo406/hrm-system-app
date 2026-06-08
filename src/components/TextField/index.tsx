@@ -17,6 +17,7 @@ const PLACEHOLDER_COLOR = '#9E9E9E';
 
 type TextFieldProps = {
   readonly autoCapitalize?: TextInputProps['autoCapitalize'];
+  readonly error?: string;
   readonly iconName: IconName;
   readonly keyboardType?: KeyboardTypeOptions;
   readonly label: string;
@@ -29,6 +30,7 @@ type TextFieldProps = {
 
 function TextField({
   autoCapitalize = 'sentences',
+  error = undefined,
   iconName,
   keyboardType = 'default',
   label,
@@ -39,11 +41,14 @@ function TextField({
   value,
 }: TextFieldProps) {
   const [secure, setSecure] = useState(secureTextEntry);
+  const hasError = error !== undefined;
 
   return (
     <View>
       <Text style={styles.label}>{label}</Text>
-      <View style={styles.inputWrapper}>
+      <View
+        style={[styles.inputWrapper, hasError && styles.inputWrapperError]}
+      >
         <Image
           color={ICON_COLOR}
           height={ICON_SIZE}
@@ -79,11 +84,22 @@ function TextField({
           </TouchableOpacity>
         ) : undefined}
       </View>
+      {hasError ? (
+        <Text style={styles.error} testID={testID ? `${testID}-error` : undefined}>
+          {error}
+        </Text>
+      ) : undefined}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  error: {
+    color: '#D32F2F',
+    fontSize: 12,
+    marginBottom: 8,
+    marginTop: -2,
+  },
   input: {
     color: '#303030',
     flex: 1,
@@ -100,6 +116,9 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 6,
     paddingHorizontal: 14,
+  },
+  inputWrapperError: {
+    borderColor: '#D32F2F',
   },
   label: {
     color: '#303030',

@@ -29,7 +29,12 @@
       "or": "Or",
       "continue_kakao": "Continue with Kakao",
       "continue_naver": "Continue with Naver",
-      "continue_google": "Continue with Google"
+      "continue_google": "Continue with Google",
+      "error_name_required": "Please enter your name",
+      "error_email_required": "Please enter your email",
+      "error_email_invalid": "Please enter a valid email",
+      "error_password_required": "Please enter your password",
+      "error_password_min": "Password must be at least 6 characters"
     },
     "error_boundary": {
       "title": "Oops! Something went wrong.",

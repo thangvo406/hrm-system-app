@@ -4,7 +4,7 @@ import type { LayoutChangeEvent } from 'react-native';
 import Image from '@components/Image';
 import Snackbar from '@components/Snackbar';
 import { Paths } from '@navigation/paths';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   KeyboardAvoidingView,
@@ -48,14 +48,18 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
   const [tabsWidth, setTabsWidth] = useState(0);
 
   const {
+    cleanError,
+    error,
+    isLoginValid,
+    isRegisterValid,
     loading,
     login,
+    loginErrors,
     loginWithSocial,
     onLoginChange,
     onRegisterChange,
     register,
-    error,
-    cleanError,
+    registerErrors,
     submitLogin,
     submitRegister,
   } = useAuthorization();
@@ -153,9 +157,11 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
               key="register"
             >
               <RegisterForm
+                errors={registerErrors}
                 loading={loading}
                 onChange={onRegisterChange}
                 onSubmit={submitRegister}
+                valid={isRegisterValid}
                 values={register}
               />
             </Animated.View>
@@ -165,9 +171,11 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
               key="login"
             >
               <LoginForm
+                errors={loginErrors}
                 loading={loading}
                 onChange={onLoginChange}
                 onSubmit={submitLogin}
+                valid={isLoginValid}
                 values={login}
               />
             </Animated.View>
