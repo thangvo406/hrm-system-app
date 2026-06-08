@@ -1,0 +1,142 @@
+# Coop Use — React Native Project Rules
+
+You are a senior React Native engineer working on this codebase. Follow the
+conventions below exactly. They are derived from the real code, not generic
+best practices. When in doubt, mirror existing files.
+
+## 1. Tech Stack (Core Libraries)
+
+- **Runtime**: React Native 0.81, React 19.1, TypeScript 5.8 (strict).
+- **Navigation**: `@react-navigation/native` + `@react-navigation/stack`
+  (native stack is NOT used — the project uses `createStackNavigator`).
+- **State management**: Redux Toolkit (`@reduxjs/toolkit`) +
+  `react-redux` for the store, `redux-saga` for async side effects.
+  `thunk` is DISABLED in the store; do async work in sagas, not thunks.
+- **Persistence**: `redux-persist` backed by `react-native-mmkv` (MMKV is the
+  ONLY local storage — there is no AsyncStorage / Realm / SQLite).
+- **HTTP**: `axios` wrapped by a custom `httpRequest` helper.
+- **Validation**: `zod` v4 — used to parse/validate API responses.
+- **i18n**: `i18next` + `react-i18next`, language persisted in MMKV.
+- **Images**: `@d11/react-native-fast-image` for raster, `react-native-svg`
+  for icons, surfaced through a single `<Image />` component.
+- **Dates**: `dayjs`. **Utils**: `lodash`.
+- **Debugging**: Reactotron (`reactotron-react-native`) wired into the store.
+- There is NO Firebase, NO analytics SDK, NO push-notification library yet.
+
+## 2. Directory Structure (`src/`)
+
+- `src/App.tsx` — root component: wires `GestureHandlerRootView`, redux
+  `Provider`, `PersistGate`, then the navigator.
+- `src/navigation/` — `Application.tsx` (navigator tree), `paths.ts`
+  (route name enum), `types.ts` (`RootStackParamList`, `RootScreenProps`).
+- `src/screens/` — one folder per screen (`Example/`, `Startup/`), each with
+  `<Screen>.tsx` and optional `<Screen>.test.tsx`. `index.ts` re-exports all
+  screens as named exports.
+- `src/components/` — reusable presentational components, one folder each with
+  `index.tsx` + `<Name>.test.tsx`.
+- `src/services/` — all data + state logic:
+  - `services/common/` — infrastructure: `store.ts`, `instance.ts` (axios +
+    interceptors), `httpRequest.ts` (typed HTTP helper), `storage.ts` (MMKV),
+    `rootSaga.ts`, `storeHooks.ts` (typed `useAppDispatch`/`useAppSelector`).
+  - `services/slices/<feature>/` — per-feature `<feature>Slice.ts` and, when
+    async is needed, `<feature>Saga.ts`.
+- `src/hooks/` — custom hooks; `index.ts` re-exports them. Sub-folders group
+  by domain (e.g. `language/`).
+- `src/assets/` — `colors.ts`, `icons/` (svg + `index.ts` registry),
+  `images/` (registry + generated `names.ts`).
+- `src/translations/` — i18n setup, `en-EN.json`, `fr-FR.json`.
+- `src/tests/` — `TestAppWrapper.tsx` and `__mocks__/` for libs.
+- `src/types/` — ambient declarations (`env.d.ts`).
+- Ignore `android/`, `ios/`, `node_modules/`, `kits/`, `scripts/`.
+
+## 3. Path Aliases
+
+Always import via aliases, never deep relative paths across folders:
+`@assets/*`, `@components/*`, `@hooks` / `@hooks/*`, `@navigation/*`,
+`@screens` / `@screens/*`, `@services/*`, `@translations` / `@translations/*`,
+`@tests/*`. Relative imports are only for siblings within the same folder
+(e.g. a slice importing its own saga via `./appSlice`).
+
+## 4. Coding Conventions
+
+### Naming & files
+- Components & screens: `PascalCase` files and function names. Screens live in
+  `screens/<Name>/<Name>.tsx`; shared components in
+  `components/<Name>/index.tsx`.
+- Slices: `<feature>Slice.ts` exporting `{ actions }` named + `<feature>Reducer`.
+- Sagas: `<feature>Saga.ts` exporting `<feature>Saga` generator.
+- Tests: co-located `*.test.tsx` next to the unit under test.
+- Constants: `SCREAMING_SNAKE_CASE`, defined at module top (e.g.
+  `BUTTON_SIZE`, `HTTP_UNAUTHORIZED`). Magic numbers are lint errors — extract
+  them (only -1..6 are allowed inline).
+
+### Components
+- Prefer `function Component() {}` declarations, then `export default`.
+- Wrap purely presentational reusable components in `React.memo`.
+- Styles via `StyleSheet.create`, declared AFTER the component, named `styles`.
+- Use `SafeAreaView` from `react-native-safe-area-context` (not core RN).
+- Provide `testID` on interactive/asserted elements (tests query by testID).
+- Props type is named `Properties` or `<Name>Props`; mark fields `readonly`.
+
+### TypeScript & lint (STRICT — eslint blocks merges)
+- `type` only — `interface` is forbidden (`consistent-type-definitions`).
+- Use `import type { ... }` for type-only imports.
+- ESLint `perfectionist` enforces ALPHABETICAL ordering of object keys, object
+  types, JSX props, and union members. Keep keys/props sorted A→Z. (Import
+  sorting itself is off, but keep imports tidy.)
+- Strict type-checked + unicorn rules are on. Avoid `any`; model absence with
+  `T | undefined` (the codebase uses `undefined`, not `null`).
+- `console.log` is banned; only `console.warn` / `console.error` allowed.
+- Run `yarn lint` (rules + prettier + tsc) before considering work done.
+
+## 5. Standard Flows
+
+### API call flow
+1. Define a `zod` schema for the response shape.
+2. Call through `httpRequest` (`get/post/put/patch/delete`) passing
+   `{ schema }` so the response is validated and typed:
+   ```ts
+   const user = await httpRequest.get<User>('users/me', { schema: userSchema });
+   ```
+   Optional `{ retry, retryDelay }` retries ONLY on network errors (no
+   response), never on 4xx/5xx.
+3. `httpRequest` delegates to the shared `instance` (axios) in
+   `services/common/instance.ts`, which:
+   - injects `Authorization: Bearer <accessToken>` from
+     `store.getState().auth.accessToken` on every request,
+   - on `401`, performs a single-flight token refresh via `auth/refresh`,
+     dispatches `setCredentials` on success (or `clearCredentials` on failure),
+     and retries the original request once (`_retry` guard).
+- Base URL comes from `react-native-config` (`Config.API_URL`). Never hardcode
+  hosts. Do NOT create new axios instances for normal calls — reuse `instance`.
+
+### State flow
+- Synchronous state: define in a slice with `createSlice`; mutate via Immer
+  (`state.x = ...`). Export named actions + `<feature>Reducer`.
+- Async state: dispatch a "trigger" action (use `prepare` to carry payload,
+  set `loading: true`), handle it in a saga with `takeLatest`, then `put` a
+  `...Success` action that writes results and clears `loading`. See
+  `app/appSlice.ts` + `app/appSaga.ts` as the reference pattern.
+- Register new reducers in `combineReducers` in `services/common/store.ts`, and
+  add to `whitelist` only if it must persist. Register new sagas via `fork`
+  in `services/common/rootSaga.ts`.
+- In components, read state with `useAppSelector` and dispatch with
+  `useAppDispatch` (typed hooks from `services/common/storeHooks.ts`). Never
+  import the raw `useSelector`/`useDispatch`.
+
+### Navigation flow
+- Add the route name to the `Paths` enum, add it to `RootStackParamList` in
+  `navigation/types.ts`, register `<Stack.Screen>` in `Application.tsx`, and
+  export the screen from `screens/index.ts`.
+- Type screen props as `RootScreenProps<Paths.X>`.
+
+## 6. Testing
+- Jest + `@testing-library/react-native`.
+- Render with `{ wrapper: TestAppWrapper }` so redux/i18n/safe-area context is
+  available. Query by `testID`, assert behavior via `fireEvent`.
+- Co-locate tests; name them `*.test.tsx`.
+
+## 7. i18n
+- All user-facing strings go through i18next; add keys to BOTH `en-EN.json`
+  and `fr-FR.json`. Use `useI18n()` for language switching. Language choice is
+  persisted in MMKV under `appLanguage`.

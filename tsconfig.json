@@ -1,5 +1,32 @@
 {
   "extends": "@react-native/typescript-config",
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["**/node_modules", "**/Pods"]
+  "compilerOptions": {
+    "types": ["react-native", "jest", "node"],
+    "paths": {
+      "@assets/*": ["./src/assets/*"],
+      "@components/*": ["./src/components/*"],
+      "@hooks": ["./src/hooks"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@navigation/*": ["./src/navigation/*"],
+      "@screens": ["./src/screens"],
+      "@screens/*": ["./src/screens/*"],
+      "@services/*": ["./src/services/*"],
+      "@translations": ["./src/translations"],
+      "@translations/*": ["./src/translations/*"],
+      "@tests/*": ["./src/tests/*"]
+    },
+    "noUnusedLocals": true
+  },
+  "include": [
+    "src/tests/**/*",
+    "./src/**/*",
+    "index.d.ts",
+    "*.mjs",
+    ".*.mjs",
+    "*.js",
+    ".*.js",
+    "*.ts",
+    ".prettierrc.mjs"
+  ],
+  "exclude": ["**/node_modules", "_", "android", "ios", "**/Pods"]
 }
