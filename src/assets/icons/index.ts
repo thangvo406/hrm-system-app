@@ -4,6 +4,12 @@ import EyeOffIcon from './eye-off.svg';
 import EyeIcon from './eye.svg';
 import FireIcon from './fire.svg';
 import GoogleIcon from './google.svg';
+import IcChevronDownIcon from './ic_chevron_down.svg';
+import IcChevronRightIcon from './ic_chevron_right.svg';
+import IcLogoUnappIcon from './ic_logo_unapp.svg';
+import IcRadioSelectedIcon from './ic_radio_selected.svg';
+import IcRadioUnselectedIcon from './ic_radio_unselected.svg';
+import IcSearchIcon from './ic_search.svg';
 import KakaoIcon from './kakao.svg';
 import LanguageIcon from './language.svg';
 import LockIcon from './lock.svg';
@@ -19,6 +25,12 @@ const icons = {
   eye: EyeIcon,
   fire: FireIcon,
   google: GoogleIcon,
+  ic_chevron_down: IcChevronDownIcon,
+  ic_chevron_right: IcChevronRightIcon,
+  ic_logo_unapp: IcLogoUnappIcon,
+  ic_radio_selected: IcRadioSelectedIcon,
+  ic_radio_unselected: IcRadioUnselectedIcon,
+  ic_search: IcSearchIcon,
   kakao: KakaoIcon,
   language: LanguageIcon,
   lock: LockIcon,
