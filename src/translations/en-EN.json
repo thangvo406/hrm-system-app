@@ -40,6 +40,25 @@
       "title": "Oops! Something went wrong.",
       "description": "We are sorry for the inconvenience. Please try again later.",
       "cta": "Reload the screen"
+    },
+    "register_flow": {
+      "identity_title": "Please proceed with verification to confirm your identity.",
+      "agree_label": "Agree to all terms for identity verification service",
+      "terms_of_use": "Agree to the Terms of Use for Mobile Phone Identity Verification Service (Required)",
+      "carrier_terms": "Agree to the Mobile Carrier Terms of Use (Required)",
+      "name_label": "Name",
+      "dob_label": "6-digit Date of Birth",
+      "phone_placeholder": "Phone Number",
+      "request_verification": "Request Verification",
+      "warning": "*If you register using someone else's personal information without authorization, your service access may be restricted and you may be subject to legal penalties.",
+      "next": "Next"
+    },
+    "choose_school": {
+      "title": "School Verification",
+      "search_label": "School Lookup",
+      "search_placeholder": "Search",
+      "empty": "No results found.",
+      "next": "Next"
     }
   }
 }

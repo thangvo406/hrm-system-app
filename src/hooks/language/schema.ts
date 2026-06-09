@@ -2,12 +2,12 @@ import * as z from 'zod';
 
 export const enum SupportedLanguages {
   EN_EN = 'en-EN',
-  FR_FR = 'fr-FR',
+  KO_KR = 'ko-KR',
 }
 
 export const languageSchema = z.enum([
   SupportedLanguages.EN_EN,
-  SupportedLanguages.FR_FR,
+  SupportedLanguages.KO_KR,
 ]);
 
 export type Language = z.infer<typeof languageSchema>;

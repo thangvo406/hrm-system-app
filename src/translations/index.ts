@@ -9,7 +9,7 @@ import { initReactI18next } from 'react-i18next';
 import { createMMKV } from 'react-native-mmkv';
 
 import en from './en-EN.json';
-import fr from './fr-FR.json';
+import ko from './ko-KR.json';
 
 export const APP_LANGUAGE_KEY = 'appLanguage';
 
@@ -19,17 +19,17 @@ export const defaultNS = 'myapp';
 
 export const resources = {
   'en-EN': en,
-  'fr-FR': fr,
+  'ko-KR': ko,
 } as const satisfies Record<Language, unknown>;
 
 const savedLanguage =
-  storage.getString(APP_LANGUAGE_KEY) ?? SupportedLanguages.EN_EN;
+  storage.getString(APP_LANGUAGE_KEY) ?? SupportedLanguages.KO_KR;
 
 void i18n
   .use(initReactI18next)
   .init({
     defaultNS,
-    fallbackLng: SupportedLanguages.EN_EN,
+    fallbackLng: SupportedLanguages.KO_KR,
     lng: savedLanguage,
     resources,
   })
@@ -48,8 +48,8 @@ export const executeLanguageFallback = (
 ) => {
   if (lng === (SupportedLanguages.EN_EN as string)) {
     i18n.addResourceBundle(SupportedLanguages.EN_EN, defaultNS, translations);
-  } else if (lng === (SupportedLanguages.FR_FR as string)) {
-    i18n.addResourceBundle(SupportedLanguages.FR_FR, defaultNS, translations);
+  } else if (lng === (SupportedLanguages.KO_KR as string)) {
+    i18n.addResourceBundle(SupportedLanguages.KO_KR, defaultNS, translations);
   }
 };
 

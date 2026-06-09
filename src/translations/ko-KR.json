@@ -1,0 +1,64 @@
+{
+  "myapp": {
+    "common_appName": {
+      "full": "리액트 네이티브 MyApp",
+      "initials": "RNB"
+    },
+    "common_error": "문제가 발생했습니다.",
+    "screen_example": {
+      "hello_user": "안녕하세요, 제 이름은 {{name}}입니다",
+      "title": "$t(common_appName.full)에 오신 것을 환영합니다",
+      "description": "기능을 살펴보시겠어요? 화면 하단의 세 개 버튼 중 하나를 누르세요. 첫 번째 버튼은 REST API를 호출하고, 두 번째 버튼은 테마 색상을 변경하며, 세 번째 버튼은 언어를 변경합니다."
+    },
+    "welcome": {
+      "login": "로그인",
+      "register": "신규 가입"
+    },
+    "authorisation": {
+      "tab_login": "로그인",
+      "tab_registration": "회원가입",
+      "name_label": "이름",
+      "name_placeholder": "홍길동",
+      "email_label": "이메일",
+      "email_placeholder": "example@email.com",
+      "password_label": "비밀번호",
+      "password_placeholder": "비밀번호",
+      "forgot_password": "비밀번호를 잊으셨나요?",
+      "login": "로그인",
+      "register": "회원가입",
+      "or": "또는",
+      "continue_kakao": "카카오로 계속하기",
+      "continue_naver": "네이버로 계속하기",
+      "continue_google": "구글로 계속하기",
+      "error_name_required": "이름을 입력해 주세요",
+      "error_email_required": "이메일을 입력해 주세요",
+      "error_email_invalid": "올바른 이메일을 입력해 주세요",
+      "error_password_required": "비밀번호를 입력해 주세요",
+      "error_password_min": "비밀번호는 최소 6자 이상이어야 합니다"
+    },
+    "error_boundary": {
+      "title": "이런! 문제가 발생했습니다.",
+      "description": "불편을 드려 죄송합니다. 잠시 후 다시 시도해 주세요.",
+      "cta": "화면 새로고침"
+    },
+    "register_flow": {
+      "identity_title": "본인확인을 위해\n인증을 진행해 주세요.",
+      "agree_label": "본인 인증 서비스 약관 전체 동의",
+      "terms_of_use": "휴대폰 본인 인증 서비스 이용약관 동의(필수)",
+      "carrier_terms": "휴대폰 통신사 이용약관 동의(필수)",
+      "name_label": "이름",
+      "dob_label": "생년월일 6자리",
+      "phone_placeholder": "휴대폰 번호",
+      "request_verification": "인증 요청",
+      "warning": "*타인의 개인정보를 무단으로 사용하여 가입할 경우 서비스 이용이 제한될 수 있으며 법적 처벌을 받을 수 있습니다.",
+      "next": "다음"
+    },
+    "choose_school": {
+      "title": "학적 인증",
+      "search_label": "학교 조회",
+      "search_placeholder": "Search",
+      "empty": "검색 결과가 없습니다.",
+      "next": "다음"
+    }
+  }
+}
