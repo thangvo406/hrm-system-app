@@ -1,0 +1,75 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+desc "Build Android APK và tự động lưu trữ lên GitHub Releases"
+  lane :beta do
+    
+    # 1. Đọc các biến môi trường tự động từ hệ thống và GitHub Actions
+    build_num    = ENV['BUILD_NUMBER'] || "1"
+    version_num  = ENV['VERSION_NUMBER'] || "1.0.0"
+    prefix_name  = ENV['PREFIX_APP_NAME'] || "APP"
+    branch       = ENV['BRANCH_NAME'] || "master_icourse"
+    
+    # GitHub Actions sẽ tự động cung cấp 2 biến này trong máy ảo
+    repo_name    = ENV['GITHUB_REPOSITORY'] # Dạng: "ten-tai-khoan/ten-repo"
+    github_token = ENV['GITHUB_TOKEN']      # Token có quyền ghi vào repo
+
+    UI.message("--- BẮT ĐẦU QUY TRÌNH BUILD & STORE APK ---")
+    UI.message("Cấu hình: #{prefix_name} - Phiên bản: #{version_num} (Build: #{build_num})")
+
+    # 2. Clean và Biên dịch dự án thành file APK Release
+    gradle(task: "clean")
+    gradle(
+      task: "assemble",
+      build_type: "Release"
+    )
+
+    # 3. Định vị và Đổi tên file APK để dễ quản lý khi tải về
+    original_apk = "app/build/outputs/apk/release/app-release.apk"
+    formatted_name = "#{prefix_name}_v#{version_num}_b#{build_num}.apk"
+    target_apk_path = "app/build/outputs/apk/release/#{formatted_name}"
+    
+    # Sử dụng lệnh shell đổi tên file nhị phân vừa tạo
+    sh("mv #{original_apk} #{target_apk_path}")
+    UI.message("Đã build xong file APK tại đường dẫn: #{target_apk_path}")
+
+    # 4. Tiến hành đẩy file APK lên GitHub Releases của chính Repo này
+    if github_token && repo_name
+      UI.message("Đang kết nối tới GitHub để lưu trữ bản build...")
+      
+      github_release(
+        repository_name: repo_name,
+        api_token: github_token,
+        tag_name: "v#{version_num}-b#{build_num}", # Tạo một tag mới trên git
+        name: "#{prefix_name} v#{version_num} (Build #{build_num})", # Tiêu đề Release
+        description: "Bản build thử nghiệm Android được tạo tự động từ GitHub Actions.\nNhánh nguồn: #{branch}",
+        assets: [target_apk_path], # Đính kèm file APK vào đây
+        commitish: branch
+      )
+      
+      UI.success("🎉 Đã lưu trữ thành công file APK lên GitHub Releases của Repository!")
+    else
+      UI.important("⚠️ Bỏ qua bước đẩy lên GitHub do thiếu thông tin Token hoặc tên Repo (Có thể đang chạy thử dưới máy Local).")
+    end
+
+  end
+end
+
+def prepare_package(options, isProd)
+  # sh "yarn install --no-immutable"
+end

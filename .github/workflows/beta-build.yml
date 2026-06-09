@@ -1,0 +1,100 @@
+name: React Native CI/CD Beta Build
+
+on:
+  push:
+    branches:
+      - dev
+
+# Thiết lập biến môi trường toàn cục cho toàn bộ workflow
+env:
+  # github.run_number: Tự động tăng mỗi khi workflow chạy (ví dụ: 1, 2, 3...)
+  # Hoặc bạn có thể hardcode là '8929' nếu muốn.
+  BUILD_NUMBER: ${{ github.run_number }}
+
+  PREFIX_APP_NAME: 'COOP_DEV_v'
+
+  # github.ref_name: Tự động lấy tên nhánh đang trigger workflow (ở đây là master_icourse)
+  BRANCH_NAME: ${{ github.ref_name }}
+
+  # Lấy từ GitHub Variables (Settings > Secrets and variables > Variables) để dễ đổi version sau này mà không cần sửa code.
+  # Nếu chưa cấu hình, bạn có thể hardcode thẳng: '1.0.31'
+  VERSION_NUMBER: '1.0.0'
+
+jobs:
+  build-android:
+    name: Build Android Beta
+    runs-on: ubuntu-latest
+    # QUAN TRỌNG: Cấp quyền để GitHub Actions tạo được Release và lưu file APK
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Ruby and Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: android
+
+      - name: Run Fastlane Android Beta
+        # Không cần truyền tham số ở đây nữa, Fastlane sẽ tự đọc từ biến môi trường
+        run: bundle exec fastlane beta
+        working-directory: android
+        env:
+          GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
+
+  # build-ios:
+  #   name: Build iOS Beta
+  #   runs-on: macos-14
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
+
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '18'
+  #         cache: 'yarn'
+
+  #     - name: Install Dependencies
+  #       run: yarn install --frozen-lockfile
+
+  #     - name: Setup Ruby and Fastlane
+  #       uses: ruby/setup-ruby@v1
+  #       with:
+  #         ruby-version: '3.2'
+  #         bundler-cache: true
+  #         working-directory: ios
+
+  #     - name: Install CocoaPods
+  #       run: pod install
+  #       working-directory: ios
+
+  #     - name: Run Fastlane iOS Beta
+  #       # Tương tự Android, câu lệnh cực kỳ gọn gàng
+  #       run: bundle exec fastlane beta
+  #       working-directory: ios
+  #       env:
+  #         APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
+  #         APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+  #         APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+  #         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
