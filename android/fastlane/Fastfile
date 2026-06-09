@@ -38,24 +38,15 @@ desc "Build Android APK và tự động lưu trữ lên GitHub Releases"
       task: "assemble",
       build_type: "Release"
     )
-
     # 3. Định vị và Đổi tên file APK để dễ quản lý khi tải về
+    original_apk = "app/build/outputs/apk/release/app-release.apk"
     formatted_name = "#{prefix_name}_v#{version_num}_b#{build_num}.apk"
-    apk_paths = Dir.glob("app/build/outputs/apk/**/*.apk")
+    target_apk_path = "app/build/outputs/apk/release/#{formatted_name}"
     
-    if apk_paths.empty?
-      UI.user_error!("❌ Không tìm thấy bất kỳ file APK nào được sinh ra sau khi build!")
-    end
-
-    # Ưu tiên lấy bản "universal" (nếu bạn bật split APK), nếu không thì lấy file apk đầu tiên tìm được
-    original_apk = apk_paths.find { |path| path.include?("universal") } || apk_paths.first
-    
-    # Lấy ra thư mục đang chứa file APK đó để rename ngay tại chỗ
-    target_apk_path = File.join(File.dirname(original_apk), formatted_name)
-    
-    # Đổi tên file
-    sh("mv #{original_apk} #{target_apk_path}")
-    UI.message("Đã build xong file APK tại đường dẫn: #{target_apk_path}")
+    # Sử dụng lệnh shell đổi tên file nhị phân vừa tạo
+    sh "pwd"
+    sh "ls"
+    sh("mv ../#{original_apk} ../#{target_apk_path}")
 
     # 4. Tiến hành đẩy file APK lên GitHub Releases của chính Repo này
     if github_token && repo_name
