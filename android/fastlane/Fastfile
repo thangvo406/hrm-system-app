@@ -44,21 +44,19 @@ desc "Build Android APK và tự động lưu trữ lên GitHub Releases"
     target_apk_path = "app/build/outputs/apk/release/#{formatted_name}"
     
     # Sử dụng lệnh shell đổi tên file nhị phân vừa tạo
-    sh "pwd"
-    sh "ls"
     sh("mv ../#{original_apk} ../#{target_apk_path}")
 
     # 4. Tiến hành đẩy file APK lên GitHub Releases của chính Repo này
     if github_token && repo_name
       UI.message("Đang kết nối tới GitHub để lưu trữ bản build...")
       
-      github_release(
+      set_github_release(
         repository_name: repo_name,
         api_token: github_token,
         tag_name: "v#{version_num}-b#{build_num}", # Tạo một tag mới trên git
         name: "#{prefix_name} v#{version_num} (Build #{build_num})", # Tiêu đề Release
         description: "Bản build thử nghiệm Android được tạo tự động từ GitHub Actions.\nNhánh nguồn: #{branch}",
-        assets: [target_apk_path], # Đính kèm file APK vào đây
+        upload_assets: [target_apk_path], # Đính kèm file APK vào đây
         commitish: branch
       )
       

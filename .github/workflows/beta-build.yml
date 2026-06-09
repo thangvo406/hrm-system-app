@@ -23,7 +23,7 @@ env:
 jobs:
   build-android:
     name: Build Android Beta
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     # QUAN TRỌNG: Cấp quyền để GitHub Actions tạo được Release và lưu file APK
     permissions:
       contents: write
