@@ -46,7 +46,13 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-          cache: 'gradle'
+          # cache: 'gradle'
+      # (Cấp độ 2 & 3: Thêm Action này để quản lý toàn bộ Cache của Android)
+      - name: Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          # Chỉ ghi đè cache mới khi build trên nhánh chính để tránh rác cache
+          cache-read-only: ${{ github.ref != 'refs/heads/dev' }}
 
       - name: Setup Ruby and Fastlane
         uses: ruby/setup-ruby@v1

@@ -33,7 +33,7 @@ desc "Build Android APK và tự động lưu trữ lên GitHub Releases"
     UI.message("Cấu hình: #{prefix_name} - Phiên bản: #{version_num} (Build: #{build_num})")
 
     # 2. Clean và Biên dịch dự án thành file APK Release
-    gradle(task: "clean")
+    # gradle(task: "clean")
     gradle(
       task: "assemble",
       build_type: "Release"
