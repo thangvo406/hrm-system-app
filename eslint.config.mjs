@@ -97,6 +97,7 @@ export default defineConfig(
       'perfectionist/sort-modules': OFF,
       'perfectionist/sort-object-types': OFF,
       'perfectionist/sort-exports': OFF,
+      'perfectionist/sort-named-imports': OFF,
       'react-hooks/use-memo': OFF,
       'unicorn/prefer-top-level-await': 0, // not valid on RN for the moment
       'unicorn/prevent-abbreviations': [

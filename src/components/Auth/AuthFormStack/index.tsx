@@ -46,7 +46,6 @@ type AuthFormStackProps = {
   readonly onRegisterChange: (
     field: keyof RegisterValues,
   ) => (value: string) => void;
-  readonly register: RegisterValues;
   readonly registerErrors: RegisterErrors;
   readonly submitLogin: () => void;
   readonly submitRegister: () => void;
@@ -62,7 +61,6 @@ function AuthFormStack({
   loginWithSocial,
   onLoginChange,
   onRegisterChange,
-  register,
   registerErrors,
   submitLogin,
   submitRegister,
@@ -169,7 +167,7 @@ function AuthFormStack({
               onChange={onRegisterChange}
               onSubmit={submitRegister}
               valid={validRegister}
-              values={register}
+              // values={register}
             />
           </Animated.View>
         ) : (

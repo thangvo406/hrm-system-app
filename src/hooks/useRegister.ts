@@ -1,12 +1,12 @@
 import type { InputInfoValues } from '@screens/Authorisation/components/RegisterFlow/InputInfo';
+import type { ChooseSchoolValues } from '@screens/Authorisation/components/RegisterFlow/ChooseSchool';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { ValidateUtils } from '@kits/core/utils';
 import { useTranslation } from 'react-i18next';
 
 import {
   PASSWORD_MIN_LENGTH,
-  // eslint-disable-next-line perfectionist/sort-named-imports
   computeFormErrors,
 } from './authorisation/validation';
 
@@ -22,15 +22,32 @@ export type School = {
   readonly name: string;
 };
 
-export type AuthStep = 'choose_school' | 'form' | 'info';
+export type AuthStep =
+  | 'choose_membership'
+  | 'choose_role'
+  | 'choose_school'
+  | 'form'
+  | 'info';
 
-const STEP_STACK: readonly AuthStep[] = ['form', 'info', 'choose_school'];
+export const STEP = {
+  CHOOSE_MEMBERSHIP: 'choose_membership' as AuthStep,
+  CHOOSE_ROLE: 'choose_role' as AuthStep,
+  CHOOSE_SCHOOL: 'choose_school' as AuthStep,
+  FORM: 'form' as AuthStep,
+  INFO: 'info' as AuthStep,
+} as const;
 
-const initialRegisterForm = {
-  email: '',
-  name: '',
-  password: '',
+export type FormData = {
+  email: string;
+  info?: InputInfoValues;
+  membershipId?: string;
+  name: string;
+  password: string;
+  roleId?: string;
+  schoolId?: string;
 };
+
+type RegisterFormFields = Pick<FormData, 'email' | 'name' | 'password'>;
 
 const MOCK_SCHOOLS: readonly School[] = [
   { address: '서울시 OO구 OO동 OOO', id: '1', name: '생협대학교' },
@@ -39,8 +56,19 @@ const MOCK_SCHOOLS: readonly School[] = [
   { address: '서울시 OO구 OO동 OOO', id: '4', name: '좋은대학교' },
 ];
 
+const MEMBERSHIP_OPTIONS = [
+  { id: 'member', label: 'Join as a member' },
+  { id: 'non_member', label: 'Join as a non-member' },
+] as const;
+
+const ROLE_OPTIONS = [
+  { id: 'employee', label: 'Employee' },
+  { id: 'student', label: 'Student' },
+  { id: 'teacher', label: 'Teacher' },
+] as const;
+
 const validateRegister = (
-  values: typeof initialRegisterForm,
+  values: RegisterFormFields,
   t: (key: string) => string,
 ): RegisterErrors => {
   const errors: RegisterErrors = {};
@@ -62,63 +90,98 @@ const validateRegister = (
 
 export const useRegister = () => {
   const { t } = useTranslation();
-  const [registerForm, setRegisterForm] = useState(initialRegisterForm);
-  const [infoValues, setInfoValues] = useState<InputInfoValues | undefined>();
+  const formData = useRef<FormData>({
+    email: '',
+    name: '',
+    password: '',
+  });
+
   const [errors, setErrors] = useState<{
     email?: boolean;
     name?: boolean;
     password?: boolean;
   }>({});
-  const [step, setStep] = useState<AuthStep>('form');
+  const [step, setStep] = useState<AuthStep>(STEP.FORM);
   const [schoolKeyword, setSchoolKeyword] = useState('');
   const [selectedSchoolId, setSelectedSchoolId] = useState<
     string | undefined
   >();
+  const [selectedMembershipId, setSelectedMembershipId] = useState<
+    string | undefined
+  >();
 
   const onRegisterChange = useCallback(
-    (field: keyof typeof initialRegisterForm) => (value: string) => {
-      setRegisterForm(previous => ({ ...previous, [field]: value }));
+    (field: keyof RegisterFormFields) => (value: string) => {
+      formData.current = { ...formData.current, [field]: value };
+      // setRegisterFields(previous => ({ ...previous, [field]: value }));
       setErrors(previous => ({ ...previous, [field]: true }));
     },
     [],
   );
 
-  const registerFormState = computeFormErrors(
-    registerForm,
-    errors,
-    validateRegister,
-    t,
-  );
-  const visibleRegisterErrors = registerFormState.visible;
-  const isRegisterValid = registerFormState.valid;
+  const chooseOptions = useMemo(() => {
+    const options: Partial<
+      Record<AuthStep, typeof MEMBERSHIP_OPTIONS | typeof ROLE_OPTIONS>
+    > = {
+      [STEP.CHOOSE_MEMBERSHIP]: MEMBERSHIP_OPTIONS,
+      [STEP.CHOOSE_ROLE]: ROLE_OPTIONS,
+    };
+    return options[step] ?? [];
+  }, [step]);
 
-  const goToStep = useCallback((target: AuthStep) => {
-    setStep(previous => {
-      const previousIndex = STEP_STACK.indexOf(previous);
-      const targetIndex = STEP_STACK.indexOf(target);
-      return targetIndex !== -1 && targetIndex <= previousIndex
-        ? target
-        : previous;
-    });
-  }, []);
+  const { visibleRegisterErrors, isRegisterValid } = useMemo(() => {
+    if (step != STEP.FORM) {
+      return {};
+    }
+    const registerFormState = computeFormErrors(
+      // eslint-disable-next-line react-hooks/refs
+      formData.current,
+      errors,
+      validateRegister,
+      t,
+    );
+    return {
+      visibleRegisterErrors: registerFormState.visible,
+      isRegisterValid: registerFormState.valid,
+    };
+  }, [errors, step, t]);
+
+  // const registerFormState = computeFormErrors(
+  //   registerFields,
+  //   errors,
+  //   validateRegister,
+  //   t,
+  // );
+  // const visibleRegisterErrors = registerFormState.visible;
+  // const isRegisterValid = registerFormState.valid;
 
   const submitRegister = () => {
     setErrors({ email: true, name: true, password: true });
     if (!isRegisterValid) return;
-    // dispatch(
-    //   registerRequest({
-    //     email: registerForm.email.trim(),
-    //     name: registerForm.name.trim(),
-    //     password: registerForm.password,
-    //   }),
-    // );
-    setStep('info');
+    setStep(STEP.INFO);
   };
 
-  const submitInfo = (values: InputInfoValues) => {
-    setInfoValues(values);
-    setStep('choose_school');
-  };
+  const submitInfo = useCallback((values: InputInfoValues) => {
+    formData.current = { ...formData.current, info: values };
+    setStep(STEP.CHOOSE_SCHOOL);
+  }, []);
+
+  const submitSchool = useCallback(() => {
+    setStep(STEP.CHOOSE_MEMBERSHIP);
+  }, []);
+
+  const onSelectMembership = useCallback((id: string) => {
+    setSelectedMembershipId(id);
+    formData.current = { ...formData.current, membershipId: id };
+  }, []);
+
+  const submitMembership = useCallback(() => {
+    setStep(STEP.CHOOSE_ROLE);
+  }, []);
+
+  const onSelectRole = useCallback((id: string) => {
+    formData.current = { ...formData.current, roleId: id };
+  }, []);
 
   const filteredSchools = useMemo(() => {
     const query = schoolKeyword.trim().toLowerCase();
@@ -139,23 +202,50 @@ export const useRegister = () => {
 
   const onSelectSchool = useCallback((id: string) => {
     setSelectedSchoolId(id);
+    formData.current = { ...formData.current, schoolId: id };
   }, []);
 
+  const handleSubmit = useCallback(
+    (values?: ChooseSchoolValues | InputInfoValues) => {
+      switch (step) {
+        case STEP.CHOOSE_MEMBERSHIP:
+        case STEP.CHOOSE_ROLE: {
+          submitMembership();
+          break;
+        }
+        case STEP.CHOOSE_SCHOOL: {
+          submitSchool();
+          break;
+        }
+        case STEP.INFO: {
+          submitInfo(values as InputInfoValues);
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+    },
+    [step, submitInfo, submitMembership, submitSchool],
+  );
+
   return {
+    chooseOptions,
     filteredSchools,
-    goToStep,
-    infoValues,
+    formData,
+    handleSubmit,
     isRegisterValid,
     onRegisterChange,
     onSchoolKeywordChange,
+    onSelectMembership,
+    onSelectRole,
     onSelectSchool,
-    register: registerForm,
     registerErrors: visibleRegisterErrors,
     schoolKeyword,
+    selectedMembershipId,
     selectedSchool,
     selectedSchoolId,
     step,
-    submitInfo,
     submitRegister,
   };
 };

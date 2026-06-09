@@ -59,6 +59,12 @@
       "search_placeholder": "Search",
       "empty": "검색 결과가 없습니다.",
       "next": "다음"
+    },
+    "choose_membership": {
+      "title": "회원 유형 선택",
+      "join_as_member": "조합원으로 가입",
+      "join_as_non_member": "비조합원으로 가입",
+      "next": "다음"
     }
   }
 }

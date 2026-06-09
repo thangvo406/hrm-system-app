@@ -16,7 +16,7 @@ type RegisterFormProps = {
   readonly onChange: (field: keyof RegisterValues) => (value: string) => void;
   readonly onSubmit: () => void;
   readonly valid: boolean;
-  readonly values: RegisterValues;
+  readonly values?: RegisterValues;
 };
 
 function RegisterForm({
@@ -38,7 +38,7 @@ function RegisterForm({
         onChangeText={onChange('name')}
         placeholder={t('authorisation.name_placeholder')}
         testID="auth-name-input"
-        value={values.name}
+        value={values?.name}
       />
 
       <TextField
@@ -50,7 +50,7 @@ function RegisterForm({
         onChangeText={onChange('email')}
         placeholder={t('authorisation.email_placeholder')}
         testID="auth-email-input"
-        value={values.email}
+        value={values?.email}
       />
 
       <TextField
@@ -62,7 +62,7 @@ function RegisterForm({
         placeholder={t('authorisation.password_placeholder')}
         secureTextEntry
         testID="auth-password-input"
-        value={values.password}
+        value={values?.password}
       />
 
       <Button

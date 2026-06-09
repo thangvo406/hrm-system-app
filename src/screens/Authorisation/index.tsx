@@ -1,10 +1,9 @@
 import type { RootScreenProps } from '@navigation/types';
 import type { AuthStep } from '@hooks';
-import type { ChooseSchoolValues } from '@screens/Authorisation/components/RegisterFlow/ChooseSchool';
-import type { InputInfoValues } from '@screens/Authorisation/components/RegisterFlow/InputInfo';
 import type { ComponentType } from 'react';
 
 import { AuthFormStack, AuthInfoForm, Snackbar } from '@components';
+import ChooseMemberShipType from '@screens/Authorisation/components/RegisterFlow/ChooseMemberShipType';
 import ChooseSchool from '@screens/Authorisation/components/RegisterFlow/ChooseSchool';
 import { Paths } from '@navigation/paths';
 import { useAuthorization } from '@hooks';
@@ -22,6 +21,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     cleanError,
     error,
     filteredSchools,
+    handleSubmit,
     isLoginValid,
     isRegisterValid,
     loading,
@@ -31,27 +31,18 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     onLoginChange,
     onRegisterChange,
     onSchoolKeywordChange,
+    onSelectMembership,
     onSelectSchool,
-    register,
+    registerChooseOptions,
     registerErrors,
     schoolKeyword,
+    selectedMembershipId,
     selectedSchool,
     selectedSchoolId,
     step,
-    submitInfo,
     submitLogin,
     submitRegister,
   } = useAuthorization();
-
-  const handleDetailSubmit = (
-    values: ChooseSchoolValues | InputInfoValues,
-  ) => {
-    if ('school' in values) {
-      // TODO: dispatch register with collected info + selected school
-      return;
-    }
-    submitInfo(values);
-  };
 
   const detailProps = {
     filteredSchools,
@@ -63,11 +54,13 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     onLoginChange,
     onRegisterChange,
     onSchoolKeywordChange,
+    onSelectMembership,
     onSelectSchool,
-    onSubmit: handleDetailSubmit,
-    register,
+    onSubmit: handleSubmit,
+    options: registerChooseOptions,
     registerErrors,
     schoolKeyword,
+    selectedMembershipId,
     selectedSchool,
     selectedSchoolId,
     submitLogin,
@@ -77,7 +70,10 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
   };
 
   const DetailComponent = useMemo(() => {
-    const screens: Record<AuthStep, ComponentType<typeof detailProps>> = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const screens: Record<AuthStep, ComponentType<any>> = {
+      choose_membership: ChooseMemberShipType,
+      choose_role: ChooseMemberShipType,
       choose_school: ChooseSchool,
       form: AuthFormStack,
       info: AuthInfoForm,

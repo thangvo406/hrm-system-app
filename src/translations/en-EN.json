@@ -59,6 +59,12 @@
       "search_placeholder": "Search",
       "empty": "No results found.",
       "next": "Next"
+    },
+    "choose_membership": {
+      "title": "Select Membership Type",
+      "join_as_member": "Join as a member",
+      "join_as_non_member": "Join as a non-member",
+      "next": "Next"
     }
   }
 }
