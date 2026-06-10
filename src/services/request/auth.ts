@@ -8,7 +8,7 @@ import type {
 
 import { httpRequest } from '@services/common/httpRequest';
 import { z } from 'zod';
-import { EndPoints } from '@services/common/endPoint';
+import { EndPoints } from '@constants';
 
 type ApiResponse<T> = { data: T };
 

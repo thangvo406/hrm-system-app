@@ -8,7 +8,8 @@ import { createMMKV } from 'react-native-mmkv';
 // import { storage } from './App';
 const storage = createMMKV();
 Reactotron.configure({
-  host: 'localhost',
+  // host: 'localhost',
+  host: '192.168.9.37',
   name: config.name,
   port: 9090,
 })

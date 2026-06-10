@@ -1,6 +1,4 @@
-export const PASSWORD_MIN_LENGTH = 6;
-
-export const computeFormErrors = <
+export const computeFormAuthErrors = <
   V extends Record<string, string>,
   E extends Record<string, string | undefined>,
 >(

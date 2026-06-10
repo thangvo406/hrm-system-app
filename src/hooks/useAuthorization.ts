@@ -9,35 +9,20 @@ import { Paths } from '@navigation/paths';
 import type { RootStackParamList } from '@navigation/types';
 import { useTranslation } from 'react-i18next';
 
-import {
-  PASSWORD_MIN_LENGTH,
-  computeFormErrors,
-} from './authorisation/validation';
+import { computeFormAuthErrors } from '@utils/common';
+import { AppConstants } from '@constants';
 import { useRegister } from './useRegister';
-
+const { PASSWORD_MIN_LENGTH, NEED_INFO_LOGIN_CODE, initialLoginForm } =
+  AppConstants;
 export type { AuthStep, RegisterErrors } from './useRegister';
 
 export type SocialProvider = 'google' | 'kakao' | 'naver';
-
-// Khi login trả về status này nghĩa là tài khoản chưa hoàn tất đăng ký,
-// cần đưa user sang bước nhập thông tin (INFO).
-const STATUS_NEEDS_REGISTER_INFO = 400;
 
 export type UseAuthorization = ReturnType<typeof useAuthorization>;
 
 export type LoginErrors = {
   email?: string;
   password?: string;
-};
-
-const initialLoginForm = {
-  email: '',
-  password: '',
-};
-
-const NEED_INFO_LOGIN_CODE = {
-  PHONE_NOT_VERIFIED: 'AUTH_001',
-  MEMBERSHIP_INCOMPLETE: 'AUTH_002',
 };
 
 const validateLogin = (
@@ -100,7 +85,7 @@ export const useAuthorization = () => {
       setLoginErrorsState(previous => ({ ...previous, [field]: true }));
     };
 
-  const loginFormState = computeFormErrors(
+  const loginFormState = computeFormAuthErrors(
     loginForm,
     loginErrorsState,
     validateLogin,
@@ -126,7 +111,7 @@ export const useAuthorization = () => {
       return;
     }
 
-    setError(message);
+    setError(error?.message);
   };
 
   const submitLogin = () => {
@@ -137,7 +122,7 @@ export const useAuthorization = () => {
       loginRequest({
         deviceId: DeviceUtils.getDeviceId(),
         deviceName: DeviceUtils.getDeviceName(),
-        email: loginForm.email.trim(),
+        email: loginForm?.email?.trim?.(),
         onFailure: onLoginFailure,
         onSuccess: onLoginSuccess,
         password: loginForm.password,

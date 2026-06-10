@@ -15,6 +15,10 @@
       "@translations": ["./src/translations"],
       "@translations/*": ["./src/translations/*"],
       "@tests/*": ["./src/tests/*"],
+      "@utils": ["./src/utils"],
+      "@utils/*": ["./src/utils/*"],
+      "@constants": ["./src/constants"],
+      "@constants/*": ["./src/constants/*"],
       "@kits/*": ["./kits/*"]
     },
     "noUnusedLocals": true

@@ -85,6 +85,7 @@ export default defineConfig(
       'react/no-unescaped-entities': OFF,
       'react-hooks/exhaustive-deps': OFF,
       'perfectionist/sort-jsx-props': OFF,
+      '@typescript-eslint/no-explicit-any': OFF,
       'react/require-default-props': [
         ERROR,
         {
@@ -100,6 +101,13 @@ export default defineConfig(
       'perfectionist/sort-exports': OFF,
       'perfectionist/sort-named-imports': OFF,
       'perfectionist/sort-union-types': OFF,
+      '@typescript-eslint/no-unsafe-member-access': OFF,
+      '@typescript-eslint/no-unsafe-call': OFF,
+      '@typescript-eslint/no-unsafe-argument': OFF,
+      '@typescript-eslint/no-unsafe-return': OFF,
+      '@typescript-eslint/no-unnecessary-type-assertion': OFF,
+      '@typescript-eslint/no-redundant-type-constituents': OFF,
+      '@typescript-eslint/no-unnecessary-condition': OFF,
       'perfectionist/sort-array-includes': OFF,
       'react-hooks/use-memo': OFF,
       'unicorn/prefer-top-level-await': 0, // not valid on RN for the moment

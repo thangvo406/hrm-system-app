@@ -1,5 +1,4 @@
 import type { InputInfoValues } from '@screens/Authorisation/components/RegisterFlow/InputInfo';
-import type { ChooseSchoolValues } from '@screens/Authorisation/components/RegisterFlow/ChooseSchool';
 
 import { useMemo, useRef, useState } from 'react';
 import { ValidateUtils } from '@kits/core/utils';
@@ -13,11 +12,16 @@ import {
   verifyOTPRequest,
 } from '@services/slices/auth/authSlice';
 
-import {
-  PASSWORD_MIN_LENGTH,
-  computeFormErrors,
-} from './authorisation/validation';
+import { computeFormAuthErrors } from '@utils/common';
+import { AppConstants } from '@constants';
 
+const {
+  MEMBERSHIP_OPTIONS,
+  PASSWORD_MIN_LENGTH,
+  MOCK_SCHOOLS,
+  ROLE_OPTIONS,
+  STEP,
+} = AppConstants;
 export type RegisterErrors = {
   email?: string;
   name?: string;
@@ -38,15 +42,6 @@ export type AuthStep =
   | 'register_completed'
   | 'info';
 
-export const STEP = {
-  CHOOSE_MEMBERSHIP: 'choose_membership' as AuthStep,
-  CHOOSE_ROLE: 'choose_role' as AuthStep,
-  CHOOSE_SCHOOL: 'choose_school' as AuthStep,
-  FORM: 'form' as AuthStep,
-  INFO: 'info' as AuthStep,
-  REGISTER_COMPLETED: 'register_completed' as AuthStep,
-} as const;
-
 export type FormData = {
   birthday?: string;
   indentify?: string;
@@ -62,24 +57,6 @@ export type FormData = {
 };
 
 type RegisterFormFields = Pick<FormData, 'email' | 'name' | 'password'>;
-const MEMBER_ID = 'member';
-const MOCK_SCHOOLS: readonly School[] = [
-  { address: '서울시 OO구 OO동 OOO', id: '1', name: '생협대학교' },
-  { address: '서울시 OO구 OO동 OOO', id: '2', name: '쿠피대학교' },
-  { address: '서울시 OO구 OO동 OOO', id: '3', name: '그냥대학교' },
-  { address: '서울시 OO구 OO동 OOO', id: '4', name: '좋은대학교' },
-];
-
-const MEMBERSHIP_OPTIONS = [
-  { id: MEMBER_ID, label: 'Join as a member' },
-  { id: 'non_member', label: 'Join as a non-member' },
-] as const;
-
-const ROLE_OPTIONS = [
-  { id: 'employee', label: 'Employee' },
-  { id: 'student', label: 'Student' },
-  { id: 'teacher', label: 'Teacher' },
-] as const;
 
 const validateRegister = (
   values: RegisterFormFields,
@@ -158,7 +135,7 @@ export const useRegister = () => {
     if (step != STEP.FORM) {
       return {};
     }
-    const registerFormState = computeFormErrors(
+    const registerFormState = computeFormAuthErrors(
       // eslint-disable-next-line react-hooks/refs
       formData.current,
       { email: errors.email, name: errors.name, password: errors.password },
