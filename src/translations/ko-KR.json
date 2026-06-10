@@ -47,7 +47,8 @@
       "terms_of_use": "휴대폰 본인 인증 서비스 이용약관 동의(필수)",
       "carrier_terms": "휴대폰 통신사 이용약관 동의(필수)",
       "name_label": "이름",
-      "dob_label": "생년월일 6자리",
+      "dob_label": "생년 월일 6자리",
+      "identify_label": "생년 월일 6자리",
       "phone_placeholder": "휴대폰 번호",
       "request_verification": "인증 요청",
       "warning": "*타인의 개인정보를 무단으로 사용하여 가입할 경우 서비스 이용이 제한될 수 있으며 법적 처벌을 받을 수 있습니다.",
@@ -65,6 +66,9 @@
       "join_as_member": "조합원으로 가입",
       "join_as_non_member": "비조합원으로 가입",
       "next": "다음"
+    },
+    "register_completed": {
+      "desc": "가입이 완료되었습니다!"
     }
   }
 }

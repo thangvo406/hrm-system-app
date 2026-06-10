@@ -1,9 +1,17 @@
 import type { InputInfoValues } from '@screens/Authorisation/components/RegisterFlow/InputInfo';
 import type { ChooseSchoolValues } from '@screens/Authorisation/components/RegisterFlow/ChooseSchool';
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { ValidateUtils } from '@kits/core/utils';
 import { useTranslation } from 'react-i18next';
+
+import { useAppDispatch } from '@services/common/storeHooks';
+import {
+  completeRegisterRequest,
+  registerUserRequest,
+  sendOTPRequest,
+  verifyOTPRequest,
+} from '@services/slices/auth/authSlice';
 
 import {
   PASSWORD_MIN_LENGTH,
@@ -27,6 +35,7 @@ export type AuthStep =
   | 'choose_role'
   | 'choose_school'
   | 'form'
+  | 'register_completed'
   | 'info';
 
 export const STEP = {
@@ -35,20 +44,25 @@ export const STEP = {
   CHOOSE_SCHOOL: 'choose_school' as AuthStep,
   FORM: 'form' as AuthStep,
   INFO: 'info' as AuthStep,
+  REGISTER_COMPLETED: 'register_completed' as AuthStep,
 } as const;
 
 export type FormData = {
+  birthday?: string;
+  indentify?: string;
+  carrier?: string;
   email: string;
-  info?: InputInfoValues;
   membershipId?: string;
   name: string;
+  otp?: string;
   password: string;
+  phone?: string;
   roleId?: string;
-  schoolId?: string;
+  school?: School;
 };
 
 type RegisterFormFields = Pick<FormData, 'email' | 'name' | 'password'>;
-
+const MEMBER_ID = 'member';
 const MOCK_SCHOOLS: readonly School[] = [
   { address: '서울시 OO구 OO동 OOO', id: '1', name: '생협대학교' },
   { address: '서울시 OO구 OO동 OOO', id: '2', name: '쿠피대학교' },
@@ -57,7 +71,7 @@ const MOCK_SCHOOLS: readonly School[] = [
 ];
 
 const MEMBERSHIP_OPTIONS = [
-  { id: 'member', label: 'Join as a member' },
+  { id: MEMBER_ID, label: 'Join as a member' },
   { id: 'non_member', label: 'Join as a non-member' },
 ] as const;
 
@@ -90,6 +104,7 @@ const validateRegister = (
 
 export const useRegister = () => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const formData = useRef<FormData>({
     email: '',
     name: '',
@@ -97,6 +112,7 @@ export const useRegister = () => {
   });
 
   const [errors, setErrors] = useState<{
+    api?: string;
     email?: boolean;
     name?: boolean;
     password?: boolean;
@@ -110,14 +126,23 @@ export const useRegister = () => {
     string | undefined
   >();
 
-  const onRegisterChange = useCallback(
+  const onRegisterChange =
     (field: keyof RegisterFormFields) => (value: string) => {
-      formData.current = { ...formData.current, [field]: value };
-      // setRegisterFields(previous => ({ ...previous, [field]: value }));
+      formData.current[field] = value;
+      // formData.current = { ...formData.current, [field]: value };
       setErrors(previous => ({ ...previous, [field]: true }));
-    },
-    [],
-  );
+    };
+
+  const onInfoChange = (field: keyof InputInfoValues, value: string) => {
+    formData.current[field] = value;
+    // formData.current = { ...formData.current, [field]: value };
+  };
+
+  const goToStep = (step: string) => {
+    if (Object.values(STEP).includes(step as AuthStep)) {
+      setStep(step as AuthStep);
+    }
+  };
 
   const chooseOptions = useMemo(() => {
     const options: Partial<
@@ -136,7 +161,7 @@ export const useRegister = () => {
     const registerFormState = computeFormErrors(
       // eslint-disable-next-line react-hooks/refs
       formData.current,
-      errors,
+      { email: errors.email, name: errors.name, password: errors.password },
       validateRegister,
       t,
     );
@@ -146,42 +171,74 @@ export const useRegister = () => {
     };
   }, [errors, step, t]);
 
-  // const registerFormState = computeFormErrors(
-  //   registerFields,
-  //   errors,
-  //   validateRegister,
-  //   t,
-  // );
-  // const visibleRegisterErrors = registerFormState.visible;
-  // const isRegisterValid = registerFormState.valid;
-
   const submitRegister = () => {
     setErrors({ email: true, name: true, password: true });
     if (!isRegisterValid) return;
-    setStep(STEP.INFO);
+    dispatch(
+      registerUserRequest({
+        email: formData.current.email,
+        name: formData.current.name,
+        password: formData.current.password,
+        onSuccess: () => {
+          setStep(STEP.INFO);
+        },
+        onFailure: (error: string) => {
+          setErrors(previous => ({ ...previous, api: error }));
+        },
+      }),
+    );
+    // setStep(STEP.INFO);
   };
 
-  const submitInfo = useCallback((values: InputInfoValues) => {
-    formData.current = { ...formData.current, info: values };
-    setStep(STEP.CHOOSE_SCHOOL);
-  }, []);
+  const onSubmitInfo = () => {
+    dispatch(
+      verifyOTPRequest({
+        email: formData.current.email,
+        otp: formData.current.otp ?? '',
+        phone: formData.current.phone ?? '',
+        // birthday: formData.current.birthday1 ?? '',
+        birthday: '2000-08-01',
+        termsAgreed: true,
+        onSuccess: () => {
+          setStep(STEP.CHOOSE_SCHOOL);
+        },
+        onFailure: (error: string) => {
+          setErrors(previous => ({ ...previous, api: error }));
+        },
+      }),
+    );
+  };
 
-  const submitSchool = useCallback(() => {
+  const submitSchool = () => {
+    // console.log('submitSchool', formData.current);
     setStep(STEP.CHOOSE_MEMBERSHIP);
-  }, []);
+  };
 
-  const onSelectMembership = useCallback((id: string) => {
+  const onSelectMembership = (id: string) => {
     setSelectedMembershipId(id);
     formData.current = { ...formData.current, membershipId: id };
-  }, []);
+  };
 
-  const submitMembership = useCallback(() => {
-    setStep(STEP.CHOOSE_ROLE);
-  }, []);
+  const onSubmitFormRegister = () => {
+    dispatch(
+      completeRegisterRequest({
+        email: formData.current.email,
+        universityExternalId: formData.current?.school?.id ?? '',
+        universityName: formData.current?.school?.name ?? '',
+        membershipType: formData.current?.membershipId
+          ? 'MEMBER'
+          : 'NON_MEMBER',
+        membershipAffiliationType: formData.current?.membershipId ?? '',
+        onSuccess: () => {
+          setStep(STEP.REGISTER_COMPLETED);
+        },
+      }),
+    );
+  };
 
-  const onSelectRole = useCallback((id: string) => {
+  const onSelectRole = (id: string) => {
     formData.current = { ...formData.current, roleId: id };
-  }, []);
+  };
 
   const filteredSchools = useMemo(() => {
     const query = schoolKeyword.trim().toLowerCase();
@@ -196,45 +253,61 @@ export const useRegister = () => {
     [selectedSchoolId],
   );
 
-  const onSchoolKeywordChange = useCallback((value: string) => {
+  const onSchoolKeywordChange = (value: string) => {
     setSchoolKeyword(value);
-  }, []);
+  };
 
-  const onSelectSchool = useCallback((id: string) => {
-    setSelectedSchoolId(id);
-    formData.current = { ...formData.current, schoolId: id };
-  }, []);
+  const onSelectSchool = (school: School) => {
+    setSelectedSchoolId(school.id);
+    formData.current = { ...formData.current, school };
+  };
 
-  const handleSubmit = useCallback(
-    (values?: ChooseSchoolValues | InputInfoValues) => {
-      switch (step) {
-        case STEP.CHOOSE_MEMBERSHIP:
-        case STEP.CHOOSE_ROLE: {
-          submitMembership();
-          break;
-        }
-        case STEP.CHOOSE_SCHOOL: {
-          submitSchool();
-          break;
-        }
-        case STEP.INFO: {
-          submitInfo(values as InputInfoValues);
-          break;
-        }
-        default: {
-          break;
-        }
+  const handleSubmit = () => {
+    switch (step) {
+      case STEP.CHOOSE_MEMBERSHIP: {
+        onSubmitFormRegister();
+        break;
       }
-    },
-    [step, submitInfo, submitMembership, submitSchool],
-  );
+      case STEP.CHOOSE_SCHOOL: {
+        submitSchool();
+        break;
+      }
+      case STEP.INFO: {
+        onSubmitInfo();
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  };
+
+  const onPressRequestOtp = (onSuccess: () => void) => {
+    dispatch(
+      sendOTPRequest({
+        email: formData.current.email,
+        onFailure: (error: string) => {
+          setErrors(previous => ({ ...previous, api: error }));
+        },
+        onSuccess,
+        phone: formData.current.phone ?? '',
+      }),
+    );
+  };
 
   return {
+    apiError: errors.api ?? '',
     chooseOptions,
+    clearApiError: () => {
+      setErrors(previous => ({ ...previous, api: undefined }));
+    },
     filteredSchools,
     formData,
+    goToStep,
     handleSubmit,
     isRegisterValid,
+    onInfoChange,
+    onPressRequestOtp,
     onRegisterChange,
     onSchoolKeywordChange,
     onSelectMembership,

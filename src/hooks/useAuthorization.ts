@@ -1,10 +1,12 @@
-import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { useAppDispatch } from '@services/common/storeHooks';
 import { loginRequest } from '@services/slices/auth/authSlice';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { DeviceUtils, ValidateUtils } from '@kits/core/utils';
 import { Platform } from 'react-native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { Paths } from '@navigation/paths';
+import type { RootStackParamList } from '@navigation/types';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -17,6 +19,10 @@ export type { AuthStep, RegisterErrors } from './useRegister';
 
 export type SocialProvider = 'google' | 'kakao' | 'naver';
 
+// Khi login trả về status này nghĩa là tài khoản chưa hoàn tất đăng ký,
+// cần đưa user sang bước nhập thông tin (INFO).
+const STATUS_NEEDS_REGISTER_INFO = 400;
+
 export type UseAuthorization = ReturnType<typeof useAuthorization>;
 
 export type LoginErrors = {
@@ -27,6 +33,11 @@ export type LoginErrors = {
 const initialLoginForm = {
   email: '',
   password: '',
+};
+
+const NEED_INFO_LOGIN_CODE = {
+  PHONE_NOT_VERIFIED: 'AUTH_001',
+  MEMBERSHIP_INCOMPLETE: 'AUTH_002',
 };
 
 const validateLogin = (
@@ -47,11 +58,28 @@ const validateLogin = (
   return errors;
 };
 
+const loginWithSocial = (provider: SocialProvider) => {
+  switch (provider) {
+    case 'google': {
+      // TODO: implement Google login
+      break;
+    }
+    case 'kakao': {
+      // TODO: implement Kakao login
+      break;
+    }
+    case 'naver': {
+      // TODO: implement Naver login
+      break;
+    }
+  }
+};
+
 export const useAuthorization = () => {
   const dispatch = useAppDispatch();
   const [error, setError] = useState('');
-  const loading = useAppSelector(state => state.auth.loading);
-  const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { t } = useTranslation();
   const [loginForm, setLoginForm] = useState(initialLoginForm);
   const [loginErrorsState, setLoginErrorsState] = useState<{
@@ -61,17 +89,16 @@ export const useAuthorization = () => {
 
   const register = useRegister();
 
-  const onLoginSuccess = useCallback(() => {
+  const onLoginSuccess = () => {
+    setLoading(false);
     navigation.reset({ index: 0, routes: [{ name: Paths.Home }] });
-  }, [navigation]);
+  };
 
-  const onLoginChange = useCallback(
+  const onLoginChange =
     (field: keyof typeof initialLoginForm) => (value: string) => {
       setLoginForm(previous => ({ ...previous, [field]: value }));
       setLoginErrorsState(previous => ({ ...previous, [field]: true }));
-    },
-    [],
-  );
+    };
 
   const loginFormState = computeFormErrors(
     loginForm,
@@ -82,13 +109,30 @@ export const useAuthorization = () => {
   const visibleLoginErrors = loginFormState.visible;
   const isLoginValid = loginFormState.valid;
 
-  const onLoginFailure = useCallback((_error: string) => {
-    setError(_error);
-  }, []);
+  const onLoginFailure = (error: any) => {
+    setLoading(false);
+    if (
+      [
+        NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED,
+        NEED_INFO_LOGIN_CODE.MEMBERSHIP_INCOMPLETE,
+      ].includes(error?.code)
+    ) {
+      const stepMapping = {
+        [NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED]: 'info',
+        [NEED_INFO_LOGIN_CODE.MEMBERSHIP_INCOMPLETE]: 'choose_membership',
+      };
+      const step = stepMapping[error?.code];
+      register.goToStep(step);
+      return;
+    }
+
+    setError(message);
+  };
 
   const submitLogin = () => {
     setLoginErrorsState({ email: true, password: true });
     if (!isLoginValid) return;
+    setLoading(true);
     dispatch(
       loginRequest({
         deviceId: DeviceUtils.getDeviceId(),
@@ -102,66 +146,20 @@ export const useAuthorization = () => {
     );
   };
 
-  const loginWithKakao = useCallback(() => {
-    // TODO: implement Kakao login
-  }, []);
-
-  const loginWithNaver = useCallback(() => {
-    // TODO: implement Naver login
-  }, []);
-
-  const loginWithGoogle = useCallback(() => {
-    // TODO: implement Google login
-  }, []);
-
-  const loginWithSocial = useCallback(
-    (provider: SocialProvider) => {
-      switch (provider) {
-        case 'google': {
-          loginWithGoogle();
-          break;
-        }
-        case 'kakao': {
-          loginWithKakao();
-          break;
-        }
-        case 'naver': {
-          loginWithNaver();
-          break;
-        }
-      }
-    },
-    [loginWithGoogle, loginWithKakao, loginWithNaver],
-  );
-
-  const cleanError = useCallback(() => {
+  const cleanError = () => {
     setError('');
-  }, []);
+  };
 
   return {
     cleanError,
     error,
-    filteredSchools: register.filteredSchools,
-    handleSubmit: register.handleSubmit,
     isLoginValid,
-    isRegisterValid: register.isRegisterValid,
     loading,
     login: loginForm,
     loginErrors: visibleLoginErrors,
     loginWithSocial,
     onLoginChange,
-    onRegisterChange: register.onRegisterChange,
-    onSchoolKeywordChange: register.onSchoolKeywordChange,
-    onSelectMembership: register.onSelectMembership,
-    onSelectSchool: register.onSelectSchool,
-    registerChooseOptions: register.chooseOptions,
-    registerErrors: register.registerErrors,
-    schoolKeyword: register.schoolKeyword,
-    selectedMembershipId: register.selectedMembershipId,
-    selectedSchool: register.selectedSchool,
-    selectedSchoolId: register.selectedSchoolId,
-    step: register.step,
+    register,
     submitLogin,
-    submitRegister: register.submitRegister,
   };
 };

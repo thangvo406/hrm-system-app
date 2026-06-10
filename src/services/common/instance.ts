@@ -9,9 +9,10 @@ import axios from 'axios';
 import Config from 'react-native-config';
 
 // const baseURL = `${Config.API_URL}/`;
-const baseURL = `http://15.164.215.12/`;
+const baseURL = `http://52.79.38.251/`;
 
 const HTTP_UNAUTHORIZED = 401;
+const REQUEST_TIMEOUT_MS = 15_000;
 
 // Bare client without auth interceptors — used for the refresh call to avoid
 // recursive 401 handling.
@@ -20,6 +21,7 @@ const refreshClient = axios.create({
   headers: {
     Accept: 'application/json',
   },
+  timeout: REQUEST_TIMEOUT_MS,
 });
 
 type RefreshResponse = {
@@ -61,6 +63,7 @@ export const instance = axios.create({
   headers: {
     Accept: 'application/json',
   },
+  timeout: REQUEST_TIMEOUT_MS,
 });
 
 instance.interceptors.request.use(config => {

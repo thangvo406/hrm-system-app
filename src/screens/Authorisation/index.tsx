@@ -3,13 +3,14 @@ import type { AuthStep } from '@hooks';
 import type { ComponentType } from 'react';
 
 import { AuthFormStack, AuthInfoForm, Snackbar } from '@components';
-import ChooseMemberShipType from '@screens/Authorisation/components/RegisterFlow/ChooseMemberShipType';
-import ChooseSchool from '@screens/Authorisation/components/RegisterFlow/ChooseSchool';
+import ChooseMemberShipType from './components/RegisterFlow/ChooseMemberShipType';
+import ChooseSchool from './components/RegisterFlow/ChooseSchool';
 import { Paths } from '@navigation/paths';
 import { useAuthorization } from '@hooks';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMemo } from 'react';
+import RegisterCompleted from './components/RegisterFlow/RegisterCompleted';
 
 type AuthTab = 'login' | 'registration';
 
@@ -20,53 +21,41 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
   const {
     cleanError,
     error,
-    filteredSchools,
-    handleSubmit,
     isLoginValid,
-    isRegisterValid,
     loading,
     login,
     loginErrors,
     loginWithSocial,
     onLoginChange,
-    onRegisterChange,
-    onSchoolKeywordChange,
-    onSelectMembership,
-    onSelectSchool,
-    registerChooseOptions,
-    registerErrors,
-    schoolKeyword,
-    selectedMembershipId,
-    selectedSchool,
-    selectedSchoolId,
-    step,
+    register,
     submitLogin,
-    submitRegister,
   } = useAuthorization();
 
   const detailProps = {
-    filteredSchools,
+    filteredSchools: register.filteredSchools,
     initialTab,
     loading,
     login,
     loginErrors,
     loginWithSocial,
     onLoginChange,
-    onRegisterChange,
-    onSchoolKeywordChange,
-    onSelectMembership,
-    onSelectSchool,
-    onSubmit: handleSubmit,
-    options: registerChooseOptions,
-    registerErrors,
-    schoolKeyword,
-    selectedMembershipId,
-    selectedSchool,
-    selectedSchoolId,
+    onRegisterChange: register.onRegisterChange,
+    onSchoolKeywordChange: register.onSchoolKeywordChange,
+    onSelectMembership: register.onSelectMembership,
+    onSelectSchool: register.onSelectSchool,
+    onSubmit: register.handleSubmit,
+    options: register.chooseOptions,
+    registerErrors: register.registerErrors,
+    schoolKeyword: register.schoolKeyword,
+    selectedMembershipId: register.selectedMembershipId,
+    selectedSchool: register.selectedSchool,
+    selectedSchoolId: register.selectedSchoolId,
     submitLogin,
-    submitRegister,
+    onPressRequestOtp: register.onPressRequestOtp,
+    submitRegister: register.submitRegister,
+    onInfoChange: register.onInfoChange,
     validLogin: isLoginValid,
-    validRegister: isRegisterValid,
+    validRegister: register.isRegisterValid,
   };
 
   const DetailComponent = useMemo(() => {
@@ -77,14 +66,21 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
       choose_school: ChooseSchool,
       form: AuthFormStack,
       info: AuthInfoForm,
+      register_completed: RegisterCompleted,
     };
-    return screens[step];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step]);
+    return screens[register.step];
+  }, [register.step]);
 
   return (
     <SafeAreaView mode="padding" style={styles.container}>
       <Snackbar message={error} visible={!!error} onDismiss={cleanError} />
+      <Snackbar
+        message={register.apiError}
+        onDismiss={() => {
+          register.clearApiError();
+        }}
+        visible={!!register.apiError}
+      />
       <DetailComponent {...detailProps} />
     </SafeAreaView>
   );

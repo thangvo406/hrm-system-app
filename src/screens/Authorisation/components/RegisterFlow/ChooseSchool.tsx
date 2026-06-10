@@ -33,7 +33,7 @@ type ChooseSchoolProps = {
   readonly disabled?: boolean;
   readonly filteredSchools: readonly School[];
   readonly onSchoolKeywordChange: (value: string) => void;
-  readonly onSelectSchool: (id: string) => void;
+  readonly onSelectSchool: (school: School) => void;
   readonly onSubmit: (values: ChooseSchoolValues) => void;
   readonly schoolKeyword: string;
   readonly selectedSchool?: School;
@@ -135,7 +135,7 @@ function ChooseSchool({
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => {
-                onSelectSchool(item.id);
+                onSelectSchool(item);
               }}
               style={[styles.schoolItem, isSelected && styles.schoolItemActive]}
               testID={`choose-school-item-${item.id}`}
@@ -164,9 +164,23 @@ function ChooseSchool({
       />
 
       <View style={styles.footer}>
+        <View
+          style={{
+            width: '100%',
+            height: ScaleSize(10),
+            backgroundColor: '#F0F0F0',
+            marginBottom: ScaleSize(30),
+            // position: 'absolute',
+            // bottom: ScaleSize(20),
+          }}
+        />
         <Button
           disabled={disabled || selectedSchool === undefined}
           onPress={handleSubmit}
+          style={{
+            width: '90%',
+            alignSelf: 'center',
+          }}
           testID="choose-school-next"
           title={t('choose_school.next')}
           type="primary"
@@ -196,7 +210,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingBottom: 24,
-    paddingHorizontal: 24,
     paddingTop: 12,
   },
   header: {

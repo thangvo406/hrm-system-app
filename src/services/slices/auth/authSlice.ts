@@ -15,8 +15,8 @@ export type Credentials = {
 };
 
 export type AuthCallback = {
+  onFailure?: (error: string, status?: number) => void;
   onSuccess?: () => void;
-  onFailure?: (error: string) => void;
 };
 
 export type LoginPayload = {
@@ -27,10 +27,32 @@ export type LoginPayload = {
   platform?: string;
 } & AuthCallback;
 
-export type RegisterPayload = {
+export type RegisterUserPayload = {
   email: string;
   name: string;
   password: string;
+} & AuthCallback;
+
+export type RegisterPayload = RegisterUserPayload;
+export type SendOTPPayload = {
+  email: string;
+  phone: string;
+} & AuthCallback;
+
+export type VerifyOTPPayload = {
+  email: string;
+  otp: string;
+  phone: string;
+  termsAgreed: boolean;
+  birthday: string;
+} & AuthCallback;
+
+export type CompleteRegisterPayload = {
+  email: string;
+  membershipAffiliationType: string;
+  membershipType: string;
+  universityExternalId: string;
+  universityName: string;
 } & AuthCallback;
 
 const initialState: AuthState = {
@@ -72,6 +94,38 @@ const authSlice = createSlice({
         state.loading = true;
       },
     },
+    // Step 1 of multi-step registration.
+    registerUserRequest: {
+      prepare: (payload: RegisterUserPayload) => ({ payload }),
+      reducer: state => {
+        state.error = undefined;
+        state.loading = true;
+      },
+    },
+    // Step 2: send OTP to phone.
+    sendOTPRequest: {
+      prepare: (payload: SendOTPPayload) => ({ payload }),
+      reducer: state => {
+        state.error = undefined;
+        state.loading = true;
+      },
+    },
+    // Step 3: verify OTP.
+    verifyOTPRequest: {
+      prepare: (payload: VerifyOTPPayload) => ({ payload }),
+      reducer: state => {
+        state.error = undefined;
+        state.loading = true;
+      },
+    },
+    // Step 4: complete registration with university/membership info.
+    completeRegisterRequest: {
+      prepare: (payload: CompleteRegisterPayload) => ({ payload }),
+      reducer: state => {
+        state.error = undefined;
+        state.loading = true;
+      },
+    },
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
     },
@@ -88,10 +142,14 @@ export const {
   authFailure,
   authSuccess,
   clearCredentials,
+  completeRegisterRequest,
   loginRequest,
   registerRequest,
+  registerUserRequest,
+  sendOTPRequest,
   setAccessToken,
   setCredentials,
+  verifyOTPRequest,
 } = authSlice.actions;
 
 export const authReducer = authSlice.reducer;

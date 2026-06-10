@@ -1,14 +1,8 @@
-import InputInfo, {
-  type InputInfoValues,
-} from '@screens/Authorisation/components/RegisterFlow/InputInfo';
+import InputInfo from '@screens/Authorisation/components/RegisterFlow/InputInfo';
 import React from 'react';
 
-type AuthInfoFormProps = {
-  readonly onSubmit: (values: InputInfoValues) => void;
-};
-
-function AuthInfoForm({ onSubmit }: AuthInfoFormProps) {
-  return <InputInfo onSubmit={onSubmit} />;
+function AuthInfoForm(props: any) {
+  return <InputInfo {...props} />;
 }
 
 export default React.memo(AuthInfoForm);

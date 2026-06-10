@@ -80,9 +80,21 @@ function ChooseMemberShipType({
       </View>
 
       <View style={styles.footer}>
+        <View
+          style={{
+            width: '100%',
+            height: ScaleSize(10),
+            backgroundColor: '#F0F0F0',
+            marginBottom: ScaleSize(30),
+          }}
+        />
         <Button
           disabled={disabled || !selectedMembershipId}
           onPress={onSubmit}
+          style={{
+            width: '90%',
+            alignSelf: 'center',
+          }}
           testID="choose-membership-next"
           title={t('choose_membership.next')}
           type="primary"
@@ -104,7 +116,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingBottom: ScaleSize(24),
-    paddingHorizontal: ScaleSize(24),
     paddingTop: ScaleSize(12),
   },
   header: {

@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import { ScaleSize } from '@kits/core';
-
+import { DeviceUtils } from '@kits/core/utils';
+const { ifAndroid } = DeviceUtils;
 const BANNER_HEIGHT = 30;
 const BANNER_WIDTH = 68;
 const ICON_CHEVRON_SIZE = 18;
@@ -21,54 +22,60 @@ const UNDERLINE_HEIGHT = 1.5;
 const TEXT_COLOR = '#1A1A1A';
 const PLACEHOLDER_COLOR = '#9E9E9E';
 const FIELD_BORDER_RADIUS = 0;
+const PHONE_MAX_LENGTH = 11;
+const OTP_MAX_LENGTH = 6;
 
-type InputInfoValues = {
-  birthday1: string;
-  birthday2: string;
+export type InputInfoValues = {
+  birthday: string;
   carrier: string;
+  indentify: string;
   name: string;
+  otp: string;
   phone: string;
 };
 
 type InputInfoProps = {
   readonly disabled?: boolean;
-  readonly onSubmit: (values: InputInfoValues) => void;
+  readonly onInfoChange: (field: keyof InputInfoValues, value: string) => void;
+  readonly onPressRequestOtp: (onSuccess: () => void) => void;
+  readonly onSubmit: () => void;
 };
 
 const CARRIERS = ['SKT', 'KT', 'LGU+'];
+const IDENTIFY_MAX_LENGTH = 6;
+const BIRTHDAY_MAX_LENGTH = 6;
 
-const DOB_DATE_LENGTH = 6;
-const DOB_GENDER_LENGTH = 1;
-const PHONE_MIN_LENGTH = 10;
-const PHONE_MAX_LENGTH = 11;
+const INITIAL_INFO: InputInfoValues = {
+  birthday: '',
+  carrier: 'SKT',
+  indentify: '',
+  name: '',
+  otp: '',
+  phone: '',
+};
 
-function InputInfo({ disabled = false, onSubmit }: InputInfoProps) {
+function InputInfo({
+  disabled = false,
+  onInfoChange,
+  onPressRequestOtp,
+  onSubmit,
+}: InputInfoProps) {
   const { t } = useTranslation();
   const [agreed, setAgreed] = useState(false);
-  const [name, setName] = useState('');
-  const [birthday1, setBirthday1] = useState('');
-  const [birthday2, setBirthday2] = useState('');
-  const [carrier, setCarrier] = useState('SKT');
   const [showCarriers, setShowCarriers] = useState(false);
-  const [phone, setPhone] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [values, setValues] = useState<InputInfoValues>(INITIAL_INFO);
 
-  // const isFormValid =
-  //   agreed &&
-  //   name.trim().length > 0 &&
-  //   birthday1.length === DOB_DATE_LENGTH &&
-  //   birthday2.length === DOB_GENDER_LENGTH &&
-  //   phone.length >= PHONE_MIN_LENGTH;
+  const handleChange = (field: keyof InputInfoValues) => (value: string) => {
+    setValues(previous => ({ ...previous, [field]: value }));
+    onInfoChange(field, value);
+  };
 
   const isFormValid =
     agreed &&
-    name.trim().length &&
-    birthday1.trim().length &&
-    birthday2.trim().length &&
-    phone.trim().length;
-
-  const handleSubmit = () => {
-    onSubmit({ birthday1, birthday2, carrier, name, phone });
-  };
+    values.birthday.trim().length == BIRTHDAY_MAX_LENGTH &&
+    values.indentify.trim().length == IDENTIFY_MAX_LENGTH &&
+    values.phone.trim().length > 0;
 
   return (
     <View style={styles.container}>
@@ -141,43 +148,33 @@ function InputInfo({ disabled = false, onSubmit }: InputInfoProps) {
       <View style={styles.divider} />
 
       <View style={styles.formBlock}>
-        <View style={styles.underlinedField}>
-          <TextInput
-            onChangeText={setName}
-            placeholder={t('register_flow.name_label')}
-            placeholderTextColor={PLACEHOLDER_COLOR}
-            style={styles.underlinedInput}
-            testID="register-flow-name"
-            value={name}
-          />
-        </View>
-
-        <View style={styles.dobRow}>
-          <View style={[styles.underlinedField, styles.dobDateField]}>
+        <View style={[styles.dobRow, styles.underlinedField]}>
+          <View style={[styles.dobDateField]}>
             <TextInput
               keyboardType="number-pad"
-              // maxLength={6}
-              onChangeText={setBirthday1}
+              onChangeText={handleChange('birthday')}
+              maxLength={BIRTHDAY_MAX_LENGTH}
               placeholder={t('register_flow.dob_label')}
               placeholderTextColor={PLACEHOLDER_COLOR}
               style={styles.underlinedInput}
               testID="register-flow-birthday1"
-              value={birthday1}
+              value={values.birthday}
             />
           </View>
 
           <Text style={styles.dobSeparator}>—</Text>
 
-          <View style={[styles.underlinedField, styles.dobGenderField]}>
+          <View style={[styles.dobDateField]}>
             <TextInput
               keyboardType="number-pad"
-              // maxLength={1}
-              onChangeText={setBirthday2}
-              placeholder=""
+              onChangeText={handleChange('indentify')}
+              placeholder={t('register_flow.identify_label')}
               secureTextEntry
-              style={styles.underlinedInput}
+              maxLength={IDENTIFY_MAX_LENGTH}
+              placeholderTextColor={PLACEHOLDER_COLOR}
+              style={[styles.underlinedInput, { textAlign: 'right' }]}
               testID="register-flow-birthday2"
-              value={birthday2}
+              value={values.indentify}
             />
           </View>
         </View>
@@ -191,7 +188,7 @@ function InputInfo({ disabled = false, onSubmit }: InputInfoProps) {
             style={styles.carrierPicker}
             testID="register-flow-carrier"
           >
-            <Text style={styles.carrierText}>{carrier}</Text>
+            <Text style={styles.carrierText}>{values.carrier}</Text>
             <Image
               color={ICON_COLOR}
               height={ICON_CHEVRON_SIZE}
@@ -205,24 +202,45 @@ function InputInfo({ disabled = false, onSubmit }: InputInfoProps) {
             <TextInput
               keyboardType="number-pad"
               maxLength={PHONE_MAX_LENGTH}
-              onChangeText={setPhone}
+              onChangeText={handleChange('phone')}
               placeholder={t('register_flow.phone_placeholder')}
               placeholderTextColor={PLACEHOLDER_COLOR}
               style={styles.underlinedInput}
               testID="register-flow-phone"
-              value={phone}
+              value={values.phone}
             />
           </View>
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={styles.requestButton}
-            testID="register-flow-request"
-          >
-            <Text style={styles.requestText}>
-              {t('register_flow.request_verification')}
-            </Text>
-          </TouchableOpacity>
+          {otpSent ? (
+            <View style={styles.otpField}>
+              <TextInput
+                keyboardType="number-pad"
+                onChangeText={handleChange('otp')}
+                // placeholder={t('register_flow.otp_placeholder')}
+                // placeholderTextColor={PLACEHOLDER_COLOR}
+                secureTextEntry
+                maxLength={OTP_MAX_LENGTH}
+                style={styles.underlinedInput}
+                testID="register-flow-otp"
+                value={values.otp}
+              />
+            </View>
+          ) : (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => {
+                onPressRequestOtp(() => {
+                  setOtpSent(true);
+                });
+              }}
+              style={styles.requestButton}
+              testID="register-flow-request"
+            >
+              <Text style={styles.requestText}>
+                {t('register_flow.request_verification')}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {showCarriers ? (
@@ -232,7 +250,7 @@ function InputInfo({ disabled = false, onSubmit }: InputInfoProps) {
                 activeOpacity={0.8}
                 key={option}
                 onPress={() => {
-                  setCarrier(option);
+                  handleChange('carrier')(option);
                   setShowCarriers(false);
                 }}
                 style={styles.carrierOption}
@@ -246,14 +264,27 @@ function InputInfo({ disabled = false, onSubmit }: InputInfoProps) {
 
         <Text style={styles.warning}>{t('register_flow.warning')}</Text>
       </View>
-
       <View style={styles.footer}>
+        <View
+          style={{
+            width: '100%',
+            height: ScaleSize(10),
+            backgroundColor: '#F0F0F0',
+            marginBottom: ScaleSize(30),
+            // position: 'absolute',
+            // bottom: ScaleSize(20),
+          }}
+        />
         <Button
           disabled={disabled || !isFormValid}
-          title={t('register_flow.next')}
-          onPress={handleSubmit}
-          type="primary"
+          style={{
+            width: '90%',
+            alignSelf: 'center',
+          }}
+          onPress={onSubmit}
           testID="register-flow-next"
+          title={t('register_flow.next')}
+          type="primary"
         />
       </View>
     </View>
@@ -273,6 +304,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: ScaleSize(6),
   },
+  carrierList: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+    borderWidth: 1,
+    marginTop: 8,
+  },
   carrierOption: {
     paddingHorizontal: 14,
     paddingVertical: 10,
@@ -280,13 +318,6 @@ const styles = StyleSheet.create({
   carrierOptionText: {
     color: TEXT_COLOR,
     fontSize: 15,
-  },
-  carrierList: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
-    borderWidth: 1,
-    marginTop: 8,
   },
   carrierPicker: {
     alignItems: 'center',
@@ -312,7 +343,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   dobDateField: {
-    flex: 1,
+    flex: 1 / 2,
   },
   dobGenderField: {
     width: 64,
@@ -329,13 +360,11 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   footer: {
-    // paddingBottom: 24,
-    paddingHorizontal: 24,
-    // paddingTop: 12,
-    position: 'absolute',
+    bottom: ifAndroid(ScaleSize(25), 0),
     left: 0,
+
+    position: 'absolute',
     right: 0,
-    bottom: 0,
   },
   formBlock: {
     paddingHorizontal: 24,
@@ -343,9 +372,8 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     backgroundColor: '#F5F5F5',
-    paddingTop: 16,
     paddingBottom: ScaleSize(10),
-    // paddingVertical: 24,
+    paddingTop: 16,
   },
   identityBlock: {
     paddingHorizontal: 24,
@@ -366,21 +394,23 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: TEXT_COLOR,
-    fontSize: 14,
     flex: 1,
+    fontSize: 14,
+  },
+  otpField: {
+    flex: 1,
+    marginLeft: 16,
   },
   phoneField: {
-    // borderBottomColor: UNDERLINE_COLOR,
-    // borderBottomWidth: UNDERLINE_HEIGHT,
     flex: 1,
     marginLeft: 16,
   },
   phoneRow: {
     alignItems: 'flex-end',
-    flexDirection: 'row',
-    marginTop: 24,
     borderBottomColor: UNDERLINE_COLOR,
     borderBottomWidth: UNDERLINE_HEIGHT,
+    flexDirection: 'row',
+    marginTop: 24,
   },
   requestButton: {
     marginLeft: 16,
@@ -393,9 +423,6 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     textAlign: 'right',
     width: 60,
-  },
-  spacer: {
-    flex: 1,
   },
   underlinedField: {
     borderBottomColor: UNDERLINE_COLOR,
@@ -417,4 +444,3 @@ const styles = StyleSheet.create({
 });
 
 export default React.memo(InputInfo);
-export type { InputInfoValues };

@@ -48,6 +48,7 @@
       "carrier_terms": "Agree to the Mobile Carrier Terms of Use (Required)",
       "name_label": "Name",
       "dob_label": "6-digit Date of Birth",
+      "identify_label": "6-digit identify",
       "phone_placeholder": "Phone Number",
       "request_verification": "Request Verification",
       "warning": "*If you register using someone else's personal information without authorization, your service access may be restricted and you may be subject to legal penalties.",
@@ -65,6 +66,9 @@
       "join_as_member": "Join as a member",
       "join_as_non_member": "Join as a non-member",
       "next": "Next"
+    },
+    "register_completed": {
+      "desc": "Desc"
     }
   }
 }
