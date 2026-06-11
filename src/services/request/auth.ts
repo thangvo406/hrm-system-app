@@ -22,7 +22,7 @@ export type AuthResponse = z.infer<typeof authResponseSchema>;
 
 export const login = async (payload: LoginPayload): Promise<AuthResponse> => {
   const response = await httpRequest.post<ApiResponse<AuthResponse>>(
-    'http://172.8.154.79:3000/' + EndPoints.AUTH.login,
+    EndPoints.AUTH.login,
     payload,
   );
   return authResponseSchema.parse(response.data);

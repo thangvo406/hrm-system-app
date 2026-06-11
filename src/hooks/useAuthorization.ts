@@ -81,7 +81,7 @@ export const useAuthorization = () => {
 
   const onLoginChange =
     (field: keyof typeof initialLoginForm) => (value: string) => {
-      setLoginForm(previous => ({ ...previous, [field]: value }));
+      setLoginForm(previous => ({ ...previous, [field]: value?.trim?.() }));
       setLoginErrorsState(previous => ({ ...previous, [field]: true }));
     };
 
@@ -118,13 +118,11 @@ export const useAuthorization = () => {
     setLoginErrorsState({ email: true, password: true });
     if (!isLoginValid) return;
     // setLoading(true);
-    onLoginSuccess();
-    return;
     dispatch(
       loginRequest({
         deviceId: DeviceUtils.getDeviceId(),
         deviceName: DeviceUtils.getDeviceName(),
-        email: loginForm?.email?.trim?.(),
+        email: loginForm?.email,
         onFailure: onLoginFailure,
         onSuccess: onLoginSuccess,
         password: loginForm.password,

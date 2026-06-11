@@ -22,7 +22,7 @@ const UNDERLINE_HEIGHT = 1.5;
 const TEXT_COLOR = '#1A1A1A';
 const PLACEHOLDER_COLOR = '#9E9E9E';
 const FIELD_BORDER_RADIUS = 0;
-const PHONE_MAX_LENGTH = 11;
+const PHONE_MAX_LENGTH = 13;
 const OTP_MAX_LENGTH = 6;
 
 export type InputInfoValues = {

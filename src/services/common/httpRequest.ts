@@ -1,5 +1,6 @@
 import type { AxiosRequestConfig } from 'axios';
 
+import AppNavigator from '@navigation/AppNavigator';
 import { instance } from '@services/common/instance';
 import axios from 'axios';
 
@@ -8,6 +9,9 @@ type RequestOptions = {
   retry?: number;
   // Khoảng cách giữa các lần retry (ms).
   retryDelay?: number;
+  // Khi true, tự động show loading dialog trước request và hide loading
+  // sau khi request hoàn tất (return hoặc throw).
+  loading?: boolean;
 } & AxiosRequestConfig;
 
 const DEFAULT_RETRY = 0;
@@ -25,17 +29,33 @@ const isNetworkError = (error: unknown): boolean =>
 
 const request = async <T>(
   config: AxiosRequestConfig,
-  options: { retry: number; retryDelay: number },
+  options: { loading: boolean; retry: number; retryDelay: number },
 ): Promise<T> => {
-  const { retry, retryDelay } = options;
+  const { loading, retry, retryDelay } = options;
+  // Called from both the success and final-error paths so the dialog
+  // dismisses BEFORE the return/throw. `hideLoading` returns a Promise
+  // that resolves after the dialog system's hide-debounce; we don't await
+  // it — the call itself is synchronous (it just schedules a timer), so
+  // the dismissal kicks off before the response is handed to the caller.
+  const dismissLoading = (): void => {
+    if (loading) {
+      void AppNavigator.hideLoading();
+    }
+  };
+
+  if (loading) {
+    AppNavigator.showLoading();
+  }
 
   let attempt = 0;
   for (;;) {
     try {
       const response = await instance.request<T>(config);
+      dismissLoading();
       return response.data;
     } catch (error) {
       if (attempt >= retry || !isNetworkError(error)) {
+        dismissLoading();
         throw error;
       }
       attempt += 1;
@@ -46,11 +66,12 @@ const request = async <T>(
 
 const buildOptions = (options: RequestOptions) => {
   const {
+    loading = true,
     retry = DEFAULT_RETRY,
     retryDelay = DEFAULT_RETRY_DELAY,
     ...config
   } = options;
-  return { config, retry, retryDelay };
+  return { config, loading, retry, retryDelay };
 };
 
 export const httpRequest = {

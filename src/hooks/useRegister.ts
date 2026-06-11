@@ -174,7 +174,8 @@ export const useRegister = () => {
         otp: formData.current.otp ?? '',
         phone: formData.current.phone ?? '',
         // birthday: formData.current.birthday1 ?? '',
-        birthday: '2000-08-01',
+        identityNumber: `${formData.current.birthday}-${formData.current.indentify}`,
+        // birthday: '2000-08-01',
         termsAgreed: true,
         onSuccess: () => {
           setStep(STEP.CHOOSE_SCHOOL);

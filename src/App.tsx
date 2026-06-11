@@ -7,6 +7,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Dialog from '@screens/Dialog';
+import AppNavigator from '@navigation/AppNavigator';
 
 function App() {
   return (
@@ -15,6 +17,7 @@ function App() {
         <SafeAreaProvider>
           <PersistGate persistor={persistor}>
             <ApplicationNavigator />
+            <Dialog ref={ref => AppNavigator.setRefDialog(ref)} />
           </PersistGate>
         </SafeAreaProvider>
       </Provider>
