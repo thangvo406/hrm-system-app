@@ -51,11 +51,6 @@ function* loginWorker(action: PayloadAction<LoginPayload>) {
     yield put(authSuccess(response));
     action.payload.onSuccess?.();
   } catch (error) {
-    console.log(
-      'error?.response?.data',
-      error?.response,
-      error?.response?.data,
-    );
     action.payload.onFailure?.(error?.response?.data);
     yield put(authFailure(toErrorMessage(error)));
   }
@@ -109,7 +104,8 @@ function* completeRegisterWorker(
   action: PayloadAction<CompleteRegisterPayload>,
 ) {
   try {
-    yield call(completeRegister, action.payload);
+    const response: AuthResponse = yield call(completeRegister, action.payload);
+    yield put(authSuccess(response));
     action.payload.onSuccess?.();
   } catch (error) {
     yield put(authFailure(toErrorMessage(error)));

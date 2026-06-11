@@ -40,19 +40,19 @@ export type SendOTPPayload = {
 } & AuthCallback;
 
 export type VerifyOTPPayload = {
-  email: string;
-  otp: string;
-  phone: string;
+  email?: string;
+  otp?: string;
+  phone?: string;
   termsAgreed: boolean;
-  birthday: string;
+  identityNumber?: string;
 } & AuthCallback;
 
 export type CompleteRegisterPayload = {
-  email: string;
-  membershipAffiliationType: string;
-  membershipType: string;
-  universityExternalId: string;
-  universityName: string;
+  email?: string;
+  membershipAffiliationType?: string;
+  membershipType?: string;
+  universityExternalId?: string;
+  universityName?: string;
 } & AuthCallback;
 
 const initialState: AuthState = {

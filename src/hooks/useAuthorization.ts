@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { computeFormAuthErrors } from '@utils/common';
 import { AppConstants } from '@constants';
 import { useRegister } from './useRegister';
-const { PASSWORD_MIN_LENGTH, NEED_INFO_LOGIN_CODE, initialLoginForm } =
+const { STEP, PASSWORD_MIN_LENGTH, NEED_INFO_LOGIN_CODE, initialLoginForm } =
   AppConstants;
 export type { AuthStep, RegisterErrors } from './useRegister';
 
@@ -103,11 +103,12 @@ export const useAuthorization = () => {
       ].includes(error?.code)
     ) {
       const stepMapping = {
-        [NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED]: 'info',
-        [NEED_INFO_LOGIN_CODE.MEMBERSHIP_INCOMPLETE]: 'choose_membership',
+        [NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED]: STEP.INFO,
+        [NEED_INFO_LOGIN_CODE.MEMBERSHIP_INCOMPLETE]: STEP.CHOOSE_SCHOOL,
       };
       const step = stepMapping[error?.code];
       register.goToStep(step);
+      register.onRegisterChange('email')(loginForm.email);
       return;
     }
 

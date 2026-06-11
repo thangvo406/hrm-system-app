@@ -11,6 +11,10 @@ import {
   sendOTPRequest,
   verifyOTPRequest,
 } from '@services/slices/auth/authSlice';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { RootStackParamList } from '@navigation/types';
+import { Paths } from '@navigation/paths';
 
 import { computeFormAuthErrors } from '@utils/common';
 import { AppConstants } from '@constants';
@@ -102,6 +106,7 @@ export const useRegister = () => {
   const [selectedMembershipId, setSelectedMembershipId] = useState<
     string | undefined
   >();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const onRegisterChange =
     (field: keyof RegisterFormFields) => (value: string) => {
@@ -171,8 +176,8 @@ export const useRegister = () => {
     dispatch(
       verifyOTPRequest({
         email: formData.current.email,
-        otp: formData.current.otp ?? '',
-        phone: formData.current.phone ?? '',
+        otp: formData.current.otp,
+        phone: formData.current.phone,
         // birthday: formData.current.birthday1 ?? '',
         identityNumber: `${formData.current.birthday}-${formData.current.indentify}`,
         // birthday: '2000-08-01',
@@ -201,12 +206,11 @@ export const useRegister = () => {
     dispatch(
       completeRegisterRequest({
         email: formData.current.email,
-        universityExternalId: formData.current?.school?.id ?? '',
-        universityName: formData.current?.school?.name ?? '',
+        universityExternalId: formData.current?.school?.id,
+        universityName: formData.current?.school?.name,
         membershipType: formData.current?.membershipId
           ? 'MEMBER'
           : 'NON_MEMBER',
-        membershipAffiliationType: formData.current?.membershipId ?? '',
         onSuccess: () => {
           setStep(STEP.REGISTER_COMPLETED);
         },
@@ -252,6 +256,10 @@ export const useRegister = () => {
       }
       case STEP.INFO: {
         onSubmitInfo();
+        break;
+      }
+      case STEP.REGISTER_COMPLETED: {
+        navigation.reset({ index: 0, routes: [{ name: Paths.Home }] });
         break;
       }
       default: {

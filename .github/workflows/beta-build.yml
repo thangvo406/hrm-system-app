@@ -61,6 +61,18 @@ jobs:
           bundler-cache: true
           working-directory: android
 
+        name: Decode & Generate Google Services and Firebase Credentials
+        run: |
+          # 1. Giải mã google-services.json và đặt đúng thư mục app/
+          # echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > android/app/google-services.json
+          
+          # 2. Giải mã file credential để Fastlane upload (đặt tạm ở thư mục android/)
+          echo "${{ secrets.FIREBASE_CREDENTIALS_DEV_BASE64 }}" | base64 --decode > android/coop-dev-firebase.json
+          
+          # In ra thông báo check xem file đã tồn tại chưa
+          # ls -la android/app/google-services.json
+          ls -la android/coop-dev-firebase.json
+
       - name: Run Fastlane Android Beta
         # Không cần truyền tham số ở đây nữa, Fastlane sẽ tự đọc từ biến môi trường
         run: bundle exec fastlane beta

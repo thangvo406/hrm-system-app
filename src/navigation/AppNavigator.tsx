@@ -123,7 +123,7 @@ function hideLoading(): Promise<unknown> {
       dialogReference?.hideLoading?.();
       debounceHideLoading = null;
       resolve({});
-    }, 1700);
+    }, 200);
   });
 }
 

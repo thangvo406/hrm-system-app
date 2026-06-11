@@ -37,9 +37,9 @@ const request = async <T>(
   // that resolves after the dialog system's hide-debounce; we don't await
   // it — the call itself is synchronous (it just schedules a timer), so
   // the dismissal kicks off before the response is handed to the caller.
-  const dismissLoading = (): void => {
+  const dismissLoading = async () => {
     if (loading) {
-      void AppNavigator.hideLoading();
+      await AppNavigator.hideLoading();
     }
   };
 
@@ -51,11 +51,11 @@ const request = async <T>(
   for (;;) {
     try {
       const response = await instance.request<T>(config);
-      dismissLoading();
+      await dismissLoading();
       return response.data;
     } catch (error) {
       if (attempt >= retry || !isNetworkError(error)) {
-        dismissLoading();
+        await dismissLoading();
         throw error;
       }
       attempt += 1;
