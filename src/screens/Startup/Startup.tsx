@@ -2,6 +2,8 @@ import type { RootScreenProps } from '@navigation/types';
 
 import Image from '@components/Image';
 import { Paths } from '@navigation/paths';
+import { useAppDispatch } from '@services/common/storeHooks';
+import { startupApp } from '@services/slices/app/appSlice';
 import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 // import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,19 +15,28 @@ const BANNER_WIDTH = 200;
 const MASCOT_SIZE = 220;
 
 function Startup({ navigation }: RootScreenProps<Paths.Startup>) {
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     // FastImage.clearDiskCache().then(() => null);
     // FastImage.clearMemoryCache().then(() => null);
-    const timer = setTimeout(() => {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: Paths.Welcome }],
-      });
-    }, 1500);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [navigation]);
+    dispatch(
+      startupApp({
+        onFailure: () => {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: Paths.Welcome }],
+          });
+        },
+        onSuccess: isAuthenticated => {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: isAuthenticated ? Paths.Home : Paths.Welcome }],
+          });
+        },
+      }),
+    );
+  }, [dispatch, navigation]);
 
   return (
     <View style={styles.container}>

@@ -1,8 +1,8 @@
 import { Button, TextField } from '@components';
 import type { RegisterErrors } from '@hooks';
 import { useTranslation } from 'react-i18next';
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, TextInput } from 'react-native';
 
 export type RegisterValues = {
   readonly email: string;
@@ -25,9 +25,11 @@ function RegisterForm({
   onChange,
   onSubmit,
   valid,
-  values,
+  values = undefined,
 }: RegisterFormProps) {
   const { t } = useTranslation();
+  const emailReference = useRef<TextInput>(null);
+  const passwordReference = useRef<TextInput>(null);
 
   return (
     <>
@@ -36,9 +38,12 @@ function RegisterForm({
         iconName="user"
         label={t('authorisation.name_label')}
         onChangeText={onChange('name')}
+        onSubmitEditing={() => emailReference.current?.focus()}
         placeholder={t('authorisation.name_placeholder')}
+        returnKeyType="next"
+        submitBehavior="submit"
         testID="auth-name-input"
-        value={values?.name}
+        value={values?.name ?? ''}
       />
 
       <TextField
@@ -48,9 +53,13 @@ function RegisterForm({
         keyboardType="email-address"
         label={t('authorisation.email_label')}
         onChangeText={onChange('email')}
+        onSubmitEditing={() => passwordReference.current?.focus()}
         placeholder={t('authorisation.email_placeholder')}
+        ref={emailReference}
+        returnKeyType="next"
+        submitBehavior="submit"
         testID="auth-email-input"
-        value={values?.email}
+        value={values?.email ?? ''}
       />
 
       <TextField
@@ -59,10 +68,17 @@ function RegisterForm({
         iconName="lock"
         label={t('authorisation.password_label')}
         onChangeText={onChange('password')}
+        onSubmitEditing={() => {
+          if (valid) {
+            onSubmit();
+          }
+        }}
         placeholder={t('authorisation.password_placeholder')}
+        ref={passwordReference}
+        returnKeyType="done"
         secureTextEntry
         testID="auth-password-input"
-        value={values?.password}
+        value={values?.password ?? ''}
       />
 
       <Button

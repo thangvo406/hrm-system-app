@@ -1,5 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+import { logout } from '@services/slices/auth/authSlice';
+
 export type CounterState = {
   value: number;
 };
@@ -9,6 +11,9 @@ const initialState: CounterState = {
 };
 
 const counterSlice = createSlice({
+  extraReducers: builder => {
+    builder.addCase(logout, () => initialState);
+  },
   initialState,
   name: 'counter',
   reducers: {

@@ -3,6 +3,7 @@ import {
   increment,
 } from '@services/slices/counter/counterSlice';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { CounterSelector } from '@services/selectors';
 import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,7 +11,7 @@ const BUTTON_SIZE = 80;
 
 function Example() {
   const dispatch = useAppDispatch();
-  const count = useAppSelector((state) => state.counter.value);
+  const count = useAppSelector(CounterSelector.getValue);
 
   return (
     <SafeAreaView mode="padding" style={styles.container}>

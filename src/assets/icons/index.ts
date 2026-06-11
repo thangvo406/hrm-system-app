@@ -8,6 +8,7 @@ import IcChevronDownIcon from './ic_chevron_down.svg';
 import IcChevronRightIcon from './ic_chevron_right.svg';
 import IcClockIcon from './ic_clock.svg';
 import IcLogoUnappIcon from './ic_logo_unapp.svg';
+import IcLogoutIcon from './ic_logout.svg';
 import IcMenuIcon from './ic_menu.svg';
 import IcRadioSelectedIcon from './ic_radio_selected.svg';
 import IcRadioUnselectedIcon from './ic_radio_unselected.svg';
@@ -32,6 +33,7 @@ const icons = {
   ic_chevron_right: IcChevronRightIcon,
   ic_clock: IcClockIcon,
   ic_logo_unapp: IcLogoUnappIcon,
+  ic_logout: IcLogoutIcon,
   ic_menu: IcMenuIcon,
   ic_radio_selected: IcRadioSelectedIcon,
   ic_radio_unselected: IcRadioUnselectedIcon,

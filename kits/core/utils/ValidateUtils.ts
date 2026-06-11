@@ -27,7 +27,7 @@ const mergeStyle = (style: any) => {
       : style;
 };
 const isPhoneNumber = (value: string) => {
-  const PHONE_REGEX = /^(010|840)-[0-9]{4}-[0-9]{4}$/;
+  const PHONE_REGEX = /^01[0-9]-?\d{3,4}-?\d{4}$/;
   return PHONE_REGEX.test(value);
 };
 const isNumber = (text: string) => {

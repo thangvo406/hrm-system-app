@@ -6,4 +6,7 @@ export const EndPoints = {
     sendOTP: 'auth/register/phone/send-otp',
     verifyOTP: 'auth/register/phone/confirm-otp',
   },
+  ACCOUNT: {
+    getProfile: 'user/profile',
+  },
 };

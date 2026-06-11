@@ -2,11 +2,21 @@ import type { ImageName } from '@assets/images';
 
 import Image from '@components/Image';
 import imageNames from '@assets/images/names';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { AccountSelector } from '@services/selectors';
+import { logout } from '@services/slices/auth/authSlice';
+import { Paths } from '@navigation/paths';
+import { useNavigation } from '@react-navigation/native';
 
-const USER_NAME = '쿠비';
 const PAY_AMOUNT = '100,000';
 const POINT_AMOUNT = '210,000';
 const STORE_NAME = 'Cafe Coop';
@@ -32,6 +42,9 @@ const PRODUCTS: readonly Product[] = [
 
 function Header() {
   const { t } = useTranslation();
+  const profile = useAppSelector(AccountSelector.getProfile);
+  const dispatch = useAppDispatch();
+  const navigation = useNavigation();
   return (
     <View style={styles.header}>
       <Image
@@ -42,7 +55,7 @@ function Header() {
       />
       <View style={styles.headerRight}>
         <Text style={styles.greeting}>
-          {t('home.greeting', { name: USER_NAME })}
+          {t('home.greeting', { name: profile?.name ?? '' })}
         </Text>
         <Image
           color="#4CAF50"
@@ -51,13 +64,23 @@ function Header() {
           type="svg"
           width={ICON_SIZE}
         />
-        <Image
-          color="#1A1A1A"
-          height={ICON_SIZE}
-          name="ic_menu"
-          type="svg"
-          width={ICON_SIZE}
-        />
+        <TouchableOpacity
+          onPress={() => {
+            dispatch(logout());
+            navigation.reset({
+              index: 0,
+              routes: [{ name: Paths.Authorization }],
+            });
+          }}
+        >
+          <Image
+            color="#4CAF50"
+            height={ICON_SIZE}
+            name="ic_logout"
+            type="svg"
+            width={ICON_SIZE}
+          />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -66,7 +89,11 @@ function Header() {
 function PayCard() {
   const { t } = useTranslation();
   return (
-    <TouchableOpacity activeOpacity={0.9} style={styles.payCard} testID="home-pay-card">
+    <TouchableOpacity
+      activeOpacity={0.9}
+      style={styles.payCard}
+      testID="home-pay-card"
+    >
       <Text style={styles.payLabel}>{t('home.pay_label')}</Text>
       <Text style={styles.payAmount}>
         {t('home.pay_amount', { amount: PAY_AMOUNT })}
@@ -74,7 +101,7 @@ function PayCard() {
       <View style={styles.payDivider} />
       <View style={styles.payFooter}>
         <Text style={styles.pointText}>
-          {t('home.point_label')}  {POINT_AMOUNT}
+          {t('home.point_label')} {POINT_AMOUNT}
         </Text>
         <Text style={styles.payAction}>{t('home.pay_action')}</Text>
       </View>
@@ -91,7 +118,11 @@ type FeatureCardProps = {
 
 function FeatureCard({ desc, image, testID, title }: FeatureCardProps) {
   return (
-    <TouchableOpacity activeOpacity={0.9} style={styles.featureCard} testID={testID}>
+    <TouchableOpacity
+      activeOpacity={0.9}
+      style={styles.featureCard}
+      testID={testID}
+    >
       <Text style={styles.featureTitle}>{title}</Text>
       <Text style={styles.featureDesc}>{desc}</Text>
       <View style={styles.featureImageWrap}>
@@ -113,11 +144,23 @@ function StoreSection() {
       <Text style={styles.sectionLabel}>{t('home.frequent_store')}</Text>
       <View style={styles.storeHeader}>
         <View style={styles.storeNameRow}>
-          <Image color="#1A1A1A" height={18} name="ic_store" type="svg" width={18} />
+          <Image
+            color="#1A1A1A"
+            height={18}
+            name="ic_store"
+            type="svg"
+            width={18}
+          />
           <Text style={styles.storeName}>{STORE_NAME}</Text>
         </View>
         <View style={styles.storeNameRow}>
-          <Image color="#5C5C5C" height={16} name="ic_clock" type="svg" width={16} />
+          <Image
+            color="#5C5C5C"
+            height={16}
+            name="ic_clock"
+            type="svg"
+            width={16}
+          />
           <Text style={styles.storeEta}>{t('home.store_eta')}</Text>
         </View>
       </View>
@@ -354,6 +397,3 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
-
-
-

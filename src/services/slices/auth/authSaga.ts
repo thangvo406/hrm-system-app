@@ -20,11 +20,14 @@ import {
 import axios from 'axios';
 import { call, put, takeLatest } from 'redux-saga/effects';
 
+import { persistor } from '@services/common/store';
+
 import {
   authFailure,
   authSuccess,
   completeRegisterRequest,
   loginRequest,
+  logout,
   registerRequest,
   registerUserRequest,
   sendOTPRequest,
@@ -113,6 +116,13 @@ function* completeRegisterWorker(
   }
 }
 
+// Reducers reset in-memory state synchronously when `logout` is dispatched.
+// This worker additionally wipes the persisted MMKV storage so tokens and
+// profile data do not survive an app restart.
+function* logoutWorker() {
+  yield call([persistor, 'purge']);
+}
+
 export function* authSaga() {
   yield takeLatest(loginRequest.type, loginWorker);
   yield takeLatest(registerRequest.type, registerWorker);
@@ -120,4 +130,5 @@ export function* authSaga() {
   yield takeLatest(sendOTPRequest.type, sendOTPWorker);
   yield takeLatest(verifyOTPRequest.type, verifyOTPWorker);
   yield takeLatest(completeRegisterRequest.type, completeRegisterWorker);
+  yield takeLatest(logout.type, logoutWorker);
 }

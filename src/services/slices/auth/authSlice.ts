@@ -78,6 +78,9 @@ const authSlice = createSlice({
       state.loading = false;
     },
     clearCredentials: () => initialState,
+    // Clears auth state. Other slices listen for this in extraReducers to
+    // reset themselves, so a single dispatch wipes the whole store.
+    logout: () => initialState,
     // Triggers the saga; carries the login form values.
     loginRequest: {
       prepare: (payload: LoginPayload) => ({ payload }),
@@ -144,6 +147,7 @@ export const {
   clearCredentials,
   completeRegisterRequest,
   loginRequest,
+  logout,
   registerRequest,
   registerUserRequest,
   sendOTPRequest,

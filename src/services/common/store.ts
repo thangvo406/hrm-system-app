@@ -16,6 +16,7 @@ import createSagaMiddleware from 'redux-saga';
 import { reactotronReduxEnhancer } from './reactotron';
 import { rootSaga } from './rootSaga';
 import { storage } from './storage';
+import { accountReducer } from '@services/slices/account/accountSlice';
 import { appReducer } from '@services/slices/app/appSlice';
 import { authReducer } from '@services/slices/auth/authSlice';
 import { counterReducer } from '@services/slices/counter/counterSlice';
@@ -33,6 +34,7 @@ const reduxStorage: Storage = {
 };
 
 const rootReducer = combineReducers({
+  account: accountReducer,
   app: appReducer,
   auth: authReducer,
   counter: counterReducer,
@@ -63,6 +65,8 @@ export const store = configureStore({
           PERSIST,
           PURGE,
           REGISTER,
+          'account/getProfileRequest',
+          'app/startupApp',
           'auth/loginRequest',
           'auth/registerRequest',
         ],

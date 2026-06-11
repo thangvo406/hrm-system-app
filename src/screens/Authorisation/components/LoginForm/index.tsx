@@ -1,8 +1,8 @@
 import { Button, TextField } from '@components';
 import type { LoginErrors } from '@hooks';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-import React from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import React, { useRef } from 'react';
 
 export type LoginValues = {
   readonly email: string;
@@ -29,6 +29,7 @@ function LoginForm({
   values,
 }: LoginFormProps) {
   const { t } = useTranslation();
+  const passwordReference = useRef<TextInput>(null);
 
   return (
     <>
@@ -39,7 +40,10 @@ function LoginForm({
         keyboardType="email-address"
         label={t('authorisation.email_label')}
         onChangeText={onChange('email')}
+        onSubmitEditing={() => passwordReference.current?.focus()}
         placeholder={t('authorisation.email_placeholder')}
+        returnKeyType="next"
+        submitBehavior="submit"
         testID="auth-email-input"
         value={values.email}
       />
@@ -50,7 +54,14 @@ function LoginForm({
         iconName="lock"
         label={t('authorisation.password_label')}
         onChangeText={onChange('password')}
+        onSubmitEditing={() => {
+          if (valid) {
+            onSubmit();
+          }
+        }}
         placeholder={t('authorisation.password_placeholder')}
+        ref={passwordReference}
+        returnKeyType="done"
         secureTextEntry
         testID="auth-password-input"
         value={values.password}

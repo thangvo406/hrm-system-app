@@ -269,6 +269,8 @@ export const useRegister = () => {
   };
 
   const onPressRequestOtp = (onSuccess: () => void) => {
+    // if (!ValidateUtils.isPhoneNumber(formData.current.phone)) {
+    // }
     dispatch(
       sendOTPRequest({
         email: formData.current.email,

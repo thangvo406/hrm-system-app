@@ -1,4 +1,5 @@
 import type { IconName } from '@assets/icons';
+import type { Ref } from 'react';
 import type { KeyboardTypeOptions, TextInputProps } from 'react-native';
 
 import Image from '@components/Image';
@@ -22,8 +23,12 @@ type TextFieldProps = {
   readonly keyboardType?: KeyboardTypeOptions;
   readonly label: string;
   readonly onChangeText: (text: string) => void;
+  readonly onSubmitEditing?: TextInputProps['onSubmitEditing'];
   readonly placeholder: string;
+  readonly ref?: Ref<TextInput>;
+  readonly returnKeyType?: TextInputProps['returnKeyType'];
   readonly secureTextEntry?: boolean;
+  readonly submitBehavior?: TextInputProps['submitBehavior'];
   readonly testID?: string;
   readonly value: string;
 };
@@ -35,8 +40,12 @@ function TextField({
   keyboardType = 'default',
   label,
   onChangeText,
+  onSubmitEditing = undefined,
   placeholder,
+  ref: reference = undefined,
+  returnKeyType = undefined,
   secureTextEntry = false,
+  submitBehavior = undefined,
   testID = undefined,
   value,
 }: TextFieldProps) {
@@ -46,9 +55,7 @@ function TextField({
   return (
     <View>
       <Text style={styles.label}>{label}</Text>
-      <View
-        style={[styles.inputWrapper, hasError && styles.inputWrapperError]}
-      >
+      <View style={[styles.inputWrapper, hasError && styles.inputWrapperError]}>
         <Image
           color={ICON_COLOR}
           height={ICON_SIZE}
@@ -60,10 +67,14 @@ function TextField({
           autoCapitalize={autoCapitalize}
           keyboardType={keyboardType}
           onChangeText={onChangeText}
+          onSubmitEditing={onSubmitEditing}
           placeholder={placeholder}
           placeholderTextColor={PLACEHOLDER_COLOR}
+          ref={reference}
+          returnKeyType={returnKeyType}
           secureTextEntry={secure}
           style={styles.input}
+          submitBehavior={submitBehavior}
           testID={testID}
           value={value}
         />
@@ -85,7 +96,10 @@ function TextField({
         ) : undefined}
       </View>
       {hasError ? (
-        <Text style={styles.error} testID={testID ? `${testID}-error` : undefined}>
+        <Text
+          style={styles.error}
+          testID={testID ? `${testID}-error` : undefined}
+        >
           {error}
         </Text>
       ) : undefined}
