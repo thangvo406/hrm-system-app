@@ -1,75 +1,158 @@
-# This file contains the fastlane.tools configuration
-# You can find the documentation at https://docs.fastlane.tools
-#
-# For a list of all available actions, check out
-#
-#     https://docs.fastlane.tools/actions
-#
-# For a list of all available plugins, check out
-#
-#     https://docs.fastlane.tools/plugins/available-plugins
-#
-
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
-
 default_platform(:android)
 
 platform :android do
-desc "Build Android APK và tự động lưu trữ lên GitHub Releases"
+  desc "Tự động lấy build mới nhất trên Firebase, bump versionCode, build APK và đẩy lên Firebase App Distribution"
   lane :beta do
-    
-    # 1. Đọc các biến môi trường tự động từ hệ thống và GitHub Actions
-    build_num    = ENV['BUILD_NUMBER'] || "1"
-    version_num  = ENV['VERSION_NUMBER'] || "1.0.0"
-    prefix_name  = ENV['PREFIX_APP_NAME'] || "APP"
-    branch       = ENV['BRANCH_NAME'] || "dev"
-    
-    # GitHub Actions sẽ tự động cung cấp 2 biến này trong máy ảo
-    repo_name    = ENV['GITHUB_REPOSITORY'] # Dạng: "ten-tai-khoan/ten-repo"
-    github_token = ENV['GITHUB_TOKEN']      # Token có quyền ghi vào repo
+    # 1. Đọc các biến môi trường
+    version_num = ENV['VERSION_NUMBER'] || "1.0.0"
+    prefix_name = ENV['PREFIX_APP_NAME'] || "APP"
+    branch      = ENV['BRANCH_NAME'] || "dev"
+    firebase_app_id   = "1:453541234898:android:ab23906bed3260294b450b"
+    service_creds     = "coop-dev-firebase.json"
+    gradle_file_path  = "app/build.gradle"
 
-    UI.message("--- BẮT ĐẦU QUY TRÌNH BUILD & STORE APK ---")
-    UI.message("Cấu hình: #{prefix_name} - Phiên bản: #{version_num} (Build: #{build_num})")
+    UI.message("--- BẮT ĐẦU QUY TRÌNH BUILD & DISTRIBUTE ---")
+    UI.message("Cấu hình: #{prefix_name} - Phiên bản: #{version_num}")
 
-    # 2. Clean và Biên dịch dự án thành file APK Release
-    # gradle(task: "clean")
+    # 1.5. Lấy danh sách 5 commit gần nhất để gắn vào release notes
+    recent_commits = get_recent_git_commits(
+      repo_dir: File.expand_path("../..", __dir__),
+      limit: 5
+    )
+    UI.message("Đã lấy #{recent_commits.lines.size} commit gần nhất")
+
+    # 2. Lấy versionCode mới nhất từ Firebase App Distribution, bump lên +1
+    latest_version_code = get_firebase_latest_version_code(
+      app_id: firebase_app_id,
+      service_credentials_file: service_creds
+    )
+    new_version_code = latest_version_code + 1
+    build_num = new_version_code.to_s
+
+    UI.message("Firebase latest versionCode: #{latest_version_code} -> bumping to: #{new_version_code}")
+
+    # 3. Cập nhật versionCode trong app/build.gradle TRƯỚC khi build
+    update_android_version_code(
+      gradle_file: gradle_file_path,
+      version_code: new_version_code
+    )
+
+    # 4. Clean và Biên dịch dự án thành file APK Release
     gradle(
       task: "assemble",
       build_type: "Release"
     )
-    # 3. Định vị và Đổi tên file APK để dễ quản lý khi tải về
+
+    # 5. Đổi tên APK để dễ quản lý
     original_apk = "app/build/outputs/apk/release/app-release.apk"
     formatted_name = "#{prefix_name}_v#{version_num}_b#{build_num}.apk"
     target_apk_path = "app/build/outputs/apk/release/#{formatted_name}"
-    
-    # Sử dụng lệnh shell đổi tên file nhị phân vừa tạo
     sh("mv ../#{original_apk} ../#{target_apk_path}")
 
-    # 4. Tiến hành đẩy file APK lên GitHub Releases của chính Repo này
-    # if github_token && repo_name
-      UI.message("Đang kết nối tới GitHub để lưu trữ bản build...")
-      
-      # set_github_release(
-      #   repository_name: repo_name,
-      #   api_token: github_token,
-      #   tag_name: "v#{version_num}-b#{build_num}", # Tạo một tag mới trên git
-      #   name: "#{prefix_name} v#{version_num} (Build #{build_num})", # Tiêu đề Release
-      #   description: "Bản build thử nghiệm Android được tạo tự động từ GitHub Actions.\nNhánh nguồn: #{branch}",
-      #   upload_assets: [target_apk_path], # Đính kèm file APK vào đây
-      #   commitish: branch
-      # )
-      # 2. Upload lên Firebase
+    # 6. Upload APK lên Firebase App Distribution
     firebase_app_distribution(
-      app: "1:453541234898:android:ab23906bed3260294b450b", # Lấy App ID trong Firebase Console > Project Settings
+      app: firebase_app_id,
       apk_path: target_apk_path,
-      service_credentials_file: "coop-dev-firebase.json", # Trỏ tới file mình vừa giải mã ở step GitHub Actions
-      release_notes: "Bản build Beta số #{build_num} từ GitHub Actions",
-      groups: "internal" # Tên nhóm tester bạn đã tạo trên Firebase
+      service_credentials_file: service_creds,
+      release_notes: "Branch: #{branch}\n\n#{recent_commits}",
+      groups: "internal"
     )
-      
-      UI.success("🎉 Đã lưu trữ thành công file APK lên GitHub Releases của Repository!")
+
+    UI.success("🎉 Đã build & distribute thành công bản #{version_num} (build #{build_num}) lên Firebase!")
   end
+end
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+# Gọi Firebase App Distribution REST API để lấy versionCode mới nhất.
+# Trả về 0 nếu chưa có release nào (lần build đầu tiên).
+def get_firebase_latest_version_code(app_id:, service_credentials_file:)
+  require 'googleauth'
+  require 'json'
+  require 'net/http'
+  require 'uri'
+
+  creds_path = File.expand_path("../#{service_credentials_file}", __dir__)
+  unless File.exist?(creds_path)
+    UI.error("Không tìm thấy service credentials file: #{creds_path}")
+    return 0
+  end
+
+  # project_number nằm trong app_id: "1:<project_number>:android:<app_hash>"
+  project_number = app_id.split(':')[1]
+
+  # Lấy access token từ service account JSON
+  authorizer = Google::Auth::ServiceAccountCredentials.make_creds(
+    json_key_io: File.open(creds_path),
+    scope: 'https://www.googleapis.com/auth/cloud-platform'
+  )
+  access_token = authorizer.fetch_access_token!['access_token']
+
+  # Gọi API list releases, sắp xếp theo createTime desc, lấy 1 release mới nhất
+  api_url = "https://firebaseappdistribution.googleapis.com/v1/" \
+            "projects/#{project_number}/apps/#{app_id}/releases" \
+            "?pageSize=1&orderBy=createTime%20desc"
+  uri = URI(api_url)
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = true
+
+  request = Net::HTTP::Get.new(uri.request_uri)
+  request['Authorization'] = "Bearer #{access_token}"
+
+  response = http.request(request)
+
+  if response.code == '200'
+    data = JSON.parse(response.body)
+    releases = data['releases'] || []
+    if releases.any? && releases.first['buildVersion']
+      return releases.first['buildVersion'].to_i
+    end
+    UI.message("Firebase chưa có release nào — bắt đầu từ build 1")
+    return 0
+  else
+    UI.error("Firebase API lỗi (status #{response.code}): #{response.body}")
+    return 0
+  end
+rescue => e
+  UI.error("Lỗi khi gọi Firebase App Distribution API: #{e.message}")
+  return 0
+end
+
+# Thay thế dòng `versionCode <n>` trong file build.gradle.
+def update_android_version_code(gradle_file:, version_code:)
+  file_path = File.expand_path("../#{gradle_file}", __dir__)
+  unless File.exist?(file_path)
+    UI.error("Không tìm thấy file: #{file_path}")
+    return
+  end
+
+  content = File.read(file_path)
+  new_content = content.gsub(/(\s*versionCode\s+)\d+/, "\\1#{version_code}")
+  File.write(file_path, new_content)
+  UI.message("Đã cập nhật versionCode = #{version_code} trong #{gradle_file}")
+end
+
+# Lấy danh sách N commit gần nhất trong repo git, trả về chuỗi nhiều dòng:
+#   <subject> (<author>, <date>)
+#   <subject> (<author>, <date>)
+#   ...
+def get_recent_git_commits(repo_dir:, limit: 5)
+  Dir.chdir(repo_dir) do
+    # Dùng %x00 (null) làm field separator để tránh lỗi nếu subject chứa dấu phẩy
+    format = '%s%x00%an%x00%ad'
+    raw = `git log -n #{limit} --pretty=#{format} --date=short`.strip
+    return "N/A" if raw.empty?
+
+    raw.lines.map(&:strip).reject(&:empty?).map do |line|
+      subject, author, date = line.split("\x00", 3)
+      "#{subject} (#{author}, #{date})"
+    end.join("\n")
+  end
+rescue => e
+  UI.error("Không thể đọc git log: #{e.message}")
+  return "N/A"
 end
 
 def prepare_package(options, isProd)

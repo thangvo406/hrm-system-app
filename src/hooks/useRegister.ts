@@ -11,6 +11,7 @@ import {
   sendOTPRequest,
   verifyOTPRequest,
 } from '@services/slices/auth/authSlice';
+import AppNavigator from '@navigation/AppNavigator';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RootStackParamList } from '@navigation/types';
@@ -44,7 +45,7 @@ export type AuthStep =
   | 'choose_school'
   | 'form'
   | 'register_completed'
-  | 'info';
+  | 'register_input';
 
 export type FormData = {
   birthday?: string;
@@ -93,7 +94,6 @@ export const useRegister = () => {
   });
 
   const [errors, setErrors] = useState<{
-    api?: string;
     email?: boolean;
     name?: boolean;
     password?: boolean;
@@ -162,17 +162,17 @@ export const useRegister = () => {
         name: formData.current.name,
         password: formData.current.password,
         onSuccess: () => {
-          setStep(STEP.INFO);
+          setStep(STEP.REGISTER_INPUT);
         },
         onFailure: (error: string) => {
-          setErrors(previous => ({ ...previous, api: error }));
+          AppNavigator.showSnackBar({ message: error, type: 'failed' });
         },
       }),
     );
     // setStep(STEP.INFO);
   };
 
-  const onSubmitInfo = () => {
+  const onSubmitRegisterInfo = () => {
     dispatch(
       verifyOTPRequest({
         email: formData.current.email,
@@ -186,7 +186,7 @@ export const useRegister = () => {
           setStep(STEP.CHOOSE_SCHOOL);
         },
         onFailure: (error: string) => {
-          setErrors(previous => ({ ...previous, api: error }));
+          AppNavigator.showSnackBar({ message: error, type: 'failed' });
         },
       }),
     );
@@ -254,8 +254,8 @@ export const useRegister = () => {
         submitSchool();
         break;
       }
-      case STEP.INFO: {
-        onSubmitInfo();
+      case STEP.REGISTER_INPUT: {
+        onSubmitRegisterInfo();
         break;
       }
       case STEP.REGISTER_COMPLETED: {
@@ -275,7 +275,7 @@ export const useRegister = () => {
       sendOTPRequest({
         email: formData.current.email,
         onFailure: (error: string) => {
-          setErrors(previous => ({ ...previous, api: error }));
+          AppNavigator.showSnackBar({ message: error, type: 'failed' });
         },
         onSuccess,
         phone: formData.current.phone ?? '',
@@ -284,11 +284,7 @@ export const useRegister = () => {
   };
 
   return {
-    apiError: errors.api ?? '',
     chooseOptions,
-    clearApiError: () => {
-      setErrors(previous => ({ ...previous, api: undefined }));
-    },
     filteredSchools,
     formData,
     goToStep,

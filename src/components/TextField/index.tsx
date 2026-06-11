@@ -30,7 +30,7 @@ type TextFieldProps = {
   readonly secureTextEntry?: boolean;
   readonly submitBehavior?: TextInputProps['submitBehavior'];
   readonly testID?: string;
-  readonly value: string;
+  readonly value?: string;
 };
 
 function TextField({

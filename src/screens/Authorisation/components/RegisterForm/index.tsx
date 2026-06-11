@@ -43,7 +43,7 @@ function RegisterForm({
         returnKeyType="next"
         submitBehavior="submit"
         testID="auth-name-input"
-        value={values?.name ?? ''}
+        // value={values?.name ?? ''}
       />
 
       <TextField
@@ -59,7 +59,7 @@ function RegisterForm({
         returnKeyType="next"
         submitBehavior="submit"
         testID="auth-email-input"
-        value={values?.email ?? ''}
+        // value={values?.email ?? ''}
       />
 
       <TextField
@@ -78,7 +78,7 @@ function RegisterForm({
         returnKeyType="done"
         secureTextEntry
         testID="auth-password-input"
-        value={values?.password ?? ''}
+        // value={values?.password ?? ''}
       />
 
       <Button

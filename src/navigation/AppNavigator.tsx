@@ -1,3 +1,6 @@
+/* eslint-disable unicorn/no-useless-fallback-in-spread */
+/* eslint-disable unicorn/no-immediate-mutation */
+/* eslint-disable unicorn/prevent-abbreviations */
 // import { DeviceUtils } from '@kits/core/utils';
 import { CommonActions, StackActions } from '@react-navigation/native';
 // import Information from '@dialogs/Information';
@@ -12,6 +15,11 @@ import { Keyboard } from 'react-native';
 let navigator: any;
 let dialogReference: DialogHandle | undefined;
 let debounce: any;
+
+type TSnackBar = {
+  readonly message: string;
+  readonly type: 'failed' | 'info' | 'success';
+};
 
 const setRootNavigator = (navigationRef = {}) => {
   if (!navigator || navigationRef) {
@@ -70,8 +78,8 @@ function navigate(
 function getCurrentRoute() {
   return navigator?.getCurrentRoute?.();
 }
+
 function showDialog(params: any) {
-  console.log('showDialog', params);
   const { onDidAppear, popupType, timeOutDialog = 250 } = params || {};
   Keyboard.dismiss();
   dialogReference?.setWillShow(true);
@@ -84,8 +92,11 @@ function showDialog(params: any) {
 }
 
 function showToast(params: any) {
-  console.log('showToast', params);
   dialogReference?.showToast?.({ ...(params || {}), isToast: true });
+}
+
+function showSnackBar(params: TSnackBar) {
+  dialogReference?.showSnackBar?.(params);
 }
 
 function hideAllPopup() {
@@ -102,7 +113,6 @@ function replace(nameStack: string, params?: any) {
 }
 function goBack() {
   if (navigator?.canGoBack?.()) {
-    console.log('goBack', navigator?.getCurrentRoute()?.name);
     navigator?.goBack?.();
   }
 }
@@ -118,7 +128,7 @@ function reset(name: string, params = {}) {
 let debounceHideLoading: ReturnType<typeof setTimeout> | null = null;
 function hideLoading(): Promise<unknown> {
   return new Promise(resolve => {
-    clearTimeout(debounceHideLoading ?? undefined);
+    clearTimeout(debounceHideLoading);
     debounceHideLoading = setTimeout(() => {
       dialogReference?.hideLoading?.();
       debounceHideLoading = null;
@@ -235,13 +245,11 @@ function onTrackScreenChange() {
 function setParams(props: any, params: object) {
   if (props?.navigation && typeof props.navigation.setParams === 'function') {
     props.navigation.setParams(params);
-  } else {
-    if (navigator.getCurrentRoute()) {
-      navigator.getCurrentRoute().params = {
-        ...navigator.getCurrentRoute().params,
-        ...params,
-      };
-    }
+  } else if (navigator.getCurrentRoute()) {
+    navigator.getCurrentRoute().params = {
+      ...navigator.getCurrentRoute().params,
+      ...params,
+    };
   }
 }
 
@@ -252,6 +260,7 @@ export default {
   showDialog,
   replace,
   getCurrentRoute,
+  showSnackBar,
   showToast,
   setParams,
   getParams,

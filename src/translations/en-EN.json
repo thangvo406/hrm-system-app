@@ -52,7 +52,8 @@
       "phone_placeholder": "Phone Number",
       "request_verification": "Request Verification",
       "warning": "*If you register using someone else's personal information without authorization, your service access may be restricted and you may be subject to legal penalties.",
-      "next": "Next"
+      "next": "Next",
+      "otp_placeholder": "Input OTP"
     },
     "choose_school": {
       "title": "School Verification",

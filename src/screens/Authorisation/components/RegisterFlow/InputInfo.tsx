@@ -1,24 +1,27 @@
 import { Button } from '@components';
 import Image from '@components/Image';
+import imageNames from '@assets/images/names';
 import { useTranslation } from 'react-i18next';
 import {
+  Keyboard,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScaleSize } from '@kits/core';
 import { DeviceUtils } from '@kits/core/utils';
 const { ifAndroid } = DeviceUtils;
-const BANNER_HEIGHT = 30;
-const BANNER_WIDTH = 68;
-const ICON_CHEVRON_SIZE = 18;
-const ICON_RADIO_SIZE = 20;
+const BANNER_HEIGHT = ScaleSize(30);
+const BANNER_WIDTH = ScaleSize(68);
+const ICON_CHEVRON_SIZE = ScaleSize(18);
+const ICON_RADIO_SIZE = ScaleSize(20);
 const ICON_COLOR = '#666666';
 const UNDERLINE_COLOR = '#9E9E9E';
-const UNDERLINE_HEIGHT = 1.5;
+const UNDERLINE_HEIGHT = ScaleSize(1.5);
 const TEXT_COLOR = '#1A1A1A';
 const PLACEHOLDER_COLOR = '#9E9E9E';
 const FIELD_BORDER_RADIUS = 0;
@@ -65,6 +68,13 @@ function InputInfo({
   const [showCarriers, setShowCarriers] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [values, setValues] = useState<InputInfoValues>(INITIAL_INFO);
+  const otpReference = useRef<TextInput>(null);
+
+  useEffect(() => {
+    if (otpSent) {
+      otpReference.current?.focus();
+    }
+  }, [otpSent]);
 
   const handleChange = (field: keyof InputInfoValues) => (value: string) => {
     setValues(previous => ({ ...previous, [field]: value }));
@@ -75,14 +85,21 @@ function InputInfo({
     agreed &&
     values.birthday.trim().length == BIRTHDAY_MAX_LENGTH &&
     values.indentify.trim().length == IDENTIFY_MAX_LENGTH &&
-    values.phone.trim().length > 0;
+    values.phone.trim().length > 0 &&
+    values.otp.trim().length === OTP_MAX_LENGTH;
 
   return (
-    <View style={styles.container}>
+    <Pressable
+      accessible={false}
+      onPress={() => {
+        Keyboard.dismiss();
+      }}
+      style={styles.container}
+    >
       <View style={styles.header}>
         <Image
           height={BANNER_HEIGHT}
-          name="ic_logo_banner"
+          name={imageNames.ic_logo_banner}
           width={BANNER_WIDTH}
         />
       </View>
@@ -96,6 +113,12 @@ function InputInfo({
           activeOpacity={0.8}
           onPress={() => {
             setAgreed(previous => !previous);
+          }}
+          hitSlop={{
+            bottom: 10,
+            left: 10,
+            right: 10,
+            top: 10,
           }}
           style={styles.agreeRow}
           testID="register-flow-agree"
@@ -216,11 +239,12 @@ function InputInfo({
               <TextInput
                 keyboardType="number-pad"
                 onChangeText={handleChange('otp')}
-                // placeholder={t('register_flow.otp_placeholder')}
-                // placeholderTextColor={PLACEHOLDER_COLOR}
+                placeholder={t('register_flow.otp_placeholder')}
+                placeholderTextColor={PLACEHOLDER_COLOR}
                 secureTextEntry
+                ref={otpReference}
                 maxLength={OTP_MAX_LENGTH}
-                style={styles.underlinedInput}
+                style={[styles.underlinedInput, { textAlign: 'right' }]}
                 testID="register-flow-otp"
                 value={values.otp}
               />
@@ -287,7 +311,7 @@ function InputInfo({
           type="primary"
         />
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -295,9 +319,9 @@ const styles = StyleSheet.create({
   agreeLabel: {
     color: TEXT_COLOR,
     flex: 1,
-    fontSize: 14,
-    lineHeight: 20,
-    marginLeft: 10,
+    fontSize: ScaleSize(14),
+    lineHeight: ScaleSize(20),
+    marginLeft: ScaleSize(10),
   },
   agreeRow: {
     alignItems: 'center',
@@ -307,30 +331,30 @@ const styles = StyleSheet.create({
   carrierList: {
     backgroundColor: '#FFFFFF',
     borderColor: '#E0E0E0',
-    borderRadius: 8,
-    borderWidth: 1,
-    marginTop: 8,
+    borderRadius: ScaleSize(8),
+    borderWidth: ScaleSize(1),
+    marginTop: ScaleSize(8),
   },
   carrierOption: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+    paddingHorizontal: ScaleSize(14),
+    paddingVertical: ScaleSize(10),
   },
   carrierOptionText: {
     color: TEXT_COLOR,
-    fontSize: 15,
+    fontSize: ScaleSize(15),
   },
   carrierPicker: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 8,
+    gap: ScaleSize(8),
     justifyContent: 'space-between',
-    minWidth: 70,
-    paddingBottom: 12,
-    paddingTop: 14,
+    minWidth: ScaleSize(70),
+    paddingBottom: ScaleSize(12),
+    paddingTop: ScaleSize(14),
   },
   carrierText: {
     color: TEXT_COLOR,
-    fontSize: 15,
+    fontSize: ScaleSize(15),
     fontWeight: '500',
   },
   container: {
@@ -339,52 +363,52 @@ const styles = StyleSheet.create({
   },
   divider: {
     backgroundColor: '#F0F0F0',
-    height: 1,
-    marginVertical: 8,
+    height: ScaleSize(1),
+    marginVertical: ScaleSize(8),
   },
   dobDateField: {
     flex: 1 / 2,
   },
   dobGenderField: {
-    width: 64,
+    width: ScaleSize(64),
   },
   dobRow: {
     alignItems: 'flex-end',
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 24,
+    gap: ScaleSize(12),
+    marginTop: ScaleSize(24),
   },
   dobSeparator: {
     color: PLACEHOLDER_COLOR,
-    fontSize: 16,
-    paddingBottom: 12,
+    fontSize: ScaleSize(16),
+    paddingBottom: ScaleSize(12),
   },
   footer: {
     bottom: ifAndroid(ScaleSize(25), 0),
     left: 0,
-
+    zIndex: 9,
     position: 'absolute',
     right: 0,
   },
   formBlock: {
-    paddingHorizontal: 24,
+    paddingHorizontal: ScaleSize(24),
   },
   header: {
     alignItems: 'center',
     backgroundColor: '#F5F5F5',
     paddingBottom: ScaleSize(10),
-    paddingTop: 16,
+    paddingTop: ScaleSize(16),
   },
   identityBlock: {
-    paddingHorizontal: 24,
-    paddingVertical: 24,
+    paddingHorizontal: ScaleSize(24),
+    paddingVertical: ScaleSize(24),
   },
   identityTitle: {
     color: TEXT_COLOR,
-    fontSize: 22,
+    fontSize: ScaleSize(22),
     fontWeight: '700',
-    lineHeight: 30,
-    marginBottom: 24,
+    lineHeight: ScaleSize(30),
+    marginBottom: ScaleSize(24),
   },
   linkRow: {
     alignItems: 'center',
@@ -395,34 +419,36 @@ const styles = StyleSheet.create({
   linkText: {
     color: TEXT_COLOR,
     flex: 1,
-    fontSize: 14,
+    fontSize: ScaleSize(14),
   },
   otpField: {
     flex: 1,
-    marginLeft: 16,
+    marginLeft: ScaleSize(16),
+    justifyContent: 'flex-end',
   },
   phoneField: {
     flex: 1,
-    marginLeft: 16,
+    marginLeft: ScaleSize(16),
   },
   phoneRow: {
     alignItems: 'flex-end',
     borderBottomColor: UNDERLINE_COLOR,
     borderBottomWidth: UNDERLINE_HEIGHT,
+    borderWidth: 1,
     flexDirection: 'row',
-    marginTop: 24,
+    marginTop: ScaleSize(24),
   },
   requestButton: {
-    marginLeft: 16,
-    paddingBottom: 12,
-    paddingTop: 12,
+    marginLeft: ScaleSize(16),
+    paddingBottom: ScaleSize(12),
+    paddingTop: ScaleSize(12),
   },
   requestText: {
     color: PLACEHOLDER_COLOR,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: ScaleSize(13),
+    lineHeight: ScaleSize(18),
     textAlign: 'right',
-    width: 60,
+    width: ScaleSize(60),
   },
   underlinedField: {
     borderBottomColor: UNDERLINE_COLOR,
@@ -431,15 +457,15 @@ const styles = StyleSheet.create({
   },
   underlinedInput: {
     color: TEXT_COLOR,
-    fontSize: 16,
+    fontSize: ScaleSize(16),
     paddingHorizontal: 0,
-    paddingVertical: 12,
+    paddingVertical: ScaleSize(12),
   },
   warning: {
     color: TEXT_COLOR,
-    fontSize: 12,
-    lineHeight: 18,
-    marginTop: 24,
+    fontSize: ScaleSize(12),
+    lineHeight: ScaleSize(18),
+    marginTop: ScaleSize(24),
   },
 });
 

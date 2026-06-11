@@ -4,6 +4,8 @@ export type DialogVariant = 'default' | 'success' | 'warning' | 'error';
 
 export type ToastVariant = 'default' | 'success' | 'error';
 
+export type SnackbarType = 'success' | 'failed' | 'info';
+
 /**
  * Imperative close callback injected into the screen by the dialog host.
  * Any component rendered as a screen can call this to dismiss itself.
@@ -40,7 +42,12 @@ export type ToastOptions = {
   readonly variant?: ToastVariant;
 };
 
-export type DialogItemType = 'dialog' | 'toast';
+export type SnackbarOptions = {
+  readonly message: string;
+  readonly type: SnackbarType;
+};
+
+export type DialogItemType = 'dialog' | 'toast' | 'snackbar';
 
 export type DialogItem =
   | {
@@ -52,6 +59,11 @@ export type DialogItem =
       readonly id: string;
       readonly options: ToastOptions;
       readonly type: 'toast';
+    }
+  | {
+      readonly id: string;
+      readonly options: SnackbarOptions;
+      readonly type: 'snackbar';
     };
 
 export type DialogHandle = {
@@ -61,6 +73,7 @@ export type DialogHandle = {
   setWillShow: (willShow: boolean) => void;
   showDialog: (options: DialogOptions) => string;
   showLoading: (options?: { readonly message?: string }) => string;
+  showSnackBar: (options: SnackbarOptions) => string;
   showToast: (options: ToastOptions) => string;
 };
 

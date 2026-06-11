@@ -2,7 +2,7 @@ import type { RootScreenProps } from '@navigation/types';
 import type { AuthStep } from '@hooks';
 import type { ComponentType } from 'react';
 
-import { AuthFormStack, AuthInfoForm, Snackbar } from '@components';
+import { AuthFormStack, RegisterForm } from '@components';
 import ChooseMemberShipType from './components/RegisterFlow/ChooseMemberShipType';
 import ChooseSchool from './components/RegisterFlow/ChooseSchool';
 import { Paths } from '@navigation/paths';
@@ -19,8 +19,6 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
   const initialTab: AuthTab = isLogin ? 'login' : 'registration';
 
   const {
-    cleanError,
-    error,
     isLoginValid,
     loading,
     login,
@@ -59,13 +57,12 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
   };
 
   const DetailComponent = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const screens: Record<AuthStep, ComponentType<any>> = {
       choose_membership: ChooseMemberShipType,
       choose_role: ChooseMemberShipType,
       choose_school: ChooseSchool,
       form: AuthFormStack,
-      info: AuthInfoForm,
+      register_input: RegisterForm,
       register_completed: RegisterCompleted,
     };
     return screens[register.step];
@@ -73,14 +70,6 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
 
   return (
     <SafeAreaView mode="padding" style={styles.container}>
-      <Snackbar message={error} visible={!!error} onDismiss={cleanError} />
-      <Snackbar
-        message={register.apiError}
-        onDismiss={() => {
-          register.clearApiError();
-        }}
-        visible={!!register.apiError}
-      />
       <DetailComponent {...detailProps} />
     </SafeAreaView>
   );

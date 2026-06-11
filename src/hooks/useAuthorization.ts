@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { computeFormAuthErrors } from '@utils/common';
 import { AppConstants } from '@constants';
 import { useRegister } from './useRegister';
+import AppNavigator from '@navigation/AppNavigator';
 const { STEP, PASSWORD_MIN_LENGTH, NEED_INFO_LOGIN_CODE, initialLoginForm } =
   AppConstants;
 export type { AuthStep, RegisterErrors } from './useRegister';
@@ -62,7 +63,6 @@ const loginWithSocial = (provider: SocialProvider) => {
 
 export const useAuthorization = () => {
   const dispatch = useAppDispatch();
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { t } = useTranslation();
@@ -103,7 +103,7 @@ export const useAuthorization = () => {
       ].includes(error?.code)
     ) {
       const stepMapping = {
-        [NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED]: STEP.INFO,
+        [NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED]: STEP.REGISTER_INPUT,
         [NEED_INFO_LOGIN_CODE.MEMBERSHIP_INCOMPLETE]: STEP.CHOOSE_SCHOOL,
       };
       const step = stepMapping[error?.code];
@@ -111,8 +111,10 @@ export const useAuthorization = () => {
       register.onRegisterChange('email')(loginForm.email);
       return;
     }
-
-    setError(error?.message);
+    AppNavigator.showSnackBar({
+      type: 'failed',
+      message: error?.message,
+    });
   };
 
   const submitLogin = () => {
@@ -132,13 +134,7 @@ export const useAuthorization = () => {
     );
   };
 
-  const cleanError = () => {
-    setError('');
-  };
-
   return {
-    cleanError,
-    error,
     isLoginValid,
     loading,
     login: loginForm,

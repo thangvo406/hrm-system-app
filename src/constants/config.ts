@@ -17,7 +17,7 @@ export const STEP = {
   CHOOSE_ROLE: 'choose_role' as AuthStep,
   CHOOSE_SCHOOL: 'choose_school' as AuthStep,
   FORM: 'form' as AuthStep,
-  INFO: 'info' as AuthStep,
+  REGISTER_INPUT: 'register_input' as AuthStep,
   REGISTER_COMPLETED: 'register_completed' as AuthStep,
 } as const;
 
