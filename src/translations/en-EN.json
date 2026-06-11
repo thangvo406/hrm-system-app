@@ -69,6 +69,23 @@
     },
     "register_completed": {
       "desc": "Desc"
+    },
+    "home": {
+      "greeting": "Welcome! {{name}}",
+      "pay_label": "Coop Pay :",
+      "pay_amount": "{{amount}} KRW",
+      "point_label": "Point :",
+      "pay_action": "Tap to pay",
+      "dividend_title": "Check Contribution",
+      "dividend_desc": "Curious about your expected dividend?",
+      "order_title": "Mobile Order",
+      "order_desc": "Fast order for on-campus delivery / pickup",
+      "frequent_store": "Frequently Ordered Store",
+      "store_eta": "About 15 min",
+      "notice_title": "Notice / Community",
+      "notice_desc": "Event",
+      "survey_title": "Survey",
+      "survey_desc": "Survey"
     }
   }
 }

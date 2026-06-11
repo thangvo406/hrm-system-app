@@ -1,20 +1,359 @@
+import type { ImageName } from '@assets/images';
+
+import Image from '@components/Image';
+import imageNames from '@assets/images/names';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
+const USER_NAME = '쿠비';
+const PAY_AMOUNT = '100,000';
+const POINT_AMOUNT = '210,000';
+const STORE_NAME = 'Cafe Coop';
+const ICON_SIZE = 24;
+const LOGO_WIDTH = 96;
+const LOGO_HEIGHT = 42;
+const FEATURE_IMAGE_SIZE = 88;
+
+type Product = {
+  readonly color: string;
+  readonly name: string;
+  readonly price: string;
+};
+
+const PRODUCTS: readonly Product[] = [
+  { color: '#3A2E2A', name: '아메리카노', price: '3,500원' },
+  { color: '#C9B79C', name: '라떼', price: '4,500원' },
+  { color: '#D7B98E', name: '마들렌', price: '4,500원' },
+  { color: '#E8C8B0', name: '딸기 조각', price: '4,500원' },
+];
+
+// PLACEHOLDER_MAIN_COMPONENT
+
+function Header() {
+  const { t } = useTranslation();
+  return (
+    <View style={styles.header}>
+      <Image
+        height={LOGO_HEIGHT}
+        name={imageNames.ic_logo_banner}
+        type="image"
+        width={LOGO_WIDTH}
+      />
+      <View style={styles.headerRight}>
+        <Text style={styles.greeting}>
+          {t('home.greeting', { name: USER_NAME })}
+        </Text>
+        <Image
+          color="#4CAF50"
+          height={ICON_SIZE}
+          name="user"
+          type="svg"
+          width={ICON_SIZE}
+        />
+        <Image
+          color="#1A1A1A"
+          height={ICON_SIZE}
+          name="ic_menu"
+          type="svg"
+          width={ICON_SIZE}
+        />
+      </View>
+    </View>
+  );
+}
+
+function PayCard() {
+  const { t } = useTranslation();
+  return (
+    <TouchableOpacity activeOpacity={0.9} style={styles.payCard} testID="home-pay-card">
+      <Text style={styles.payLabel}>{t('home.pay_label')}</Text>
+      <Text style={styles.payAmount}>
+        {t('home.pay_amount', { amount: PAY_AMOUNT })}
+      </Text>
+      <View style={styles.payDivider} />
+      <View style={styles.payFooter}>
+        <Text style={styles.pointText}>
+          {t('home.point_label')}  {POINT_AMOUNT}
+        </Text>
+        <Text style={styles.payAction}>{t('home.pay_action')}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+type FeatureCardProps = {
+  readonly desc: string;
+  readonly image: ImageName;
+  readonly testID: string;
+  readonly title: string;
+};
+
+function FeatureCard({ desc, image, testID, title }: FeatureCardProps) {
+  return (
+    <TouchableOpacity activeOpacity={0.9} style={styles.featureCard} testID={testID}>
+      <Text style={styles.featureTitle}>{title}</Text>
+      <Text style={styles.featureDesc}>{desc}</Text>
+      <View style={styles.featureImageWrap}>
+        <Image
+          height={FEATURE_IMAGE_SIZE}
+          name={image}
+          type="image"
+          width={FEATURE_IMAGE_SIZE}
+        />
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+function StoreSection() {
+  const { t } = useTranslation();
+  return (
+    <View>
+      <Text style={styles.sectionLabel}>{t('home.frequent_store')}</Text>
+      <View style={styles.storeHeader}>
+        <View style={styles.storeNameRow}>
+          <Image color="#1A1A1A" height={18} name="ic_store" type="svg" width={18} />
+          <Text style={styles.storeName}>{STORE_NAME}</Text>
+        </View>
+        <View style={styles.storeNameRow}>
+          <Image color="#5C5C5C" height={16} name="ic_clock" type="svg" width={16} />
+          <Text style={styles.storeEta}>{t('home.store_eta')}</Text>
+        </View>
+      </View>
+      <ScrollView
+        contentContainerStyle={styles.productList}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+      >
+        {PRODUCTS.map(product => (
+          <View
+            key={product.name}
+            style={styles.productCard}
+            testID={`home-product-${product.name}`}
+          >
+            <View
+              style={[styles.productThumb, { backgroundColor: product.color }]}
+            />
+            <View style={styles.productOverlay}>
+              <Text style={styles.productName}>{product.name}</Text>
+              <Text style={styles.productPrice}>{product.price}</Text>
+            </View>
+          </View>
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
 
 function Home() {
+  const { t } = useTranslation();
   return (
-    <SafeAreaView style={styles.container}>
-      <Text>Home page</Text>
+    <SafeAreaView edges={['top']} style={styles.safeArea}>
+      <View style={styles.headerWrap}>
+        <Header />
+      </View>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <PayCard />
+        <View style={styles.row}>
+          <FeatureCard
+            desc={t('home.dividend_desc')}
+            image={imageNames.img_discount}
+            testID="home-dividend"
+            title={t('home.dividend_title')}
+          />
+          <FeatureCard
+            desc={t('home.order_desc')}
+            image={imageNames.img_place_map}
+            testID="home-order"
+            title={t('home.order_title')}
+          />
+        </View>
+        <StoreSection />
+        <View style={styles.row}>
+          <FeatureCard
+            desc={t('home.notice_desc')}
+            image={imageNames.img_speaker}
+            testID="home-notice"
+            title={t('home.notice_title')}
+          />
+          <FeatureCard
+            desc={t('home.survey_desc')}
+            image={imageNames.img_picture}
+            testID="home-survey"
+            title={t('home.survey_title')}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
+export default Home;
+
 const styles = StyleSheet.create({
-  container: {
+  greeting: {
+    color: '#3D3D3D',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  header: {
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  headerWrap: {
+    backgroundColor: '#F2F2F2',
+    paddingBottom: 12,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+  },
+  headerRight: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  safeArea: {
+    backgroundColor: '#F2F2F2',
     flex: 1,
-    justifyContent: 'center',
+  },
+  scrollContent: {
+    gap: 16,
+    paddingBottom: 32,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+  },
+  // PLACEHOLDER_STYLES
+  payCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    paddingHorizontal: 24,
+    paddingVertical: 24,
+    shadowColor: '#000000',
+    shadowOffset: { height: 2, width: 0 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+  },
+  payLabel: {
+    color: '#1A1A1A',
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  payAmount: {
+    color: '#1A1A1A',
+    fontSize: 38,
+    fontWeight: '800',
+    marginTop: 20,
+    textAlign: 'center',
+  },
+  payDivider: {
+    backgroundColor: '#E0E0E0',
+    height: 1,
+    marginTop: 24,
+  },
+  payFooter: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 18,
+  },
+  pointText: {
+    color: '#1A1A1A',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  payAction: {
+    color: '#1A1A1A',
+    fontSize: 15,
+  },
+  featureCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    flex: 1,
+    minHeight: 200,
+    padding: 20,
+    shadowColor: '#000000',
+    shadowOffset: { height: 2, width: 0 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+  },
+  featureTitle: {
+    color: '#1A1A1A',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  featureDesc: {
+    color: '#9E9E9E',
+    fontSize: 12,
+    marginTop: 8,
+  },
+  featureImageWrap: {
+    alignItems: 'flex-end',
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  sectionLabel: {
+    color: '#5C5C5C',
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  storeHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  storeNameRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 6,
+  },
+  storeName: {
+    color: '#1A1A1A',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  storeEta: {
+    color: '#5C5C5C',
+    fontSize: 13,
+  },
+  productList: {
+    gap: 10,
+  },
+  productCard: {
+    borderRadius: 10,
+    height: 96,
+    overflow: 'hidden',
+    width: 96,
+  },
+  productThumb: {
+    flex: 1,
+  },
+  productOverlay: {
+    bottom: 0,
+    left: 0,
+    padding: 8,
+    position: 'absolute',
+    right: 0,
+  },
+  productName: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  productPrice: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
   },
 });
 
-export default Home;
+
+

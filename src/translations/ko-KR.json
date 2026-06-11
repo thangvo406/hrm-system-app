@@ -69,6 +69,23 @@
     },
     "register_completed": {
       "desc": "가입이 완료되었습니다!"
+    },
+    "home": {
+      "greeting": "반가워요! {{name}}님",
+      "pay_label": "생협Pay :",
+      "pay_amount": "{{amount}} 원",
+      "point_label": "Point :",
+      "pay_action": "터치로 결재 이동",
+      "dividend_title": "출자금 확인",
+      "dividend_desc": "내 예상 배당금이 궁금하다면?",
+      "order_title": "모바일 오더",
+      "order_desc": "패스트 오더로 학내 배달 / 픽업",
+      "frequent_store": "자주 주문한 매장",
+      "store_eta": "약 15분 소요 예상",
+      "notice_title": "공지 / 커뮤니티",
+      "notice_desc": "이벤트",
+      "survey_title": "설문조사",
+      "survey_desc": "설문조사"
     }
   }
 }

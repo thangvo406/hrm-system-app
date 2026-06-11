@@ -6,10 +6,13 @@ import FireIcon from './fire.svg';
 import GoogleIcon from './google.svg';
 import IcChevronDownIcon from './ic_chevron_down.svg';
 import IcChevronRightIcon from './ic_chevron_right.svg';
+import IcClockIcon from './ic_clock.svg';
 import IcLogoUnappIcon from './ic_logo_unapp.svg';
+import IcMenuIcon from './ic_menu.svg';
 import IcRadioSelectedIcon from './ic_radio_selected.svg';
 import IcRadioUnselectedIcon from './ic_radio_unselected.svg';
 import IcSearchIcon from './ic_search.svg';
+import IcStoreIcon from './ic_store.svg';
 import KakaoIcon from './kakao.svg';
 import LanguageIcon from './language.svg';
 import LockIcon from './lock.svg';
@@ -27,10 +30,13 @@ const icons = {
   google: GoogleIcon,
   ic_chevron_down: IcChevronDownIcon,
   ic_chevron_right: IcChevronRightIcon,
+  ic_clock: IcClockIcon,
   ic_logo_unapp: IcLogoUnappIcon,
+  ic_menu: IcMenuIcon,
   ic_radio_selected: IcRadioSelectedIcon,
   ic_radio_unselected: IcRadioUnselectedIcon,
   ic_search: IcSearchIcon,
+  ic_store: IcStoreIcon,
   kakao: KakaoIcon,
   language: LanguageIcon,
   lock: LockIcon,

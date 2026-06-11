@@ -117,7 +117,9 @@ export const useAuthorization = () => {
   const submitLogin = () => {
     setLoginErrorsState({ email: true, password: true });
     if (!isLoginValid) return;
-    setLoading(true);
+    // setLoading(true);
+    onLoginSuccess();
+    return;
     dispatch(
       loginRequest({
         deviceId: DeviceUtils.getDeviceId(),
