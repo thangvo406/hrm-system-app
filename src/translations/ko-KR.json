@@ -5,6 +5,10 @@
       "initials": "RNB"
     },
     "common_error": "문제가 발생했습니다.",
+    "common": {
+      "confirm": "확인",
+      "cancel": "취소"
+    },
     "screen_example": {
       "hello_user": "안녕하세요, 제 이름은 {{name}}입니다",
       "title": "$t(common_appName.full)에 오신 것을 환영합니다",
@@ -87,7 +91,35 @@
       "notice_title": "공지 / 커뮤니티",
       "notice_desc": "이벤트",
       "survey_title": "설문조사",
-      "survey_desc": "설문조사"
+      "survey_desc": "설문조사",
+      "menu": {
+        "logout": "로그아웃",
+        "section_life": "생협라이프",
+        "section_pay": "생협페이",
+        "section_order": "모바일 오더",
+        "section_community": "커뮤니티",
+        "section_mypage": "마이페이지",
+        "deposit_inquiry": "출자금 조회",
+        "deposit_pay": "출자금 납부하기",
+        "dividend_inquiry": "배당금 조회",
+        "payment_method": "결제수단 등록",
+        "pay": "결제하기",
+        "pay_balance": "생협Pay 잔액 조회",
+        "order": "주문하기",
+        "store_search": "매장검색",
+        "notice": "공지사항",
+        "community": "커뮤니티",
+        "survey": "설문조사",
+        "profile": "내 정보 관리",
+        "security": "보안/인증",
+        "notification": "알림 설정"
+      },
+      "logout": {
+        "title": "이런! 문제가 발생했습니다.",
+        "desc": "로그아웃 하시겠습니까?",
+        "button_submit": "예",
+        "button_cancel": "아니오"
+      }
     }
   }
 }

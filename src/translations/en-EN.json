@@ -5,6 +5,10 @@
       "initials": "RNB"
     },
     "common_error": "Oops! Something went wrong.",
+    "common": {
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
     "screen_example": {
       "hello_user": "Hi, my name is {{name}}",
       "title": "Welcome on The $t(common_appName.full)",
@@ -87,7 +91,35 @@
       "notice_title": "Notice / Community",
       "notice_desc": "Event",
       "survey_title": "Survey",
-      "survey_desc": "Survey"
+      "survey_desc": "Survey",
+      "menu": {
+        "logout": "Logout",
+        "section_life": "Coop Life",
+        "section_pay": "Coop Pay",
+        "section_order": "Mobile Order",
+        "section_community": "Community",
+        "section_mypage": "My Page",
+        "deposit_inquiry": "Deposit Inquiry",
+        "deposit_pay": "Pay Deposit",
+        "dividend_inquiry": "Dividend Inquiry",
+        "payment_method": "Register Payment Method",
+        "pay": "Pay",
+        "pay_balance": "Check Coop Pay Balance",
+        "order": "Order",
+        "store_search": "Store Search",
+        "notice": "Notices",
+        "community": "Community",
+        "survey": "Survey",
+        "profile": "My Information",
+        "security": "Security/Authentication",
+        "notification": "Notification Settings"
+      },
+      "logout": {
+        "title": "Confirmation",
+        "desc": "Do you want to logout?",
+        "button_submit": "Yes",
+        "button_cancel": "No"
+      }
     }
   }
 }

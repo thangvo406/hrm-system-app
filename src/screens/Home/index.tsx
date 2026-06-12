@@ -1,4 +1,5 @@
 import type { ImageName } from '@assets/images';
+import type { Profile } from '@services/request/account';
 
 import Image from '@components/Image';
 import imageNames from '@assets/images/names';
@@ -11,11 +12,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
-import { AccountSelector } from '@services/selectors';
-import { logout } from '@services/slices/auth/authSlice';
-import { Paths } from '@navigation/paths';
-import { useNavigation } from '@react-navigation/native';
+import { useHome } from '@hooks';
+
+import Menu from './Menu';
 
 const PAY_AMOUNT = '100,000';
 const POINT_AMOUNT = '210,000';
@@ -40,11 +39,13 @@ const PRODUCTS: readonly Product[] = [
 
 // PLACEHOLDER_MAIN_COMPONENT
 
-function Header() {
+type HeaderProps = {
+  readonly onOpenMenu: () => void;
+  readonly profile?: Profile;
+};
+
+function Header({ onOpenMenu, profile = undefined }: HeaderProps) {
   const { t } = useTranslation();
-  const profile = useAppSelector(AccountSelector.getProfile);
-  const dispatch = useAppDispatch();
-  const navigation = useNavigation();
   return (
     <View style={styles.header}>
       <Image
@@ -64,15 +65,7 @@ function Header() {
           type="svg"
           width={ICON_SIZE}
         />
-        <TouchableOpacity
-          onPress={() => {
-            dispatch(logout());
-            navigation.reset({
-              index: 0,
-              routes: [{ name: Paths.Authorization }],
-            });
-          }}
-        >
+        <TouchableOpacity onPress={onOpenMenu} testID="home-menu-button">
           <Image
             color="#1A1A1A"
             height={ICON_SIZE}
@@ -191,10 +184,19 @@ function StoreSection() {
 
 function Home() {
   const { t } = useTranslation();
+  const {
+    closeMenu,
+    handleLogout,
+    handleMenuItemPress,
+    menuVisible,
+    openMenu,
+    profile,
+  } = useHome();
+
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <View style={styles.headerWrap}>
-        <Header />
+        <Header onOpenMenu={openMenu} profile={profile} />
       </View>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -231,6 +233,12 @@ function Home() {
           />
         </View>
       </ScrollView>
+      <Menu
+        onClose={closeMenu}
+        onItemPress={handleMenuItemPress}
+        onLogout={handleLogout}
+        visible={menuVisible}
+      />
     </SafeAreaView>
   );
 }

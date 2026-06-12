@@ -5,6 +5,7 @@ const imageNames = {
   ic_info_white: 'ic_info_white',
   ic_logo_banner: 'ic_logo_banner',
   ic_logo_welcome: 'ic_logo_welcome',
+  ic_logout_white: 'ic_logout_white',
   ic_outlet_close_white: 'ic_outlet_close_white',
   img_discount: 'img_discount',
   img_picture: 'img_picture',
