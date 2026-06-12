@@ -8,19 +8,30 @@ const { isAndroid, isDevicePixel, isTablet, isIPad } = DeviceUtils;
 // Baseline dimensions for each device type
 const BASELINE = {
   IPHONE: { width: 414, height: 736 }, // iPhone 6/7/8 Plus
-  IPAD: { width: 812, height: 609 },   // iPad baseline (custom, adjust as needed)
+  IPAD: { width: 812, height: 609 }, // iPad baseline (custom, adjust as needed)
   ANDROID_PHONE: { width: 411, height: 731 }, // Pixel 2 XL
   ANDROID_TABLET: { width: 800, height: 1280 }, // Typical Android tablet
 };
 
 function getDeviceType() {
-  if (isIPad()) {return 'IPAD';}
-  if (isTablet()) {return 'ANDROID_TABLET';}
-  if (isAndroid()) {return 'ANDROID_PHONE';}
+  if (isIPad()) {
+    return 'IPAD';
+  }
+  if (isTablet()) {
+    return 'ANDROID_TABLET';
+  }
+  if (isAndroid()) {
+    return 'ANDROID_PHONE';
+  }
   return 'IPHONE';
 }
 
-export function scaleSize(size: number, iPadSize?: number, pixelSize?: number, isShow = false) {
+export function scaleSize(
+  size: number,
+  iPadSize?: number,
+  pixelSize?: number,
+  isShow = false,
+) {
   const dimensions = getDimensions();
   // console.log("getDimensions",dimensions)`
   let width = dimensions.width;
@@ -31,9 +42,9 @@ export function scaleSize(size: number, iPadSize?: number, pixelSize?: number, i
   let baselineWidth = BASELINE.IPHONE.width;
   let baselineHeight = BASELINE.IPHONE.height;
 
-//   alert(typeof iPadSize)
-//  isShow && alert(deviceType)
- const _iPadSize = isNumber(iPadSize) ? iPadSize : size;
+  //   alert(typeof iPadSize)
+  //  isShow && alert(deviceType)
+  const _iPadSize = isNumber(iPadSize) ? iPadSize : size;
   if (deviceType === 'IPAD') {
     baselineWidth = BASELINE.IPAD.width;
     if (typeof iPadSize === 'string') {
@@ -62,6 +73,9 @@ export function scaleSize(size: number, iPadSize?: number, pixelSize?: number, i
   width = Math.min(dimensions.width, dimensions.height);
   const scale = width / baselineWidth;
   const newSize = _size * scale;
+  if (isAndroid()) {
+    return newSize;
+  }
   return Platform.OS === 'ios'
     ? Math.round(PixelRatio.roundToNearestPixel(newSize))
     : Math.round(PixelRatio.roundToNearestPixel(newSize)) - 2;

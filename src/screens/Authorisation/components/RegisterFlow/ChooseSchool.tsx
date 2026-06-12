@@ -2,6 +2,7 @@ import type { School } from '@hooks/useRegister';
 
 import { Button } from '@components';
 import Image from '@components/Image';
+import imageNames from '@assets/images/names';
 import { useTranslation } from 'react-i18next';
 import {
   FlatList,
@@ -14,6 +15,7 @@ import {
 import React from 'react';
 import { ScaleSize } from '@kits/core';
 
+const BACK_ICON_SIZE = 24;
 const BANNER_HEIGHT = 30;
 const BANNER_WIDTH = 68;
 const ICON_CLEAR_SIZE = 16;
@@ -32,6 +34,7 @@ type ChooseSchoolValues = {
 type ChooseSchoolProps = {
   readonly disabled?: boolean;
   readonly filteredSchools: readonly School[];
+  readonly onBack?: () => void;
   readonly onSchoolKeywordChange: (value: string) => void;
   readonly onSelectSchool: (school: School) => void;
   readonly onSubmit: (values: ChooseSchoolValues) => void;
@@ -43,6 +46,7 @@ type ChooseSchoolProps = {
 function ChooseSchool({
   disabled = false,
   filteredSchools,
+  onBack = undefined,
   onSchoolKeywordChange,
   onSelectSchool,
   onSubmit,
@@ -59,6 +63,26 @@ function ChooseSchool({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        {onBack ? (
+          <TouchableOpacity
+            activeOpacity={0.8}
+            hitSlop={{
+              bottom: 12,
+              left: 12,
+              right: 12,
+              top: 12,
+            }}
+            onPress={onBack}
+            style={styles.backButton}
+            testID="choose-school-back"
+          >
+            <Image
+              height={BACK_ICON_SIZE}
+              name={imageNames.ic_arrow_left_gray}
+              width={BACK_ICON_SIZE}
+            />
+          </TouchableOpacity>
+        ) : undefined}
         <Image
           height={BANNER_HEIGHT}
           name="ic_logo_banner"
@@ -191,6 +215,15 @@ function ChooseSchool({
 }
 
 const styles = StyleSheet.create({
+  backButton: {
+    alignItems: 'center',
+    height: BACK_ICON_SIZE,
+    justifyContent: 'center',
+    left: 16,
+    position: 'absolute',
+    top: 10,
+    width: BACK_ICON_SIZE,
+  },
   clearButton: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -217,6 +250,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
     paddingBottom: ScaleSize(10),
     paddingTop: 16,
+    position: 'relative',
   },
   list: {
     flex: 1,

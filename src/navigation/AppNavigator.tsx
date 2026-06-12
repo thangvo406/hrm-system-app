@@ -29,7 +29,7 @@ const setRootNavigator = (navigationRef = {}) => {
 
 function showLoading(options?: Parameters<DialogHandle['showLoading']>[0]) {
   Keyboard.dismiss();
-  dialogReference?.setWillShow(true);
+  // dialogReference?.setWillShow(true);
   dialogReference?.showLoading?.(options);
 }
 
@@ -82,7 +82,7 @@ function getCurrentRoute() {
 function showDialog(params: any) {
   const { onDidAppear, popupType, timeOutDialog = 250 } = params || {};
   Keyboard.dismiss();
-  dialogReference?.setWillShow(true);
+  // dialogReference?.setWillShow(true);
   const _params = { ...(params || {}) };
   _params.popupType = popupType;
   setTimeout(() => {
@@ -96,6 +96,7 @@ function showToast(params: any) {
 }
 
 function showSnackBar(params: TSnackBar) {
+  Keyboard.dismiss();
   dialogReference?.showSnackBar?.(params);
 }
 

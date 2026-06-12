@@ -2,7 +2,6 @@ import type { RootScreenProps } from '@navigation/types';
 import type { AuthStep } from '@hooks';
 import type { ComponentType } from 'react';
 
-import { AuthFormStack, RegisterForm } from '@components';
 import ChooseMemberShipType from './components/RegisterFlow/ChooseMemberShipType';
 import ChooseSchool from './components/RegisterFlow/ChooseSchool';
 import { Paths } from '@navigation/paths';
@@ -11,7 +10,8 @@ import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMemo } from 'react';
 import RegisterCompleted from './components/RegisterFlow/RegisterCompleted';
-
+import RegisterForm from './components/RegisterFlow/InputInfo';
+import AuthFormStack from './components/AuthFormStack';
 type AuthTab = 'login' | 'registration';
 
 function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
@@ -32,10 +32,13 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
   const detailProps = {
     filteredSchools: register.filteredSchools,
     initialTab,
+    initialValues: register.formData.current,
     loading,
     login,
     loginErrors,
     loginWithSocial,
+    onBack: register.goBack,
+    onInfoMetaChange: register.onInfoMetaChange,
     onLoginChange,
     onRegisterChange: register.onRegisterChange,
     onSchoolKeywordChange: register.onSchoolKeywordChange,

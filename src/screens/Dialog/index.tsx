@@ -34,7 +34,7 @@ function computeZIndex(index: number): number {
  */
 const Dialog = forwardRef<DialogHandle>((_props, reference) => {
   const manager = useDialogManager();
-  const willShowReference = useRef(false);
+  // const willShowReference = useRef(false);
   const loadingIdReference = useRef<string | undefined>(undefined);
 
   // Guard show*() so that callers must opt in via setWillShow(true) first.
@@ -42,9 +42,6 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
   // always called before any showDialog/showToast/showLoading invocation.
   const guardedShowDialog = useCallback(
     (options: Parameters<DialogHandle['showDialog']>[0]): string => {
-      if (!willShowReference.current) {
-        return '';
-      }
       return manager.showDialog(options);
     },
     [manager],
@@ -52,9 +49,6 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
 
   const guardedShowToast = useCallback(
     (options: Parameters<DialogHandle['showToast']>[0]): string => {
-      if (!willShowReference.current) {
-        return '';
-      }
       return manager.showToast(options);
     },
     [manager],
@@ -62,9 +56,10 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
 
   const guardedShowSnackBar = useCallback(
     (options: Parameters<DialogHandle['showSnackBar']>[0]): string => {
-      if (!willShowReference.current) {
-        return '';
-      }
+      // alert(willShowReference.current);
+      // if (!willShowReference.current) {
+      //   return '';
+      // }
       return manager.showSnackBar(options);
     },
     [manager],
@@ -76,9 +71,9 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
       // (e.g. a message); the current screen is prop-free, so the value
       // is intentionally read-only here.
       void options;
-      if (!willShowReference.current) {
-        return '';
-      }
+      // if (!willShowReference.current) {
+      //   return '';
+      // }
       if (loadingIdReference.current !== undefined) {
         return loadingIdReference.current;
       }
@@ -111,9 +106,9 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
       },
       closeDialog: manager.closeDialog,
       hideLoading,
-      setWillShow: (willShow: boolean) => {
-        willShowReference.current = willShow;
-      },
+      // setWillShow: (willShow: boolean) => {
+      //   willShowReference.current = willShow;
+      // },
       showDialog: guardedShowDialog,
       showLoading,
       showSnackBar: guardedShowSnackBar,

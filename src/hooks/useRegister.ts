@@ -59,6 +59,8 @@ export type FormData = {
   phone?: string;
   roleId?: string;
   school?: School;
+  agreed?: boolean;
+  otpSent?: boolean;
 };
 
 type RegisterFormFields = Pick<FormData, 'email' | 'name' | 'password'>;
@@ -120,9 +122,37 @@ export const useRegister = () => {
     // formData.current = { ...formData.current, [field]: value };
   };
 
+  const onInfoMetaChange = (field: 'agreed' | 'otpSent', value: boolean) => {
+    formData.current = { ...formData.current, [field]: value };
+  };
+
   const goToStep = (step: string) => {
     if (Object.values(STEP).includes(step as AuthStep)) {
       setStep(step as AuthStep);
+    }
+  };
+
+  const goBack = () => {
+    switch (step) {
+      case STEP.REGISTER_INPUT: {
+        setStep(STEP.FORM);
+        break;
+      }
+      case STEP.CHOOSE_SCHOOL: {
+        setStep(STEP.REGISTER_INPUT);
+        break;
+      }
+      case STEP.CHOOSE_MEMBERSHIP: {
+        setStep(STEP.CHOOSE_SCHOOL);
+        break;
+      }
+      case STEP.REGISTER_COMPLETED: {
+        setStep(STEP.CHOOSE_MEMBERSHIP);
+        break;
+      }
+      default: {
+        break;
+      }
     }
   };
 
@@ -269,8 +299,14 @@ export const useRegister = () => {
   };
 
   const onPressRequestOtp = (onSuccess: () => void) => {
-    // if (!ValidateUtils.isPhoneNumber(formData.current.phone)) {
-    // }
+    // alert(ValidateUtils.isPhoneNumber(formData.current.phone));
+    if (!ValidateUtils.isPhoneNumber(formData.current.phone as string)) {
+      AppNavigator.showSnackBar({
+        message: t('authorisation.error_phone_invalid'),
+        type: 'failed',
+      });
+      return;
+    }
     dispatch(
       sendOTPRequest({
         email: formData.current.email,
@@ -287,10 +323,12 @@ export const useRegister = () => {
     chooseOptions,
     filteredSchools,
     formData,
+    goBack,
     goToStep,
     handleSubmit,
     isRegisterValid,
     onInfoChange,
+    onInfoMetaChange,
     onPressRequestOtp,
     onRegisterChange,
     onSchoolKeywordChange,

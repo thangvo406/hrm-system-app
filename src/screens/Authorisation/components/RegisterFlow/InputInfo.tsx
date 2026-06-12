@@ -1,13 +1,13 @@
-import { Button } from '@components';
-import Image from '@components/Image';
+import { Button, Image } from '@components';
 import imageNames from '@assets/images/names';
+import TextInputRegister from './TextInputRegister';
 import { useTranslation } from 'react-i18next';
+import type { TextInput } from 'react-native';
 import {
   Keyboard,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -17,15 +17,17 @@ import { DeviceUtils } from '@kits/core/utils';
 const { ifAndroid } = DeviceUtils;
 const BANNER_HEIGHT = ScaleSize(30);
 const BANNER_WIDTH = ScaleSize(68);
+const BACK_ICON_SIZE = ScaleSize(24);
 const ICON_CHEVRON_SIZE = ScaleSize(18);
 const ICON_RADIO_SIZE = ScaleSize(20);
 const ICON_COLOR = '#666666';
-const UNDERLINE_COLOR = '#9E9E9E';
-const UNDERLINE_HEIGHT = ScaleSize(1.5);
 const TEXT_COLOR = '#1A1A1A';
 const PLACEHOLDER_COLOR = '#9E9E9E';
-const FIELD_BORDER_RADIUS = 0;
 const PHONE_MAX_LENGTH = 13;
+const PHONE_AREA_CODE_LENGTH = 3;
+const PHONE_MIDDLE_LENGTH = 4;
+const PHONE_LAST_LENGTH = 4;
+const PHONE_MAX_DIGITS = 11;
 const OTP_MAX_LENGTH = 6;
 
 export type InputInfoValues = {
@@ -37,9 +39,19 @@ export type InputInfoValues = {
   phone: string;
 };
 
+export type InputInfoInitialValues = Partial<
+  { agreed?: boolean; otpSent?: boolean } & InputInfoValues
+>;
+
 type InputInfoProps = {
   readonly disabled?: boolean;
+  readonly initialValues?: InputInfoInitialValues;
+  readonly onBack?: () => void;
   readonly onInfoChange: (field: keyof InputInfoValues, value: string) => void;
+  readonly onInfoMetaChange?: (
+    field: 'agreed' | 'otpSent',
+    value: boolean,
+  ) => void;
   readonly onPressRequestOtp: (onSuccess: () => void) => void;
   readonly onSubmit: () => void;
 };
@@ -48,7 +60,32 @@ const CARRIERS = ['SKT', 'KT', 'LGU+'];
 const IDENTIFY_MAX_LENGTH = 6;
 const BIRTHDAY_MAX_LENGTH = 6;
 
-const INITIAL_INFO: InputInfoValues = {
+/**
+ * Format a phone input into `010-xxxx-xxxx`.
+ * Strips non-digits, caps at 11 digits, then re-inserts dashes at the
+ * correct positions so the user sees the separators as they type.
+ */
+const formatPhoneNumber = (input: string): string => {
+  const digits = input.replaceAll(/\D/g, '').slice(0, PHONE_MAX_DIGITS);
+  const area = digits.slice(0, PHONE_AREA_CODE_LENGTH);
+  if (digits.length <= PHONE_AREA_CODE_LENGTH) {
+    return area;
+  }
+  const middle = digits.slice(
+    PHONE_AREA_CODE_LENGTH,
+    PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH,
+  );
+  if (digits.length <= PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH) {
+    return `${area}-${middle}`;
+  }
+  const last = digits.slice(
+    PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH,
+    PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH + PHONE_LAST_LENGTH,
+  );
+  return `${area}-${middle}-${last}`;
+};
+
+const DEFAULT_INFO: InputInfoValues = {
   birthday: '',
   carrier: 'SKT',
   indentify: '',
@@ -57,18 +94,42 @@ const INITIAL_INFO: InputInfoValues = {
   phone: '',
 };
 
+const buildInitialValues = (
+  initial: InputInfoInitialValues | undefined,
+): InputInfoValues => ({
+  ...DEFAULT_INFO,
+  ...initial,
+});
+
 function InputInfo({
   disabled = false,
+  initialValues = undefined,
+  onBack = undefined,
   onInfoChange,
+  onInfoMetaChange = undefined,
   onPressRequestOtp,
   onSubmit,
 }: InputInfoProps) {
   const { t } = useTranslation();
-  const [agreed, setAgreed] = useState(false);
+  const [agreed, setAgreed] = useState<boolean>(initialValues?.agreed ?? false);
   const [showCarriers, setShowCarriers] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
-  const [values, setValues] = useState<InputInfoValues>(INITIAL_INFO);
+  const [otpSent, setOtpSent] = useState<boolean>(
+    initialValues?.otpSent ?? false,
+  );
+  const [values, setValues] = useState<InputInfoValues>(() =>
+    buildInitialValues(initialValues),
+  );
   const otpReference = useRef<TextInput>(null);
+
+  const updateAgreed = (value: boolean) => {
+    setAgreed(value);
+    onInfoMetaChange?.('agreed', value);
+  };
+
+  const updateOtpSent = (value: boolean) => {
+    setOtpSent(value);
+    onInfoMetaChange?.('otpSent', value);
+  };
 
   useEffect(() => {
     if (otpSent) {
@@ -79,6 +140,12 @@ function InputInfo({
   const handleChange = (field: keyof InputInfoValues) => (value: string) => {
     setValues(previous => ({ ...previous, [field]: value }));
     onInfoChange(field, value);
+  };
+
+  const handlePhoneChange = (value: string) => {
+    const formatted = formatPhoneNumber(value);
+    setValues(previous => ({ ...previous, phone: formatted }));
+    onInfoChange('phone', formatted);
   };
 
   const isFormValid =
@@ -97,6 +164,26 @@ function InputInfo({
       style={styles.container}
     >
       <View style={styles.header}>
+        {onBack ? (
+          <TouchableOpacity
+            activeOpacity={0.8}
+            hitSlop={{
+              bottom: 12,
+              left: 12,
+              right: 12,
+              top: 12,
+            }}
+            onPress={onBack}
+            style={styles.backButton}
+            testID="register-flow-back"
+          >
+            <Image
+              height={BACK_ICON_SIZE}
+              name={imageNames.ic_arrow_left_gray}
+              width={BACK_ICON_SIZE}
+            />
+          </TouchableOpacity>
+        ) : undefined}
         <Image
           height={BANNER_HEIGHT}
           name={imageNames.ic_logo_banner}
@@ -112,7 +199,7 @@ function InputInfo({
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => {
-            setAgreed(previous => !previous);
+            updateAgreed(!agreed);
           }}
           hitSlop={{
             bottom: 10,
@@ -171,15 +258,13 @@ function InputInfo({
       <View style={styles.divider} />
 
       <View style={styles.formBlock}>
-        <View style={[styles.dobRow, styles.underlinedField]}>
+        <View style={styles.dobRow}>
           <View style={[styles.dobDateField]}>
-            <TextInput
+            <TextInputRegister
               keyboardType="number-pad"
-              onChangeText={handleChange('birthday')}
               maxLength={BIRTHDAY_MAX_LENGTH}
+              onChangeText={handleChange('birthday')}
               placeholder={t('register_flow.dob_label')}
-              placeholderTextColor={PLACEHOLDER_COLOR}
-              style={styles.underlinedInput}
               testID="register-flow-birthday1"
               value={values.birthday}
             />
@@ -188,15 +273,14 @@ function InputInfo({
           <Text style={styles.dobSeparator}>—</Text>
 
           <View style={[styles.dobDateField]}>
-            <TextInput
+            <TextInputRegister
               keyboardType="number-pad"
+              maxLength={IDENTIFY_MAX_LENGTH}
               onChangeText={handleChange('indentify')}
               placeholder={t('register_flow.identify_label')}
               secureTextEntry
-              maxLength={IDENTIFY_MAX_LENGTH}
-              placeholderTextColor={PLACEHOLDER_COLOR}
-              style={[styles.underlinedInput, { textAlign: 'right' }]}
               testID="register-flow-birthday2"
+              textAlign="right"
               value={values.indentify}
             />
           </View>
@@ -222,13 +306,11 @@ function InputInfo({
           </TouchableOpacity>
 
           <View style={styles.phoneField}>
-            <TextInput
+            <TextInputRegister
               keyboardType="number-pad"
               maxLength={PHONE_MAX_LENGTH}
-              onChangeText={handleChange('phone')}
+              onChangeText={handlePhoneChange}
               placeholder={t('register_flow.phone_placeholder')}
-              placeholderTextColor={PLACEHOLDER_COLOR}
-              style={styles.underlinedInput}
               testID="register-flow-phone"
               value={values.phone}
             />
@@ -236,16 +318,15 @@ function InputInfo({
 
           {otpSent ? (
             <View style={styles.otpField}>
-              <TextInput
+              <TextInputRegister
                 keyboardType="number-pad"
+                maxLength={OTP_MAX_LENGTH}
                 onChangeText={handleChange('otp')}
                 placeholder={t('register_flow.otp_placeholder')}
-                placeholderTextColor={PLACEHOLDER_COLOR}
-                secureTextEntry
                 ref={otpReference}
-                maxLength={OTP_MAX_LENGTH}
-                style={[styles.underlinedInput, { textAlign: 'right' }]}
+                secureTextEntry
                 testID="register-flow-otp"
+                textAlign="right"
                 value={values.otp}
               />
             </View>
@@ -254,7 +335,7 @@ function InputInfo({
               activeOpacity={0.8}
               onPress={() => {
                 onPressRequestOtp(() => {
-                  setOtpSent(true);
+                  updateOtpSent(true);
                 });
               }}
               style={styles.requestButton}
@@ -328,6 +409,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: ScaleSize(6),
   },
+  backButton: {
+    alignItems: 'center',
+    height: BACK_ICON_SIZE,
+    justifyContent: 'center',
+    left: ScaleSize(16),
+    position: 'absolute',
+    top: ScaleSize(10),
+    width: BACK_ICON_SIZE,
+  },
   carrierList: {
     backgroundColor: '#FFFFFF',
     borderColor: '#E0E0E0',
@@ -363,6 +453,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     backgroundColor: '#F0F0F0',
+    width: '100%',
     height: ScaleSize(1),
     marginVertical: ScaleSize(8),
   },
@@ -398,6 +489,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
     paddingBottom: ScaleSize(10),
     paddingTop: ScaleSize(16),
+    position: 'relative',
   },
   identityBlock: {
     paddingHorizontal: ScaleSize(24),
@@ -432,9 +524,6 @@ const styles = StyleSheet.create({
   },
   phoneRow: {
     alignItems: 'flex-end',
-    borderBottomColor: UNDERLINE_COLOR,
-    borderBottomWidth: UNDERLINE_HEIGHT,
-    borderWidth: 1,
     flexDirection: 'row',
     marginTop: ScaleSize(24),
   },
@@ -449,17 +538,6 @@ const styles = StyleSheet.create({
     lineHeight: ScaleSize(18),
     textAlign: 'right',
     width: ScaleSize(60),
-  },
-  underlinedField: {
-    borderBottomColor: UNDERLINE_COLOR,
-    borderBottomWidth: UNDERLINE_HEIGHT,
-    borderRadius: FIELD_BORDER_RADIUS,
-  },
-  underlinedInput: {
-    color: TEXT_COLOR,
-    fontSize: ScaleSize(16),
-    paddingHorizontal: 0,
-    paddingVertical: ScaleSize(12),
   },
   warning: {
     color: TEXT_COLOR,

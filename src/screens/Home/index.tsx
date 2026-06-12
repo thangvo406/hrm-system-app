@@ -74,9 +74,9 @@ function Header() {
           }}
         >
           <Image
-            color="#4CAF50"
+            color="#1A1A1A"
             height={ICON_SIZE}
-            name="ic_logout"
+            name="ic_menu"
             type="svg"
             width={ICON_SIZE}
           />
