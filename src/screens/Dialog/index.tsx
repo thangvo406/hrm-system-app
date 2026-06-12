@@ -3,6 +3,7 @@ import type { DialogHandle, DialogItem } from './types';
 import DialogOverlay from './DialogOverlay';
 import { DIALOG_Z_INDEX } from './constants';
 import Loading from './components/Loading';
+import Menu from '@screens/Home/Menu';
 import { useDialogManager } from './Manager';
 import SnackbarOverlay from './SnackbarOverlay';
 import ToastOverlay from './ToastOverlay';
@@ -105,12 +106,14 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
         manager.closeAll();
       },
       closeDialog: manager.closeDialog,
+      closeMenu: manager.closeMenu,
       hideLoading,
       // setWillShow: (willShow: boolean) => {
       //   willShowReference.current = willShow;
       // },
       showDialog: guardedShowDialog,
       showLoading,
+      showMenu: manager.showMenu,
       showSnackBar: guardedShowSnackBar,
       showToast: guardedShowToast,
     }),
@@ -121,6 +124,8 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
       hideLoading,
       manager.closeAll,
       manager.closeDialog,
+      manager.closeMenu,
+      manager.showMenu,
       showLoading,
     ],
   );
@@ -135,6 +140,10 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
       () => {
         for (let cursor = manager.items.length - 1; cursor >= 0; cursor--) {
           const item = manager.items[cursor] as DialogItem | undefined;
+          if (item?.type === 'menu') {
+            manager.closeMenu();
+            return true;
+          }
           if (item?.type === 'dialog' && item.options.cancelable !== false) {
             manager.closeDialog(item.id);
             return true;
@@ -146,7 +155,7 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
     return () => {
       subscription.remove();
     };
-  }, [manager.closeDialog, manager.items]);
+  }, [manager.closeDialog, manager.closeMenu, manager.items]);
 
   if (manager.items.length === 0) {
     return undefined;
@@ -180,6 +189,17 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
                 manager.closeDialog(item.id);
               }}
               options={item.options}
+              zIndex={zIndex}
+            />
+          );
+        }
+        if (item.type === 'menu') {
+          return (
+            <Menu
+              key={item.id}
+              onRequestClose={() => {
+                manager.closeMenu();
+              }}
               zIndex={zIndex}
             />
           );

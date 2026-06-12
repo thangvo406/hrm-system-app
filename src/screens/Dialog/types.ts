@@ -47,13 +47,24 @@ export type SnackbarOptions = {
   readonly type: SnackbarType;
 };
 
-export type DialogItemType = 'dialog' | 'toast' | 'snackbar';
+/**
+ * Side-menu popup. It is fully self-contained (renders its own backdrop,
+ * slide animation and handles its own actions), so no options are required.
+ */
+export type MenuOptions = Record<string, unknown>;
+
+export type DialogItemType = 'dialog' | 'menu' | 'snackbar' | 'toast';
 
 export type DialogItem =
   | {
       readonly id: string;
       readonly options: DialogOptions;
       readonly type: 'dialog';
+    }
+  | {
+      readonly id: string;
+      readonly options: MenuOptions;
+      readonly type: 'menu';
     }
   | {
       readonly id: string;
@@ -69,10 +80,12 @@ export type DialogItem =
 export type DialogHandle = {
   closeAll: () => void;
   closeDialog: (id?: string) => void;
+  closeMenu: () => void;
   hideLoading: () => void;
   // setWillShow: (willShow: boolean) => void;
   showDialog: (options: DialogOptions) => string;
   showLoading: (options?: { readonly message?: string }) => string;
+  showMenu: (options?: MenuOptions) => string;
   showSnackBar: (options: SnackbarOptions) => string;
   showToast: (options: ToastOptions) => string;
 };

@@ -7,6 +7,7 @@ const imageNames = {
   ic_logo_welcome: 'ic_logo_welcome',
   ic_logout_white: 'ic_logout_white',
   ic_outlet_close_white: 'ic_outlet_close_white',
+  ic_user_fill: 'ic_user_fill',
   img_discount: 'img_discount',
   img_picture: 'img_picture',
   img_place_map: 'img_place_map',

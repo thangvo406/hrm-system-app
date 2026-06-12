@@ -7,19 +7,21 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ScaleSize } from '@kits/core';
 import imageNames from '@assets/images/names';
+import { useAppDispatch } from '@services/common/storeHooks';
+import { logout } from '@services/slices/auth/authSlice';
+import { Paths } from '@navigation/paths';
+import AppNavigator from '@navigation/AppNavigator';
+import Information from '@screens/Dialog/components/Information';
 
 const MENU_WIDTH_RATIO = 0.78;
 const SLIDE_DURATION = 280;
@@ -107,23 +109,38 @@ const sections: readonly MenuSection[] = [
 ];
 
 export type MenuProperties = {
-  readonly onClose: () => void;
-  readonly onItemPress: (itemKey: string) => void;
-  readonly onLogout: () => void;
-  readonly visible: boolean;
+  readonly onRequestClose: () => void;
+  readonly zIndex?: number;
 };
 
-function Menu({ onClose, onItemPress, onLogout, visible }: MenuProperties) {
+function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const progress = useSharedValue(0);
   const insets = useSafeAreaInsets();
+  const [closing, setClosing] = useState(false);
+  const afterCloseReference = useRef<(() => void) | undefined>(undefined);
 
   useEffect(() => {
-    progress.value = withTiming(visible ? 1 : 0, {
+    if (closing) {
+      progress.value = withTiming(0, {
+        duration: SLIDE_DURATION,
+        easing: Easing.in(Easing.cubic),
+      });
+      const timer = setTimeout(() => {
+        onRequestClose();
+        afterCloseReference.current?.();
+      }, SLIDE_DURATION);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+    progress.value = withTiming(1, {
       duration: SLIDE_DURATION,
       easing: Easing.out(Easing.cubic),
     });
-  }, [progress, visible]);
+    return undefined;
+  }, [closing, onRequestClose, progress]);
 
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: progress.value * BACKDROP_OPACITY,
@@ -133,12 +150,47 @@ function Menu({ onClose, onItemPress, onLogout, visible }: MenuProperties) {
     transform: [{ translateX: -(1 - progress.value) * TRANSLATE_HIDDEN }],
   }));
 
-  if (!visible) return undefined;
+  // Slide the panel out, then unmount via the host's close callback.
+  const close = (afterClose?: () => void) => {
+    afterCloseReference.current = afterClose;
+    setClosing(true);
+  };
+
+  const handleItemPress = (itemKey: string) => {
+    close(() => {
+      AppNavigator.showSnackBar({
+        message: `menu.${itemKey}`,
+        type: 'info',
+      });
+    });
+  };
+
+  const handleLogout = () => {
+    close(() => {
+      AppNavigator.showDialog({
+        screen: Information,
+        title: t('home.logout.title'),
+        desc: t('home.logout.desc'),
+        confirmTitle: t('home.logout.button_submit'),
+        cancelTitle: t('home.logout.button_cancel'),
+        onConfirm: () => {
+          dispatch(logout());
+          AppNavigator.reset(Paths.Authorization);
+        },
+      });
+    });
+  };
 
   return (
-    <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
+    <View
+      pointerEvents="box-none"
+      style={[
+        StyleSheet.absoluteFill,
+        zIndex === undefined ? undefined : { zIndex },
+      ]}
+    >
       <Animated.View
-        pointerEvents={visible ? 'auto' : 'none'}
+        pointerEvents="auto"
         style={[styles.backdrop, backdropStyle]}
       >
         <TouchableOpacity
@@ -146,7 +198,9 @@ function Menu({ onClose, onItemPress, onLogout, visible }: MenuProperties) {
           accessibilityRole="button"
           activeOpacity={0.7}
           hitSlop={HIT_SLOP_LARGE}
-          onPress={onClose}
+          onPress={() => {
+            close();
+          }}
           style={styles.backdropPressable}
           testID="menu-backdrop"
         />
@@ -163,7 +217,7 @@ function Menu({ onClose, onItemPress, onLogout, visible }: MenuProperties) {
                 accessibilityRole="button"
                 activeOpacity={0.7}
                 hitSlop={HIT_SLOP_SMALL}
-                onPress={onLogout}
+                onPress={handleLogout}
                 style={styles.logoutButton}
                 testID="menu-logout"
               >
@@ -196,7 +250,7 @@ function Menu({ onClose, onItemPress, onLogout, visible }: MenuProperties) {
                       hitSlop={HIT_SLOP_SMALL}
                       key={item.key}
                       onPress={() => {
-                        onItemPress(item.key);
+                        handleItemPress(item.key);
                       }}
                       style={styles.item}
                       testID={`menu-item-${item.key}`}

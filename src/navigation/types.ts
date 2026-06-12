@@ -9,6 +9,7 @@ export type RootStackParamList = {
   [Paths.Authorization]: { isLogin: boolean } | undefined;
   [Paths.Example]: undefined;
   [Paths.Home]: undefined;
+  [Paths.Profile]: undefined;
   [Paths.Startup]: undefined;
   [Paths.Welcome]: undefined;
 };

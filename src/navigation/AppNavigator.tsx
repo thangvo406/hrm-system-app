@@ -100,6 +100,15 @@ function showSnackBar(params: TSnackBar) {
   dialogReference?.showSnackBar?.(params);
 }
 
+function showMenu(params?: Parameters<DialogHandle['showMenu']>[0]) {
+  Keyboard.dismiss();
+  dialogReference?.showMenu?.(params);
+}
+
+function closeMenu() {
+  dialogReference?.closeMenu?.();
+}
+
 function hideAllPopup() {
   dialogReference?.closeDialog?.();
   dialogReference?.hideLoading?.();
@@ -266,6 +275,8 @@ export default {
   setParams,
   getParams,
   showLoading,
+  showMenu,
+  closeMenu,
   hideAllPopup,
   showDialogErrorOpenCamera,
   showDialogErrorOpenPhoto,

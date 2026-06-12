@@ -1,6 +1,7 @@
 import type {
   DialogItem,
   DialogOptions,
+  MenuOptions,
   SnackbarOptions,
   ToastOptions,
 } from './types';
@@ -8,7 +9,7 @@ import type {
 import { useCallback, useState } from 'react';
 
 let counter = 0;
-const nextId = (prefix: 'dialog' | 'toast' | 'snackbar'): string => {
+const nextId = (prefix: 'dialog' | 'menu' | 'snackbar' | 'toast'): string => {
   counter += 1;
   return `${prefix}_${Date.now()}_${counter}`;
 };
@@ -16,8 +17,10 @@ const nextId = (prefix: 'dialog' | 'toast' | 'snackbar'): string => {
 export type DialogManager = {
   readonly closeAll: () => void;
   readonly closeDialog: (id?: string) => void;
+  readonly closeMenu: () => void;
   readonly items: readonly DialogItem[];
   readonly showDialog: (options: DialogOptions) => string;
+  readonly showMenu: (options?: MenuOptions) => string;
   readonly showSnackBar: (options: SnackbarOptions) => string;
   readonly showToast: (options: ToastOptions) => string;
 };
@@ -44,11 +47,22 @@ export function useDialogManager(): DialogManager {
 
   const showSnackBar = useCallback((options: SnackbarOptions): string => {
     const id = nextId('snackbar');
+    setItems(previous => [...previous, { id, options, type: 'snackbar' }]);
+    return id;
+  }, []);
+
+  const showMenu = useCallback((options: MenuOptions = {}): string => {
+    const id = nextId('menu');
     setItems(previous => [
-      ...previous,
-      { id, options, type: 'snackbar' },
+      // Only one menu can be open at a time — drop any existing menu first.
+      ...previous.filter(item => item.type !== 'menu'),
+      { id, options, type: 'menu' },
     ]);
     return id;
+  }, []);
+
+  const closeMenu = useCallback((): void => {
+    setItems(previous => previous.filter(item => item.type !== 'menu'));
   }, []);
 
   const closeDialog = useCallback((id?: string): void => {
@@ -66,5 +80,14 @@ export function useDialogManager(): DialogManager {
     setItems([]);
   }, []);
 
-  return { closeAll, closeDialog, items, showDialog, showSnackBar, showToast };
+  return {
+    closeAll,
+    closeDialog,
+    closeMenu,
+    items,
+    showDialog,
+    showMenu,
+    showSnackBar,
+    showToast,
+  };
 }

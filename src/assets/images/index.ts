@@ -5,6 +5,7 @@ const images = {
   ic_logo_welcome: require('./ic_logo_welcome.png') as number,
   ic_logout_white: require('./ic_logout_white.png') as number,
   ic_outlet_close_white: require('./ic_outlet_close_white.png') as number,
+  ic_user_fill: require('./ic_user_fill.png') as number,
   img_discount: require('./img_discount.png') as number,
   img_picture: require('./img_picture.png') as number,
   img_place_map: require('./img_place_map.png') as number,

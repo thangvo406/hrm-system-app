@@ -1,7 +1,6 @@
 import type { ImageName } from '@assets/images';
-import type { Profile } from '@services/request/account';
 
-import Image from '@components/Image';
+import { Image, HomeHeader } from '@components';
 import imageNames from '@assets/images/names';
 import {
   ScrollView,
@@ -14,14 +13,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useHome } from '@hooks';
 
-import Menu from './Menu';
-
 const PAY_AMOUNT = '100,000';
 const POINT_AMOUNT = '210,000';
 const STORE_NAME = 'Cafe Coop';
-const ICON_SIZE = 24;
-const LOGO_WIDTH = 96;
-const LOGO_HEIGHT = 42;
+
 const FEATURE_IMAGE_SIZE = 88;
 
 type Product = {
@@ -39,51 +34,12 @@ const PRODUCTS: readonly Product[] = [
 
 // PLACEHOLDER_MAIN_COMPONENT
 
-type HeaderProps = {
-  readonly onOpenMenu: () => void;
-  readonly profile?: Profile;
-};
-
-function Header({ onOpenMenu, profile = undefined }: HeaderProps) {
-  const { t } = useTranslation();
-  return (
-    <View style={styles.header}>
-      <Image
-        height={LOGO_HEIGHT}
-        name={imageNames.ic_logo_banner}
-        type="image"
-        width={LOGO_WIDTH}
-      />
-      <View style={styles.headerRight}>
-        <Text style={styles.greeting}>
-          {t('home.greeting', { name: profile?.name ?? '' })}
-        </Text>
-        <Image
-          color="#4CAF50"
-          height={ICON_SIZE}
-          name="user"
-          type="svg"
-          width={ICON_SIZE}
-        />
-        <TouchableOpacity onPress={onOpenMenu} testID="home-menu-button">
-          <Image
-            color="#1A1A1A"
-            height={ICON_SIZE}
-            name="ic_menu"
-            type="svg"
-            width={ICON_SIZE}
-          />
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-}
-
-function PayCard() {
+function PayCard({ onPress = undefined }: { readonly onPress?: () => void }) {
   const { t } = useTranslation();
   return (
     <TouchableOpacity
       activeOpacity={0.9}
+      onPress={onPress}
       style={styles.payCard}
       testID="home-pay-card"
     >
@@ -184,25 +140,16 @@ function StoreSection() {
 
 function Home() {
   const { t } = useTranslation();
-  const {
-    closeMenu,
-    handleLogout,
-    handleMenuItemPress,
-    menuVisible,
-    openMenu,
-    profile,
-  } = useHome();
+  const { goToProfile, openMenu, profile } = useHome();
 
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
-      <View style={styles.headerWrap}>
-        <Header onOpenMenu={openMenu} profile={profile} />
-      </View>
+      <HomeHeader onOpenMenu={openMenu} profile={profile} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <PayCard />
+        <PayCard onPress={goToProfile} />
         <View style={styles.row}>
           <FeatureCard
             desc={t('home.dividend_desc')}
@@ -233,12 +180,6 @@ function Home() {
           />
         </View>
       </ScrollView>
-      <Menu
-        onClose={closeMenu}
-        onItemPress={handleMenuItemPress}
-        onLogout={handleLogout}
-        visible={menuVisible}
-      />
     </SafeAreaView>
   );
 }
@@ -250,22 +191,6 @@ const styles = StyleSheet.create({
     color: '#3D3D3D',
     fontSize: 18,
     fontWeight: '700',
-  },
-  header: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  headerWrap: {
-    backgroundColor: '#F2F2F2',
-    paddingBottom: 12,
-    paddingHorizontal: 20,
-    paddingTop: 8,
-  },
-  headerRight: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 10,
   },
   row: {
     flexDirection: 'row',
