@@ -4,41 +4,70 @@ import Image from '@components/Image';
 import imageNames from '@assets/images/names';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
+import { ScaleSize } from '@kits/core';
 
 type HeaderProps = {
   readonly onOpenMenu: () => void;
+  readonly onPressNotification?: () => void;
   readonly profile?: Profile;
+  readonly isShowLabelMember?: boolean;
 };
 
 const ICON_SIZE = 24;
 const LOGO_WIDTH = 96;
 const LOGO_HEIGHT = 42;
+const PRIMARY_COLOR = '#5BB85C';
 
-function Header({ onOpenMenu, profile = undefined }: HeaderProps) {
+function Header({
+  onOpenMenu,
+  onPressNotification = undefined,
+  profile = undefined,
+  isShowLabelMember,
+}: HeaderProps) {
   const { t } = useTranslation();
   return (
     <View style={styles.header}>
-      <Image
-        height={LOGO_HEIGHT}
-        name={imageNames.ic_logo_banner}
-        type="image"
-        width={LOGO_WIDTH}
-      />
-      <View style={styles.headerRight}>
-        <Text style={styles.greeting}>
-          {t('home.greeting', { name: profile?.name ?? '' })}
-        </Text>
-        <Image
-          height={ICON_SIZE}
-          name={imageNames.ic_user_fill}
-          width={ICON_SIZE}
-        />
+      <View style={styles.headerLeft}>
         <TouchableOpacity onPress={onOpenMenu} testID="home-menu-button">
           <Image
             color="#1A1A1A"
             height={ICON_SIZE}
             name="ic_menu"
             type="svg"
+            width={ICON_SIZE}
+          />
+        </TouchableOpacity>
+        <Image
+          height={LOGO_HEIGHT}
+          name={imageNames.ic_logo_banner}
+          type="image"
+          width={LOGO_WIDTH}
+        />
+        {isShowLabelMember ? (
+          <View style={styles.memberBadge}>
+            <Text style={styles.memberBadgeText}>{t('home.member_label')}</Text>
+          </View>
+        ) : null}
+      </View>
+
+      <View
+        style={{
+          flexDirection: 'row',
+        }}
+      >
+        <Text style={styles.greeting}>
+          {t('home.greeting', { name: profile?.name ?? '' })}
+        </Text>
+        <TouchableOpacity
+          onPress={onPressNotification}
+          testID="home-notification-button"
+          style={{
+            marginTop: ScaleSize(-5),
+          }}
+        >
+          <Image
+            height={ICON_SIZE}
+            name={imageNames.ic_bell_green}
             width={ICON_SIZE}
           />
         </TouchableOpacity>
@@ -49,25 +78,37 @@ function Header({ onOpenMenu, profile = undefined }: HeaderProps) {
 
 const styles = StyleSheet.create({
   greeting: {
-    color: '#3D3D3D',
-    fontSize: 18,
-    fontWeight: '700',
+    color: '#1A1A1A',
+    fontSize: 15,
+    fontWeight: '600',
+    marginRight: ScaleSize(10),
   },
   header: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
-  headerWrap: {
-    backgroundColor: '#F2F2F2',
-    paddingBottom: 12,
-    paddingHorizontal: 20,
-    paddingTop: 8,
-  },
-  headerRight: {
+  headerLeft: {
     alignItems: 'center',
+    flex: 1,
     flexDirection: 'row',
     gap: 10,
+  },
+  memberBadge: {
+    alignSelf: 'center',
+    backgroundColor: PRIMARY_COLOR,
+    borderRadius: 14,
+    marginLeft: -ScaleSize(8),
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    top: -10,
+  },
+  memberBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
   },
 });
 

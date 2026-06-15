@@ -99,6 +99,7 @@
     },
     "home": {
       "greeting": "반가워요! {{name}}님",
+      "member_label": "Member",
       "pay_label": "생협Pay :",
       "pay_amount": "{{amount}} 원",
       "point_label": "Point :",

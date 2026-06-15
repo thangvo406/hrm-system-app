@@ -144,7 +144,7 @@ function Home() {
 
   return (
     <SafeAreaView edges={['top']} style={styles.safeArea}>
-      <HomeHeader onOpenMenu={openMenu} profile={profile} />
+      <HomeHeader isShowLabelMember onOpenMenu={openMenu} profile={profile} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}

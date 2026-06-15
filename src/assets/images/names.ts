@@ -2,6 +2,7 @@ import type { ImageName } from './index';
 
 const imageNames = {
   ic_arrow_left_gray: 'ic_arrow_left_gray',
+  ic_bell_green: 'ic_bell_green',
   ic_info_white: 'ic_info_white',
   ic_logo_banner: 'ic_logo_banner',
   ic_logo_welcome: 'ic_logo_welcome',

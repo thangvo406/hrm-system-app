@@ -1,5 +1,6 @@
 const images = {
   ic_arrow_left_gray: require('./ic_arrow_left_gray.png') as number,
+  ic_bell_green: require('./ic_bell_green.png') as number,
   ic_info_white: require('./ic_info_white.png') as number,
   ic_logo_banner: require('./ic_logo_banner.png') as number,
   ic_logo_welcome: require('./ic_logo_welcome.png') as number,
