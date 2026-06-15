@@ -14,7 +14,6 @@ import {
   completeRegister,
   getUniversities,
   login,
-  register,
   registerUser,
   sendOTP,
   verifyOTP,
@@ -53,9 +52,6 @@ const toErrorMessage = (error: unknown): string => {
   return DEFAULT_ERROR;
 };
 
-const toErrorStatus = (error: unknown): number | undefined =>
-  axios.isAxiosError(error) ? error.response?.status : undefined;
-
 function* loginWorker(action: PayloadAction<LoginPayload>) {
   try {
     const response: AuthResponse = yield call(login, action.payload);
@@ -73,7 +69,6 @@ function* registerWorker(action: PayloadAction<RegisterPayload>) {
     // yield put(authSuccess(response));
     action.payload.onSuccess?.();
   } catch (error) {
-    console.log('error', error);
     yield put(authFailure(toErrorMessage(error)));
   }
 }
@@ -85,7 +80,6 @@ function* registerUserWorker(action: PayloadAction<RegisterUserPayload>) {
     // yield put(authSuccess(response));
     action.payload.onSuccess?.();
   } catch (error) {
-    console.log('error', error?.message);
     yield put(authFailure(toErrorMessage(error)));
     action.payload.onFailure?.(toErrorMessage(error));
   }
@@ -133,7 +127,6 @@ function* completeRegisterWorker(
 function* getUniversitiesWorker(action: PayloadAction<GetUniversitiesPayload>) {
   try {
     const response: IResponseUniversity[] = yield call(getUniversities);
-    console.log('getUniversitiesWorker', response);
     action.payload.onSuccess?.(response);
   } catch {
     action.payload.onFailure?.('');

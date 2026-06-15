@@ -1,5 +1,3 @@
-import type { School } from '@hooks/useRegister';
-
 import { Button } from '@components';
 import Image from '@components/Image';
 import RegisterHeader from './Header';
@@ -14,6 +12,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import { ScaleSize } from '@kits/core';
+import { IResponseUniversity } from '../../../../types/Auth';
 
 const BACK_ICON_SIZE = 24;
 const ICON_CLEAR_SIZE = 16;
@@ -26,17 +25,17 @@ const SUBTITLE_COLOR = '#666666';
 const PLACEHOLDER_COLOR = '#9E9E9E';
 
 type ChooseSchoolValues = {
-  readonly school: School;
+  readonly school: IResponseUniversity;
 };
 
 type ChooseSchoolProps = {
   readonly disabled?: boolean;
-  readonly filteredSchools: readonly School[];
+  readonly filteredSchools: readonly IResponseUniversity[];
   readonly onSchoolKeywordChange: (value: string) => void;
-  readonly onSelectSchool: (school: School) => void;
+  readonly onSelectSchool: (school: IResponseUniversity) => void;
   readonly onSubmit: (values: ChooseSchoolValues) => void;
   readonly schoolKeyword: string;
-  readonly selectedSchool?: School;
+  readonly selectedSchool?: IResponseUniversity;
   readonly selectedSchoolId?: string;
 };
 
@@ -285,5 +284,4 @@ const styles = StyleSheet.create({
 });
 
 export default React.memo(ChooseSchool);
-export type { School } from '@hooks/useRegister';
 export type { ChooseSchoolValues };

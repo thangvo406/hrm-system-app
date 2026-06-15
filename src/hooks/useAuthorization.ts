@@ -108,6 +108,7 @@ export const useAuthorization = () => {
       };
       const step = stepMapping[error?.code];
       register.goToStep(step);
+      register.onGetUniversities();
       register.onRegisterChange('email')(loginForm.email);
       return;
     }

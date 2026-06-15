@@ -1,4 +1,4 @@
-import type { AuthStep, School } from '@hooks/useRegister';
+import type { AuthStep } from '@hooks/useRegister';
 
 export const initialLoginForm = {
   email: '',

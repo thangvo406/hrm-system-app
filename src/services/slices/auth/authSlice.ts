@@ -54,6 +54,7 @@ export type CompleteRegisterPayload = {
   membershipType?: string;
   universityId?: string;
   universityName?: string;
+  signupToken?: string;
 } & AuthCallback;
 
 export type GetUniversitiesPayload = AuthCallback;

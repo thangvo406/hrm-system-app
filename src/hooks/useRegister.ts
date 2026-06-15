@@ -43,12 +43,6 @@ export type RegisterErrors = {
   password?: string;
 };
 
-export type School = {
-  readonly address: string;
-  readonly id: string;
-  readonly name: string;
-};
-
 export type AuthStep =
   | 'choose_membership'
   | 'choose_role'
@@ -69,7 +63,7 @@ export type FormData = {
   password: string;
   phone?: string;
   roleId?: string;
-  school?: School;
+  school?: IResponseUniversity;
   phoneVerificationToken?: string;
   signupToken?: string;
 };
@@ -290,17 +284,11 @@ export const useRegister = () => {
 
   const filteredSchools = useMemo(() => {
     const query = schoolKeyword.trim().toLowerCase();
-    console.log('filteredSchools', {
-      schoolKeyword,
-      universities,
-    });
     if (query.length === 0) return universities;
     return universities?.filter(school =>
       school.name.toLowerCase().includes(query),
     );
   }, [schoolKeyword, universities]);
-
-  console.log('filteredSchools', filteredSchools);
 
   const selectedSchool = useMemo(
     () => universities?.find(school => school.id === selectedSchoolId),
@@ -311,7 +299,7 @@ export const useRegister = () => {
     setSchoolKeyword(value);
   };
 
-  const onSelectSchool = (school: School) => {
+  const onSelectSchool = (school: IResponseUniversity) => {
     setSelectedSchoolId(school.id);
     formData.current = { ...formData.current, school };
   };
@@ -384,6 +372,7 @@ export const useRegister = () => {
     onRegisterChange,
     onSchoolKeywordChange,
     onSelectMembership,
+    onGetUniversities,
     onSelectRole,
     onSelectSchool,
     onToggleAgreement,
