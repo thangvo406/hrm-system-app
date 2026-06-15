@@ -39,7 +39,7 @@ jobs:
           cache: 'yarn'
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
       - name: Setup Java JDK 17
         uses: actions/setup-java@v4

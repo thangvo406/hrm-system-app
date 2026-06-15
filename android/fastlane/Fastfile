@@ -14,13 +14,14 @@ platform :android do
     UI.message("--- BẮT ĐẦU QUY TRÌNH BUILD & DISTRIBUTE ---")
     UI.message("Cấu hình: #{prefix_name} - Phiên bản: #{version_num}")
 
-    # 1.5. Lấy danh sách 5 commit gần nhất để gắn vào release notes
-    recent_commits = get_recent_git_commits(
-      repo_dir: File.expand_path("../..", __dir__),
-      limit: 5
+    _changelog = changelog_from_git_commits(
+      # between: ["8efd2a6e", "HEAD"],  # Optional, lets you specify a revision/tag range between which to collect commit info
+      pretty: "- (%ae) %s",# Optional, lets you provide a custom format to apply to each commit when generating the changelog text
+      date_format: "short",# Optional, lets you provide an additional date format to dates within the pretty-formatted string
+      match_lightweight_tag: false,  # Optional, lets you ignore lightweight (non-annotated) tags when searching for the last tag
+      merge_commit_filtering: "exclude_merges", # Optional, lets you filter out merge commits
+      commits_count: 5
     )
-    UI.message("Đã lấy #{recent_commits.lines.size} commit gần nhất")
-
     # 2. Lấy versionCode mới nhất từ Firebase App Distribution, bump lên +1
     latest_version_code = get_firebase_latest_version_code(
       app_id: firebase_app_id,
@@ -49,12 +50,14 @@ platform :android do
     target_apk_path = "app/build/outputs/apk/release/#{formatted_name}"
     sh("mv ../#{original_apk} ../#{target_apk_path}")
 
+
+
     # 6. Upload APK lên Firebase App Distribution
     firebase_app_distribution(
       app: firebase_app_id,
       apk_path: target_apk_path,
       service_credentials_file: service_creds,
-      release_notes: "Branch: #{branch}\n\n#{recent_commits}",
+      release_notes: "Branch: #{branch}\n\n#{_changelog}",
       groups: "internal"
     )
 
