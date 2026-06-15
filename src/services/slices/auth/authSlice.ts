@@ -16,7 +16,7 @@ export type Credentials = {
 
 export type AuthCallback = {
   onFailure?: (error: string, status?: number) => void;
-  onSuccess?: () => void;
+  onSuccess?: (data?: any) => void;
 };
 
 export type LoginPayload = {
@@ -43,6 +43,7 @@ export type VerifyOTPPayload = {
   email?: string;
   otp?: string;
   phone?: string;
+  phoneVerificationToken?: string;
   termsAgreed: boolean;
   identityNumber?: string;
 } & AuthCallback;
@@ -51,9 +52,11 @@ export type CompleteRegisterPayload = {
   email?: string;
   membershipAffiliationType?: string;
   membershipType?: string;
-  universityExternalId?: string;
+  universityId?: string;
   universityName?: string;
 } & AuthCallback;
+
+export type GetUniversitiesPayload = AuthCallback;
 
 const initialState: AuthState = {
   accessToken: undefined,
@@ -129,6 +132,14 @@ const authSlice = createSlice({
         state.loading = true;
       },
     },
+    // Fetch the list of universities for the school picker.
+    getUniversitiesRequest: {
+      prepare: (payload: GetUniversitiesPayload = {}) => ({ payload }),
+      reducer: state => {
+        state.error = undefined;
+        state.loading = true;
+      },
+    },
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
     },
@@ -146,6 +157,7 @@ export const {
   authSuccess,
   clearCredentials,
   completeRegisterRequest,
+  getUniversitiesRequest,
   loginRequest,
   logout,
   registerRequest,

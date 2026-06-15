@@ -111,20 +111,12 @@ export default defineConfig(
       'perfectionist/sort-array-includes': OFF,
       '@typescript-eslint/prefer-nullish-coalescing': OFF,
       'perfectionist/sort-switch-case': OFF,
+      'unicorn/no-negated-condition': OFF,
+      'unicorn/prevent-abbreviations': OFF,
+      '@typescript-eslint/no-confusing-void-expression': OFF,
       '@typescript-eslint/non-nullable-type-assertion-style': OFF,
       'react-hooks/use-memo': OFF,
       'unicorn/prefer-top-level-await': 0, // not valid on RN for the moment
-      'unicorn/prevent-abbreviations': [
-        ERROR,
-        {
-          allowList: {
-            env: true,
-            Param: true,
-            props: true,
-            Props: true,
-          },
-        },
-      ],
     },
   },
   {

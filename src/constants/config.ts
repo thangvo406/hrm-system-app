@@ -19,20 +19,35 @@ export const STEP = {
   FORM: 'form' as AuthStep,
   REGISTER_INPUT: 'register_input' as AuthStep,
   REGISTER_COMPLETED: 'register_completed' as AuthStep,
+  BANK_INFORMATION: 'bank_information' as AuthStep,
 } as const;
 
 export const MEMBER_ID = 'member';
 
-export const MOCK_SCHOOLS: readonly School[] = [
-  { address: '서울시 OO구 OO동 OOO', id: '1', name: '생협대학교' },
-  { address: '서울시 OO구 OO동 OOO', id: '2', name: '쿠피대학교' },
-  { address: '서울시 OO구 OO동 OOO', id: '3', name: '그냥대학교' },
-  { address: '서울시 OO구 OO동 OOO', id: '4', name: '좋은대학교' },
-];
+export const MEMBERSHIP_TYPE = {
+  TEACHER: 'TEACHER',
+  NON_MEMBER: 'NON_MEMBER',
+  STAFF: 'EMPLOYEE',
+  STUDENT: 'STUDENT',
+} as const;
 
 export const MEMBERSHIP_OPTIONS = [
-  { id: MEMBER_ID, label: 'Join as a member' },
-  { id: 'non_member', label: 'Join as a non-member' },
+  {
+    id: MEMBERSHIP_TYPE.STUDENT,
+    label: 'choose_membership.join_as_student',
+  },
+  {
+    id: MEMBERSHIP_TYPE.TEACHER,
+    label: 'choose_membership.join_as_employee',
+  },
+  {
+    id: MEMBERSHIP_TYPE.STAFF,
+    label: 'choose_membership.join_as_staff',
+  },
+  {
+    id: MEMBERSHIP_TYPE.NON_MEMBER,
+    label: 'choose_membership.join_as_non_member',
+  },
 ] as const;
 
 export const ROLE_OPTIONS = [

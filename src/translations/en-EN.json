@@ -47,18 +47,22 @@
       "cta": "Reload the screen"
     },
     "register_flow": {
-      "identity_title": "Please proceed with verification to confirm your identity.",
+      "identity_title": "Please proceed with verification\nto reset your password.",
       "agree_label": "Agree to all terms for identity verification service",
       "terms_of_use": "Agree to the Terms of Use for Mobile Phone Identity Verification Service (Required)",
       "carrier_terms": "Agree to the Mobile Carrier Terms of Use (Required)",
       "name_label": "Name",
-      "dob_label": "6-digit Date of Birth",
-      "identify_label": "6-digit identify",
+      "name_placeholder": "Name",
+      "dob_label": "First 6 digits of ID",
+      "identify_label": "Last 7 digits of ID",
       "phone_placeholder": "Phone Number",
-      "request_verification": "Request Verification",
-      "warning": "*If you register using someone else's personal information without authorization, your service access may be restricted and you may be subject to legal penalties.",
-      "next": "Next",
-      "otp_placeholder": "Input OTP"
+      "request_verification": "Request",
+      "warning": "*If you register using someone else's personal information, your service access may be restricted and you may be subject to legal penalties.",
+      "next": "Verify",
+      "otp_label": "Verification Code",
+      "otp_placeholder": "Verification Code",
+      "verify": "Verify",
+      "choose_carrier": "Select Carrier"
     },
     "choose_school": {
       "title": "School Verification",
@@ -69,12 +73,20 @@
     },
     "choose_membership": {
       "title": "Select Membership Type",
-      "join_as_member": "Join as a member",
+      "join_as_student": "Join as a student member",
+      "join_as_employee": "Join as a faculty member",
+      "join_as_staff": "Join as a staff member",
       "join_as_non_member": "Join as a non-member",
       "next": "Next"
     },
     "register_completed": {
-      "desc": "Desc"
+      "desc": "Desc",
+      "next": "Next"
+    },
+    "bank_information": {
+      "intro": "When joining as a member for the first time,\na contribution payment is required.",
+      "instruction": "Pay the initial {{amount}} KRW\nto the account below to complete your application.",
+      "next": "Next"
     },
     "home": {
       "greeting": "Welcome! {{name}}",

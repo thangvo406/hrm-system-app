@@ -45,6 +45,7 @@ function TextInputRegister({
   testID,
   textAlign = 'left',
   value,
+  style,
 }: TextInputRegisterProps) {
   const hasError = error !== undefined;
   return (
@@ -53,6 +54,7 @@ function TextInputRegister({
         style={[
           styles.wrapper,
           hasError ? styles.wrapperError : undefined,
+          style,
         ]}
       >
         <TextInput

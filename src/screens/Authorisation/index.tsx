@@ -9,14 +9,17 @@ import { useAuthorization } from '@hooks';
 import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import RegisterCompleted from './components/RegisterFlow/RegisterCompleted';
 import RegisterForm from './components/RegisterFlow/InputInfo';
 import AuthFormStack from './components/AuthFormStack';
+import BankInformation from './components/RegisterFlow/BankInformation';
 type AuthTab = 'login' | 'registration';
 
 function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
   const isLogin = route.params?.isLogin ?? true;
   const initialTab: AuthTab = isLogin ? 'login' : 'registration';
+  const { t } = useTranslation();
 
   const {
     isLoginValid,
@@ -30,21 +33,23 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
   } = useAuthorization();
 
   const detailProps = {
+    agreed: register.agreed,
+    carrier: register.carrier,
+    desc: t('register_completed.desc'),
     filteredSchools: register.filteredSchools,
     initialTab,
-    initialValues: register.formData.current,
     loading,
     login,
     loginErrors,
     loginWithSocial,
-    onBack: register.goBack,
-    onInfoMetaChange: register.onInfoMetaChange,
     onLoginChange,
+    onPressCarrier: register.onPressCarrier,
     onRegisterChange: register.onRegisterChange,
     onSchoolKeywordChange: register.onSchoolKeywordChange,
     onSelectMembership: register.onSelectMembership,
     onSelectSchool: register.onSelectSchool,
     onSubmit: register.handleSubmit,
+    onToggleAgreement: register.onToggleAgreement,
     options: register.chooseOptions,
     registerErrors: register.registerErrors,
     schoolKeyword: register.schoolKeyword,
@@ -53,7 +58,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     selectedSchoolId: register.selectedSchoolId,
     submitLogin,
     onPressRequestOtp: register.onPressRequestOtp,
-    submitRegister: register.submitRegister,
+    onGoRegisterForm: register.onGoRegisterForm,
     onInfoChange: register.onInfoChange,
     validLogin: isLoginValid,
     validRegister: register.isRegisterValid,
@@ -67,6 +72,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
       form: AuthFormStack,
       register_input: RegisterForm,
       register_completed: RegisterCompleted,
+      bank_information: BankInformation,
     };
     return screens[register.step];
   }, [register.step]);

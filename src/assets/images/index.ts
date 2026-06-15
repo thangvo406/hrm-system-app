@@ -9,6 +9,7 @@ const images = {
   img_discount: require('./img_discount.png') as number,
   img_picture: require('./img_picture.png') as number,
   img_place_map: require('./img_place_map.png') as number,
+  img_register_success: require('./img_register_success.png') as number,
   img_speaker: require('./img_speaker.png') as number,
 } as const;
 

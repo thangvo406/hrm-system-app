@@ -48,7 +48,7 @@ type AuthFormStackProps = {
   ) => (value: string) => void;
   readonly registerErrors: RegisterErrors;
   readonly submitLogin: () => void;
-  readonly submitRegister: () => void;
+  readonly onGoRegisterForm: () => void;
   readonly validLogin: boolean;
   readonly validRegister: boolean;
 };
@@ -63,7 +63,7 @@ function AuthFormStack({
   onRegisterChange,
   registerErrors,
   submitLogin,
-  submitRegister,
+  onGoRegisterForm,
   validLogin,
   validRegister,
 }: AuthFormStackProps) {
@@ -165,7 +165,7 @@ function AuthFormStack({
               errors={registerErrors}
               loading={loading}
               onChange={onRegisterChange}
-              onSubmit={submitRegister}
+              onSubmit={onGoRegisterForm}
               valid={validRegister}
               // values={register}
             />

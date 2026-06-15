@@ -6,11 +6,18 @@ import type {
   VerifyOTPPayload,
 } from '@services/slices/auth/authSlice';
 
+import type {
+  IResponseRegisterVerifyOtp,
+  IResponseRegisterSendOtp,
+  IResponseUniversity,
+  IResponseCompletedRegister,
+} from '../../types/Auth';
+
 import { httpRequest } from '@services/common/httpRequest';
 import { z } from 'zod';
 import { EndPoints } from '@constants';
 
-type ApiResponse<T> = { data: T };
+type ApiResponse<T> = { data: T; content: T };
 
 export const authResponseSchema = z.object({
   accessToken: z.string(),
@@ -28,40 +35,43 @@ export const login = async (payload: LoginPayload): Promise<AuthResponse> => {
   return authResponseSchema.parse(response.data);
 };
 
-export const register = async (
-  payload: RegisterUserPayload,
-): Promise<AuthResponse> => {
-  const response = await httpRequest.post<ApiResponse<AuthResponse>>(
-    EndPoints.AUTH.register,
-    payload,
-  );
-  return authResponseSchema.parse(response.data);
-};
-
 export const registerUser = async (
   request: RegisterUserPayload,
 ): Promise<void> => {
   await httpRequest.post(EndPoints.AUTH.register, request);
 };
 
-export const sendOTP = async (request: SendOTPPayload): Promise<void> => {
-  const response = await httpRequest.post(EndPoints.AUTH.sendOTP, request);
-  console.log('response', response);
-  return response;
+export const sendOTP = async (
+  request: SendOTPPayload,
+): Promise<IResponseRegisterSendOtp> => {
+  const response = await httpRequest.post<
+    ApiResponse<IResponseRegisterSendOtp>
+  >(EndPoints.AUTH.sendOTP, request);
+  return response.data;
 };
 
-export const verifyOTP = async (request: VerifyOTPPayload): Promise<void> => {
-  const response = await httpRequest.post(EndPoints.AUTH.verifyOTP, request);
-  console.log('response', response);
-  return response;
+export const verifyOTP = async (
+  request: VerifyOTPPayload,
+): Promise<IResponseRegisterVerifyOtp> => {
+  const response = await httpRequest.post<
+    ApiResponse<IResponseRegisterVerifyOtp>
+  >(EndPoints.AUTH.verifyOTP, request);
+  return response.data;
+};
+
+export const getUniversities = async (): Promise<IResponseUniversity[]> => {
+  const response = await httpRequest.get<ApiResponse<IResponseUniversity[]>>(
+    EndPoints.AUTH.getUniversities,
+    { loading: false },
+  );
+  return response.content;
 };
 
 export const completeRegister = async (
   request: CompleteRegisterPayload,
-): Promise<void> => {
-  const response = await httpRequest.post(
-    EndPoints.AUTH.completeRegister,
-    request,
-  );
+): Promise<IResponseCompletedRegister> => {
+  const response = await httpRequest.post<
+    ApiResponse<IResponseCompletedRegister>
+  >(EndPoints.AUTH.completeRegister, request);
   return response.data;
 };

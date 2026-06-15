@@ -4,6 +4,7 @@ import EyeOffIcon from './eye-off.svg';
 import EyeIcon from './eye.svg';
 import FireIcon from './fire.svg';
 import GoogleIcon from './google.svg';
+import IcCheckIcon from './ic_check.svg';
 import IcChevronDownIcon from './ic_chevron_down.svg';
 import IcChevronRightIcon from './ic_chevron_right.svg';
 import IcClockIcon from './ic_clock.svg';
@@ -29,6 +30,7 @@ const icons = {
   eye: EyeIcon,
   fire: FireIcon,
   google: GoogleIcon,
+  ic_check: IcCheckIcon,
   ic_chevron_down: IcChevronDownIcon,
   ic_chevron_right: IcChevronRightIcon,
   ic_clock: IcClockIcon,

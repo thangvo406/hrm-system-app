@@ -5,6 +5,7 @@ export const EndPoints = {
     register: 'auth/register',
     sendOTP: 'auth/register/phone/send-otp',
     verifyOTP: 'auth/register/phone/confirm-otp',
+    getUniversities: 'universities',
   },
   ACCOUNT: {
     getProfile: 'user/profile',

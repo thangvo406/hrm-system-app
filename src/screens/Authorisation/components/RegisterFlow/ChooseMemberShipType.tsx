@@ -1,14 +1,11 @@
 import { Button } from '@components';
-import Image from '@components/Image';
-import imageNames from '@assets/images/names';
+import RegisterHeader from './Header';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import { ScaleSize } from '@kits/core';
 
 const BACK_ICON_SIZE = ScaleSize(24);
-const BANNER_HEIGHT = ScaleSize(30);
-const BANNER_WIDTH = ScaleSize(68);
 const PRIMARY_COLOR = '#5BB85C';
 const BORDER_COLOR_SELECTED = '#5BB85C';
 const BORDER_COLOR_DEFAULT = '#CCCCCC';
@@ -23,7 +20,6 @@ export type MembershipOption = {
 
 type ChooseMemberShipTypeProps = {
   readonly disabled?: boolean;
-  readonly onBack?: () => void;
   readonly onSelectMembership: (id: string) => void;
   readonly onSubmit: () => void;
   readonly options: readonly MembershipOption[];
@@ -32,7 +28,6 @@ type ChooseMemberShipTypeProps = {
 
 function ChooseMemberShipType({
   disabled = false,
-  onBack = undefined,
   onSelectMembership,
   onSubmit,
   options,
@@ -42,33 +37,7 @@ function ChooseMemberShipType({
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        {onBack ? (
-          <TouchableOpacity
-            activeOpacity={0.8}
-            hitSlop={{
-              bottom: 12,
-              left: 12,
-              right: 12,
-              top: 12,
-            }}
-            onPress={onBack}
-            style={styles.backButton}
-            testID="choose-membership-back"
-          >
-            <Image
-              height={BACK_ICON_SIZE}
-              name={imageNames.ic_arrow_left_gray}
-              width={BACK_ICON_SIZE}
-            />
-          </TouchableOpacity>
-        ) : undefined}
-        <Image
-          height={BANNER_HEIGHT}
-          name="ic_logo_banner"
-          width={BANNER_WIDTH}
-        />
-      </View>
+      <RegisterHeader />
 
       <View style={styles.content}>
         <Text style={styles.title}>{t('choose_membership.title')}</Text>
@@ -97,7 +66,7 @@ function ChooseMemberShipType({
               >
                 {isSelected ? <View style={styles.radioInner} /> : undefined}
               </View>
-              <Text style={styles.optionLabel}>{option.label}</Text>
+              <Text style={styles.optionLabel}>{t(option.label)}</Text>
             </TouchableOpacity>
           );
         })}
@@ -150,13 +119,6 @@ const styles = StyleSheet.create({
   footer: {
     paddingBottom: ScaleSize(24),
     paddingTop: ScaleSize(12),
-  },
-  header: {
-    alignItems: 'center',
-    backgroundColor: '#F5F5F5',
-    paddingBottom: ScaleSize(10),
-    paddingTop: ScaleSize(16),
-    position: 'relative',
   },
   option: {
     alignItems: 'center',

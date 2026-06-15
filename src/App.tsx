@@ -9,6 +9,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Dialog from '@screens/Dialog';
 import AppNavigator from '@navigation/AppNavigator';
+import { StatusBar } from 'react-native';
 
 function App() {
   return (
@@ -16,6 +17,11 @@ function App() {
       <Provider store={store}>
         <SafeAreaProvider>
           <PersistGate persistor={persistor}>
+            <StatusBar
+              backgroundColor="transparent"
+              barStyle="dark-content"
+              translucent
+            />
             <ApplicationNavigator />
             <Dialog ref={ref => AppNavigator.setRefDialog(ref)} />
           </PersistGate>

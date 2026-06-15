@@ -2,6 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AuthResponse } from '@services/request/auth';
 import type {
   CompleteRegisterPayload,
+  GetUniversitiesPayload,
   LoginPayload,
   RegisterPayload,
   RegisterUserPayload,
@@ -11,6 +12,7 @@ import type {
 
 import {
   completeRegister,
+  getUniversities,
   login,
   register,
   registerUser,
@@ -26,6 +28,7 @@ import {
   authFailure,
   authSuccess,
   completeRegisterRequest,
+  getUniversitiesRequest,
   loginRequest,
   logout,
   registerRequest,
@@ -33,6 +36,11 @@ import {
   sendOTPRequest,
   verifyOTPRequest,
 } from './authSlice';
+import {
+  IResponseRegisterSendOtp,
+  IResponseRegisterVerifyOtp,
+  IResponseUniversity,
+} from '../../../types/Auth';
 
 const DEFAULT_ERROR = 'common_error';
 
@@ -85,8 +93,11 @@ function* registerUserWorker(action: PayloadAction<RegisterUserPayload>) {
 
 function* sendOTPWorker(action: PayloadAction<SendOTPPayload>) {
   try {
-    yield call(sendOTP, action.payload);
-    action.payload.onSuccess?.();
+    const response: IResponseRegisterSendOtp = yield call(
+      sendOTP,
+      action.payload,
+    );
+    action.payload.onSuccess?.(response);
   } catch (error) {
     yield put(authFailure(toErrorMessage(error)));
     action.payload.onFailure?.(toErrorMessage(error));
@@ -95,8 +106,11 @@ function* sendOTPWorker(action: PayloadAction<SendOTPPayload>) {
 
 function* verifyOTPWorker(action: PayloadAction<VerifyOTPPayload>) {
   try {
-    yield call(verifyOTP, action.payload);
-    action.payload.onSuccess?.();
+    const response: IResponseRegisterVerifyOtp = yield call(
+      verifyOTP,
+      action.payload,
+    );
+    action.payload.onSuccess?.(response);
   } catch (error) {
     yield put(authFailure(toErrorMessage(error)));
     action.payload.onFailure?.(toErrorMessage(error));
@@ -116,6 +130,16 @@ function* completeRegisterWorker(
   }
 }
 
+function* getUniversitiesWorker(action: PayloadAction<GetUniversitiesPayload>) {
+  try {
+    const response: IResponseUniversity[] = yield call(getUniversities);
+    console.log('getUniversitiesWorker', response);
+    action.payload.onSuccess?.(response);
+  } catch {
+    action.payload.onFailure?.('');
+  }
+}
+
 // Reducers reset in-memory state synchronously when `logout` is dispatched.
 // This worker additionally wipes the persisted MMKV storage so tokens and
 // profile data do not survive an app restart.
@@ -130,5 +154,6 @@ export function* authSaga() {
   yield takeLatest(sendOTPRequest.type, sendOTPWorker);
   yield takeLatest(verifyOTPRequest.type, verifyOTPWorker);
   yield takeLatest(completeRegisterRequest.type, completeRegisterWorker);
+  yield takeLatest(getUniversitiesRequest.type, getUniversitiesWorker);
   yield takeLatest(logout.type, logoutWorker);
 }

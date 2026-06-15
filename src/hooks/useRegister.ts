@@ -1,12 +1,13 @@
 import type { InputInfoValues } from '@screens/Authorisation/components/RegisterFlow/InputInfo';
 
 import { useMemo, useRef, useState } from 'react';
-import { ValidateUtils } from '@kits/core/utils';
+import { DeviceUtils, ValidateUtils } from '@kits/core/utils';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch } from '@services/common/storeHooks';
 import {
   completeRegisterRequest,
+  getUniversitiesRequest,
   registerUserRequest,
   sendOTPRequest,
   verifyOTPRequest,
@@ -16,17 +17,26 @@ import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RootStackParamList } from '@navigation/types';
 import { Paths } from '@navigation/paths';
-
+import Selection from '@screens/Dialog/components/Selection';
+import { Platform } from 'react-native';
 import { computeFormAuthErrors } from '@utils/common';
 import { AppConstants } from '@constants';
+import Information from '@screens/Dialog/components/Information';
+import {
+  IResponseRegisterSendOtp,
+  IResponseRegisterVerifyOtp,
+  IResponseUniversity,
+} from '../types/Auth';
 
-const {
-  MEMBERSHIP_OPTIONS,
-  PASSWORD_MIN_LENGTH,
-  MOCK_SCHOOLS,
-  ROLE_OPTIONS,
-  STEP,
-} = AppConstants;
+const CARRIER_ITEMS = [
+  { id: 'SKT', label: 'SKT' },
+  { id: 'KT', label: 'KT' },
+  { id: 'LGU+', label: 'LGU+' },
+] as const;
+const DEFAULT_CARRIER = 'SKT';
+
+const { MEMBERSHIP_OPTIONS, PASSWORD_MIN_LENGTH, MEMBERSHIP_TYPE, STEP } =
+  AppConstants;
 export type RegisterErrors = {
   email?: string;
   name?: string;
@@ -44,6 +54,7 @@ export type AuthStep =
   | 'choose_role'
   | 'choose_school'
   | 'form'
+  | 'bank_information'
   | 'register_completed'
   | 'register_input';
 
@@ -59,8 +70,8 @@ export type FormData = {
   phone?: string;
   roleId?: string;
   school?: School;
-  agreed?: boolean;
-  otpSent?: boolean;
+  phoneVerificationToken?: string;
+  signupToken?: string;
 };
 
 type RegisterFormFields = Pick<FormData, 'email' | 'name' | 'password'>;
@@ -100,6 +111,7 @@ export const useRegister = () => {
     name?: boolean;
     password?: boolean;
   }>({});
+
   const [step, setStep] = useState<AuthStep>(STEP.FORM);
   const [schoolKeyword, setSchoolKeyword] = useState('');
   const [selectedSchoolId, setSelectedSchoolId] = useState<
@@ -109,6 +121,27 @@ export const useRegister = () => {
     string | undefined
   >();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const [agreed, setAgreed] = useState(false);
+  const [carrier, setCarrier] = useState<string>(DEFAULT_CARRIER);
+  const [universities, setUniversities] = useState<IResponseUniversity[]>([]);
+
+  const onToggleAgreement = () => {
+    setAgreed(previous => !previous);
+  };
+
+  const onPressCarrier = () => {
+    AppNavigator.showDialog({
+      cancelable: true,
+      items: CARRIER_ITEMS,
+      onSelect: (id: string) => {
+        setCarrier(id);
+        formData.current.carrier = id;
+      },
+      screen: Selection,
+      selectedId: carrier,
+      title: t('register_flow.choose_carrier'),
+    });
+  };
 
   const onRegisterChange =
     (field: keyof RegisterFormFields) => (value: string) => {
@@ -122,49 +155,21 @@ export const useRegister = () => {
     // formData.current = { ...formData.current, [field]: value };
   };
 
-  const onInfoMetaChange = (field: 'agreed' | 'otpSent', value: boolean) => {
-    formData.current = { ...formData.current, [field]: value };
-  };
-
   const goToStep = (step: string) => {
     if (Object.values(STEP).includes(step as AuthStep)) {
       setStep(step as AuthStep);
     }
   };
 
-  const goBack = () => {
-    switch (step) {
-      case STEP.REGISTER_INPUT: {
-        setStep(STEP.FORM);
-        break;
-      }
-      case STEP.CHOOSE_SCHOOL: {
-        setStep(STEP.REGISTER_INPUT);
-        break;
-      }
-      case STEP.CHOOSE_MEMBERSHIP: {
-        setStep(STEP.CHOOSE_SCHOOL);
-        break;
-      }
-      case STEP.REGISTER_COMPLETED: {
-        setStep(STEP.CHOOSE_MEMBERSHIP);
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  };
-
-  const chooseOptions = useMemo(() => {
-    const options: Partial<
-      Record<AuthStep, typeof MEMBERSHIP_OPTIONS | typeof ROLE_OPTIONS>
-    > = {
-      [STEP.CHOOSE_MEMBERSHIP]: MEMBERSHIP_OPTIONS,
-      [STEP.CHOOSE_ROLE]: ROLE_OPTIONS,
-    };
-    return options[step] ?? [];
-  }, [step]);
+  // const chooseOptions = useMemo(() => {
+  //   const options: Partial<
+  //     Record<AuthStep, typeof MEMBERSHIP_OPTIONS | typeof ROLE_OPTIONS>
+  //   > = {
+  //     [STEP.CHOOSE_MEMBERSHIP]: MEMBERSHIP_OPTIONS,
+  //     [STEP.CHOOSE_ROLE]: ROLE_OPTIONS,
+  //   };
+  //   return options[step] ?? [];
+  // }, [step]);
 
   const { visibleRegisterErrors, isRegisterValid } = useMemo(() => {
     if (step != STEP.FORM) {
@@ -183,7 +188,16 @@ export const useRegister = () => {
     };
   }, [errors, step, t]);
 
-  const submitRegister = () => {
+  const onGetUniversities = () => {
+    dispatch(
+      getUniversitiesRequest({
+        onSuccess: data => setUniversities(data),
+        onFailure: () => setUniversities([] as IResponseUniversity),
+      }),
+    );
+  };
+
+  const onGoRegisterForm = () => {
     setErrors({ email: true, name: true, password: true });
     if (!isRegisterValid) return;
     dispatch(
@@ -193,6 +207,7 @@ export const useRegister = () => {
         password: formData.current.password,
         onSuccess: () => {
           setStep(STEP.REGISTER_INPUT);
+          onGetUniversities();
         },
         onFailure: (error: string) => {
           AppNavigator.showSnackBar({ message: error, type: 'failed' });
@@ -208,12 +223,12 @@ export const useRegister = () => {
         email: formData.current.email,
         otp: formData.current.otp,
         phone: formData.current.phone,
-        // birthday: formData.current.birthday1 ?? '',
+        phoneVerificationToken: formData.current.phoneVerificationToken,
         identityNumber: `${formData.current.birthday}-${formData.current.indentify}`,
-        // birthday: '2000-08-01',
         termsAgreed: true,
-        onSuccess: () => {
-          setStep(STEP.CHOOSE_SCHOOL);
+        onSuccess: (response: IResponseRegisterVerifyOtp) => {
+          formData.current.signupToken = response.signupToken;
+          setStep(STEP.CHOOSE_MEMBERSHIP);
         },
         onFailure: (error: string) => {
           AppNavigator.showSnackBar({ message: error, type: 'failed' });
@@ -222,9 +237,30 @@ export const useRegister = () => {
     );
   };
 
+  const onCompletedRegister = () => {
+    dispatch(
+      completeRegisterRequest({
+        email: formData.current.email,
+        universityId: formData.current?.school?.id,
+        universityName: formData.current?.school?.name,
+        signupToken: formData.current?.signupToken,
+        membershipType: formData.current?.membershipId,
+        deviceId: DeviceUtils.getDeviceId(),
+        deviceName: DeviceUtils.getDeviceName(),
+        platform: Platform.OS,
+        onSuccess: () => {
+          setStep(STEP.REGISTER_COMPLETED);
+        },
+      }),
+    );
+  };
+
   const submitSchool = () => {
-    // console.log('submitSchool', formData.current);
-    setStep(STEP.CHOOSE_MEMBERSHIP);
+    if (formData.current?.membershipId != MEMBERSHIP_TYPE.NON_MEMBER) {
+      setStep(STEP.BANK_INFORMATION);
+    } else {
+      onCompletedRegister();
+    }
   };
 
   const onSelectMembership = (id: string) => {
@@ -233,19 +269,19 @@ export const useRegister = () => {
   };
 
   const onSubmitFormRegister = () => {
-    dispatch(
-      completeRegisterRequest({
-        email: formData.current.email,
-        universityExternalId: formData.current?.school?.id,
-        universityName: formData.current?.school?.name,
-        membershipType: formData.current?.membershipId
-          ? 'MEMBER'
-          : 'NON_MEMBER',
-        onSuccess: () => {
-          setStep(STEP.REGISTER_COMPLETED);
+    if (formData.current?.membershipId != MEMBERSHIP_TYPE.NON_MEMBER) {
+      AppNavigator.showDialog({
+        screen: Information,
+        desc: '조합원 가입을 위해 최초 1회 출자금 납부가 필요합니다. 계속 진행할까요?',
+        cancelTitle: '취소',
+        confirmTitle: '확인',
+        onConfirm: () => {
+          setStep(STEP.CHOOSE_SCHOOL);
         },
-      }),
-    );
+      });
+    } else {
+      setStep(STEP.CHOOSE_SCHOOL);
+    }
   };
 
   const onSelectRole = (id: string) => {
@@ -254,15 +290,21 @@ export const useRegister = () => {
 
   const filteredSchools = useMemo(() => {
     const query = schoolKeyword.trim().toLowerCase();
-    if (query.length === 0) return MOCK_SCHOOLS;
-    return MOCK_SCHOOLS.filter(school =>
+    console.log('filteredSchools', {
+      schoolKeyword,
+      universities,
+    });
+    if (query.length === 0) return universities;
+    return universities?.filter(school =>
       school.name.toLowerCase().includes(query),
     );
-  }, [schoolKeyword]);
+  }, [schoolKeyword, universities]);
+
+  console.log('filteredSchools', filteredSchools);
 
   const selectedSchool = useMemo(
-    () => MOCK_SCHOOLS.find(school => school.id === selectedSchoolId),
-    [selectedSchoolId],
+    () => universities?.find(school => school.id === selectedSchoolId),
+    [selectedSchoolId, universities],
   );
 
   const onSchoolKeywordChange = (value: string) => {
@@ -286,6 +328,10 @@ export const useRegister = () => {
       }
       case STEP.REGISTER_INPUT: {
         onSubmitRegisterInfo();
+        break;
+      }
+      case STEP.BANK_INFORMATION: {
+        onCompletedRegister();
         break;
       }
       case STEP.REGISTER_COMPLETED: {
@@ -313,34 +359,40 @@ export const useRegister = () => {
         onFailure: (error: string) => {
           AppNavigator.showSnackBar({ message: error, type: 'failed' });
         },
-        onSuccess,
+        onSuccess: (response: IResponseRegisterSendOtp) => {
+          formData.current.phoneVerificationToken =
+            response.phoneVerificationToken;
+          onSuccess();
+        },
         phone: formData.current.phone ?? '',
       }),
     );
   };
 
   return {
-    chooseOptions,
+    agreed,
+    carrier,
+    chooseOptions: MEMBERSHIP_OPTIONS,
     filteredSchools,
     formData,
-    goBack,
     goToStep,
     handleSubmit,
     isRegisterValid,
     onInfoChange,
-    onInfoMetaChange,
+    onPressCarrier,
     onPressRequestOtp,
     onRegisterChange,
     onSchoolKeywordChange,
     onSelectMembership,
     onSelectRole,
     onSelectSchool,
+    onToggleAgreement,
     registerErrors: visibleRegisterErrors,
     schoolKeyword,
     selectedMembershipId,
     selectedSchool,
     selectedSchoolId,
     step,
-    submitRegister,
+    onGoRegisterForm,
   };
 };

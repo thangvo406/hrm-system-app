@@ -11,6 +11,7 @@ const imageNames = {
   img_discount: 'img_discount',
   img_picture: 'img_picture',
   img_place_map: 'img_place_map',
+  img_register_success: 'img_register_success',
   img_speaker: 'img_speaker',
 } as const satisfies Record<string, ImageName>;
 

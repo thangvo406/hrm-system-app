@@ -1,64 +1,49 @@
-import { Button } from '@components';
-import Image from '@components/Image';
+import { Button, Image } from '@components';
+import RegisterHeader from './Header';
+import imageNames from '@assets/images/names';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { ScaleSize } from '@kits/core';
 
-const BANNER_HEIGHT = ScaleSize(30);
-const BANNER_WIDTH = ScaleSize(68);
 const TEXT_COLOR = '#1A1A1A';
+const MASCOT_SIZE = ScaleSize(220);
+const SEPARATOR_HEIGHT = ScaleSize(10);
 
-export type MembershipOption = {
-  readonly id: string;
-  readonly label: string;
-};
-
-type ChooseMemberShipTypeProps = {
+type RegisterCompletedProps = {
+  readonly desc: string;
   readonly disabled?: boolean;
   readonly onSubmit: () => void;
-  readonly selectedMembershipId?: string;
 };
 
 function RegisterCompleted({
+  desc,
   disabled = false,
   onSubmit,
-  selectedMembershipId = undefined,
-}: ChooseMemberShipTypeProps) {
+}: RegisterCompletedProps) {
   const { t } = useTranslation();
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Image
-          height={BANNER_HEIGHT}
-          name="ic_logo_banner"
-          width={BANNER_WIDTH}
-        />
-      </View>
+      <RegisterHeader />
 
       <View style={styles.content}>
-        <Text style={styles.desc}>{t('register_completed.desc')}</Text>
+        <Image
+          height={MASCOT_SIZE}
+          name={imageNames.img_register_success}
+          width={MASCOT_SIZE}
+        />
+        <Text style={styles.desc}>{desc}</Text>
       </View>
 
       <View style={styles.footer}>
-        <View
-          style={{
-            width: '100%',
-            height: ScaleSize(10),
-            backgroundColor: '#F0F0F0',
-            marginBottom: ScaleSize(30),
-          }}
-        />
+        <View style={styles.footerSeparator} />
         <Button
-          disabled={disabled || !selectedMembershipId}
+          disabled={disabled}
           onPress={onSubmit}
-          style={{
-            width: '90%',
-            alignSelf: 'center',
-          }}
-          testID="choose-membership-next"
-          title={t('choose_membership.next')}
+          style={styles.nextButton}
+          testID="register-completed-next"
+          title={t('register_completed.next')}
           type="primary"
         />
       </View>
@@ -72,26 +57,30 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
-    alignContent: 'center',
-  },
-  footer: {
-    paddingBottom: ScaleSize(24),
-    paddingTop: ScaleSize(12),
-  },
-  header: {
-    alignItems: 'center',
-    backgroundColor: '#F5F5F5',
-    paddingBottom: ScaleSize(10),
-    paddingTop: ScaleSize(16),
+    paddingHorizontal: ScaleSize(24),
   },
   desc: {
     color: TEXT_COLOR,
-    fontSize: ScaleSize(26),
+    fontSize: ScaleSize(18),
+    lineHeight: ScaleSize(26),
+    marginTop: ScaleSize(40),
     textAlign: 'center',
-    // fontWeight: '700',
-    // marginBottom: ScaleSize(40),
+  },
+  footer: {
+    paddingBottom: ScaleSize(24),
+  },
+  footerSeparator: {
+    backgroundColor: '#F0F0F0',
+    height: SEPARATOR_HEIGHT,
+    marginBottom: ScaleSize(24),
+    width: '100%',
+  },
+  nextButton: {
+    alignSelf: 'center',
+    width: '90%',
   },
 });
 

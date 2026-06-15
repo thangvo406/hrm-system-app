@@ -47,18 +47,22 @@
       "cta": "화면 새로고침"
     },
     "register_flow": {
-      "identity_title": "본인확인을 위해\n인증을 진행해 주세요.",
+      "identity_title": "비밀번호 재설정을 위해\n인증을 진행해 주세요.",
       "agree_label": "본인 인증 서비스 약관 전체 동의",
       "terms_of_use": "휴대폰 본인 인증 서비스 이용약관 동의(필수)",
       "carrier_terms": "휴대폰 통신사 이용약관 동의(필수)",
       "name_label": "이름",
-      "dob_label": "생년 월일 6자리",
-      "identify_label": "생년 월일 6자리",
+      "name_placeholder": "이름",
+      "dob_label": "주민번호 앞 6자리",
+      "identify_label": "주민번호 뒤 7자리",
       "phone_placeholder": "휴대폰 번호",
-      "request_verification": "인증 요청",
-      "warning": "*타인의 개인정보를 무단으로 사용하여 가입할 경우 서비스 이용이 제한될 수 있으며 법적 처벌을 받을 수 있습니다.",
-      "next": "다음",
-      "otp_placeholder": "OTP를 입력해주세요."
+      "request_verification": "인증요청",
+      "warning": "*타인의 개인정보를 도용하여 가입한 경우, 서비스 이용 제한 및 법적 제재를 받으실 수 있습니다.",
+      "next": "인증",
+      "otp_label": "인증 번호",
+      "otp_placeholder": "인증 번호",
+      "verify": "인증",
+      "choose_carrier": "통신사 선택"
     },
     "choose_school": {
       "title": "학적 인증",
@@ -69,12 +73,20 @@
     },
     "choose_membership": {
       "title": "회원 유형 선택",
-      "join_as_member": "조합원으로 가입",
-      "join_as_non_member": "비조합원으로 가입",
+      "join_as_student": "학생 조합원으로 가입하기",
+      "join_as_employee": "교원 조합원으로 가입하기",
+      "join_as_staff": "직원 조합원으로 가입하기",
+      "join_as_non_member": "비조합원으로 가입하기",
       "next": "다음"
     },
     "register_completed": {
-      "desc": "가입이 완료되었습니다!"
+      "desc": "가입이 완료되었습니다!",
+      "next": "다음"
+    },
+    "bank_information": {
+      "intro": "조합원 최초 가입시,\n출자금 납부가 필요합니다.",
+      "instruction": "아래 계좌로 최초 {{amount}}원을\n납부하여 신청을 완료하세요.",
+      "next": "다음"
     },
     "home": {
       "greeting": "반가워요! {{name}}님",
