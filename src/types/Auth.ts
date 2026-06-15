@@ -15,3 +15,13 @@ export type IResponseCompletedRegister = {
 export type IResponseRegisterSendOtp = {
   phoneVerificationToken: string;
 };
+
+export type IResponseSendOtpForgotPass = {
+  phoneVerificationToken?: string;
+};
+export type IResponseVerifyOtpForgotPass = {
+  resetToken: string;
+};
+export type IResponseSubmitForgotPass = {
+  success?: boolean;
+};

@@ -118,10 +118,14 @@ export const useAuthorization = () => {
     });
   };
 
+  const onForgotPassword = () => {
+    navigation.navigate(Paths.ForgotPass);
+  };
+
   const submitLogin = () => {
     setLoginErrorsState({ email: true, password: true });
     if (!isLoginValid) return;
-    // setLoading(true);
+
     dispatch(
       loginRequest({
         deviceId: DeviceUtils.getDeviceId(),
@@ -140,6 +144,7 @@ export const useAuthorization = () => {
     loading,
     login: loginForm,
     loginErrors: visibleLoginErrors,
+    onForgotPassword,
     loginWithSocial,
     onLoginChange,
     register,

@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { ScaleSize } from '@kits/core';
-import { DeviceUtils } from '@kits/core/utils';
+import { DeviceUtils, ValidateUtils } from '@kits/core/utils';
+import AppNavigator from '@navigation/AppNavigator';
 
 const { ifAndroid } = DeviceUtils;
 const BACK_ICON_SIZE = ScaleSize(24);
@@ -31,6 +32,16 @@ const OTP_MAX_LENGTH = 6;
 const IDENTIFY_MAX_LENGTH = 7;
 const BIRTHDAY_MAX_LENGTH = 6;
 const NAME_MAX_LENGTH = 20;
+const OTP_COOLDOWN_SECONDS = 300;
+const OTP_TICK_MS = 1000;
+const SECONDS_PER_MINUTE = 60;
+const SECONDS_PAD_LENGTH = 2;
+
+const formatCountdown = (totalSeconds: number): string => {
+  const minutes = Math.floor(totalSeconds / SECONDS_PER_MINUTE);
+  const seconds = totalSeconds % SECONDS_PER_MINUTE;
+  return `${minutes}:${String(seconds).padStart(SECONDS_PAD_LENGTH, '0')}`;
+};
 
 export type InputInfoValues = {
   birthday: string;
@@ -46,7 +57,7 @@ type InputInfoProps = {
   readonly disabled?: boolean;
   readonly onInfoChange: (field: keyof InputInfoValues, value: string) => void;
   readonly onPressCarrier: () => void;
-  readonly onPressRequestOtp: (onSuccess: () => void) => void;
+  readonly onPressRequestOtp: (onSuccess: (isSuccess: boolean) => void) => void;
   readonly onSubmit: () => void;
   readonly onToggleAgreement: () => void;
 };
@@ -104,6 +115,7 @@ function InputInfo({
 }: InputInfoProps) {
   const { t } = useTranslation();
   const [otpSent, setOtpSent] = useState<boolean>(false);
+  const [countDownTime, setCountDownTime] = useState<number>(0);
   const [values, setValues] = useState<InputInfoValues>(DEFAULT_INFO);
   const otpReference = useRef<TextInput>(null);
 
@@ -112,6 +124,35 @@ function InputInfo({
       otpReference.current?.focus();
     }
   }, [otpSent]);
+
+  useEffect(() => {
+    if (countDownTime <= 0) return;
+    const interval = setInterval(() => {
+      setCountDownTime(previous => (previous <= 1 ? 0 : previous - 1));
+    }, OTP_TICK_MS);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [countDownTime]);
+
+  const onRequestOtp = () => {
+    if (countDownTime > 0) return;
+    if (!ValidateUtils.isPhoneNumber(values.phone)) {
+      AppNavigator.showSnackBar({
+        message: t('authorisation.error_phone_invalid'),
+        type: 'failed',
+      });
+      return;
+    }
+    onPressRequestOtp((isSuccess: boolean) => {
+      if (!isSuccess) {
+        setCountDownTime(0);
+        return;
+      }
+      setCountDownTime(OTP_COOLDOWN_SECONDS);
+      setOtpSent(true);
+    });
+  };
 
   const handleChange = (field: keyof InputInfoValues) => (value: string) => {
     const _value =
@@ -257,16 +298,21 @@ function InputInfo({
 
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() => {
-              onPressRequestOtp(() => {
-                setOtpSent(true);
-              });
-            }}
+            disabled={countDownTime > 0}
+            onPress={onRequestOtp}
             style={styles.requestButton}
             testID="register-flow-request"
           >
-            <Text style={styles.requestTextActive}>
-              {t('register_flow.request_verification')}
+            <Text
+              style={
+                countDownTime > 0
+                  ? styles.requestText
+                  : styles.requestTextActive
+              }
+            >
+              {countDownTime > 0
+                ? formatCountdown(countDownTime)
+                : t('register_flow.request_verification')}
             </Text>
           </TouchableOpacity>
         </View>

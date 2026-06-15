@@ -113,6 +113,7 @@ export default defineConfig(
       'perfectionist/sort-switch-case': OFF,
       'unicorn/no-negated-condition': OFF,
       'unicorn/prevent-abbreviations': OFF,
+      'perfectionist/sort-enums': OFF,
       '@typescript-eslint/no-confusing-void-expression': OFF,
       '@typescript-eslint/non-nullable-type-assertion-style': OFF,
       'react-hooks/use-memo': OFF,

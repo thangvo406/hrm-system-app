@@ -13,6 +13,7 @@ import {
   Profile,
   Startup,
   Welcome,
+  ForgotPass,
 } from '@screens';
 import AppNavigator from '@navigation/AppNavigator';
 
@@ -33,6 +34,7 @@ function ApplicationNavigator() {
         <Stack.Screen component={Welcome} name={Paths.Welcome} />
         <Stack.Screen component={Authorization} name={Paths.Authorization} />
         <Stack.Screen component={Home} name={Paths.Home} />
+        <Stack.Screen component={ForgotPass} name={Paths.ForgotPass} />
         <Stack.Screen component={Profile} name={Paths.Profile} />
         <Stack.Screen component={Example} name={Paths.Example} />
       </Stack.Navigator>

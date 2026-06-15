@@ -55,3 +55,11 @@ export const ROLE_OPTIONS = [
   { id: 'student', label: 'Student' },
   { id: 'teacher', label: 'Teacher' },
 ] as const;
+
+export const CARRIER_ITEMS = [
+  { id: 'SKT', label: 'SKT' },
+  { id: 'KT', label: 'KT' },
+  { id: 'LGU+', label: 'LGU+' },
+] as const;
+
+export const DEFAULT_CARRIER = 'SKT';

@@ -18,6 +18,9 @@
       "login": "Login",
       "register": "New Registration"
     },
+    "forgot_password": {
+      "desc_success": "비밀번호 변경이 완료되었습니다. 새 비밀번호로 로그인해 주세요."
+    },
     "authorisation": {
       "tab_login": "Login",
       "tab_registration": "Registration",
@@ -81,6 +84,15 @@
     },
     "register_completed": {
       "desc": "Desc",
+      "next": "Next"
+    },
+    "new_password": {
+      "title": "Please enter your\nnew password.",
+      "password_label": "New password",
+      "password_placeholder": "Enter your password",
+      "confirm_label": "Confirm password",
+      "confirm_placeholder": "Re-enter your password",
+      "verification_success": "Verification successful.",
       "next": "Next"
     },
     "bank_information": {

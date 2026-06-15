@@ -59,6 +59,26 @@ export type CompleteRegisterPayload = {
 
 export type GetUniversitiesPayload = AuthCallback;
 
+export type SendOtpForgotPassPayload = {
+  identifier: string;
+} & AuthCallback;
+
+export type VerifyOtpForgotPassPayload = {
+  email: string;
+  identityNumber: string;
+  otp: string;
+  phone: string;
+  fullName: string;
+  phoneVerificationToken: string;
+  termsAgreed: boolean;
+} & AuthCallback;
+
+export type SubmitForgotPassPayload = {
+  confirmPassword: string;
+  newPassword: string;
+  resetToken: string;
+} & AuthCallback;
+
 const initialState: AuthState = {
   accessToken: undefined,
   error: undefined,
@@ -141,6 +161,30 @@ const authSlice = createSlice({
         state.loading = true;
       },
     },
+    // Forgot-password step 1: send OTP to the user's identifier (email/phone).
+    sendOtpForgotPassRequest: {
+      prepare: (payload: SendOtpForgotPassPayload) => ({ payload }),
+      reducer: state => {
+        state.error = undefined;
+        state.loading = true;
+      },
+    },
+    // Forgot-password step 2: verify the OTP and receive a reset token.
+    verifyOtpForgotPassRequest: {
+      prepare: (payload: VerifyOtpForgotPassPayload) => ({ payload }),
+      reducer: state => {
+        state.error = undefined;
+        state.loading = true;
+      },
+    },
+    // Forgot-password step 3: submit a new password with the reset token.
+    submitForgotPassRequest: {
+      prepare: (payload: SubmitForgotPassPayload) => ({ payload }),
+      reducer: state => {
+        state.error = undefined;
+        state.loading = true;
+      },
+    },
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
     },
@@ -164,9 +208,12 @@ export const {
   registerRequest,
   registerUserRequest,
   sendOTPRequest,
+  sendOtpForgotPassRequest,
   setAccessToken,
   setCredentials,
+  submitForgotPassRequest,
   verifyOTPRequest,
+  verifyOtpForgotPassRequest,
 } = authSlice.actions;
 
 export const authReducer = authSlice.reducer;

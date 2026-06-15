@@ -7,7 +7,7 @@ import React from 'react';
 import { ScaleSize } from '@kits/core';
 
 const TEXT_COLOR = '#1A1A1A';
-const MASCOT_SIZE = ScaleSize(220);
+const MASCOT_SIZE = ScaleSize(300);
 const SEPARATOR_HEIGHT = ScaleSize(10);
 
 type RegisterCompletedProps = {
@@ -32,6 +32,7 @@ function RegisterCompleted({
           height={MASCOT_SIZE}
           name={imageNames.img_register_success}
           width={MASCOT_SIZE}
+          resizeMode="stretch"
         />
         <Text style={styles.desc}>{desc}</Text>
       </View>
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
   },
   desc: {
     color: TEXT_COLOR,
-    fontSize: ScaleSize(18),
+    fontSize: ScaleSize(24),
     lineHeight: ScaleSize(26),
     marginTop: ScaleSize(40),
     textAlign: 'center',

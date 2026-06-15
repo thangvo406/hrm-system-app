@@ -83,6 +83,15 @@
       "desc": "가입이 완료되었습니다!",
       "next": "다음"
     },
+    "new_password": {
+      "title": "새로운 비밀번호를\n입력해 주세요.",
+      "password_label": "변경 비밀번호",
+      "password_placeholder": "비밀번호를 입력해 주세요",
+      "confirm_label": "비밀번호 확인",
+      "confirm_placeholder": "비밀번호를 다시 입력해 주세요",
+      "verification_success": "인증에 성공했습니다.",
+      "next": "다음"
+    },
     "bank_information": {
       "intro": "조합원 최초 가입시,\n출자금 납부가 필요합니다.",
       "instruction": "아래 계좌로 최초 {{amount}}원을\n납부하여 신청을 완료하세요.",
@@ -132,6 +141,9 @@
         "button_submit": "예",
         "button_cancel": "아니오"
       }
+    },
+    "forgot_password": {
+      "desc_success": "비밀번호 변경이 완료되었습니다. 새 비밀번호로 로그인해 주세요."
     },
     "profile": {
       "greeting": "반가워요! {{name}}님",

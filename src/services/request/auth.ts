@@ -3,7 +3,10 @@ import type {
   LoginPayload,
   RegisterUserPayload,
   SendOTPPayload,
+  SendOtpForgotPassPayload,
+  SubmitForgotPassPayload,
   VerifyOTPPayload,
+  VerifyOtpForgotPassPayload,
 } from '@services/slices/auth/authSlice';
 
 import type {
@@ -11,6 +14,9 @@ import type {
   IResponseRegisterSendOtp,
   IResponseUniversity,
   IResponseCompletedRegister,
+  IResponseSendOtpForgotPass,
+  IResponseSubmitForgotPass,
+  IResponseVerifyOtpForgotPass,
 } from '../../types/Auth';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -64,7 +70,7 @@ export const getUniversities = async (): Promise<IResponseUniversity[]> => {
     EndPoints.AUTH.getUniversities,
     { loading: false },
   );
-  return response.content;
+  return response.data.content;
 };
 
 export const completeRegister = async (
@@ -73,5 +79,32 @@ export const completeRegister = async (
   const response = await httpRequest.post<
     ApiResponse<IResponseCompletedRegister>
   >(EndPoints.AUTH.completeRegister, request);
+  return response.data;
+};
+
+export const sendOtpForgotPass = async (
+  request: SendOtpForgotPassPayload,
+): Promise<IResponseSendOtpForgotPass> => {
+  const response = await httpRequest.post<
+    ApiResponse<IResponseSendOtpForgotPass>
+  >(EndPoints.AUTH.sendOtpForgotPass, request);
+  return response.data;
+};
+
+export const verifyOtpForgotPass = async (
+  request: VerifyOtpForgotPassPayload,
+): Promise<IResponseVerifyOtpForgotPass> => {
+  const response = await httpRequest.post<
+    ApiResponse<IResponseVerifyOtpForgotPass>
+  >(EndPoints.AUTH.verifyOtpForgotPass, request);
+  return response.data;
+};
+
+export const submitForgotPass = async (
+  request: SubmitForgotPassPayload,
+): Promise<IResponseSubmitForgotPass> => {
+  const response = await httpRequest.post<
+    ApiResponse<IResponseSubmitForgotPass>
+  >(EndPoints.AUTH.submitForgotPass, request);
   return response.data;
 };

@@ -34,6 +34,12 @@ function RadioButton({
       activeOpacity={0.8}
       disabled={disabled}
       onPress={onPress}
+      hitSlop={{
+        bottom: 10,
+        left: 10,
+        right: 10,
+        top: 10,
+      }}
       style={[styles.container, style]}
       testID={testID}
     >

@@ -30,6 +30,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     onLoginChange,
     register,
     submitLogin,
+    onForgotPassword,
   } = useAuthorization();
 
   const detailProps = {
@@ -57,6 +58,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     selectedSchool: register.selectedSchool,
     selectedSchoolId: register.selectedSchoolId,
     submitLogin,
+    onForgotPassword,
     onPressRequestOtp: register.onPressRequestOtp,
     onGoRegisterForm: register.onGoRegisterForm,
     onInfoChange: register.onInfoChange,

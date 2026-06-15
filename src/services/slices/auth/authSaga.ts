@@ -7,7 +7,10 @@ import type {
   RegisterPayload,
   RegisterUserPayload,
   SendOTPPayload,
+  SendOtpForgotPassPayload,
+  SubmitForgotPassPayload,
   VerifyOTPPayload,
+  VerifyOtpForgotPassPayload,
 } from './authSlice';
 
 import {
@@ -16,7 +19,10 @@ import {
   login,
   registerUser,
   sendOTP,
+  sendOtpForgotPass,
+  submitForgotPass,
   verifyOTP,
+  verifyOtpForgotPass,
 } from '@services/request/auth';
 import axios from 'axios';
 import { call, put, takeLatest } from 'redux-saga/effects';
@@ -33,12 +39,18 @@ import {
   registerRequest,
   registerUserRequest,
   sendOTPRequest,
+  sendOtpForgotPassRequest,
+  submitForgotPassRequest,
   verifyOTPRequest,
+  verifyOtpForgotPassRequest,
 } from './authSlice';
 import {
   IResponseRegisterSendOtp,
   IResponseRegisterVerifyOtp,
+  IResponseSendOtpForgotPass,
+  IResponseSubmitForgotPass,
   IResponseUniversity,
+  IResponseVerifyOtpForgotPass,
 } from '../../../types/Auth';
 
 const DEFAULT_ERROR = 'common_error';
@@ -133,6 +145,51 @@ function* getUniversitiesWorker(action: PayloadAction<GetUniversitiesPayload>) {
   }
 }
 
+function* sendOtpForgotPassWorker(
+  action: PayloadAction<SendOtpForgotPassPayload>,
+) {
+  try {
+    const response: IResponseSendOtpForgotPass = yield call(
+      sendOtpForgotPass,
+      action.payload,
+    );
+    action.payload.onSuccess?.(response);
+  } catch (error) {
+    yield put(authFailure(toErrorMessage(error)));
+    action.payload.onFailure?.(toErrorMessage(error));
+  }
+}
+
+function* verifyOtpForgotPassWorker(
+  action: PayloadAction<VerifyOtpForgotPassPayload>,
+) {
+  try {
+    const response: IResponseVerifyOtpForgotPass = yield call(
+      verifyOtpForgotPass,
+      action.payload,
+    );
+    action.payload.onSuccess?.(response);
+  } catch (error) {
+    yield put(authFailure(toErrorMessage(error)));
+    action.payload.onFailure?.(toErrorMessage(error));
+  }
+}
+
+function* submitForgotPassWorker(
+  action: PayloadAction<SubmitForgotPassPayload>,
+) {
+  try {
+    const response: IResponseSubmitForgotPass = yield call(
+      submitForgotPass,
+      action.payload,
+    );
+    action.payload.onSuccess?.(response);
+  } catch (error) {
+    yield put(authFailure(toErrorMessage(error)));
+    action.payload.onFailure?.(toErrorMessage(error));
+  }
+}
+
 // Reducers reset in-memory state synchronously when `logout` is dispatched.
 // This worker additionally wipes the persisted MMKV storage so tokens and
 // profile data do not survive an app restart.
@@ -148,5 +205,8 @@ export function* authSaga() {
   yield takeLatest(verifyOTPRequest.type, verifyOTPWorker);
   yield takeLatest(completeRegisterRequest.type, completeRegisterWorker);
   yield takeLatest(getUniversitiesRequest.type, getUniversitiesWorker);
+  yield takeLatest(sendOtpForgotPassRequest.type, sendOtpForgotPassWorker);
+  yield takeLatest(verifyOtpForgotPassRequest.type, verifyOtpForgotPassWorker);
+  yield takeLatest(submitForgotPassRequest.type, submitForgotPassWorker);
   yield takeLatest(logout.type, logoutWorker);
 }

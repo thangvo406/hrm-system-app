@@ -28,15 +28,14 @@ import {
   IResponseUniversity,
 } from '../types/Auth';
 
-const CARRIER_ITEMS = [
-  { id: 'SKT', label: 'SKT' },
-  { id: 'KT', label: 'KT' },
-  { id: 'LGU+', label: 'LGU+' },
-] as const;
-const DEFAULT_CARRIER = 'SKT';
-
-const { MEMBERSHIP_OPTIONS, PASSWORD_MIN_LENGTH, MEMBERSHIP_TYPE, STEP } =
-  AppConstants;
+const {
+  CARRIER_ITEMS,
+  DEFAULT_CARRIER,
+  MEMBERSHIP_OPTIONS,
+  MEMBERSHIP_TYPE,
+  PASSWORD_MIN_LENGTH,
+  STEP,
+} = AppConstants;
 export type RegisterErrors = {
   email?: string;
   name?: string;
@@ -185,7 +184,9 @@ export const useRegister = () => {
   const onGetUniversities = () => {
     dispatch(
       getUniversitiesRequest({
-        onSuccess: data => setUniversities(data),
+        onSuccess: data => {
+          setUniversities(data);
+        },
         onFailure: () => setUniversities([] as IResponseUniversity),
       }),
     );
@@ -334,13 +335,13 @@ export const useRegister = () => {
 
   const onPressRequestOtp = (onSuccess: () => void) => {
     // alert(ValidateUtils.isPhoneNumber(formData.current.phone));
-    if (!ValidateUtils.isPhoneNumber(formData.current.phone as string)) {
-      AppNavigator.showSnackBar({
-        message: t('authorisation.error_phone_invalid'),
-        type: 'failed',
-      });
-      return;
-    }
+    // if (!ValidateUtils.isPhoneNumber(formData.current.phone as string)) {
+    //   AppNavigator.showSnackBar({
+    //     message: t('authorisation.error_phone_invalid'),
+    //     type: 'failed',
+    //   });
+    //   return;
+    // }
     dispatch(
       sendOTPRequest({
         email: formData.current.email,
