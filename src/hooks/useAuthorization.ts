@@ -20,6 +20,7 @@ import {
   isSuccessResponse,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
+import { loginWithKakaoAccount } from '@react-native-seoul/kakao-login';
 
 const { STEP, PASSWORD_MIN_LENGTH, NEED_INFO_LOGIN_CODE, initialLoginForm } =
   AppConstants;
@@ -118,6 +119,17 @@ export const useAuthorization = () => {
     }
   };
 
+  const onLoginKakao = async () => {
+    try {
+      const token = await loginWithKakaoAccount();
+      // TODO: dispatch backend login with token.accessToken / token.idToken
+      console.log('Kakao login success', token);
+    } catch (error: any) {
+      console.log('onLoginKakao.error', error);
+      Alert.alert('Kakao sign-in error', error?.message ?? 'unknown');
+    }
+  };
+
   const loginWithSocial = (provider: SocialProvider) => {
     switch (provider) {
       case 'google': {
@@ -125,7 +137,7 @@ export const useAuthorization = () => {
         break;
       }
       case 'kakao': {
-        // TODO: implement Kakao login
+        onLoginKakao().then(() => null);
         break;
       }
       case 'naver': {
