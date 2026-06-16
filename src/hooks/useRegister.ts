@@ -333,7 +333,7 @@ export const useRegister = () => {
     }
   };
 
-  const onPressRequestOtp = (onSuccess: () => void) => {
+  const onPressRequestOtp = (onSuccess: (isSuccess: boolean) => void) => {
     // alert(ValidateUtils.isPhoneNumber(formData.current.phone));
     // if (!ValidateUtils.isPhoneNumber(formData.current.phone as string)) {
     //   AppNavigator.showSnackBar({
@@ -347,11 +347,12 @@ export const useRegister = () => {
         email: formData.current.email,
         onFailure: (error: string) => {
           AppNavigator.showSnackBar({ message: error, type: 'failed' });
+          onSuccess(false);
         },
         onSuccess: (response: IResponseRegisterSendOtp) => {
           formData.current.phoneVerificationToken =
             response.phoneVerificationToken;
-          onSuccess();
+          onSuccess(true);
         },
         phone: formData.current.phone ?? '',
       }),

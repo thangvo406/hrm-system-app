@@ -33,7 +33,6 @@ export type RegisterUserPayload = {
   password: string;
 } & AuthCallback;
 
-export type RegisterPayload = RegisterUserPayload;
 export type SendOTPPayload = {
   email: string;
   phone: string;
@@ -108,14 +107,6 @@ const authSlice = createSlice({
     // Triggers the saga; carries the login form values.
     loginRequest: {
       prepare: (payload: LoginPayload) => ({ payload }),
-      reducer: state => {
-        state.error = undefined;
-        state.loading = true;
-      },
-    },
-    // Triggers the saga; carries the register form values.
-    registerRequest: {
-      prepare: (payload: RegisterPayload) => ({ payload }),
       reducer: state => {
         state.error = undefined;
         state.loading = true;
@@ -205,7 +196,6 @@ export const {
   getUniversitiesRequest,
   loginRequest,
   logout,
-  registerRequest,
   registerUserRequest,
   sendOTPRequest,
   sendOtpForgotPassRequest,

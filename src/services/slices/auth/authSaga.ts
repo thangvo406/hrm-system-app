@@ -4,7 +4,6 @@ import type {
   CompleteRegisterPayload,
   GetUniversitiesPayload,
   LoginPayload,
-  RegisterPayload,
   RegisterUserPayload,
   SendOTPPayload,
   SendOtpForgotPassPayload,
@@ -36,7 +35,6 @@ import {
   getUniversitiesRequest,
   loginRequest,
   logout,
-  registerRequest,
   registerUserRequest,
   sendOTPRequest,
   sendOtpForgotPassRequest,
@@ -71,16 +69,6 @@ function* loginWorker(action: PayloadAction<LoginPayload>) {
     action.payload.onSuccess?.();
   } catch (error) {
     action.payload.onFailure?.(error?.response?.data);
-    yield put(authFailure(toErrorMessage(error)));
-  }
-}
-
-function* registerWorker(action: PayloadAction<RegisterPayload>) {
-  try {
-    yield call(register, action.payload);
-    // yield put(authSuccess(response));
-    action.payload.onSuccess?.();
-  } catch (error) {
     yield put(authFailure(toErrorMessage(error)));
   }
 }
@@ -199,7 +187,6 @@ function* logoutWorker() {
 
 export function* authSaga() {
   yield takeLatest(loginRequest.type, loginWorker);
-  yield takeLatest(registerRequest.type, registerWorker);
   yield takeLatest(registerUserRequest.type, registerUserWorker);
   yield takeLatest(sendOTPRequest.type, sendOTPWorker);
   yield takeLatest(verifyOTPRequest.type, verifyOTPWorker);
