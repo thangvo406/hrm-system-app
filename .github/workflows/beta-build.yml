@@ -38,10 +38,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.13.0'
-          cache: 'yarn'
+
+      - name: Enable Corepack (Yarn 3.6)
+        run: |
+          corepack enable
+          corepack prepare yarn@3.6.4 --activate
+          yarn --version
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
 
       - name: Install Dependencies
-        run: yarn install
+        run: yarn install --immutable
 
       - name: Setup Java JDK 17
         uses: actions/setup-java@v4
