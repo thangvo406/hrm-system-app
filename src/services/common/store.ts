@@ -68,7 +68,6 @@ export const store = configureStore({
           'account/getProfileRequest',
           'app/startupApp',
           'auth/loginRequest',
-          'auth/registerRequest',
         ],
         ignoredActionPaths: ['payload.onSuccess', 'payload.onFailure'],
       },

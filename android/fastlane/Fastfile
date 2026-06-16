@@ -14,14 +14,8 @@ platform :android do
     UI.message("--- BẮT ĐẦU QUY TRÌNH BUILD & DISTRIBUTE ---")
     UI.message("Cấu hình: #{prefix_name} - Phiên bản: #{version_num}")
 
-    _changelog = changelog_from_git_commits(
-      # between: ["8efd2a6e", "HEAD"],  # Optional, lets you specify a revision/tag range between which to collect commit info
-      pretty: "- (%ae) %s",# Optional, lets you provide a custom format to apply to each commit when generating the changelog text
-      date_format: "short",# Optional, lets you provide an additional date format to dates within the pretty-formatted string
-      match_lightweight_tag: false,  # Optional, lets you ignore lightweight (non-annotated) tags when searching for the last tag
-      merge_commit_filtering: "exclude_merges", # Optional, lets you filter out merge commits
-      commits_count: 5
-    )
+    _changelog = get_recent_git_commits(repo_dir: "..", limit: 5)
+    sh "cp ../app/src/debug/google-services.json ../app/src/release/google-services.json"
     # 2. Lấy versionCode mới nhất từ Firebase App Distribution, bump lên +1
     latest_version_code = get_firebase_latest_version_code(
       app_id: firebase_app_id,
@@ -143,14 +137,13 @@ end
 #   ...
 def get_recent_git_commits(repo_dir:, limit: 5)
   Dir.chdir(repo_dir) do
-    # Dùng %x00 (null) làm field separator để tránh lỗi nếu subject chứa dấu phẩy
-    format = '%s%x00%an%x00%ad'
-    raw = `git log -n #{limit} --pretty=#{format} --date=short`.strip
+    format = '%s%x00%ae%x00%ad'
+    raw = `git log -n #{limit} --no-merges --pretty=#{format} --date=short`.strip
     return "N/A" if raw.empty?
 
     raw.lines.map(&:strip).reject(&:empty?).map do |line|
       subject, author, date = line.split("\x00", 3)
-      "#{subject} (#{author}, #{date})"
+      "- (#{author}) #{subject} [#{date}]"
     end.join("\n")
   end
 rescue => e

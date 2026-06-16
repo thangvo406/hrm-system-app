@@ -47,7 +47,7 @@
       "cta": "화면 새로고침"
     },
     "register_flow": {
-      "identity_title": "비밀번호 재설정을 위해\n인증을 진행해 주세요.",
+      "identity_title": "본인확인을 위해 인증을 진행해 주세요",
       "agree_label": "본인 인증 서비스 약관 전체 동의",
       "terms_of_use": "휴대폰 본인 인증 서비스 이용약관 동의(필수)",
       "carrier_terms": "휴대폰 통신사 이용약관 동의(필수)",
@@ -99,7 +99,7 @@
     },
     "home": {
       "greeting": "반가워요! {{name}}님",
-      "member_label": "Member",
+      "member_label": "조합원",
       "pay_label": "생협Pay :",
       "pay_amount": "{{amount}} 원",
       "point_label": "Point :",

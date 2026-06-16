@@ -5,6 +5,8 @@ import type { RegisterValues } from '@screens/Authorisation/components/RegisterF
 
 import Image from '@components/Image';
 import {
+  Animated,
+  Easing,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -13,15 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Animated, {
-  FadeInLeft,
-  FadeInRight,
-  LinearTransition,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import LoginForm from '@screens/Authorisation/components/LoginForm';
@@ -74,19 +68,61 @@ function AuthFormStack({
   const [tabsWidth, setTabsWidth] = useState(0);
 
   const isRegister = activeTab === 'registration';
-  const progress = useSharedValue(isRegister ? 1 : 0);
+  const progress = useMemo(() => new Animated.Value(isRegister ? 1 : 0), []);
+  const formOpacity = useMemo(() => new Animated.Value(1), []);
+  const formTranslateX = useMemo(() => new Animated.Value(0), []);
+  const renderedTab = useRef<AuthTab>(initialTab);
 
   useEffect(() => {
-    progress.value = withTiming(isRegister ? 1 : 0, {
+    Animated.timing(progress, {
       duration: INDICATOR_DURATION,
-    });
+      easing: Easing.out(Easing.ease),
+      toValue: isRegister ? 1 : 0,
+      useNativeDriver: true,
+    }).start();
   }, [isRegister, progress]);
+
+  useEffect(() => {
+    if (renderedTab.current === activeTab) {
+      return;
+    }
+    const fromX = activeTab === 'registration' ? 24 : -24;
+    formOpacity.setValue(0);
+    formTranslateX.setValue(fromX);
+    renderedTab.current = activeTab;
+    Animated.parallel([
+      Animated.timing(formOpacity, {
+        duration: FORM_FADE_DURATION,
+        easing: Easing.out(Easing.ease),
+        toValue: 1,
+        useNativeDriver: true,
+      }),
+      Animated.timing(formTranslateX, {
+        duration: FORM_FADE_DURATION,
+        easing: Easing.out(Easing.ease),
+        toValue: 0,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [activeTab, formOpacity, formTranslateX]);
 
   const indicatorWidth = tabsWidth > 0 ? (tabsWidth - TABS_PADDING * 2) / 2 : 0;
 
-  const indicatorStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: progress.value * indicatorWidth }],
-  }));
+  const indicatorStyle = {
+    transform: [
+      {
+        translateX: progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0, indicatorWidth],
+        }),
+      },
+    ],
+  };
+
+  const formStyle = {
+    opacity: formOpacity,
+    transform: [{ translateX: formTranslateX }],
+  };
 
   const onTabsLayout = (event: LayoutChangeEvent) => {
     setTabsWidth(event.nativeEvent.layout.width);
@@ -159,10 +195,7 @@ function AuthFormStack({
         showsVerticalScrollIndicator={false}
       >
         {isRegister ? (
-          <Animated.View
-            entering={FadeInRight.duration(FORM_FADE_DURATION)}
-            key="register"
-          >
+          <Animated.View key="register" style={formStyle}>
             <RegisterForm
               errors={registerErrors}
               loading={loading}
@@ -173,10 +206,7 @@ function AuthFormStack({
             />
           </Animated.View>
         ) : (
-          <Animated.View
-            entering={FadeInLeft.duration(FORM_FADE_DURATION)}
-            key="login"
-          >
+          <Animated.View key="login" style={formStyle}>
             <LoginForm
               errors={loginErrors}
               loading={loading}
@@ -189,9 +219,7 @@ function AuthFormStack({
           </Animated.View>
         )}
 
-        <Animated.View layout={LinearTransition.duration(FORM_FADE_DURATION)}>
-          <SocialButtons onPress={loginWithSocial} />
-        </Animated.View>
+        <SocialButtons onPress={loginWithSocial} />
       </ScrollView>
     </KeyboardAvoidingView>
   );

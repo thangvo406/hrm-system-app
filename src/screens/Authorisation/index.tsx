@@ -1,25 +1,26 @@
 import type { RootScreenProps } from '@navigation/types';
 import type { AuthStep } from '@hooks';
 import type { ComponentType } from 'react';
-
 import ChooseMemberShipType from './components/RegisterFlow/ChooseMemberShipType';
 import ChooseSchool from './components/RegisterFlow/ChooseSchool';
 import { Paths } from '@navigation/paths';
 import { useAuthorization } from '@hooks';
 import { StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import RegisterCompleted from './components/RegisterFlow/RegisterCompleted';
 import RegisterForm from './components/RegisterFlow/InputInfo';
 import AuthFormStack from './components/AuthFormStack';
 import BankInformation from './components/RegisterFlow/BankInformation';
+import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 type AuthTab = 'login' | 'registration';
 
 function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
   const isLogin = route.params?.isLogin ?? true;
   const initialTab: AuthTab = isLogin ? 'login' : 'registration';
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   const {
     isLoginValid,
@@ -80,9 +81,9 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
   }, [register.step]);
 
   return (
-    <SafeAreaView mode="padding" style={styles.container}>
-      <DetailComponent {...detailProps} />
-    </SafeAreaView>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <DetailComponent {...detailProps} />;
+    </View>
   );
 }
 

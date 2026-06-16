@@ -1,2 +1,4 @@
 API_URL=https://api.example.com
 APP_NAME=Coop Test
+APP_ID=com.coop_use
+ONE_SIGNAL_ID=027a3d1e-406d-4233-955d-06e5869d7374

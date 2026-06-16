@@ -23,6 +23,7 @@ export type Profile = z.infer<typeof profileSchema>;
 export const getProfile = async (): Promise<Profile> => {
   const response = await httpRequest.get<ApiResponse<Profile>>(
     EndPoints.ACCOUNT.getProfile,
+    { loading: false },
   );
-  return profileSchema.parse(response.data);
+  return response.data;
 };

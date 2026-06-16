@@ -1,13 +1,14 @@
 import type { ComponentType } from 'react';
 import { useForgotPass } from '@hooks';
 import { StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View } from 'react-native';
 import { useMemo } from 'react';
 import RegisterCompleted from '../Authorisation/components/RegisterFlow/RegisterCompleted';
 import RegisterForm from '../Authorisation/components/RegisterFlow/InputInfo';
 import NewPasswordForm from './components/NewPasswordForm';
 import { ForgotStep } from '@hooks/useForgotPass';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function ForgotPass() {
   const {
@@ -22,6 +23,7 @@ function ForgotPass() {
   } = useForgotPass();
 
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
 
   const detailProps = {
     agreed,
@@ -44,9 +46,9 @@ function ForgotPass() {
   }, [step]);
 
   return (
-    <SafeAreaView mode="padding" style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <DetailComponent {...detailProps} />
-    </SafeAreaView>
+    </View>
   );
 }
 

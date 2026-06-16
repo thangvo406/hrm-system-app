@@ -9,9 +9,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useHome } from '@hooks';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const PAY_AMOUNT = '100,000';
 const POINT_AMOUNT = '210,000';
@@ -141,9 +141,9 @@ function StoreSection() {
 function Home() {
   const { t } = useTranslation();
   const { goToProfile, openMenu, profile } = useHome();
-
+  const insets = useSafeAreaInsets();
   return (
-    <SafeAreaView edges={['top']} style={styles.safeArea}>
+    <View style={[styles.safeArea, { paddingTop: insets.top }]}>
       <HomeHeader isShowLabelMember onOpenMenu={openMenu} profile={profile} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -180,7 +180,7 @@ function Home() {
           />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

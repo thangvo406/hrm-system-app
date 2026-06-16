@@ -9,12 +9,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { ScaleSize } from '@kits/core';
 import AppNavigator from '@navigation/AppNavigator';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const CHEVRON_SIZE = ScaleSize(20);
 const ARROW_SIZE = ScaleSize(18);
@@ -26,7 +26,6 @@ const DARK_PILL = '#2B2F33';
 const CONTRIBUTION_AMOUNT = '2,500,000';
 const DEPOSIT_AMOUNT = '100,000';
 const POINT_AMOUNT = '11,000';
-const NOOP = (): void => undefined;
 
 type ProfileRowProps = {
   readonly label: string;
@@ -186,11 +185,12 @@ function Profile() {
   const profile: ProfileType | undefined = useAppSelector(
     AccountSelector.getProfile,
   );
+  const insets = useSafeAreaInsets();
 
   const name = profile?.name ?? '쿠비';
 
   return (
-    <SafeAreaView edges={['top']} style={styles.safeArea}>
+    <View style={[styles.safeArea, { paddingTop: insets.top }]}>
       <View style={styles.headerWrap}>
         <HomeHeader onOpenMenu={onOpenMenu} profile={profile} />
       </View>
@@ -206,7 +206,7 @@ function Profile() {
           <MenuRow label={t('profile.menu_faq')} />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

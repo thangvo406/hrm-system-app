@@ -15,7 +15,7 @@ import { ScaleSize } from '@kits/core';
 
 const TRANSLATE_OFFSET = -20;
 const SNACKBAR_HORIZONTAL_MARGIN = 16;
-const SNACKBAR_BOTTOM_OFFSET = 12;
+const SNACKBAR_TOP_OFFSET = 12;
 const ICON_SIZE = 40;
 const AUTO_DISMISS_DELAY = 4000;
 
@@ -75,7 +75,7 @@ function SnackbarOverlay({ onDismiss, options, zIndex }: SnackbarOverlayProps) {
         style={[
           styles.snackbar,
           { backgroundColor: typeBackground[type] },
-          { bottom: insets.bottom + SNACKBAR_BOTTOM_OFFSET },
+          { top: insets.top + SNACKBAR_TOP_OFFSET },
           animatedStyle,
         ]}
       >

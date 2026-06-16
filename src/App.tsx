@@ -15,8 +15,8 @@ function App() {
   return (
     <GestureHandlerRootView>
       <Provider store={store}>
-        <SafeAreaProvider>
-          <PersistGate persistor={persistor}>
+        <PersistGate persistor={persistor}>
+          <SafeAreaProvider>
             <StatusBar
               backgroundColor="transparent"
               barStyle="dark-content"
@@ -24,8 +24,8 @@ function App() {
             />
             <ApplicationNavigator />
             <Dialog ref={ref => AppNavigator.setRefDialog(ref)} />
-          </PersistGate>
-        </SafeAreaProvider>
+          </SafeAreaProvider>
+        </PersistGate>
       </Provider>
     </GestureHandlerRootView>
   );

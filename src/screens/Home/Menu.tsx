@@ -169,8 +169,7 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
     close(() => {
       AppNavigator.showDialog({
         screen: Information,
-        title: t('home.logout.title'),
-        desc: t('home.logout.desc'),
+        title: t('home.logout.desc'),
         confirmTitle: t('home.logout.button_submit'),
         cancelTitle: t('home.logout.button_cancel'),
         onConfirm: () => {

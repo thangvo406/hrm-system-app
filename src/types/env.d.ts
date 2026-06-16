@@ -1,7 +1,11 @@
 declare module 'react-native-config' {
   type NativeConfig = {
-    API_URL: string;
-    DEV_HOST?: string;
+    APP_ID?: string;
+    APP_NAME?: string;
+    BASE_URL?: string;
+    IS_DEV: string;
+    ONE_SIGNAL_ID?: string;
+    DOMAIN_CDN?: string;
   };
 
   const Config: NativeConfig;
