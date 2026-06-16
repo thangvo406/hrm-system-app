@@ -1,9 +1,29 @@
 {
-  "installed": {
-    "client_id": "1085127513737-8ipk3d7u5lakpkq913q1qh07bi0edabe.apps.googleusercontent.com",
-    "project_id": "cobalt-nomad-498810-v5",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs"
-  }
+  "project_info": {
+    "project_number": "453541234898",
+    "project_id": "coop-b66de",
+    "storage_bucket": "coop-b66de.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453541234898:android:ab23906bed3260294b450b",
+        "android_client_info": {
+          "package_name": "com.coop_use"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD61FjLE7scD-s5Ajm4DnQ9ql6N8Ng5JNg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
 }

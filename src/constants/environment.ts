@@ -5,4 +5,5 @@ export const Environment = {
   ONE_SIGNAL_ID: Config.ONE_SIGNAL_ID,
   APP_NAME: Config.APP_NAME,
   DOMAIN_CDN: Config.DOMAIN_CDN,
+  GOOGLE_WEB_CLIENT_ID: Config.GOOGLE_WEB_CLIENT_ID,
 };

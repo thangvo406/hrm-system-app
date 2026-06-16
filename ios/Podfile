@@ -17,6 +17,9 @@ end
 target 'CoopUse' do
   config = use_native_modules!
 
+  pod 'GoogleUtilities', :modular_headers => true
+  pod 'RecaptchaInterop', :modular_headers => true
+
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
@@ -30,5 +33,32 @@ target 'CoopUse' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Inject env/.dev variables into Pods-CoopUse xcconfig so Xcode can
+    # resolve things like $(APP_IOS_ID) and $(GOOGLE_IOS_CLIENT_ID) at
+    # build time (in PRODUCT_BUNDLE_IDENTIFIER, Info.plist URL schemes, etc).
+    require 'pathname'
+    env_file = Pathname.new(__dir__).join('..', 'env', '.dev')
+    if env_file.exist?
+      env_lines = env_file.readlines.map(&:strip).reject do |l|
+        l.empty? || l.start_with?('#')
+      end
+      installer.pods_project.targets.each do |target|
+        next unless target.name == 'Pods-CoopUse'
+        target.build_configurations.each do |config|
+          xcconfig_path = config.base_configuration_reference.real_path
+          contents = File.read(xcconfig_path)
+          env_lines.each do |line|
+            key, _ = line.split('=', 2)
+            contents.gsub!(/^#{Regexp.escape(key)}=.*\n/, '')
+          end
+          File.open(xcconfig_path, 'a') do |f|
+            f.puts ''
+            f.puts '// Injected from env/.dev by Podfile post_install'
+            env_lines.each { |line| f.puts line }
+          end
+        end
+      end
+    end
   end
 end

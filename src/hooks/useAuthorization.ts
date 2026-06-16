@@ -1,18 +1,26 @@
 import { useAppDispatch } from '@services/common/storeHooks';
 import { loginRequest } from '@services/slices/auth/authSlice';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Alert, Platform } from 'react-native';
 import { DeviceUtils, ValidateUtils } from '@kits/core/utils';
-import { Platform } from 'react-native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { Paths } from '@navigation/paths';
 import type { RootStackParamList } from '@navigation/types';
 import { useTranslation } from 'react-i18next';
-
 import { computeFormAuthErrors } from '@utils/common';
 import { AppConstants } from '@constants';
+import Config from 'react-native-config';
 import { useRegister } from './useRegister';
 import AppNavigator from '@navigation/AppNavigator';
+
+import {
+  GoogleSignin,
+  isErrorWithCode,
+  isSuccessResponse,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+
 const { STEP, PASSWORD_MIN_LENGTH, NEED_INFO_LOGIN_CODE, initialLoginForm } =
   AppConstants;
 export type { AuthStep, RegisterErrors } from './useRegister';
@@ -42,23 +50,6 @@ const validateLogin = (
     errors.password = t('authorisation.error_password_min');
   }
   return errors;
-};
-
-const loginWithSocial = (provider: SocialProvider) => {
-  switch (provider) {
-    case 'google': {
-      // TODO: implement Google login
-      break;
-    }
-    case 'kakao': {
-      // TODO: implement Kakao login
-      break;
-    }
-    case 'naver': {
-      // TODO: implement Naver login
-      break;
-    }
-  }
 };
 
 export const useAuthorization = () => {
@@ -93,6 +84,56 @@ export const useAuthorization = () => {
   );
   const visibleLoginErrors = loginFormState.visible;
   const isLoginValid = loginFormState.valid;
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: Config.GOOGLE_WEB_CLIENT_ID,
+    });
+  }, []);
+
+  const onLoginGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+      const response = await GoogleSignin.signIn();
+
+      if (isSuccessResponse(response)) {
+        // TODO: dispatch backend login with response.data.idToken
+      }
+    } catch (error: any) {
+      if (isErrorWithCode(error)) {
+        switch (error.code) {
+          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE: {
+            Alert.alert('Google Play Services not available');
+            break;
+          }
+          default: {
+            Alert.alert('Google sign-in error 111', error.code);
+          }
+        }
+      } else {
+        Alert.alert('Google sign-in error', error?.message ?? 'unknown');
+      }
+    }
+  };
+
+  const loginWithSocial = (provider: SocialProvider) => {
+    switch (provider) {
+      case 'google': {
+        onLoginGoogle().then(() => null);
+        break;
+      }
+      case 'kakao': {
+        // TODO: implement Kakao login
+        break;
+      }
+      case 'naver': {
+        // TODO: implement Naver login
+        break;
+      }
+    }
+  };
 
   const onLoginFailure = (error: any) => {
     setLoading(false);
