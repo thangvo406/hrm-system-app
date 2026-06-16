@@ -11,7 +11,15 @@ const openMenu = () => {
 };
 
 const goToProfile = () => {
-  AppNavigator.navigate(Paths.Profile);
+  // AppNavigator.navigate(Paths.Contribution);
+};
+
+const onPressContribution = () => {
+  AppNavigator.navigate(Paths.Contribution);
+};
+
+const onPressOrder = () => {
+  // AppNavigator.navigate(Paths.Contribution);
 };
 
 export const useHome = () => {
@@ -22,5 +30,7 @@ export const useHome = () => {
     goToProfile,
     openMenu,
     profile,
+    onPressOrder,
+    onPressContribution,
   };
 };

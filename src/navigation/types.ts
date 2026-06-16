@@ -7,10 +7,10 @@ export type RootScreenProps<
 
 export type RootStackParamList = {
   [Paths.Authorization]: { isLogin: boolean } | undefined;
+  [Paths.Contribution]: undefined;
   [Paths.Example]: undefined;
   [Paths.ForgotPass]: undefined;
   [Paths.Home]: undefined;
-  [Paths.Profile]: undefined;
   [Paths.Startup]: undefined;
   [Paths.Welcome]: undefined;
 };

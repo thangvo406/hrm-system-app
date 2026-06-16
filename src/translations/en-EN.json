@@ -101,7 +101,8 @@
       "next": "Next"
     },
     "home": {
-      "greeting": "Nice to meet you! {{name}}님",
+      "greeting": "Nice to meet you!",
+      "greeting_prefix": "님",
       "member_label": "Member",
       "pay_label": "Coop Pay :",
       "pay_amount": "{{amount}} KRW",

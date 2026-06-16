@@ -22,7 +22,7 @@ function Header({
   onOpenMenu,
   onPressNotification = undefined,
   profile = undefined,
-  isShowLabelMember,
+  isShowLabelMember = false,
 }: HeaderProps) {
   const { t } = useTranslation();
   return (
@@ -47,7 +47,7 @@ function Header({
           <View style={styles.memberBadge}>
             <Text style={styles.memberBadgeText}>{t('home.member_label')}</Text>
           </View>
-        ) : null}
+        ) : undefined}
       </View>
 
       <View
@@ -56,7 +56,9 @@ function Header({
         }}
       >
         <Text style={styles.greeting}>
-          {t('home.greeting', { name: profile?.name ?? '' })}
+          {t('home.greeting')}
+          <Text style={styles.name}> {` ${profile?.fullName}`}</Text>
+          {` ${t('home.greeting_prefix')}`}
         </Text>
         <TouchableOpacity
           onPress={onPressNotification}
@@ -78,10 +80,13 @@ function Header({
 
 const styles = StyleSheet.create({
   greeting: {
-    color: '#1A1A1A',
+    color: '#707070',
     fontSize: 15,
     fontWeight: '600',
     marginRight: ScaleSize(10),
+  },
+  name: {
+    color: '#1A1A1A',
   },
   header: {
     alignItems: 'center',

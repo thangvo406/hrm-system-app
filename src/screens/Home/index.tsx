@@ -61,18 +61,35 @@ function PayCard({ onPress = undefined }: { readonly onPress?: () => void }) {
 type FeatureCardProps = {
   readonly desc: string;
   readonly image: ImageName;
+  readonly labelRight?: string;
   readonly testID: string;
   readonly title: string;
+  readonly onPress: any;
 };
 
-function FeatureCard({ desc, image, testID, title }: FeatureCardProps) {
+function FeatureCard({
+  onPress,
+  desc,
+  image,
+  labelRight,
+  testID,
+  title,
+}: FeatureCardProps) {
   return (
     <TouchableOpacity
       activeOpacity={0.9}
       style={styles.featureCard}
       testID={testID}
+      onPress={onPress}
     >
-      <Text style={styles.featureTitle}>{title}</Text>
+      <View style={styles.featureTitleRow}>
+        <Text style={styles.featureTitle}>{title}</Text>
+        {labelRight ? (
+          <View style={styles.featureLabel} testID={`${testID}-label`}>
+            <Text style={styles.featureLabelText}>{labelRight}</Text>
+          </View>
+        ) : undefined}
+      </View>
       <Text style={styles.featureDesc}>{desc}</Text>
       <View style={styles.featureImageWrap}>
         <Image
@@ -102,16 +119,6 @@ function StoreSection() {
           />
           <Text style={styles.storeName}>{STORE_NAME}</Text>
         </View>
-        <View style={styles.storeNameRow}>
-          <Image
-            color="#5C5C5C"
-            height={16}
-            name="ic_clock"
-            type="svg"
-            width={16}
-          />
-          <Text style={styles.storeEta}>{t('home.store_eta')}</Text>
-        </View>
       </View>
       <ScrollView
         contentContainerStyle={styles.productList}
@@ -140,7 +147,8 @@ function StoreSection() {
 
 function Home() {
   const { t } = useTranslation();
-  const { goToProfile, openMenu, profile } = useHome();
+  const { goToProfile, onPressContribution, onPressOrder, openMenu, profile } =
+    useHome();
   const insets = useSafeAreaInsets();
   return (
     <View style={[styles.safeArea, { paddingTop: insets.top }]}>
@@ -155,12 +163,15 @@ function Home() {
             desc={t('home.dividend_desc')}
             image={imageNames.img_discount}
             testID="home-dividend"
+            labelRight="조합 가입하기"
+            onPress={onPressContribution}
             title={t('home.dividend_title')}
           />
           <FeatureCard
             desc={t('home.order_desc')}
             image={imageNames.img_place_map}
             testID="home-order"
+            onPress={onPressOrder}
             title={t('home.order_title')}
           />
         </View>
@@ -260,20 +271,40 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 8,
   },
-  featureTitle: {
-    color: '#1A1A1A',
-    fontSize: 18,
-    fontWeight: '700',
-  },
   featureDesc: {
     color: '#9E9E9E',
-    fontSize: 12,
+    fontSize: 9,
     marginTop: 8,
   },
   featureImageWrap: {
     alignItems: 'flex-end',
     flex: 1,
     justifyContent: 'flex-end',
+  },
+  featureLabel: {
+    backgroundColor: '#54C158',
+    borderRadius: 999,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+    position: 'absolute',
+    right: 0,
+  },
+  featureLabelText: {
+    color: '#FFFFFF',
+    fontSize: 8,
+    fontWeight: '700',
+  },
+  featureTitle: {
+    color: '#1A1A1A',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  featureTitleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    justifyContent: 'space-between',
   },
   sectionLabel: {
     color: '#5C5C5C',

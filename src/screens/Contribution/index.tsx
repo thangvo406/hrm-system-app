@@ -27,7 +27,7 @@ const CONTRIBUTION_AMOUNT = '2,500,000';
 const DEPOSIT_AMOUNT = '100,000';
 const POINT_AMOUNT = '11,000';
 
-type ProfileRowProps = {
+type ContributionRowProps = {
   readonly label: string;
 };
 
@@ -59,7 +59,7 @@ function NameBlock({ name }: { readonly name: string }) {
 function ContributionCard() {
   const { t } = useTranslation();
   return (
-    <View style={styles.contributionCard} testID="profile-contribution-card">
+    <View style={styles.contributionCard} testID="contribution-card">
       <GradientBackground />
       <Text style={styles.contributionTitle}>
         {t('profile.contribution_title')}
@@ -74,7 +74,7 @@ function ContributionCard() {
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.whitePill}
-          testID="profile-contribution-history"
+          testID="contribution-history"
         >
           <Text style={styles.whitePillText}>
             {t('profile.contribution_history')}
@@ -83,7 +83,7 @@ function ContributionCard() {
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.whitePill}
-          testID="profile-contribution-add"
+          testID="contribution-add"
         >
           <Text style={styles.whitePillText}>
             {t('profile.contribution_add')}
@@ -103,7 +103,7 @@ function PaySection() {
         <TouchableOpacity
           activeOpacity={0.7}
           style={styles.payLinkRow}
-          testID="profile-pay-link"
+          testID="contribution-pay-link"
         >
           <Text style={styles.payLinkText}>{t('profile.pay_link')}</Text>
           <Image
@@ -132,14 +132,14 @@ function PaySection() {
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.darkPill}
-          testID="profile-pay-history"
+          testID="contribution-pay-history"
         >
           <Text style={styles.darkPillText}>{t('profile.pay_history')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.darkPill}
-          testID="profile-pay-recharge"
+          testID="contribution-pay-recharge"
         >
           <Text style={styles.darkPillText}>{t('profile.pay_recharge')}</Text>
         </TouchableOpacity>
@@ -148,12 +148,12 @@ function PaySection() {
   );
 }
 
-function MenuRow({ label }: ProfileRowProps) {
+function MenuRow({ label }: ContributionRowProps) {
   return (
     <TouchableOpacity
       activeOpacity={0.7}
       style={styles.menuRow}
-      testID={`profile-menu-${label}`}
+      testID={`contribution-menu-${label}`}
     >
       <View style={styles.menuRowLeft}>
         <Image
@@ -180,7 +180,7 @@ const onOpenMenu = () => {
   AppNavigator.showMenu();
 };
 
-function Profile() {
+function Contribution() {
   const { t } = useTranslation();
   const profile: ProfileType | undefined = useAppSelector(
     AccountSelector.getProfile,
@@ -210,7 +210,7 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default Contribution;
 
 const styles = StyleSheet.create({
   bigAmount: {

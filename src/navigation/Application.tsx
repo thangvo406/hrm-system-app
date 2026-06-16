@@ -10,7 +10,7 @@ import {
   Authorization,
   Example,
   Home,
-  Profile,
+  Contribution,
   Startup,
   Welcome,
   ForgotPass,
@@ -35,7 +35,7 @@ function ApplicationNavigator() {
         <Stack.Screen component={Authorization} name={Paths.Authorization} />
         <Stack.Screen component={Home} name={Paths.Home} />
         <Stack.Screen component={ForgotPass} name={Paths.ForgotPass} />
-        <Stack.Screen component={Profile} name={Paths.Profile} />
+        <Stack.Screen component={Contribution} name={Paths.Contribution} />
         <Stack.Screen component={Example} name={Paths.Example} />
       </Stack.Navigator>
     </NavigationContainer>
