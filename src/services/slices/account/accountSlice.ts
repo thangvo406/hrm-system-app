@@ -3,7 +3,7 @@ import type { Profile } from '@services/request/account';
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { logout } from '@services/slices/auth/authSlice';
+import { logoutSuccess } from '@services/slices/auth/authSlice';
 
 export type AccountCallback = {
   onFailure?: (error: string) => void;
@@ -12,39 +12,51 @@ export type AccountCallback = {
 
 export type GetProfilePayload = AccountCallback;
 
+export type UpdatePushIdPayload = {
+  optedIn: boolean;
+  pushToken: string;
+  subscriptionId: string;
+};
+
 export type AccountState = {
-  loading: boolean;
   profile: Profile | undefined;
+  pushId: string | undefined;
 };
 
 const initialState: AccountState = {
-  loading: false,
   profile: undefined,
+  pushId: undefined,
 };
 
 const accountSlice = createSlice({
   extraReducers: builder => {
-    builder.addCase(logout, () => initialState);
+    builder.addCase(logoutSuccess, () => initialState);
   },
   initialState,
   name: 'account',
   reducers: {
     clearProfile: () => initialState,
-    // Triggers the saga to fetch the current user's profile.
     getProfileRequest: {
       prepare: (payload: GetProfilePayload = {}) => ({ payload }),
-      reducer: state => {
-        state.loading = true;
-      },
+      reducer: () => {},
     },
     getProfileSuccess: (state, action: PayloadAction<Profile>) => {
-      state.loading = false;
       state.profile = action.payload;
+    },
+    updatePushIdRequest: {
+      prepare: (payload: UpdatePushIdPayload) => ({ payload }),
+      reducer: (state, action: PayloadAction<UpdatePushIdPayload>) => {
+        state.pushId = action.payload.subscriptionId;
+      },
     },
   },
 });
 
-export const { clearProfile, getProfileRequest, getProfileSuccess } =
-  accountSlice.actions;
+export const {
+  clearProfile,
+  getProfileRequest,
+  getProfileSuccess,
+  updatePushIdRequest,
+} = accountSlice.actions;
 
 export const accountReducer = accountSlice.reducer;

@@ -4,8 +4,6 @@ import { createSlice } from '@reduxjs/toolkit';
 
 export type AuthState = {
   accessToken: string | undefined;
-  error: string | undefined;
-  loading: boolean;
   refreshToken: string | undefined;
 };
 
@@ -20,11 +18,8 @@ export type AuthCallback = {
 };
 
 export type LoginPayload = {
-  deviceId?: string;
-  deviceName?: string;
   email: string;
   password: string;
-  platform?: string;
 } & AuthCallback;
 
 export type RegisterUserPayload = {
@@ -42,10 +37,7 @@ export type LoginSocialPayload = {
   accessToken?: string;
   authorizationCode?: string;
   codeVerifier?: string;
-  deviceId?: string;
-  deviceName?: string;
   idToken?: string;
-  platform?: string;
   provider: 'GOOGLE' | 'KAKAO' | 'NAVER';
   redirectUri?: string;
   state?: string;
@@ -92,8 +84,6 @@ export type SubmitForgotPassPayload = {
 
 const initialState: AuthState = {
   accessToken: undefined,
-  error: undefined,
-  loading: false,
   refreshToken: undefined,
 };
 
@@ -101,101 +91,70 @@ const authSlice = createSlice({
   initialState,
   name: 'auth',
   reducers: {
-    authFailure: (state, _: PayloadAction<string>) => {
-      state.loading = false;
-    },
+    authFailure: () => {},
     authSuccess: (state, action: PayloadAction<Credentials>) => {
       state.accessToken = action.payload.accessToken;
       if (action.payload.refreshToken !== undefined) {
         state.refreshToken = action.payload.refreshToken;
       }
-      state.error = undefined;
-      state.loading = false;
     },
     clearCredentials: () => initialState,
-    // Clears auth state. Other slices listen for this in extraReducers to
-    // reset themselves, so a single dispatch wipes the whole store.
-    logout: () => initialState,
+    // Triggers the saga to run cleanup (delete push id, purge storage).
+    // Other slices reset to initialState when they receive `logoutSuccess`.
+    logout: state => state,
+    // Dispatched by the saga after all async cleanup is complete. All other
+    // slices listen for this to reset themselves.
+    logoutSuccess: () => initialState,
     // Triggers the saga; carries the login form values.
     loginRequest: {
       prepare: (payload: LoginPayload) => ({ payload }),
-      reducer: state => {
-        state.error = undefined;
-        state.loading = true;
-      },
+      reducer: () => {},
     },
     // Triggers the saga; carries the social-login token + provider. Shared
     // across Google, Kakao, and Naver — the saga dispatches the same API.
     loginSocialRequest: {
       prepare: (payload: LoginSocialPayload) => ({ payload }),
-      reducer: state => {
-        state.error = undefined;
-        state.loading = true;
-      },
+      reducer: () => {},
     },
     // Step 1 of multi-step registration.
     registerUserRequest: {
       prepare: (payload: RegisterUserPayload) => ({ payload }),
-      reducer: state => {
-        state.error = undefined;
-        state.loading = true;
-      },
+      reducer: () => {},
     },
     // Step 2: send OTP to phone.
     sendOTPRequest: {
       prepare: (payload: SendOTPPayload) => ({ payload }),
-      reducer: state => {
-        state.error = undefined;
-        state.loading = true;
-      },
+      reducer: () => {},
     },
     // Step 3: verify OTP.
     verifyOTPRequest: {
       prepare: (payload: VerifyOTPPayload) => ({ payload }),
-      reducer: state => {
-        state.error = undefined;
-        state.loading = true;
-      },
+      reducer: () => {},
     },
     // Step 4: complete registration with university/membership info.
     completeRegisterRequest: {
       prepare: (payload: CompleteRegisterPayload) => ({ payload }),
-      reducer: state => {
-        state.error = undefined;
-        state.loading = true;
-      },
+      reducer: () => {},
     },
     // Fetch the list of universities for the school picker.
     getUniversitiesRequest: {
       prepare: (payload: GetUniversitiesPayload = {}) => ({ payload }),
-      reducer: state => {
-        state.error = undefined;
-        state.loading = true;
-      },
+      reducer: () => {},
     },
     // Forgot-password step 1: send OTP to the user's identifier (email/phone).
     sendOtpForgotPassRequest: {
       prepare: (payload: SendOtpForgotPassPayload) => ({ payload }),
-      reducer: state => {
-        state.error = undefined;
-        state.loading = true;
-      },
+      reducer: () => {},
     },
     // Forgot-password step 2: verify the OTP and receive a reset token.
     verifyOtpForgotPassRequest: {
       prepare: (payload: VerifyOtpForgotPassPayload) => ({ payload }),
-      reducer: state => {
-        state.error = undefined;
-        state.loading = true;
-      },
+      reducer: () => {},
     },
     // Forgot-password step 3: submit a new password with the reset token.
     submitForgotPassRequest: {
       prepare: (payload: SubmitForgotPassPayload) => ({ payload }),
-      reducer: state => {
-        state.error = undefined;
-        state.loading = true;
-      },
+      reducer: () => {},
     },
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
@@ -218,6 +177,7 @@ export const {
   loginRequest,
   loginSocialRequest,
   logout,
+  logoutSuccess,
   registerUserRequest,
   sendOTPRequest,
   sendOtpForgotPassRequest,

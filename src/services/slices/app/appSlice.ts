@@ -2,11 +2,10 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 
 import { createSlice } from '@reduxjs/toolkit';
 
-import { logout } from '@services/slices/auth/authSlice';
+import { logoutSuccess } from '@services/slices/auth/authSlice';
 
 export type AppState = {
   counter: number;
-  loading: boolean;
 };
 
 export type StartupAppPayload = {
@@ -16,12 +15,11 @@ export type StartupAppPayload = {
 
 const initialState: AppState = {
   counter: 0,
-  loading: false,
 };
 
 const appSlice = createSlice({
   extraReducers: builder => {
-    builder.addCase(logout, () => initialState);
+    builder.addCase(logoutSuccess, () => initialState);
   },
   initialState,
   name: 'app',
@@ -35,13 +33,10 @@ const appSlice = createSlice({
     // Triggers the saga; payload is the amount to add asynchronously.
     incrementAsync: {
       prepare: (amount: number) => ({ payload: amount }),
-      reducer: state => {
-        state.loading = true;
-      },
+      reducer: () => {},
     },
     incrementAsyncSuccess: (state, action: PayloadAction<number>) => {
       state.counter += action.payload;
-      state.loading = false;
     },
     reset: () => initialState,
     // Triggers the saga at app cold-start; result is delivered via callbacks.

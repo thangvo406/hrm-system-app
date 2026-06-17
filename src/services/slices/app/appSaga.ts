@@ -5,7 +5,6 @@ import { AuthSelector } from '@services/selectors';
 import { delay, put, select, takeLatest } from 'redux-saga/effects';
 
 import { incrementAsync, incrementAsyncSuccess, startupApp } from './appSlice';
-import { getProfileRequest } from '../account/accountSlice';
 
 const ASYNC_DELAY = 1000;
 const STARTUP_DELAY = 1000;
@@ -29,9 +28,9 @@ function* startupAppWorker(action: PayloadAction<StartupAppPayload>) {
       AuthSelector.getAccessToken,
     );
     const isAuthenticated = Boolean(accessToken);
-    if (isAuthenticated) {
-      yield put(getProfileRequest());
-    }
+    // if (isAuthenticated) {
+    //   yield put(getProfileRequest());
+    // }
     action.payload.onSuccess?.(isAuthenticated);
   } catch {
     action.payload.onFailure?.(STARTUP_ERROR);

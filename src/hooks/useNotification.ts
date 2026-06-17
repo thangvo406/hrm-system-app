@@ -1,19 +1,13 @@
 import { Environment } from '@constants';
-// import { AppStorage } from '@config/storage';
-// import { NotificationType } from '@constants';
-// import { AppConstants } from '@constants';
 import { FileManager } from '@kits/core/utils/FileManager';
+import { useAppDispatch } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
-// import AppNavigator from '@navigations/AppNavigator';
-// import { ROUTES } from '@navigations/Routes';
-// import { AccountSelector } from '@reducers/account/selectors';
+import { updatePushIdRequest } from '@services/slices/account/accountSlice';
 import Globals from '@utils/Globals';
 import { useEffect, useRef } from 'react';
 import type { NotificationClickEvent } from 'react-native-onesignal';
 import { OneSignal } from 'react-native-onesignal';
 import { useSelector } from 'react-redux';
-// import { useActions } from './useActions';
-// import { notifyActions } from '@actions/notify';
 
 const CLICK_DEBOUNCE_MS = 500;
 const DEVICE_ID_RETRY_MS = 1000;
@@ -23,28 +17,43 @@ const onHandleNotificationClick = () => {
 };
 
 const useNotification = () => {
+  const dispatch = useAppDispatch();
   const profile = useSelector(AccountSelector.getProfile);
   const clickEventTimeoutId = useRef<NodeJS.Timeout | number>(0);
+  const timeOutSendPushRequest = useRef<any>(null);
+  const timeOutCheckDeviceId = useRef<any>(null);
 
   //   const actions = useActions({
   //     updateReadNotifyRequest: notifyActions.updateReadedNotifyRequest,
   //     updateDeviceIdRequest: accountActions.updateDeviceIdRequest,
   //   });
 
-  const getDeviceId = () => {
-    void OneSignal.User.getOnesignalId().then(token => {
-      if (!token) {
-        setTimeout(() => {
-          getDeviceId();
-        }, DEVICE_ID_RETRY_MS);
-      } else {
-        // actions.updateDeviceIdRequest({ oneSignalId: token });
-      }
-    });
+  const getDeviceId = async () => {
+    const [subscriptionId, pushToken, optedIn] = await Promise.all([
+      OneSignal.User.pushSubscription.getIdAsync(),
+      OneSignal.User.pushSubscription.getTokenAsync(),
+      OneSignal.User.pushSubscription.getOptedInAsync(),
+    ]);
+    if (!subscriptionId) {
+      clearTimeout(timeOutCheckDeviceId.current);
+      timeOutCheckDeviceId.current = setTimeout(() => {
+        void getDeviceId();
+      }, DEVICE_ID_RETRY_MS);
+      return;
+    }
+    clearTimeout(timeOutSendPushRequest.current);
+    timeOutSendPushRequest.current = setTimeout(() => {
+      dispatch(
+        updatePushIdRequest({
+          optedIn,
+          pushToken: pushToken ?? '',
+          subscriptionId,
+        }),
+      );
+    }, 250);
   };
 
   const checkPermission = async () => {
-    // alert(JSON.stringify(profile));
     if (!profile?.identityNumber) {
       return;
     }
@@ -62,7 +71,7 @@ const useNotification = () => {
         // Force sync lên server
         OneSignal.User.pushSubscription.optIn();
         OneSignal.login(`user_${profile?.phone ?? ''}`);
-        getDeviceId();
+        void getDeviceId();
       }
     });
   };

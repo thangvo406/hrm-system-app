@@ -1,6 +1,7 @@
 import { httpRequest } from '@services/common/httpRequest';
 import { z } from 'zod';
 import { EndPoints } from '@constants';
+import { UpdatePushIdPayload } from '@services/slices/account/accountSlice';
 
 type ApiResponse<T> = { data: T };
 
@@ -27,4 +28,18 @@ export const getProfile = async (): Promise<Profile> => {
     { loading: false },
   );
   return response.data;
+};
+
+export const updatePushId = async (
+  request: UpdatePushIdPayload,
+): Promise<void> => {
+  await httpRequest.post(EndPoints.ACCOUNT.updatePushId, request, {
+    loading: false,
+  });
+};
+
+export const deletePushId = async (pushId: string): Promise<void> => {
+  await httpRequest.delete(EndPoints.ACCOUNT.deletePushId(pushId), {
+    loading: false,
+  });
 };

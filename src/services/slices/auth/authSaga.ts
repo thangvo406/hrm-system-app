@@ -26,7 +26,7 @@ import {
   verifyOtpForgotPass,
 } from '@services/request/auth';
 import axios from 'axios';
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, delay, put, select, takeLatest } from 'redux-saga/effects';
 
 import { persistor } from '@services/common/store';
 
@@ -38,6 +38,7 @@ import {
   loginRequest,
   loginSocialRequest,
   logout,
+  logoutSuccess,
   registerUserRequest,
   sendOTPRequest,
   sendOtpForgotPassRequest,
@@ -53,6 +54,9 @@ import {
   IResponseUniversity,
   IResponseVerifyOtpForgotPass,
 } from '../../../types/Auth';
+import Globals from '@utils/Globals';
+import { AccountSelector } from '@services/selectors';
+import { deletePushId } from '@services/request/account';
 
 const DEFAULT_ERROR = 'common_error';
 
@@ -195,7 +199,12 @@ function* submitForgotPassWorker(
 // This worker additionally wipes the persisted MMKV storage so tokens and
 // profile data do not survive an app restart.
 function* logoutWorker() {
+  Globals.hasUpdateDeviceId = false;
+  const pushId: string = yield select(AccountSelector.getPushId);
+  yield call(deletePushId, pushId);
+  yield delay(130);
   yield call([persistor, 'purge']);
+  yield put(logoutSuccess());
 }
 
 export function* authSaga() {
