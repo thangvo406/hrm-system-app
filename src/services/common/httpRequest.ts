@@ -3,6 +3,8 @@ import type { AxiosRequestConfig } from 'axios';
 import AppNavigator from '@navigation/AppNavigator';
 import { instance } from '@services/common/instance';
 import axios from 'axios';
+import DeviceInfo from 'react-native-device-info';
+import { DeviceUtils } from '@kits/core/utils';
 
 type RequestOptions = {
   // Số lần thử lại khi gặp lỗi network. 0 = không retry.
@@ -16,6 +18,24 @@ type RequestOptions = {
 
 const DEFAULT_RETRY = 0;
 const DEFAULT_RETRY_DELAY = 500;
+
+// Device info is fixed for the lifetime of the process, so capture it once
+// and attach to every outbound request. Caller-supplied headers win on
+// conflict (spread after DEVICE_HEADERS below).
+const deviceManufacturerInLib = DeviceInfo.getManufacturerSync();
+const deviceManufacturer =
+  deviceManufacturerInLib == undefined ? '' : deviceManufacturerInLib;
+const DEVICE_HEADERS = {
+  'x-app-buildNumber': DeviceInfo.getBuildNumber(),
+  'x-app-version': DeviceInfo.getVersion(),
+  'x-device-brand': DeviceInfo.getBrand(),
+  'x-device-deviceType': DeviceInfo.getDeviceType(),
+  'x-device-model': DeviceInfo.getModel(),
+  'x-device-systemName': DeviceInfo.getSystemName(),
+  'x-device-systemVersion': DeviceInfo.getSystemVersion(),
+  'x-device-deviceId': DeviceUtils.getDeviceId(),
+  'x-device-manufacturer': deviceManufacturer,
+};
 
 const delay = (ms: number) =>
   new Promise(resolve => {
@@ -50,7 +70,15 @@ const request = async <T>(
   let attempt = 0;
   for (;;) {
     try {
-      const response = await instance.request<T>(config);
+      const response = await instance.request<T>({
+        ...config,
+        headers: {
+          ...DEVICE_HEADERS,
+          ...((config.headers as
+            | Record<string, string | number | boolean>
+            | undefined) || {}),
+        },
+      });
       await dismissLoading();
       return response.data;
     } catch (error) {

@@ -4,6 +4,7 @@ import React_RCTAppDelegate
 import ReactAppDependencyProvider
 import GoogleSignIn
 import KakaoSDKAuth
+import NaverThirdPartyLogin
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -41,6 +42,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   ) -> Bool {
     if AuthApi.isKakaoTalkLoginUrl(url) {
       return AuthController.handleOpenUrl(url: url)
+    }
+    let naverScheme = Bundle.main.object(forInfoDictionaryKey: "NAVER_URL_SCHEME") as? String
+    if let scheme = naverScheme, !scheme.isEmpty, url.scheme == scheme {
+      return NaverThirdPartyLoginConnection.getSharedInstance().application(app, open: url, options: options)
     }
     return GIDSignIn.sharedInstance.handle(url)
   }

@@ -38,6 +38,18 @@ export type SendOTPPayload = {
   phone: string;
 } & AuthCallback;
 
+export type LoginSocialPayload = {
+  accessToken?: string;
+  authorizationCode?: string;
+  codeVerifier?: string;
+  deviceId?: string;
+  deviceName?: string;
+  idToken?: string;
+  platform?: string;
+  provider: 'GOOGLE' | 'KAKAO' | 'NAVER';
+  redirectUri?: string;
+  state?: string;
+} & AuthCallback;
 export type VerifyOTPPayload = {
   email?: string;
   otp?: string;
@@ -107,6 +119,15 @@ const authSlice = createSlice({
     // Triggers the saga; carries the login form values.
     loginRequest: {
       prepare: (payload: LoginPayload) => ({ payload }),
+      reducer: state => {
+        state.error = undefined;
+        state.loading = true;
+      },
+    },
+    // Triggers the saga; carries the social-login token + provider. Shared
+    // across Google, Kakao, and Naver — the saga dispatches the same API.
+    loginSocialRequest: {
+      prepare: (payload: LoginSocialPayload) => ({ payload }),
       reducer: state => {
         state.error = undefined;
         state.loading = true;
@@ -195,6 +216,7 @@ export const {
   completeRegisterRequest,
   getUniversitiesRequest,
   loginRequest,
+  loginSocialRequest,
   logout,
   registerUserRequest,
   sendOTPRequest,

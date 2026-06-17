@@ -4,6 +4,7 @@ import type {
   CompleteRegisterPayload,
   GetUniversitiesPayload,
   LoginPayload,
+  LoginSocialPayload,
   RegisterUserPayload,
   SendOTPPayload,
   SendOtpForgotPassPayload,
@@ -16,6 +17,7 @@ import {
   completeRegister,
   getUniversities,
   login,
+  loginSocial,
   registerUser,
   sendOTP,
   sendOtpForgotPass,
@@ -34,6 +36,7 @@ import {
   completeRegisterRequest,
   getUniversitiesRequest,
   loginRequest,
+  loginSocialRequest,
   logout,
   registerUserRequest,
   sendOTPRequest,
@@ -66,6 +69,16 @@ function* loginWorker(action: PayloadAction<LoginPayload>) {
   try {
     const response: AuthResponse = yield call(login, action.payload);
     yield put(authSuccess(response));
+    action.payload.onSuccess?.();
+  } catch (error) {
+    action.payload.onFailure?.(error?.response?.data);
+    yield put(authFailure(toErrorMessage(error)));
+  }
+}
+
+function* loginSocialWorker(action: PayloadAction<LoginSocialPayload>) {
+  try {
+    yield call(loginSocial, action.payload);
     action.payload.onSuccess?.();
   } catch (error) {
     action.payload.onFailure?.(error?.response?.data);
@@ -187,6 +200,7 @@ function* logoutWorker() {
 
 export function* authSaga() {
   yield takeLatest(loginRequest.type, loginWorker);
+  yield takeLatest(loginSocialRequest.type, loginSocialWorker);
   yield takeLatest(registerUserRequest.type, registerUserWorker);
   yield takeLatest(sendOTPRequest.type, sendOTPWorker);
   yield takeLatest(verifyOTPRequest.type, verifyOTPWorker);

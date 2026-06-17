@@ -1,5 +1,5 @@
 import { useAppDispatch } from '@services/common/storeHooks';
-import { loginRequest } from '@services/slices/auth/authSlice';
+import { loginRequest, loginSocialRequest } from '@services/slices/auth/authSlice';
 import { useEffect, useState } from 'react';
 import { Alert, Platform } from 'react-native';
 import { DeviceUtils, ValidateUtils } from '@kits/core/utils';
@@ -9,8 +9,7 @@ import { Paths } from '@navigation/paths';
 import type { RootStackParamList } from '@navigation/types';
 import { useTranslation } from 'react-i18next';
 import { computeFormAuthErrors } from '@utils/common';
-import { AppConstants } from '@constants';
-import Config from 'react-native-config';
+import { AppConstants, Environment } from '@constants';
 import { useRegister } from './useRegister';
 import AppNavigator from '@navigation/AppNavigator';
 
@@ -21,6 +20,7 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import { loginWithKakaoAccount } from '@react-native-seoul/kakao-login';
+import NaverLogin from '@react-native-seoul/naver-login';
 
 const { STEP, PASSWORD_MIN_LENGTH, NEED_INFO_LOGIN_CODE, initialLoginForm } =
   AppConstants;
@@ -33,6 +33,12 @@ export type UseAuthorization = ReturnType<typeof useAuthorization>;
 export type LoginErrors = {
   email?: string;
   password?: string;
+};
+
+export type SocialLoginToken = {
+  accessToken?: string;
+  authorizationCode?: string;
+  idToken?: string;
 };
 
 const validateLogin = (
@@ -51,6 +57,72 @@ const validateLogin = (
     errors.password = t('authorisation.error_password_min');
   }
   return errors;
+};
+
+const onLoginGoogle = async (): Promise<SocialLoginToken | undefined> => {
+  try {
+    await GoogleSignin.hasPlayServices({
+      showPlayServicesUpdateDialog: true,
+    });
+    const response = await GoogleSignin.signIn();
+
+    if (isSuccessResponse(response)) {
+      return {
+        authorizationCode: response.data.serverAuthCode ?? undefined,
+        idToken: response.data.idToken ?? undefined,
+      };
+    }
+  } catch (error: any) {
+    if (isErrorWithCode(error)) {
+      switch (error.code) {
+        case statusCodes.PLAY_SERVICES_NOT_AVAILABLE: {
+          Alert.alert('Google Play Services not available');
+          break;
+        }
+        default: {
+          Alert.alert('Google sign-in error 111', error.code);
+        }
+      }
+    } else {
+      Alert.alert('Google sign-in error', error?.message ?? 'unknown');
+    }
+  }
+  return undefined;
+};
+
+const onLoginKakao = async (): Promise<SocialLoginToken | undefined> => {
+  try {
+    const token = await loginWithKakaoAccount();
+    return {
+      accessToken: token.accessToken,
+      idToken: token.idToken,
+    };
+  } catch (error: any) {
+    console.warn('onLoginKakao.error', error);
+    Alert.alert('Kakao sign-in error', error?.message ?? 'unknown');
+  }
+  return undefined;
+};
+
+const onLoginNaver = async (): Promise<SocialLoginToken | undefined> => {
+  try {
+    const { failureResponse, successResponse } = await NaverLogin.login();
+    if (successResponse) {
+      return {
+        accessToken: successResponse.accessToken,
+      };
+    }
+    if (failureResponse && !failureResponse.isCancel) {
+      Alert.alert(
+        'Naver sign-in error',
+        failureResponse.message ?? 'unknown',
+      );
+    }
+  } catch (error: any) {
+    console.warn('onLoginNaver.error', error);
+    Alert.alert('Naver sign-in error', error?.message ?? 'unknown');
+  }
+  return undefined;
 };
 
 export const useAuthorization = () => {
@@ -88,64 +160,17 @@ export const useAuthorization = () => {
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: Config.GOOGLE_WEB_CLIENT_ID,
+      webClientId: Environment.GOOGLE_WEB_CLIENT_ID,
+    });
+    NaverLogin.initialize({
+      appName: Environment.APP_NAME ?? '',
+      consumerKey: Environment.NAVER_CONSUMER_KEY ?? '',
+      consumerSecret: Environment.NAVER_CONSUMER_SECRET ?? '',
+      disableNaverAppAuthAndroid: true,
+      disableNaverAppAuthIOS: true,
+      serviceUrlSchemeIOS: Environment.NAVER_URL_SCHEME ?? '',
     });
   }, []);
-
-  const onLoginGoogle = async () => {
-    try {
-      await GoogleSignin.hasPlayServices({
-        showPlayServicesUpdateDialog: true,
-      });
-      const response = await GoogleSignin.signIn();
-
-      if (isSuccessResponse(response)) {
-        // TODO: dispatch backend login with response.data.idToken
-      }
-    } catch (error: any) {
-      if (isErrorWithCode(error)) {
-        switch (error.code) {
-          case statusCodes.PLAY_SERVICES_NOT_AVAILABLE: {
-            Alert.alert('Google Play Services not available');
-            break;
-          }
-          default: {
-            Alert.alert('Google sign-in error 111', error.code);
-          }
-        }
-      } else {
-        Alert.alert('Google sign-in error', error?.message ?? 'unknown');
-      }
-    }
-  };
-
-  const onLoginKakao = async () => {
-    try {
-      const token = await loginWithKakaoAccount();
-      // TODO: dispatch backend login with token.accessToken / token.idToken
-      console.log('Kakao login success', token);
-    } catch (error: any) {
-      console.log('onLoginKakao.error', error);
-      Alert.alert('Kakao sign-in error', error?.message ?? 'unknown');
-    }
-  };
-
-  const loginWithSocial = (provider: SocialProvider) => {
-    switch (provider) {
-      case 'google': {
-        onLoginGoogle().then(() => null);
-        break;
-      }
-      case 'kakao': {
-        onLoginKakao().then(() => null);
-        break;
-      }
-      case 'naver': {
-        // TODO: implement Naver login
-        break;
-      }
-    }
-  };
 
   const onLoginFailure = (error: any) => {
     setLoading(false);
@@ -188,6 +213,37 @@ export const useAuthorization = () => {
         onSuccess: onLoginSuccess,
         password: loginForm.password,
         platform: Platform.OS,
+      }),
+    );
+  };
+
+  const loginWithSocial = async (provider: SocialProvider) => {
+    let token: SocialLoginToken | undefined;
+    switch (provider) {
+      case 'google': {
+        token = await onLoginGoogle();
+        break;
+      }
+      case 'kakao': {
+        token = await onLoginKakao();
+        break;
+      }
+      case 'naver': {
+        token = await onLoginNaver();
+        break;
+      }
+    }
+    if (!token) return;
+
+    dispatch(
+      loginSocialRequest({
+        ...token,
+        deviceId: DeviceUtils.getDeviceId(),
+        deviceName: DeviceUtils.getDeviceName(),
+        platform: Platform.OS,
+        provider: provider.toUpperCase() as 'GOOGLE' | 'KAKAO' | 'NAVER',
+        onFailure: onLoginFailure,
+        onSuccess: onLoginSuccess,
       }),
     );
   };

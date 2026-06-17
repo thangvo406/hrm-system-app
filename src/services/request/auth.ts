@@ -6,6 +6,7 @@ import type {
   SendOtpForgotPassPayload,
   SubmitForgotPassPayload,
   VerifyOTPPayload,
+  LoginSocialPayload,
   VerifyOtpForgotPassPayload,
 } from '@services/slices/auth/authSlice';
 
@@ -17,8 +18,9 @@ import type {
   IResponseSendOtpForgotPass,
   IResponseSubmitForgotPass,
   IResponseVerifyOtpForgotPass,
+  IResponseLoginSocial,
 } from '../../types/Auth';
-
+import omit from 'lodash/omit';
 import { httpRequest } from '@services/common/httpRequest';
 import { z } from 'zod';
 import { EndPoints } from '@constants';
@@ -71,6 +73,17 @@ export const getUniversities = async (): Promise<IResponseUniversity[]> => {
     { loading: false },
   );
   return response.data.content;
+};
+
+export const loginSocial = async (
+  request: LoginSocialPayload,
+): Promise<IResponseLoginSocial> => {
+  const _request = omit(request, ['provider']);
+  const response = await httpRequest.post<ApiResponse<IResponseLoginSocial>>(
+    EndPoints.AUTH.loginSocial(request.provider),
+    _request,
+  );
+  return response.data;
 };
 
 export const completeRegister = async (

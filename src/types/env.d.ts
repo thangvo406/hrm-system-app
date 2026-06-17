@@ -8,6 +8,10 @@ declare module 'react-native-config' {
     GOOGLE_IOS_CLIENT_ID?: string;
     GOOGLE_WEB_CLIENT_ID?: string;
     IS_DEV: string;
+    KAKAO_APP_KEY?: string;
+    NAVER_CONSUMER_KEY?: string;
+    NAVER_CONSUMER_SECRET?: string;
+    NAVER_URL_SCHEME?: string;
     ONE_SIGNAL_ID?: string;
   };
 
