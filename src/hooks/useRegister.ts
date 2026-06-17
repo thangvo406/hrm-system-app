@@ -1,7 +1,7 @@
 import type { InputInfoValues } from '@screens/Authorisation/components/RegisterFlow/InputInfo';
 
 import { useMemo, useRef, useState } from 'react';
-import { DeviceUtils, ValidateUtils } from '@kits/core/utils';
+import { ValidateUtils } from '@kits/core/utils';
 import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch } from '@services/common/storeHooks';
@@ -18,7 +18,6 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RootStackParamList } from '@navigation/types';
 import { Paths } from '@navigation/paths';
 import Selection from '@screens/Dialog/components/Selection';
-import { Platform } from 'react-native';
 import { computeFormAuthErrors } from '@utils/common';
 import { AppConstants } from '@constants';
 import Information from '@screens/Dialog/components/Information';
@@ -240,9 +239,6 @@ export const useRegister = () => {
         universityName: formData.current?.school?.name,
         signupToken: formData.current?.signupToken,
         membershipType: formData.current?.membershipId,
-        deviceId: DeviceUtils.getDeviceId(),
-        deviceName: DeviceUtils.getDeviceName(),
-        platform: Platform.OS,
         onSuccess: () => {
           setStep(STEP.REGISTER_COMPLETED);
         },

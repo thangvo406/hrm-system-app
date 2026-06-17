@@ -1,3 +1,4 @@
+import type { ComponentType } from 'react';
 import type { RootStackParamList } from '@navigation/types';
 
 import { Paths } from '@navigation/paths';
@@ -6,18 +7,17 @@ import {
   useNavigationContainerRef,
 } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import {
-  Authorization,
-  Example,
-  Home,
-  Contribution,
-  Startup,
-  Welcome,
-  ForgotPass,
-} from '@screens';
+import * as Screens from '@screens';
 import AppNavigator from '@navigation/AppNavigator';
 
 const Stack = createStackNavigator<RootStackParamList>();
+
+type ScreenKey = keyof typeof Paths;
+const SCREEN_KEYS = Object.keys(Paths) as ScreenKey[];
+const ScreenAny = Stack.Screen as ComponentType<{
+  component: ComponentType<unknown>;
+  name: string;
+}>;
 
 function ApplicationNavigator() {
   const navigationReference = useNavigationContainerRef<RootStackParamList>();
@@ -29,14 +29,17 @@ function ApplicationNavigator() {
       }}
       ref={navigationReference}
     >
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen component={Startup} name={Paths.Startup} />
-        <Stack.Screen component={Welcome} name={Paths.Welcome} />
-        <Stack.Screen component={Authorization} name={Paths.Authorization} />
-        <Stack.Screen component={Home} name={Paths.Home} />
-        <Stack.Screen component={ForgotPass} name={Paths.ForgotPass} />
-        <Stack.Screen component={Contribution} name={Paths.Contribution} />
-        <Stack.Screen component={Example} name={Paths.Example} />
+      <Stack.Navigator
+        initialRouteName={Paths.Startup}
+        screenOptions={{ headerShown: false }}
+      >
+        {SCREEN_KEYS.map(key => (
+          <ScreenAny
+            key={key}
+            component={Screens[key] as ComponentType<unknown>}
+            name={Paths[key]}
+          />
+        ))}
       </Stack.Navigator>
     </NavigationContainer>
   );

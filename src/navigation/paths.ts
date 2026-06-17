@@ -1,4 +1,4 @@
-export const enum Paths {
+export enum Paths {
   Authorization = 'authorization',
   Contribution = 'contribution',
   Example = 'example',

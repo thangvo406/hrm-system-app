@@ -1,5 +1,8 @@
 import { useAppDispatch } from '@services/common/storeHooks';
-import { loginRequest, loginSocialRequest } from '@services/slices/auth/authSlice';
+import {
+  loginRequest,
+  loginSocialRequest,
+} from '@services/slices/auth/authSlice';
 import { useEffect, useState } from 'react';
 import { Alert, Platform } from 'react-native';
 import { DeviceUtils, ValidateUtils } from '@kits/core/utils';
@@ -113,10 +116,7 @@ const onLoginNaver = async (): Promise<SocialLoginToken | undefined> => {
       };
     }
     if (failureResponse && !failureResponse.isCancel) {
-      Alert.alert(
-        'Naver sign-in error',
-        failureResponse.message ?? 'unknown',
-      );
+      Alert.alert('Naver sign-in error', failureResponse.message ?? 'unknown');
     }
   } catch (error: any) {
     console.warn('onLoginNaver.error', error);
@@ -206,13 +206,10 @@ export const useAuthorization = () => {
 
     dispatch(
       loginRequest({
-        deviceId: DeviceUtils.getDeviceId(),
-        deviceName: DeviceUtils.getDeviceName(),
         email: loginForm?.email,
         onFailure: onLoginFailure,
         onSuccess: onLoginSuccess,
         password: loginForm.password,
-        platform: Platform.OS,
       }),
     );
   };
@@ -238,9 +235,6 @@ export const useAuthorization = () => {
     dispatch(
       loginSocialRequest({
         ...token,
-        deviceId: DeviceUtils.getDeviceId(),
-        deviceName: DeviceUtils.getDeviceName(),
-        platform: Platform.OS,
         provider: provider.toUpperCase() as 'GOOGLE' | 'KAKAO' | 'NAVER',
         onFailure: onLoginFailure,
         onSuccess: onLoginSuccess,

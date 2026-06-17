@@ -13,5 +13,8 @@ export const EndPoints = {
   },
   ACCOUNT: {
     getProfile: 'user/profile',
+    updatePushId: 'notification/push-subscription',
+    deletePushId: (pushId: string) =>
+      `notification/push-subscription/${pushId}`,
   },
 };

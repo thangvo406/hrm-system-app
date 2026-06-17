@@ -19,7 +19,6 @@ import { storage } from './storage';
 import { accountReducer } from '@services/slices/account/accountSlice';
 import { appReducer } from '@services/slices/app/appSlice';
 import { authReducer } from '@services/slices/auth/authSlice';
-import { counterReducer } from '@services/slices/counter/counterSlice';
 
 const reduxStorage: Storage = {
   getItem: key => Promise.resolve(storage.getString(key) ?? undefined),
@@ -37,7 +36,6 @@ const rootReducer = combineReducers({
   account: accountReducer,
   app: appReducer,
   auth: authReducer,
-  counter: counterReducer,
 });
 
 const persistConfig = {
