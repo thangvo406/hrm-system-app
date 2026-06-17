@@ -75,20 +75,24 @@ function Information({
       </View>
 
       <View style={styles.actions}>
-        <Button
-          onPress={handleConfirm}
-          style={styles.actionButton}
-          testID="information-confirm"
-          title={confirmTitle ? translate(confirmTitle) : t('common.confirm')}
-          type="rounded"
-        />
-        <Button
-          onPress={handleCancel}
-          style={styles.actionButton}
-          testID="information-cancel"
-          title={cancelTitle ? translate(cancelTitle) : t('common.cancel')}
-          type="outline"
-        />
+        {!!confirmTitle && (
+          <Button
+            onPress={handleConfirm}
+            style={styles.actionButton}
+            testID="information-confirm"
+            title={translate(confirmTitle)}
+            type="rounded"
+          />
+        )}
+        {!!cancelTitle && (
+          <Button
+            onPress={handleCancel}
+            style={styles.actionButton}
+            testID="information-cancel"
+            title={translate(cancelTitle)}
+            type="outline"
+          />
+        )}
       </View>
     </View>
   );

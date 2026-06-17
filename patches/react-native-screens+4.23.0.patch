@@ -1,13 +1,48 @@
+diff --git a/node_modules/react-native-screens/ios/conversion/RNSConversions-BottomTabs.mm b/node_modules/react-native-screens/ios/conversion/RNSConversions-BottomTabs.mm
+index 0000000..0000000 100644
+--- a/node_modules/react-native-screens/ios/conversion/RNSConversions-BottomTabs.mm
++++ b/node_modules/react-native-screens/ios/conversion/RNSConversions-BottomTabs.mm
+@@ -407,14 +407,14 @@ RNSScrollEdgeEffect RNSBottomTabsScrollEdgeEffectFromBottomTabsScreenTopScrollEd
+
+ #if RCT_NEW_ARCH_ENABLED
+ API_AVAILABLE(ios(26.0))
+-std::optional<react::RNSBottomTabsAccessoryEventEmitter::OnEnvironmentChangeEnvironment>
++std::optional<std::string>
+ RNSBottomTabsAccessoryOnEnvironmentChangePayloadFromUITabAccessoryEnvironment(UITabAccessoryEnvironment environment)
+ {
+   switch (environment) {
+     case UITabAccessoryEnvironmentRegular:
+-      return react::RNSBottomTabsAccessoryEventEmitter::OnEnvironmentChangeEnvironment::Regular;
++      return std::string("regular");
+     case UITabAccessoryEnvironmentInline:
+-      return react::RNSBottomTabsAccessoryEventEmitter::OnEnvironmentChangeEnvironment::Inline;
++      return std::string("inline");
+     default:
+       // We want to ignore other environments (e.g. `none`), that's why there is no warning here.
+       return std::nullopt;
+diff --git a/node_modules/react-native-screens/ios/conversion/RNSConversions.h b/node_modules/react-native-screens/ios/conversion/RNSConversions.h
+index 0000000..0000000 100644
+--- a/node_modules/react-native-screens/ios/conversion/RNSConversions.h
++++ b/node_modules/react-native-screens/ios/conversion/RNSConversions.h
+@@ -77,7 +77,7 @@ RNSScrollEdgeEffect RNSBottomTabsScrollEdgeEffectFromBottomTabsScreenTopScrollEd
+
+ #if RCT_NEW_ARCH_ENABLED
+ API_AVAILABLE(ios(26.0))
+-std::optional<react::RNSBottomTabsAccessoryEventEmitter::OnEnvironmentChangeEnvironment>
++std::optional<std::string>
+ RNSBottomTabsAccessoryOnEnvironmentChangePayloadFromUITabAccessoryEnvironment(UITabAccessoryEnvironment environment);
+
+ #if REACT_NATIVE_VERSION_MINOR >= 82
 diff --git a/node_modules/react-native-screens/src/fabric/bottom-tabs/BottomTabsAccessoryNativeComponent.ts b/node_modules/react-native-screens/src/fabric/bottom-tabs/BottomTabsAccessoryNativeComponent.ts
-index df58f96..a12cc26 100644
+index 0000000..0000000 100644
 --- a/node_modules/react-native-screens/src/fabric/bottom-tabs/BottomTabsAccessoryNativeComponent.ts
 +++ b/node_modules/react-native-screens/src/fabric/bottom-tabs/BottomTabsAccessoryNativeComponent.ts
 @@ -4,7 +4,7 @@ import { codegenNativeComponent } from 'react-native';
  import type { CodegenTypes as CT, ViewProps } from 'react-native';
- 
+
  type EnvironmentChangeEvent = {
 -  environment: 'regular' | 'inline';
 +  environment: string;
  };
- 
+
  export interface NativeProps extends ViewProps {

@@ -1,5 +1,11 @@
 import type { Ref } from 'react';
-import type { KeyboardTypeOptions } from 'react-native';
+import type {
+  KeyboardTypeOptions,
+  ReturnKeyType,
+  StyleProp,
+  SubmitBehavior,
+  ViewStyle,
+} from 'react-native';
 
 import { ScaleSize } from '@kits/core';
 import React from 'react';
@@ -18,9 +24,13 @@ type TextInputRegisterProps = {
   readonly keyboardType?: KeyboardTypeOptions;
   readonly maxLength?: number;
   readonly onChangeText: (text: string) => void;
+  readonly onSubmitEditing?: () => void;
   readonly placeholder: string;
   readonly ref?: Ref<TextInput>;
+  readonly returnKeyType?: ReturnKeyType;
   readonly secureTextEntry?: boolean;
+  readonly style?: StyleProp<ViewStyle>;
+  readonly submitBehavior?: SubmitBehavior;
   readonly testID: string;
   readonly textAlign?: 'left' | 'right';
   readonly value: string;
@@ -39,13 +49,16 @@ function TextInputRegister({
   keyboardType = 'default',
   maxLength = undefined,
   onChangeText,
+  onSubmitEditing = undefined,
   placeholder,
   ref: reference = undefined,
+  returnKeyType = undefined,
   secureTextEntry = false,
+  style = undefined,
+  submitBehavior = undefined,
   testID,
   textAlign = 'left',
   value,
-  style,
 }: TextInputRegisterProps) {
   const hasError = error !== undefined;
   return (
@@ -61,14 +74,17 @@ function TextInputRegister({
           keyboardType={keyboardType}
           maxLength={maxLength}
           onChangeText={onChangeText}
+          onSubmitEditing={onSubmitEditing}
           placeholder={placeholder}
           placeholderTextColor={PLACEHOLDER_COLOR}
           ref={reference}
+          returnKeyType={returnKeyType}
           secureTextEntry={secureTextEntry}
           style={[
             styles.input,
             textAlign === 'right' ? styles.inputRight : undefined,
           ]}
+          submitBehavior={submitBehavior}
           testID={testID}
           underlineColorAndroid="transparent"
           value={value}

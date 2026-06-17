@@ -104,6 +104,14 @@ const FIELD_INPUT_INFO = {
   phone: 'phone',
 } as const satisfies Record<keyof InputInfoValues, keyof InputInfoValues>;
 
+const FIELD_FLOW_ORDER: readonly (keyof InputInfoValues)[] = [
+  FIELD_INPUT_INFO.name,
+  FIELD_INPUT_INFO.birthday,
+  FIELD_INPUT_INFO.indentify,
+  FIELD_INPUT_INFO.phone,
+  FIELD_INPUT_INFO.otp,
+];
+
 function InputInfo({
   agreed,
   carrier,
@@ -119,7 +127,21 @@ function InputInfo({
   const [otpSent, setOtpSent] = useState<boolean>(false);
   const [countDownTime, setCountDownTime] = useState<number>(0);
   const [values, setValues] = useState<InputInfoValues>(DEFAULT_INFO);
+  const nameReference = useRef<TextInput>(null);
+  const birthdayReference = useRef<TextInput>(null);
+  const indentifyReference = useRef<TextInput>(null);
+  const phoneReference = useRef<TextInput>(null);
   const otpReference = useRef<TextInput>(null);
+  const fieldReferences: Record<
+    keyof InputInfoValues,
+    React.RefObject<TextInput | null>
+  > = {
+    [FIELD_INPUT_INFO.birthday]: birthdayReference,
+    [FIELD_INPUT_INFO.indentify]: indentifyReference,
+    [FIELD_INPUT_INFO.name]: nameReference,
+    [FIELD_INPUT_INFO.otp]: otpReference,
+    [FIELD_INPUT_INFO.phone]: phoneReference,
+  };
 
   useEffect(() => {
     if (otpSent) {
@@ -161,6 +183,26 @@ function InputInfo({
       field === FIELD_INPUT_INFO.phone ? value.replaceAll('-', '') : value;
     setValues(previous => ({ ...previous, [field]: _value }));
     onInfoChange(field, _value);
+  };
+
+  const handleSubmitField = (field: keyof InputInfoValues) => (): void => {
+    if (field === FIELD_INPUT_INFO.otp && !(disabled || !isFormValid)) {
+      onSubmit();
+      return;
+    }
+    const currentIndex = FIELD_FLOW_ORDER.indexOf(field);
+    if (currentIndex === -1) {
+      return;
+    }
+    const nextField = FIELD_FLOW_ORDER[currentIndex + 1];
+    if (!nextField) {
+      return;
+    }
+    if (nextField === FIELD_INPUT_INFO.otp && !otpSent) {
+      Keyboard.dismiss();
+      return;
+    }
+    fieldReferences[nextField].current?.focus();
   };
 
   const isFormValid =
@@ -232,7 +274,11 @@ function InputInfo({
         <TextInputRegister
           maxLength={NAME_MAX_LENGTH}
           onChangeText={handleChange(FIELD_INPUT_INFO.name)}
+          onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.name)}
           placeholder={t('register_flow.name_placeholder')}
+          ref={nameReference}
+          returnKeyType="next"
+          submitBehavior="submit"
           testID="register-flow-name"
           value={values.name}
         />
@@ -243,7 +289,11 @@ function InputInfo({
               keyboardType="number-pad"
               maxLength={BIRTHDAY_MAX_LENGTH}
               onChangeText={handleChange(FIELD_INPUT_INFO.birthday)}
+              onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.birthday)}
               placeholder={t('register_flow.dob_label')}
+              ref={birthdayReference}
+              returnKeyType="next"
+              submitBehavior="submit"
               testID="register-flow-birthday1"
               value={values.birthday}
             />
@@ -256,8 +306,12 @@ function InputInfo({
               keyboardType="number-pad"
               maxLength={IDENTIFY_MAX_LENGTH}
               onChangeText={handleChange(FIELD_INPUT_INFO.indentify)}
+              onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.indentify)}
               placeholder={t('register_flow.identify_label')}
+              ref={indentifyReference}
+              returnKeyType="next"
               secureTextEntry
+              submitBehavior="submit"
               testID="register-flow-birthday2"
               textAlign="right"
               value={values.indentify}
@@ -287,7 +341,11 @@ function InputInfo({
               keyboardType="number-pad"
               maxLength={PHONE_MAX_LENGTH}
               onChangeText={handleChange(FIELD_INPUT_INFO.phone)}
+              onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.phone)}
               placeholder={t('register_flow.phone_placeholder')}
+              ref={phoneReference}
+              returnKeyType="next"
+              submitBehavior="submit"
               testID="register-flow-phone"
               value={formatPhoneNumber(values.phone)}
               style={{
@@ -324,8 +382,10 @@ function InputInfo({
                 keyboardType="number-pad"
                 maxLength={OTP_MAX_LENGTH}
                 onChangeText={handleChange(FIELD_INPUT_INFO.otp)}
+                onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.otp)}
                 placeholder={t('register_flow.otp_label')}
                 ref={otpReference}
+                returnKeyType="done"
                 testID="register-flow-otp"
                 value={values.otp}
                 style={{

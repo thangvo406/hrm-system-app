@@ -148,9 +148,30 @@
         "desc": "Do you want to logout?",
         "button_submit": "Yes",
         "button_cancel": "No"
+      },
+      "non_member_dialog": {
+        "title": "This feature is only available to members. Would you like to join the cooperative?",
+        "confirm": "Yes",
+        "cancel": "No"
+      },
+      "pending_dialog": {
+        "title": "Your registration is pending. Registration takes up to 1–2 days.",
+        "confirm": "Close"
       }
     },
     "profile": {
+      "title": "Profile",
+      "edit": "Edit Profile",
+      "logout": "Log Out",
+      "edit_unavailable": "Edit profile is not available yet.",
+      "field": {
+        "email": "Email Address",
+        "full_name": "Full Name",
+        "gender": "Gender",
+        "nickname": "Nickname",
+        "phone": "Mobile Phone Number",
+        "year_of_birth": "Year of Birth"
+      },
       "greeting": "Nice to meet you, {{name}}!",
       "school_label": "School : Saenghyup University",
       "status_label": "Status : Enrolled (20141111)",
@@ -170,6 +191,16 @@
       "pay_recharge": "Recharge Pay Balance",
       "menu_transaction": "Transaction History Management",
       "menu_faq": "FAQ"
+    },
+    "edit_profile": {
+      "title": "Edit Profile",
+      "change_avatar": "Change Avatar",
+      "update": "Update",
+      "update_info_below": "Update your profile information below.",
+      "save": "Save Changes",
+      "cancel": "Cancel",
+      "save_unavailable": "Save changes is not available yet.",
+      "avatar_unavailable": "Change avatar is not available yet."
     }
   }
 }

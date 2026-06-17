@@ -12,6 +12,7 @@ export const profileSchema = z.object({
   identityNumber: z.string().optional(),
   membershipAffiliationType: z.string().optional(),
   membershipType: z.string().optional(),
+  registrationStatus: z.string().optional(),
   name: z.string().optional(),
   fullName: z.string().optional(),
   phone: z.string().optional(),
