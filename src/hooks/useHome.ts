@@ -24,6 +24,10 @@ const onPressOrder = () => {
   // AppNavigator.navigate(Paths.Contribution);
 };
 
+const onPressNotification = () => {
+  AppNavigator.navigate(Paths.Notifications);
+};
+
 export const useHome = () => {
   const profile = useAppSelector(AccountSelector.getProfile);
   useNotification();
@@ -39,5 +43,6 @@ export const useHome = () => {
     profile,
     onPressOrder,
     onPressContribution,
+    onPressNotification,
   };
 };

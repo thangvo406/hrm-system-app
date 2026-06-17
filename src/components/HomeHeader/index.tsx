@@ -10,6 +10,7 @@ type HeaderProps = {
   readonly onOpenMenu: () => void;
   readonly onPressNotification?: () => void;
   readonly profile?: Profile;
+  readonly hideIconNotify?: boolean;
   readonly isShowLabelMember?: boolean;
 };
 
@@ -23,6 +24,7 @@ function Header({
   onPressNotification = undefined,
   profile = undefined,
   isShowLabelMember = false,
+  hideIconNotify = false,
 }: HeaderProps) {
   const { t } = useTranslation();
   return (
@@ -60,19 +62,21 @@ function Header({
           <Text style={styles.name}> {` ${profile?.fullName}`}</Text>
           {` ${t('home.greeting_prefix')}`}
         </Text>
-        <TouchableOpacity
-          onPress={onPressNotification}
-          testID="home-notification-button"
-          style={{
-            marginTop: ScaleSize(-5),
-          }}
-        >
-          <Image
-            height={ICON_SIZE}
-            name={imageNames.ic_bell_green}
-            width={ICON_SIZE}
-          />
-        </TouchableOpacity>
+        {!hideIconNotify ? (
+          <TouchableOpacity
+            onPress={onPressNotification}
+            testID="home-notification-button"
+            style={{
+              marginTop: ScaleSize(-5),
+            }}
+          >
+            <Image
+              height={ICON_SIZE}
+              name={imageNames.ic_bell_green}
+              width={ICON_SIZE}
+            />
+          </TouchableOpacity>
+        ) : undefined}
       </View>
     </View>
   );

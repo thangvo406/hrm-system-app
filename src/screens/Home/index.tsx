@@ -147,12 +147,23 @@ function StoreSection() {
 
 function Home() {
   const { t } = useTranslation();
-  const { goToProfile, onPressContribution, onPressOrder, openMenu, profile } =
-    useHome();
+  const {
+    goToProfile,
+    onPressContribution,
+    onPressNotification,
+    onPressOrder,
+    openMenu,
+    profile,
+  } = useHome();
   const insets = useSafeAreaInsets();
   return (
     <View style={[styles.safeArea, { paddingTop: insets.top }]}>
-      <HomeHeader isShowLabelMember onOpenMenu={openMenu} profile={profile} />
+      <HomeHeader
+        isShowLabelMember
+        onOpenMenu={openMenu}
+        onPressNotification={onPressNotification}
+        profile={profile}
+      />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}

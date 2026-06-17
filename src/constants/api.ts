@@ -17,4 +17,7 @@ export const EndPoints = {
     deletePushId: (pushId: string) =>
       `notification/push-subscription/${pushId}`,
   },
+  NOTIFICATIONS: {
+    list: 'notifications',
+  },
 };
