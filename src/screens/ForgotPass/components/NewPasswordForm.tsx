@@ -2,18 +2,48 @@ import { Button, Image, TextField } from '@components';
 import RegisterHeader from '@screens/Authorisation/components/RegisterFlow/Header';
 import imageNames from '@assets/images/names';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import {
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScaleSize } from '@kits/core';
 import { DeviceUtils } from '@kits/core/utils';
+import { AppConstants } from '@constants';
+import { computeFormAuthErrors } from '@utils/common';
 
 const { ifAndroid } = DeviceUtils;
+const { PASSWORD_MIN_LENGTH } = AppConstants;
 const TEXT_COLOR = '#1A1A1A';
 const SUCCESS_COLOR = '#5BB85C';
-const PASSWORD_MIN_LENGTH = 6;
 const SEPARATOR_HEIGHT = ScaleSize(10);
 const SUCCESS_BANNER_DURATION = 5000;
 const SUCCESS_ICON_SIZE = ScaleSize(22);
+
+type PasswordValues = { confirmPassword: string; password: string };
+type PasswordErrors = { confirmPassword?: string; password?: string };
+
+const validateNewPassword = (
+  values: PasswordValues,
+  t: (key: string) => string,
+): PasswordErrors => {
+  const errors: PasswordErrors = {};
+  if (values.password.length === 0) {
+    errors.password = t('authorisation.error_password_required');
+  } else if (values.password.length <= PASSWORD_MIN_LENGTH) {
+    errors.password = t('authorisation.error_password_min');
+  }
+  if (values.confirmPassword.length === 0) {
+    errors.confirmPassword = t('new_password.error_confirm_required');
+  } else if (values.confirmPassword !== values.password) {
+    errors.confirmPassword = t('new_password.error_password_mismatch');
+  }
+  return errors;
+};
 
 type NewPassFormProps = {
   readonly disabled?: boolean;
@@ -25,8 +55,13 @@ type NewPassFormProps = {
 
 function NewPassForm({ disabled = false, onSubmit }: NewPassFormProps) {
   const { t } = useTranslation();
+  const confirmPasswordRef = useRef<TextInput>(null);
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [touched, setTouched] = useState<{
+    confirmPassword?: boolean;
+    password?: boolean;
+  }>({});
   const [successVisible, setSuccessVisible] = useState<boolean>(true);
 
   useEffect(() => {
@@ -38,11 +73,35 @@ function NewPassForm({ disabled = false, onSubmit }: NewPassFormProps) {
     };
   }, []);
 
-  const isMatched =
-    password.length >= PASSWORD_MIN_LENGTH && password === confirmPassword;
+  const { valid, visible } = computeFormAuthErrors(
+    { confirmPassword, password },
+    touched,
+    validateNewPassword,
+    t,
+  );
+
+  const onChangePassword = (value: string) => {
+    setPassword(value);
+    setTouched(previous => ({ ...previous, password: true }));
+  };
+
+  const onChangeConfirmPassword = (value: string) => {
+    setConfirmPassword(value);
+    setTouched(previous => ({ ...previous, confirmPassword: true }));
+  };
+
+  const handleSubmit = () => {
+    setTouched({ confirmPassword: true, password: true });
+    if (!valid) return;
+    onSubmit({ confirmPassword, password });
+  };
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      activeOpacity={1}
+      style={styles.container}
+      onPress={Keyboard.dismiss}
+    >
       <RegisterHeader />
 
       <View style={styles.titleBlock}>
@@ -54,21 +113,33 @@ function NewPassForm({ disabled = false, onSubmit }: NewPassFormProps) {
       <View style={styles.formBlock}>
         <TextField
           autoCapitalize="none"
+          error={visible.password}
           iconName="lock"
           label={t('new_password.password_label')}
-          onChangeText={setPassword}
+          onChangeText={onChangePassword}
+          onSubmitEditing={() => confirmPasswordRef.current?.focus()}
           placeholder={t('new_password.password_placeholder')}
+          returnKeyType="next"
           secureTextEntry
+          submitBehavior="submit"
           testID="new-pass-password"
           value={password}
         />
 
         <TextField
           autoCapitalize="none"
+          error={visible.confirmPassword}
           iconName="lock"
           label={t('new_password.confirm_label')}
-          onChangeText={setConfirmPassword}
+          onChangeText={onChangeConfirmPassword}
           placeholder={t('new_password.confirm_placeholder')}
+          ref={confirmPasswordRef}
+          onSubmitEditing={() => {
+            if (!(disabled || !valid)) {
+              handleSubmit();
+            }
+          }}
+          returnKeyType="done"
           secureTextEntry
           testID="new-pass-confirm"
           value={confirmPassword}
@@ -93,17 +164,15 @@ function NewPassForm({ disabled = false, onSubmit }: NewPassFormProps) {
       <View style={styles.footer}>
         <View style={styles.footerSeparator} />
         <Button
-          disabled={disabled || !isMatched}
-          onPress={() => {
-            onSubmit({ password, confirmPassword });
-          }}
+          disabled={disabled || !valid}
+          onPress={handleSubmit}
           style={styles.nextButton}
           testID="new-pass-next"
           title={t('new_password.next')}
           type="primary"
         />
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

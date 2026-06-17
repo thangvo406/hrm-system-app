@@ -33,6 +33,7 @@ function ForgotPass() {
     onPressRequestOtp,
     onSubmit,
     onToggleAgreement,
+    titleRegisterInfoKey: 'forgot_password.title_register_info',
     desc: t('forgot_password.desc_success'),
   };
 

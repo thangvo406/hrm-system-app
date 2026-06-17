@@ -82,7 +82,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <DetailComponent {...detailProps} />;
+      <DetailComponent {...detailProps} />
     </View>
   );
 }

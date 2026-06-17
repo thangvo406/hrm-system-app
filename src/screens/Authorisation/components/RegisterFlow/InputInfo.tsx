@@ -54,6 +54,7 @@ export type InputInfoValues = {
 type InputInfoProps = {
   readonly agreed: boolean;
   readonly carrier: string;
+  readonly titleRegisterInfoKey: string;
   readonly disabled?: boolean;
   readonly onInfoChange: (field: keyof InputInfoValues, value: string) => void;
   readonly onPressCarrier: () => void;
@@ -112,6 +113,7 @@ function InputInfo({
   onPressRequestOtp,
   onSubmit,
   onToggleAgreement,
+  titleRegisterInfoKey = 'register_flow.identity_title',
 }: InputInfoProps) {
   const { t } = useTranslation();
   const [otpSent, setOtpSent] = useState<boolean>(false);
@@ -181,9 +183,7 @@ function InputInfo({
       <RegisterHeader />
 
       <View style={styles.identityBlock}>
-        <Text style={styles.identityTitle}>
-          {t('register_flow.identity_title')}
-        </Text>
+        <Text style={styles.identityTitle}>{t(titleRegisterInfoKey)}</Text>
 
         <RadioButton
           label={t('register_flow.agree_label')}

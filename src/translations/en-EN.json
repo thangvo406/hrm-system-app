@@ -19,7 +19,8 @@
       "register": "New Registration"
     },
     "forgot_password": {
-      "desc_success": "비밀번호 변경이 완료되었습니다. 새 비밀번호로 로그인해 주세요."
+      "desc_success": "비밀번호 변경이 완료되었습니다. 새 비밀번호로 로그인해 주세요.",
+      "title_register_info": "비밀번호 재설정을 위해 인증을 진행해 주세요"
     },
     "authorisation": {
       "tab_login": "Login",
@@ -93,6 +94,8 @@
       "confirm_label": "Confirm password",
       "confirm_placeholder": "Re-enter your password",
       "verification_success": "Verification successful.",
+      "error_confirm_required": "Please confirm your password",
+      "error_password_mismatch": "Passwords do not match",
       "next": "Next"
     },
     "bank_information": {
