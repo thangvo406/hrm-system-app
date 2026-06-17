@@ -4,8 +4,8 @@ import {
   loginSocialRequest,
 } from '@services/slices/auth/authSlice';
 import { useEffect, useState } from 'react';
-import { Alert, Platform } from 'react-native';
-import { DeviceUtils, ValidateUtils } from '@kits/core/utils';
+import { Alert } from 'react-native';
+import { ValidateUtils } from '@kits/core/utils';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { Paths } from '@navigation/paths';
