@@ -20,4 +20,7 @@ export const EndPoints = {
   NOTIFICATIONS: {
     list: 'notifications',
   },
+  ANNOUNCEMENTS: {
+    list: 'announcements',
+  },
 };

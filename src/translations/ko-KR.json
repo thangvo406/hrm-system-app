@@ -155,6 +155,14 @@
         "confirm": "닫기"
       }
     },
+    "announcements": {
+      "title": "공지",
+      "tab_all": "전체",
+      "tab_notice": "공지사항",
+      "tab_event": "이벤트",
+      "loading": "공지사항을 불러오는 중...",
+      "empty": "표시할 공지사항이 없습니다."
+    },
     "forgot_password": {
       "desc_success": "비밀번호 변경이 완료되었습니다. 새 비밀번호로 로그인해 주세요.",
       "title_register_info": "비밀번호 재설정을 위해 인증을 진행해 주세요"

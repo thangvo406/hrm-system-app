@@ -16,7 +16,7 @@ const openMenu = () => {
 };
 
 const goToProfile = () => {
-  AppNavigator.navigate(Paths.Profile);
+  // AppNavigator.navigate(Paths.Profile);
 };
 
 const onPressOrder = () => {
@@ -25,6 +25,10 @@ const onPressOrder = () => {
 
 const onPressNotification = () => {
   AppNavigator.navigate(Paths.Notifications);
+};
+
+const onPressNotice = () => {
+  AppNavigator.navigate(Paths.Announcements);
 };
 
 export const useHome = () => {
@@ -65,6 +69,7 @@ export const useHome = () => {
     profile,
     onPressOrder,
     onPressContribution,
+    onPressNotice,
     onPressNotification,
   };
 };

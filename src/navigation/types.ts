@@ -6,6 +6,7 @@ export type RootScreenProps<
 > = StackScreenProps<RootStackParamList, S>;
 
 export type RootStackParamList = {
+  [Paths.Announcements]: undefined;
   [Paths.Authorization]: { isLogin: boolean } | undefined;
   [Paths.Contribution]: undefined;
   [Paths.Example]: undefined;

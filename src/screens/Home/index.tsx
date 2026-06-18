@@ -150,6 +150,7 @@ function Home() {
   const {
     goToProfile,
     onPressContribution,
+    onPressNotice,
     onPressNotification,
     onPressOrder,
     openMenu,
@@ -192,6 +193,7 @@ function Home() {
             desc={t('home.notice_desc')}
             image={imageNames.img_speaker}
             testID="home-notice"
+            onPress={onPressNotice}
             title={t('home.notice_title')}
           />
           <FeatureCard

@@ -159,6 +159,14 @@
         "confirm": "Close"
       }
     },
+    "announcements": {
+      "title": "Notice",
+      "tab_all": "All",
+      "tab_notice": "Notices",
+      "tab_event": "Events",
+      "loading": "Loading announcements...",
+      "empty": "No announcements to display."
+    },
     "profile": {
       "title": "Profile",
       "edit": "Edit Profile",
