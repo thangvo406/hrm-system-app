@@ -182,11 +182,12 @@ export const useAuthorization = () => {
     ) {
       const stepMapping = {
         [NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED]: STEP.REGISTER_INPUT,
-        [NEED_INFO_LOGIN_CODE.MEMBERSHIP_INCOMPLETE]: STEP.CHOOSE_SCHOOL,
+        [NEED_INFO_LOGIN_CODE.MEMBERSHIP_INCOMPLETE]: STEP.CHOOSE_MEMBERSHIP,
       };
       const step = stepMapping[error?.code];
       register.goToStep(step);
       register.onGetUniversities();
+      register.setSignupToken(error?.data?.signupToken);
       register.onRegisterChange('email')(loginForm.email);
       return;
     }

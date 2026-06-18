@@ -211,6 +211,10 @@ export const useRegister = () => {
     // setStep(STEP.INFO);
   };
 
+  const setSignupToken = (signupToken: string) => {
+    formData.current.signupToken = signupToken;
+  };
+
   const onSubmitRegisterInfo = () => {
     dispatch(
       verifyOTPRequest({
@@ -241,6 +245,12 @@ export const useRegister = () => {
         membershipType: formData.current?.membershipId,
         onSuccess: () => {
           setStep(STEP.REGISTER_COMPLETED);
+        },
+        onFailure: (error: string) => {
+          AppNavigator.showSnackBar({
+            message: error || '',
+            type: 'failed',
+          });
         },
       }),
     );
@@ -370,6 +380,7 @@ export const useRegister = () => {
     onRegisterChange,
     onSchoolKeywordChange,
     onSelectMembership,
+    setSignupToken,
     onGetUniversities,
     onSelectRole,
     onSelectSchool,

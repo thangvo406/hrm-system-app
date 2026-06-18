@@ -76,7 +76,7 @@ function* loginWorker(action: PayloadAction<LoginPayload>) {
     action.payload.onSuccess?.();
   } catch (error) {
     action.payload.onFailure?.(error?.response?.data);
-    yield put(authFailure(toErrorMessage(error)));
+    // yield put(authFailure(toErrorMessage(error)));
   }
 }
 
@@ -86,7 +86,7 @@ function* loginSocialWorker(action: PayloadAction<LoginSocialPayload>) {
     action.payload.onSuccess?.();
   } catch (error) {
     action.payload.onFailure?.(error?.response?.data);
-    yield put(authFailure(toErrorMessage(error)));
+    // yield put(authFailure(toErrorMessage(error)));
   }
 }
 
@@ -97,7 +97,7 @@ function* registerUserWorker(action: PayloadAction<RegisterUserPayload>) {
     // yield put(authSuccess(response));
     action.payload.onSuccess?.();
   } catch (error) {
-    yield put(authFailure(toErrorMessage(error)));
+    // yield put(authFailure(toErrorMessage(error)));
     action.payload.onFailure?.(toErrorMessage(error));
   }
 }
@@ -110,7 +110,7 @@ function* sendOTPWorker(action: PayloadAction<SendOTPPayload>) {
     );
     action.payload.onSuccess?.(response);
   } catch (error) {
-    yield put(authFailure(toErrorMessage(error)));
+    // yield put(authFailure(toErrorMessage(error)));
     action.payload.onFailure?.(toErrorMessage(error));
   }
 }
@@ -123,7 +123,7 @@ function* verifyOTPWorker(action: PayloadAction<VerifyOTPPayload>) {
     );
     action.payload.onSuccess?.(response);
   } catch (error) {
-    yield put(authFailure(toErrorMessage(error)));
+    // yield put(authFailure(toErrorMessage(error)));
     action.payload.onFailure?.(toErrorMessage(error));
   }
 }
@@ -136,7 +136,7 @@ function* completeRegisterWorker(
     yield put(authSuccess(response));
     action.payload.onSuccess?.();
   } catch (error) {
-    yield put(authFailure(toErrorMessage(error)));
+    // yield put(authFailure(toErrorMessage(error)));
     action.payload.onFailure?.(toErrorMessage(error));
   }
 }
@@ -190,7 +190,7 @@ function* submitForgotPassWorker(
     );
     action.payload.onSuccess?.(response);
   } catch (error) {
-    yield put(authFailure(toErrorMessage(error)));
+    // yield put(authFailure(toErrorMessage(error)));
     action.payload.onFailure?.(toErrorMessage(error));
   }
 }

@@ -15,7 +15,7 @@ platform :android do
     UI.message("Cấu hình: #{prefix_name} - Phiên bản: #{version_num}")
 
     _changelog = get_recent_git_commits(repo_dir: "..", limit: 5)
-    sh "cp ../app/src/debug/google-services.json ../app/src/release/google-services.json"
+    # sh "cp ../app/src/debug/google-services.json ../app/src/release/google-services.json"
     # 2. Lấy versionCode mới nhất từ Firebase App Distribution, bump lên +1
     latest_version_code = get_firebase_latest_version_code(
       app_id: firebase_app_id,
