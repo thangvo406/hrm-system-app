@@ -244,7 +244,12 @@ export const useRegister = () => {
         signupToken: formData.current?.signupToken,
         membershipType: formData.current?.membershipId,
         onSuccess: () => {
-          setStep(STEP.REGISTER_COMPLETED);
+          // setStep(STEP.REGISTER_COMPLETED);
+          if (formData.current?.membershipId != MEMBERSHIP_TYPE.NON_MEMBER) {
+            setStep(STEP.BANK_INFORMATION);
+          } else {
+            setStep(STEP.REGISTER_COMPLETED);
+          }
         },
         onFailure: (error: string) => {
           AppNavigator.showSnackBar({
@@ -254,14 +259,6 @@ export const useRegister = () => {
         },
       }),
     );
-  };
-
-  const submitSchool = () => {
-    if (formData.current?.membershipId != MEMBERSHIP_TYPE.NON_MEMBER) {
-      setStep(STEP.BANK_INFORMATION);
-    } else {
-      onCompletedRegister();
-    }
   };
 
   const onSelectMembership = (id: string) => {
@@ -318,7 +315,7 @@ export const useRegister = () => {
         break;
       }
       case STEP.CHOOSE_SCHOOL: {
-        submitSchool();
+        onCompletedRegister();
         break;
       }
       case STEP.REGISTER_INPUT: {
@@ -326,7 +323,7 @@ export const useRegister = () => {
         break;
       }
       case STEP.BANK_INFORMATION: {
-        onCompletedRegister();
+        setStep(STEP.REGISTER_COMPLETED);
         break;
       }
       case STEP.REGISTER_COMPLETED: {

@@ -34,7 +34,7 @@ const validateNewPassword = (
   const errors: PasswordErrors = {};
   if (values.password.length === 0) {
     errors.password = t('authorisation.error_password_required');
-  } else if (values.password.length <= PASSWORD_MIN_LENGTH) {
+  } else if (values.password.length < PASSWORD_MIN_LENGTH) {
     errors.password = t('authorisation.error_password_min');
   }
   if (values.confirmPassword.length === 0) {

@@ -81,21 +81,21 @@ def postNotifyMessage(type, branch_name, version_num, build_num)
   case type
   when "start"
     slack(
-      message: "🚧 Start building Android app",
+      message: "🚧 Start building App",
       slack_url: slack_url,
       success: true,
       payload: base_payload
     )
   when "success"
     slack(
-      message: "🎉 Build Android App successfully!",
+      message: "🎉 Build App Successfully!",
       slack_url: slack_url,
       success: true,
       payload: base_payload
     )
   when "error"
     slack(
-      message: "❌ Build Android App Failed!",
+      message: "❌ Build App Failed!",
       slack_url: slack_url,
       success: false,
       payload: base_payload
