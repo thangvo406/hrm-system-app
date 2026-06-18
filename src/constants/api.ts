@@ -24,6 +24,7 @@ export const EndPoints = {
     list: 'announcements',
   },
   PRODUCTS: {
+    detail: (productId: number | string) => `product/${productId}`,
     list: (request: string) => `product?${request}`,
   },
 };

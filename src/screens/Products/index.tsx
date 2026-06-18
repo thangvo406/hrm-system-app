@@ -2,7 +2,6 @@ import type { RootScreenProps } from '@navigation/types';
 import type { ListRenderItem } from 'react-native';
 
 import { Image, ProductsLoading } from '@components';
-import FastImage from '@d11/react-native-fast-image';
 import { Paths } from '@navigation/paths';
 import {
   ActivityIndicator,
@@ -20,6 +19,8 @@ import type { Product } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ProductUtils } from '@utils';
 import imageNames from '@assets/images/names';
+import AppNavigator from '@navigation/AppNavigator';
+import { useTranslation } from 'react-i18next';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -35,23 +36,27 @@ const TEXT_MUTED = '#7A7A7A';
 const TEXT_PRICE = '#1A1A1A';
 const DIVIDER_COLOR = '#F0F0F0';
 const PRIMARY_COLOR = '#5BB85C';
-const STORE_NAME = 'Cafe COOP';
-const ESTIMATE_TIME = '약 15분 소요 예상';
-const MIN_ORDER = '최소주문 : 3,500원';
 
 const keyExtractor = (item: Product) => String(item.id);
 
 type RowProps = {
   readonly item: Product;
+  readonly onPress: (item: any) => void;
 };
 
-const ProductRow = React.memo(({ item }: RowProps) => {
-  const thumbUri =
-    typeof item.thumbnail === 'string'
-      ? item.thumbnail
-      : (item.thumbnail?.url as string | undefined);
+const ProductRow = React.memo(function ProductRow({ item, onPress }: RowProps) {
+  const thumbUri = item.thumbnail?.fileUrl;
+
+  const handlePress = () => {
+    onPress(item);
+  };
   return (
-    <View style={styles.productRow} testID={`product-${item.id}`}>
+    <TouchableOpacity
+      activeOpacity={0.85}
+      onPress={handlePress}
+      style={styles.productRow}
+      testID={`product-${item.id}`}
+    >
       <View style={styles.productInfo}>
         <Text style={styles.productName}>{item.name}</Text>
         <Text style={styles.productDescription}>{item.description}</Text>
@@ -64,6 +69,9 @@ const ProductRow = React.memo(({ item }: RowProps) => {
           width={PRODUCT_THUMB_SIZE}
           height={PRODUCT_THUMB_SIZE}
           url={thumbUri}
+          style={{
+            borderRadius: ScaleSize(10),
+          }}
           testID={`product-${item.id}-thumb`}
         />
       ) : (
@@ -74,13 +82,9 @@ const ProductRow = React.memo(({ item }: RowProps) => {
           testID={`product-${item.id}-thumb`}
         />
       )}
-    </View>
+    </TouchableOpacity>
   );
 });
-
-const renderItem: ListRenderItem<Product> = ({ item }) => (
-  <ProductRow item={item} />
-);
 
 function ItemSeparator() {
   return <View style={styles.separator} />;
@@ -126,9 +130,10 @@ function HeroHeader({
 }
 
 function StoreInfo() {
+  const { t } = useTranslation();
   return (
     <View style={styles.storeInfo}>
-      <Text style={styles.storeName}>{STORE_NAME}</Text>
+      <Text style={styles.storeName}>{t('products.store_name')}</Text>
       <View style={styles.metaRow}>
         <View style={styles.metaItem}>
           <Image
@@ -138,9 +143,9 @@ function StoreInfo() {
             type="svg"
             width={CLOCK_ICON_SIZE}
           />
-          <Text style={styles.metaText}>{ESTIMATE_TIME}</Text>
+          <Text style={styles.metaText}>{t('products.estimate_time')}</Text>
         </View>
-        <Text style={styles.metaText}>{MIN_ORDER}</Text>
+        <Text style={styles.metaText}>{t('products.min_order')}</Text>
       </View>
     </View>
   );
@@ -151,6 +156,7 @@ type ListEmptyProps = {
 };
 
 function ListEmpty({ loading }: ListEmptyProps) {
+  const { t } = useTranslation();
   if (loading) {
     return (
       <View style={styles.empty}>
@@ -160,7 +166,7 @@ function ListEmpty({ loading }: ListEmptyProps) {
   }
   return (
     <View style={styles.empty}>
-      <Text style={styles.emptyText}>표시할 상품이 없습니다.</Text>
+      <Text style={styles.emptyText}>{t('products.empty')}</Text>
     </View>
   );
 }
@@ -185,6 +191,21 @@ function Products({ navigation }: RootScreenProps<Paths.Products>) {
   const onPressBack = () => {
     navigation.goBack();
   };
+
+  const onPressProduct = React.useMemo(
+    () => (item: any) => {
+      AppNavigator.navigate(Paths.ProductDetail, { id: item?.id });
+    },
+    [],
+  );
+
+  const renderItem = React.useMemo(
+    (): ListRenderItem<Product> =>
+      function renderItem({ item }) {
+        return <ProductRow item={item} onPress={onPressProduct} />;
+      },
+    [onPressProduct],
+  );
 
   const onScroll = Animated.event(
     [{ nativeEvent: { contentOffset: { y: scrollY } } }],

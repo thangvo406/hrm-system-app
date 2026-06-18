@@ -22,6 +22,17 @@
       "desc_success": "비밀번호 변경이 완료되었습니다. 새 비밀번호로 로그인해 주세요.",
       "title_register_info": "비밀번호 재설정을 위해 인증을 진행해 주세요"
     },
+    "product_detail": {
+      "price_label": "Price",
+      "cart_button": "Add to Cart",
+      "min_order_label": "Minimum delivery order"
+    },
+    "products": {
+      "store_name": "Cafe COOP",
+      "estimate_time": "About 15 min",
+      "min_order": "Min order: 3,500 KRW",
+      "empty": "No products to display."
+    },
     "authorisation": {
       "tab_login": "Login",
       "tab_registration": "Registration",

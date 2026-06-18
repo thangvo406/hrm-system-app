@@ -16,4 +16,5 @@ export { useHome } from './useHome';
 export { useForgotPass } from './useForgotPass';
 export { useI18n } from './language/useI18n';
 export { useNotifications } from './useNotifications';
+export { useProductDetail } from './useProductDetail';
 export { useProducts } from './useProducts';

@@ -167,6 +167,17 @@
       "desc_success": "비밀번호 변경이 완료되었습니다. 새 비밀번호로 로그인해 주세요.",
       "title_register_info": "비밀번호 재설정을 위해 인증을 진행해 주세요"
     },
+    "product_detail": {
+      "price_label": "가격",
+      "cart_button": "장바구니",
+      "min_order_label": "배달 최소 주문 금액"
+    },
+    "products": {
+      "store_name": "Cafe COOP",
+      "estimate_time": "약 15분 소요 예상",
+      "min_order": "최소주문 : 3,500원",
+      "empty": "표시할 상품이 없습니다."
+    },
     "profile": {
       "title": "프로필",
       "edit": "프로필 수정",
