@@ -1,8 +1,5 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type {
-  GetProductByIdPayload,
-  GetProductsPayload,
-} from '@type/products';
+import type { GetProductByIdPayload, GetProductsPayload } from '@type/products';
 
 import { call, takeLatest } from 'redux-saga/effects';
 import { getProductByIdRequest, getProductsRequest } from './productsSlice';
@@ -14,8 +11,6 @@ function* getProductsWorker(
   const { onSuccess, onFailure, ...request } = action.payload;
   try {
     const response = yield call(getProducts, request);
-    // yield delay(MOCK_DELAY_MS);
-    console.log('items', response);
     onSuccess?.(response);
   } catch (error_) {
     const message = error_ instanceof Error ? error_.message : 'Unknown error';

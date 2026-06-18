@@ -1,3 +1,4 @@
+export { default as AnnouncementLoading } from './Loading/Annoucements';
 export { default as Button } from './Button';
 export { default as Carousel } from './Carousel';
 export { default as HomeHeader } from './HomeHeader';

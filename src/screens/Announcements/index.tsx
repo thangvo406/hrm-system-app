@@ -1,8 +1,7 @@
 import type { LayoutChangeEvent, ListRenderItem } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 
-import { Carousel, HomeHeader } from '@components';
-import type { CarouselHandle } from '@components/Carousel';
+import { HomeHeader, AnnouncementLoading, ProgressiveImage } from '@components';
 import {
   Dimensions,
   FlatList,
@@ -12,22 +11,36 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import Animated, {
   Easing,
+  Extrapolation,
+  interpolate,
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import Carousel, {
+  type CarouselRenderItem,
+  type ICarouselInstance,
+} from 'react-native-reanimated-carousel';
 import { useAnnouncements } from '@hooks';
-import type { AnnouncementItem } from '@hooks';
+import type { AnnouncementImage, AnnouncementItem } from '@hooks';
 import { ScaleSize } from '@kits/core';
 import AppNavigator from '@navigation/AppNavigator';
 import { useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -40,28 +53,16 @@ const TEXT_DATE = '#9E9E9E';
 const TEXT_TAB_INACTIVE = '#5C5C5C';
 const TEXT_MUTED = '#9E9E9E';
 const DIVIDER_COLOR = '#EFEFEF';
-
-type TabKey = 'all' | 'event' | 'notice';
-
-type Banner = {
-  readonly color: string;
-  readonly id: string;
-};
-
-const BANNERS: readonly Banner[] = [
-  { color: '#F8C8DC', id: 'b1' },
-  { color: '#FFD9B7', id: 'b2' },
-  { color: '#C8E6C9', id: 'b3' },
-  { color: '#BBDEFB', id: 'b4' },
-  { color: '#E1BEE7', id: 'b5' },
-];
+const DOT_SIZE = ScaleSize(6);
+const DOT_ACTIVE_WIDTH = ScaleSize(18);
+const DOT_INACTIVE_COLOR = '#E0E0E0';
+const DOT_ACTIVE_COLOR = '#54C158';
 
 const onOpenMenu = () => {
   AppNavigator.showMenu();
 };
 
-const keyExtractor = (item: AnnouncementItem) => item.id;
-const bannerKeyExtractor = (item: Banner) => item.id;
+const keyExtractor = (item: AnnouncementItem) => String(item.id);
 
 type RowProps = {
   readonly item: AnnouncementItem;
@@ -70,11 +71,12 @@ type RowProps = {
 function AnnouncementRow({ item }: RowProps) {
   return (
     <View style={styles.row} testID={`announcement-${item.id}`}>
-      <Text style={styles.rowIcon}>{item.icon}</Text>
       <Text numberOfLines={1} style={styles.rowTitle}>
         {item.title}
       </Text>
-      <Text style={styles.rowDate}>{item.date}</Text>
+      <Text style={styles.rowDate}>
+        {dayjs(item.createdDate).format('YY-MM-DD')}
+      </Text>
     </View>
   );
 }
@@ -221,52 +223,137 @@ function AnimatedTabs({ labels, onChange, testIDs, value }: AnimatedTabsProps) {
   );
 }
 
-const renderBanner: ListRenderItem<Banner> = ({ item }) => (
-  <View
-    style={[styles.bannerSlide, { backgroundColor: item.color }]}
-    testID={`announcement-banner-${item.id}`}
-  >
-    <View style={styles.bannerOverlay}>
-      <Text style={styles.bannerKicker}>한국대학교 학사지원팀</Text>
-      <Text style={styles.bannerTitle}>2026년 봄 학기</Text>
-      <Text style={styles.bannerTitle}>개강 및 학사 일정 공지!</Text>
-      <View style={styles.bannerInfoBox}>
-        <Text style={styles.bannerInfoLine}>📅 3월 4일 (월) 개강!</Text>
-        <Text style={styles.bannerInfoLine}>
-          📝 수강 신청 확인 및 변경 기간:
-        </Text>
-        <Text style={styles.bannerInfoSub}>3월 4일(월) ~ 3월 8일(금)</Text>
-        <Text style={styles.bannerInfoLine}>📚 등록금 납부 기간:</Text>
-        <Text style={styles.bannerInfoSub}>3월 11일(월) ~ 3월 15일(금)</Text>
-        <Text style={styles.bannerInfoLine}>📖 1학기 중간고사:</Text>
-        <Text style={styles.bannerInfoSub}>4월 22일(월) ~ 4월 26일(금)</Text>
-      </View>
-    </View>
+const renderBanner: CarouselRenderItem<AnnouncementImage> = ({ item }) => (
+  <View style={styles.bannerSlide} testID={`announcement-banner-${item.id}`}>
+    <ProgressiveImage
+      height={BANNER_HEIGHT}
+      url={item.fileUrl}
+      resizeMode="stretch"
+      width={BANNER_WIDTH}
+    />
   </View>
 );
 
-function BannerCarousel({ tabIndex }: { readonly tabIndex: number }) {
-  const carouselReference = useRef<CarouselHandle>(null);
+function BannerCarousel({
+  tabIndex,
+  banners,
+}: {
+  readonly banners: readonly AnnouncementImage[];
+  readonly tabIndex: number;
+}) {
+  const carouselReference = useRef<ICarouselInstance>(null);
+  const progress = useSharedValue(0);
 
   useEffect(() => {
-    carouselReference.current?.scrollToIndex(0);
+    carouselReference.current?.scrollTo({ animated: true, index: 0 });
   }, [tabIndex]);
 
   return (
-    <Carousel
-      data={BANNERS}
-      horizontalPadding={BANNER_HORIZONTAL_PADDING}
-      itemWidth={BANNER_WIDTH}
-      keyExtractor={bannerKeyExtractor}
-      ref={carouselReference}
-      renderItem={renderBanner}
-      style={styles.bannerWrap}
-      testID="announcement-carousel"
-    />
+    <View style={styles.bannerContainer}>
+      <Carousel
+        ref={carouselReference}
+        data={banners as AnnouncementImage[]}
+        height={BANNER_HEIGHT}
+        loop
+        autoPlay
+        pagingEnabled
+        renderItem={renderBanner}
+        style={styles.bannerWrap}
+        testID="announcement-carousel"
+        width={BANNER_WIDTH}
+        onProgressChange={progress}
+      />
+      <PaginationDots
+        activeColor={DOT_ACTIVE_COLOR}
+        activeWidth={DOT_ACTIVE_WIDTH}
+        count={banners?.length || 0}
+        gap={ScaleSize(3)}
+        inactiveColor={DOT_INACTIVE_COLOR}
+        progress={progress}
+        size={DOT_SIZE}
+      />
+    </View>
   );
 }
 
-const TAB_KEYS: readonly TabKey[] = ['all', 'notice', 'event'];
+type PaginationDotProps = {
+  readonly activeColor: string;
+  readonly activeWidth: number;
+  readonly gap: number;
+  readonly inactiveColor: string;
+  readonly index: number;
+  readonly progress: SharedValue<number>;
+  readonly size: number;
+};
+
+function PaginationDot({
+  activeColor,
+  activeWidth,
+  gap,
+  inactiveColor,
+  index,
+  progress,
+  size,
+}: PaginationDotProps) {
+  const animatedStyle = useAnimatedStyle(() => {
+    const val = Math.abs(progress.value - index);
+    return {
+      backgroundColor: interpolateColor(
+        val,
+        [0, 0.5, 1],
+        [activeColor, inactiveColor, inactiveColor],
+      ),
+      marginHorizontal: gap,
+      width: interpolate(
+        val,
+        [0, 0.5, 1],
+        [activeWidth, size, size],
+        Extrapolation.CLAMP,
+      ),
+    };
+  });
+
+  return <Animated.View style={[styles.paginationDot, animatedStyle]} />;
+}
+
+type PaginationDotsProps = {
+  readonly activeColor: string;
+  readonly activeWidth: number;
+  readonly count: number;
+  readonly gap: number;
+  readonly inactiveColor: string;
+  readonly progress: SharedValue<number>;
+  readonly size: number;
+};
+
+function PaginationDots({
+  activeColor,
+  activeWidth,
+  count,
+  gap,
+  inactiveColor,
+  progress,
+  size,
+}: PaginationDotsProps) {
+  return (
+    <View style={styles.paginationRow}>
+      {Array.from({ length: count }).map((_, index) => (
+        <PaginationDot
+          activeColor={activeColor}
+          activeWidth={activeWidth}
+          gap={gap}
+          inactiveColor={inactiveColor}
+          index={index}
+          progress={progress}
+          size={size}
+          // eslint-disable-next-line react/no-array-index-key -- static positions, no reordering
+          key={`pagination-dot-${index}`}
+        />
+      ))}
+    </View>
+  );
+}
+
 const TAB_TEST_IDS: readonly string[] = [
   'announcement-tab-all',
   'announcement-tab-notice',
@@ -276,18 +363,22 @@ const TAB_TEST_IDS: readonly string[] = [
 function Announcements() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const [tabIndex, setTabIndex] = useState(0);
   const ownerProfile = useAppSelector(AccountSelector.getProfile);
-  const { data, loading } = useAnnouncements();
+  const {
+    onLoadMore,
+    onRefreshBanners,
+    loading,
+    onChangeTab,
+    data,
+    banners,
+    tabIndex,
+  } = useAnnouncements();
 
-  const tab = TAB_KEYS[tabIndex];
-
-  const filtered = useMemo(() => {
-    if (tab === 'all') {
-      return data;
-    }
-    return data.filter(item => item.kind === tab);
-  }, [data, tab]);
+  useFocusEffect(
+    useCallback(() => {
+      onRefreshBanners();
+    }, [onRefreshBanners]),
+  );
 
   const labels = useMemo(
     () => [
@@ -311,27 +402,27 @@ function Announcements() {
       >
         <AnimatedTabs
           labels={labels}
-          onChange={setTabIndex}
+          onChange={onChangeTab}
           testIDs={TAB_TEST_IDS}
           value={tabIndex}
         />
-        <BannerCarousel tabIndex={tabIndex} />
-        {loading && filtered.length === 0 ? (
-          <View style={styles.empty}>
-            <Text style={styles.emptyText}>{t('announcements.loading')}</Text>
-          </View>
-        ) : filtered.length === 0 ? (
+        <BannerCarousel banners={banners} tabIndex={tabIndex} />
+        {loading ? (
+          <AnnouncementLoading />
+        ) : data?.length === 0 ? (
           <View style={styles.empty}>
             <Text style={styles.emptyText}>{t('announcements.empty')}</Text>
           </View>
         ) : (
           <FlatList
-            data={filtered}
+            data={data}
             ItemSeparatorComponent={ItemSeparator}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
             scrollEnabled={false}
             showsVerticalScrollIndicator={false}
+            onEndReached={onLoadMore}
+            onEndReachedThreshold={1.5}
           />
         )}
       </ScrollView>
@@ -342,38 +433,62 @@ function Announcements() {
 export default Announcements;
 
 const styles = StyleSheet.create({
+  bannerContainer: {
+    alignItems: 'center',
+    position: 'relative',
+  },
   bannerInfoBox: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    backgroundColor: 'rgba(255, 255, 255, 0.78)',
     borderRadius: ScaleSize(10),
-    gap: ScaleSize(2),
-    marginTop: ScaleSize(10),
-    paddingHorizontal: ScaleSize(10),
+    bottom: ScaleSize(36),
+    gap: ScaleSize(4),
+    left: ScaleSize(14),
+    paddingHorizontal: ScaleSize(12),
     paddingVertical: ScaleSize(8),
+    position: 'absolute',
+    right: ScaleSize(14),
+  },
+  bannerInfoColumn: {
+    flex: 1,
+  },
+  bannerInfoIcon: {
+    fontSize: ScaleSize(14),
+    marginTop: ScaleSize(1),
   },
   bannerInfoLine: {
     color: TEXT_DARK,
     fontSize: ScaleSize(11),
     fontWeight: '600',
   },
+  bannerInfoRow: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: ScaleSize(6),
+  },
   bannerInfoSub: {
     color: '#5C5C5C',
     fontSize: ScaleSize(10),
-    marginLeft: ScaleSize(14),
+    marginLeft: ScaleSize(2),
+    marginTop: ScaleSize(1),
   },
   bannerKicker: {
-    alignSelf: 'flex-end',
     backgroundColor: 'rgba(255, 255, 255, 0.85)',
     borderRadius: ScaleSize(8),
     color: TEXT_DARK,
     fontSize: ScaleSize(10),
-    overflow: 'hidden',
+    fontWeight: '600',
+    lineHeight: ScaleSize(13),
     paddingHorizontal: ScaleSize(8),
-    paddingVertical: ScaleSize(2),
+    paddingVertical: ScaleSize(3),
+    textAlign: 'center',
   },
-  bannerOverlay: {
-    flex: 1,
-    paddingHorizontal: ScaleSize(16),
-    paddingVertical: ScaleSize(14),
+  bannerScrim: {
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   bannerSlide: {
     borderRadius: ScaleSize(14),
@@ -387,9 +502,22 @@ const styles = StyleSheet.create({
     fontSize: ScaleSize(20),
     fontWeight: '800',
     textAlign: 'center',
-    textShadowColor: 'rgba(255, 255, 255, 0.6)',
+    textShadowColor: 'rgba(255, 255, 255, 0.85)',
     textShadowOffset: { height: 1, width: 0 },
-    textShadowRadius: 2,
+    textShadowRadius: 3,
+  },
+  bannerTitleWrap: {
+    alignItems: 'center',
+    left: ScaleSize(16),
+    paddingRight: ScaleSize(80),
+    position: 'absolute',
+    right: ScaleSize(16),
+    top: ScaleSize(8),
+  },
+  bannerTopRow: {
+    position: 'absolute',
+    right: ScaleSize(16),
+    top: ScaleSize(8),
   },
   bannerWrap: {
     alignItems: 'center',
@@ -401,6 +529,16 @@ const styles = StyleSheet.create({
   emptyText: {
     color: TEXT_MUTED,
     fontSize: ScaleSize(14),
+  },
+  paginationDot: {
+    borderRadius: DOT_SIZE / 2,
+    height: DOT_SIZE,
+  },
+  paginationRow: {
+    alignSelf: 'center',
+    bottom: ScaleSize(10),
+    flexDirection: 'row',
+    position: 'absolute',
   },
   row: {
     alignItems: 'center',
@@ -441,6 +579,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minWidth: ScaleSize(72),
     paddingHorizontal: ScaleSize(16),
+    borderWidth: 1,
   },
   tabIndicator: {
     backgroundColor: TEXT_DARK,

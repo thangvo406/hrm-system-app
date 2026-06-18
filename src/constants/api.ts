@@ -22,7 +22,8 @@ export const EndPoints = {
     list: 'notifications',
   },
   ANNOUNCEMENTS: {
-    list: 'announcements',
+    list: (request: string) => `announcement?${request}`,
+    listImage: 'announcement-image',
   },
   PRODUCTS: {
     detail: (productId: number | string) => `product/${productId}`,

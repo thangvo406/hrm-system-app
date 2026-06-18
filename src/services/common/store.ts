@@ -17,9 +17,9 @@ import { reactotronReduxEnhancer } from './reactotron';
 import { rootSaga } from './rootSaga';
 import { storage } from './storage';
 import { accountReducer } from '@services/slices/account/accountSlice';
-import { announcementsReducer } from '@services/slices/announcements/announcementsSlice';
 import { appReducer } from '@services/slices/app/appSlice';
 import { authReducer } from '@services/slices/auth/authSlice';
+import { notificationsReducer } from '@services/slices/notifications/notificationsSlice';
 import { productsReducer } from '@services/slices/products/productsSlice';
 
 const reduxStorage: Storage = {
@@ -36,9 +36,9 @@ const reduxStorage: Storage = {
 
 const rootReducer = combineReducers({
   account: accountReducer,
-  announcements: announcementsReducer,
   app: appReducer,
   auth: authReducer,
+  notifications: notificationsReducer,
   products: productsReducer,
 });
 

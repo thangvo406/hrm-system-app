@@ -1,11 +1,39 @@
-import type { GetNotificationsPayload } from '@type/notifications';
+import type {
+  AnnouncementImage,
+  GetAnnouncementImagesPayload,
+  GetNotificationsPayload,
+} from '@type/notifications';
 
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+
+type NotificationsState = {
+  banners: AnnouncementImage[];
+};
+
+const initialState: NotificationsState = {
+  banners: [],
+};
 
 const notificationsSlice = createSlice({
-  initialState: {},
+  initialState,
   name: 'notifications',
   reducers: {
+    getAnnouncementImagesRequest: {
+      prepare: (payload: GetAnnouncementImagesPayload = {}) => ({ payload }),
+      reducer: () => {},
+    },
+    getAnnouncementImagesSuccess: {
+      prepare: (images: AnnouncementImage[]) => ({
+        payload: images,
+      }),
+      reducer: (state, action: PayloadAction<AnnouncementImage[]>) => {
+        state.banners = action.payload;
+      },
+    },
+    getAnnouncementsRequest: {
+      prepare: (payload: any = {}) => ({ payload }),
+      reducer: () => {},
+    },
     getNotificationsRequest: {
       prepare: (payload: GetNotificationsPayload = {}) => ({ payload }),
       reducer: () => {},
@@ -13,4 +41,10 @@ const notificationsSlice = createSlice({
   },
 });
 
-export const { getNotificationsRequest } = notificationsSlice.actions;
+export const {
+  getAnnouncementImagesRequest,
+  getAnnouncementImagesSuccess,
+  getAnnouncementsRequest,
+  getNotificationsRequest,
+} = notificationsSlice.actions;
+export const notificationsReducer = notificationsSlice.reducer;

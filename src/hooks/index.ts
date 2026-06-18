@@ -1,4 +1,5 @@
 export type {
+  AnnouncementImage,
   AnnouncementItem,
   AnnouncementKind,
 } from './useAnnouncements';

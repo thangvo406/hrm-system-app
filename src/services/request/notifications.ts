@@ -1,27 +1,14 @@
-import type { NotificationItem } from '@type/notifications';
+import type {
+  AnnouncementImage,
+  AnnouncementItem,
+  GetAnnouncementsPayload,
+  NotificationItem,
+} from '@type/notifications';
 
 import { httpRequest } from '@services/common/httpRequest';
-import { z } from 'zod';
 import { EndPoints } from '@constants';
-import { ListApiResponse } from '@type/common';
-
-export const notificationKindSchema = z.enum([
-  'contribution_done',
-  'delivery_done',
-  'payment_done',
-]);
-
-export const notificationItemSchema = z.object({
-  date: z.string(),
-  description: z.string(),
-  id: z.union([z.string(), z.number()]).transform(value => String(value)),
-  kind: notificationKindSchema,
-  title: z.string(),
-});
-
-export const notificationsResponseSchema = z.object({
-  data: z.array(notificationItemSchema),
-});
+import { ListApiResponse, SingleApiResponse } from '@type/common';
+import { CommonUtils } from '@utils';
 
 export const getNotifications = async (): Promise<
   ListApiResponse<NotificationItem[]>
@@ -30,6 +17,23 @@ export const getNotifications = async (): Promise<
     EndPoints.NOTIFICATIONS.list,
     { loading: false },
   );
-  // return notificationsResponseSchema.parse(response).data;
   return response;
+};
+
+export const getAnnouncements = async (
+  request: GetAnnouncementsPayload,
+): Promise<ListApiResponse<AnnouncementItem[]>> => {
+  const _request = CommonUtils.removeEmptyFieldObject(request, true);
+  const params = CommonUtils.objectToQueryParams(_request);
+  const response = await httpRequest.get<
+    SingleApiResponse<ListApiResponse<AnnouncementItem[]>>
+  >(EndPoints.ANNOUNCEMENTS.list(params), { loading: false });
+  return response.data;
+};
+
+export const getAnnouncementImages = async (): Promise<AnnouncementImage[]> => {
+  const response = await httpRequest.get<
+    SingleApiResponse<AnnouncementImage[]>
+  >(EndPoints.ANNOUNCEMENTS.listImage, { loading: false });
+  return response.data;
 };
