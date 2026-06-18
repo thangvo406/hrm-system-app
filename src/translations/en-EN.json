@@ -77,7 +77,10 @@
       "otp_label": "Verification Code",
       "otp_placeholder": "Verification Code",
       "verify": "Verify",
-      "choose_carrier": "Select Carrier"
+      "choose_carrier": "Select Carrier",
+      "contribution_dialog": {
+        "desc": "Joining as a member requires an initial contribution payment. Would you like to continue?"
+      }
     },
     "choose_school": {
       "title": "School Verification",

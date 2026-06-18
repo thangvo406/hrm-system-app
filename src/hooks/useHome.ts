@@ -3,11 +3,16 @@ import { AccountSelector } from '@services/selectors';
 import { Paths } from '@navigation/paths';
 import AppNavigator from '@navigation/AppNavigator';
 import useNotification from './useNotification';
-import { getProfileRequest } from '@services/slices/account/accountSlice';
-import { useCallback, useEffect } from 'react';
+import {
+  getProfileRequest,
+  updateMembershipRequest,
+} from '@services/slices/account/accountSlice';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MEMBERSHIP_TYPE } from '@constants/config';
+import { MEMBERSHIP_OPTIONS, MEMBERSHIP_TYPE } from '@constants/config';
 import Information from '@screens/Dialog/components/Information';
+import ChooseMemberShipType from '../screens/Authorisation/components/RegisterFlow/ChooseMemberShipType';
+import BankInformation from '../screens/Authorisation/components/RegisterFlow/BankInformation';
 
 export type UseHome = ReturnType<typeof useHome>;
 
@@ -37,7 +42,60 @@ export const useHome = () => {
   useNotification();
   const dispatch = useAppDispatch();
 
-  const onPressContribution = useCallback(() => {
+  const isShowCtaContribute = useMemo(() => {
+    return !(
+      profile?.membershipType != MEMBERSHIP_TYPE.NON_MEMBER &&
+      profile?.registrationStatus == 'COMPLETED'
+    );
+  }, [profile]);
+
+  const onSubmitMemberShip = selectedId => {
+    AppNavigator.showDialog({
+      screen: Information,
+      desc: t('register_flow.contribution_dialog.desc'),
+      cancelTitle: t('common.cancel'),
+      confirmTitle: t('common.confirm'),
+      onConfirm: () => {
+        dispatch(
+          updateMembershipRequest({
+            membershipType: selectedId,
+            onFailure: message => {
+              AppNavigator.showSnackBar({
+                message: message || '',
+                type: 'failed',
+              });
+            },
+            onSuccess: () => {
+              AppNavigator.showDialog({
+                screen: BankInformation,
+                isFullScreen: true,
+                cancelable: false,
+                onSubmit: () => {
+                  AppNavigator.hideAllPopup();
+                  dispatch(getProfileRequest());
+                },
+              });
+            },
+          }),
+        );
+      },
+    });
+  };
+  const onShowMemberShip = () => {
+    AppNavigator.showDialog({
+      isFullScreen: true,
+      cancelable: false,
+      showBtnBack: true,
+      onBack: () => {
+        AppNavigator.hideAllPopup();
+      },
+      screen: ChooseMemberShipType,
+      options: MEMBERSHIP_OPTIONS,
+      onSubmit: onSubmitMemberShip,
+    });
+  };
+
+  const onPressContribution = () => {
     if (profile?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER) {
       AppNavigator.showDialog({
         screen: Information,
@@ -45,7 +103,7 @@ export const useHome = () => {
         cancelTitle: t('home.non_member_dialog.cancel'),
         confirmTitle: t('home.non_member_dialog.confirm'),
         onConfirm: () => {
-          AppNavigator.navigate(Paths.Contribution);
+          onShowMemberShip();
         },
       });
     } else if (profile?.registrationStatus != 'COMPLETED') {
@@ -57,7 +115,7 @@ export const useHome = () => {
     } else {
       AppNavigator.navigate(Paths.Contribution);
     }
-  }, [profile, t]);
+  };
 
   useEffect(() => {
     dispatch(getProfileRequest());
@@ -71,6 +129,7 @@ export const useHome = () => {
     goToProfile,
     openMenu,
     profile,
+    isShowCtaContribute,
     onPressOrder,
     onPressContribution,
     onGoToStore,

@@ -201,7 +201,11 @@ function* submitForgotPassWorker(
 function* logoutWorker() {
   Globals.hasUpdateDeviceId = false;
   const pushId: string = yield select(AccountSelector.getPushId);
-  yield call(deletePushId, pushId);
+  try {
+    yield call(deletePushId, pushId);
+  } catch {
+    //TODO: handle error
+  }
   yield delay(130);
   yield call([persistor, 'purge']);
   yield put(logoutSuccess());

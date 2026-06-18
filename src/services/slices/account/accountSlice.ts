@@ -18,6 +18,15 @@ export type UpdatePushIdPayload = {
   subscriptionId: string;
 };
 
+export type UpdateMembershipCallback = {
+  onFailure?: (error: string) => void;
+  onSuccess?: () => void;
+};
+
+export type UpdateMembershipPayload = UpdateMembershipCallback & {
+  membershipType: string;
+};
+
 export type AccountState = {
   profile: Profile | undefined;
   pushId: string | undefined;
@@ -43,6 +52,10 @@ const accountSlice = createSlice({
     getProfileSuccess: (state, action: PayloadAction<Profile>) => {
       state.profile = action.payload;
     },
+    updateMembershipRequest: {
+      prepare: (payload: UpdateMembershipPayload = {}) => ({ payload }),
+      reducer: () => {},
+    },
     updatePushIdRequest: {
       prepare: (payload: UpdatePushIdPayload) => ({ payload }),
       reducer: (state, action: PayloadAction<UpdatePushIdPayload>) => {
@@ -56,6 +69,7 @@ export const {
   clearProfile,
   getProfileRequest,
   getProfileSuccess,
+  updateMembershipRequest,
   updatePushIdRequest,
 } = accountSlice.actions;
 

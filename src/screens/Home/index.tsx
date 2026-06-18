@@ -61,7 +61,8 @@ function PayCard({ onPress = undefined }: { readonly onPress?: () => void }) {
 type FeatureCardProps = {
   readonly desc: string;
   readonly image: ImageName;
-  readonly labelRight?: string;
+  readonly ctaRight?: string;
+  readonly isShowCtaRight?: boolean;
   readonly testID: string;
   readonly title: string;
   readonly onPress: any;
@@ -71,9 +72,10 @@ function FeatureCard({
   onPress,
   desc,
   image,
-  labelRight,
+  ctaRight = '',
   testID,
   title,
+  isShowCtaRight = false,
 }: FeatureCardProps) {
   return (
     <TouchableOpacity
@@ -84,9 +86,9 @@ function FeatureCard({
     >
       <View style={styles.featureTitleRow}>
         <Text style={styles.featureTitle}>{title}</Text>
-        {labelRight ? (
+        {isShowCtaRight && ctaRight ? (
           <View style={styles.featureLabel} testID={`${testID}-label`}>
-            <Text style={styles.featureLabelText}>{labelRight}</Text>
+            <Text style={styles.featureLabelText}>{ctaRight}</Text>
           </View>
         ) : undefined}
       </View>
@@ -159,6 +161,7 @@ function Home() {
     onPressOrder,
     openMenu,
     onGoToStore,
+    isShowCtaContribute,
     profile,
   } = useHome();
   const insets = useSafeAreaInsets();
@@ -179,8 +182,9 @@ function Home() {
           <FeatureCard
             desc={t('home.dividend_desc')}
             image={imageNames.img_discount}
+            isShowCtaRight={isShowCtaContribute}
             testID="home-dividend"
-            labelRight="조합 가입하기"
+            ctaRight="조합 가입하기"
             onPress={onPressContribution}
             title={t('home.dividend_title')}
           />

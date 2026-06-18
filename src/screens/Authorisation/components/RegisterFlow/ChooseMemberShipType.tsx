@@ -2,13 +2,13 @@ import { Button } from '@components';
 import RegisterHeader from './Header';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { ScaleSize } from '@kits/core';
 
-const BACK_ICON_SIZE = ScaleSize(24);
 const PRIMARY_COLOR = '#5BB85C';
 const BORDER_COLOR_SELECTED = '#5BB85C';
 const BORDER_COLOR_DEFAULT = '#CCCCCC';
+const NOOP = () => undefined;
 const RADIO_OUTER_SIZE = ScaleSize(20);
 const RADIO_INNER_SIZE = ScaleSize(10);
 const TEXT_COLOR = '#1A1A1A';
@@ -20,36 +20,44 @@ export type MembershipOption = {
 
 type ChooseMemberShipTypeProps = {
   readonly disabled?: boolean;
+  readonly onBack?: () => void;
   readonly onSelectMembership: (id: string) => void;
-  readonly onSubmit: () => void;
+  readonly onSubmit: (data: any) => void;
   readonly options: readonly MembershipOption[];
-  readonly selectedMembershipId?: string;
+  readonly showBtnBack?: boolean;
 };
 
 function ChooseMemberShipType({
   disabled = false,
+  onBack = NOOP,
   onSelectMembership,
   onSubmit,
   options,
-  selectedMembershipId = undefined,
+  showBtnBack = false,
 }: ChooseMemberShipTypeProps) {
   const { t } = useTranslation();
+  const [itemSelected, setItemSelected] = useState('');
+
+  const handleSubmit = () => {
+    onSubmit?.(itemSelected);
+  };
 
   return (
     <View style={styles.container}>
-      <RegisterHeader />
+      <RegisterHeader onBack={onBack} showBtnBack={showBtnBack} />
 
       <View style={styles.content}>
         <Text style={styles.title}>{t('choose_membership.title')}</Text>
 
         {options.map((option, index) => {
-          const isSelected = option.id === selectedMembershipId;
+          const isSelected = option.id === itemSelected;
           return (
             <TouchableOpacity
               activeOpacity={0.8}
               key={option.id}
               onPress={() => {
-                onSelectMembership(option.id);
+                onSelectMembership?.(option.id);
+                setItemSelected(option.id);
               }}
               style={[
                 styles.option,
@@ -82,8 +90,8 @@ function ChooseMemberShipType({
           }}
         />
         <Button
-          disabled={disabled || !selectedMembershipId}
-          onPress={onSubmit}
+          disabled={disabled || !itemSelected}
+          onPress={handleSubmit}
           style={{
             width: '90%',
             alignSelf: 'center',
@@ -98,15 +106,6 @@ function ChooseMemberShipType({
 }
 
 const styles = StyleSheet.create({
-  backButton: {
-    alignItems: 'center',
-    height: BACK_ICON_SIZE,
-    justifyContent: 'center',
-    left: ScaleSize(16),
-    position: 'absolute',
-    top: ScaleSize(10),
-    width: BACK_ICON_SIZE,
-  },
   container: {
     backgroundColor: '#FFFFFF',
     flex: 1,

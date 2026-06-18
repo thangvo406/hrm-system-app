@@ -1,12 +1,17 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Profile } from '@services/request/account';
-import type { GetProfilePayload, UpdatePushIdPayload } from './accountSlice';
+import type {
+  GetProfilePayload,
+  UpdateMembershipPayload,
+  UpdatePushIdPayload,
+} from './accountSlice';
 
-import { getProfile, updatePushId } from '@services/request/account';
+import { getProfile, updateMembership, updatePushId } from '@services/request/account';
 import { call, put, takeLatest } from 'redux-saga/effects';
 
 import {
   getProfileRequest,
+  updateMembershipRequest,
   updatePushIdRequest,
   getProfileSuccess,
 } from './accountSlice';
@@ -31,7 +36,21 @@ function* updatePushIdWorker(action: PayloadAction<UpdatePushIdPayload>) {
   }
 }
 
+function* updateMembershipWorker(
+  action: PayloadAction<UpdateMembershipPayload>,
+) {
+  const { onSuccess, onFailure, ...request } = action.payload;
+  try {
+    yield call(updateMembership, request);
+    onSuccess?.();
+  } catch (error_) {
+    const message = error_ instanceof Error ? error_.message : 'Unknown error';
+    onFailure?.(message);
+  }
+}
+
 export function* accountSaga() {
   yield takeLatest(getProfileRequest.type, getProfileWorker);
+  yield takeLatest(updateMembershipRequest.type, updateMembershipWorker);
   yield takeLatest(updatePushIdRequest.type, updatePushIdWorker);
 }

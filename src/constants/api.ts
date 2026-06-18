@@ -16,6 +16,7 @@ export const EndPoints = {
     updatePushId: 'notification/push-subscription',
     deletePushId: (pushId: string) =>
       `notification/push-subscription/${pushId}`,
+    updateMembership: 'user/membership/request',
   },
   NOTIFICATIONS: {
     list: 'notifications',

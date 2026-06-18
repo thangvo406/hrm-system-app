@@ -31,6 +31,8 @@ export const MEMBERSHIP_TYPE = {
   STUDENT: 'STUDENT',
 } as const;
 
+export const HISLOP_BUTTON = { top: 10, bottom: 10, left: 10, right: 10 };
+
 export const MEMBERSHIP_OPTIONS = [
   {
     id: MEMBERSHIP_TYPE.STUDENT,

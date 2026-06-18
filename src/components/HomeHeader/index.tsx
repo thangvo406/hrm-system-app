@@ -5,6 +5,7 @@ import imageNames from '@assets/images/names';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import { ScaleSize } from '@kits/core';
+import { AppConstants } from '@constants';
 
 type HeaderProps = {
   readonly onOpenMenu: () => void;
@@ -30,7 +31,11 @@ function Header({
   return (
     <View style={styles.header}>
       <View style={styles.headerLeft}>
-        <TouchableOpacity onPress={onOpenMenu} testID="home-menu-button">
+        <TouchableOpacity
+          onPress={onOpenMenu}
+          testID="home-menu-button"
+          hitSlop={AppConstants.HISLOP_BUTTON}
+        >
           <Image
             color="#1A1A1A"
             height={ICON_SIZE}
@@ -66,6 +71,7 @@ function Header({
           <TouchableOpacity
             onPress={onPressNotification}
             testID="home-notification-button"
+            hitSlop={AppConstants.HISLOP_BUTTON}
             style={{
               marginTop: ScaleSize(-5),
             }}

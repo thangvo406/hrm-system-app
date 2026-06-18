@@ -38,6 +38,12 @@ export const updatePushId = async (
   });
 };
 
+export const updateMembership = async (request: {
+  membershipType: string;
+}): Promise<void> => {
+  await httpRequest.post(EndPoints.ACCOUNT.updateMembership, request);
+};
+
 export const deletePushId = async (pushId: string): Promise<void> => {
   await httpRequest.delete(EndPoints.ACCOUNT.deletePushId(pushId), {
     loading: false,

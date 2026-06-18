@@ -12,10 +12,10 @@ import {
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { ScaleSize } from '@kits/core';
-import { DeviceUtils, ValidateUtils } from '@kits/core/utils';
+import { ValidateUtils } from '@kits/core/utils';
 import AppNavigator from '@navigation/AppNavigator';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const { ifAndroid } = DeviceUtils;
 const BACK_ICON_SIZE = ScaleSize(24);
 const ICON_CHEVRON_SIZE = ScaleSize(18);
 const ICON_COLOR = '#666666';
@@ -132,6 +132,7 @@ function InputInfo({
   const indentifyReference = useRef<TextInput>(null);
   const phoneReference = useRef<TextInput>(null);
   const otpReference = useRef<TextInput>(null);
+  const insset = useSafeAreaInsets();
   const fieldReferences: Record<
     keyof InputInfoValues,
     React.RefObject<TextInput | null>
@@ -398,7 +399,7 @@ function InputInfo({
 
         <Text style={styles.warning}>{t('register_flow.warning')}</Text>
       </View>
-      <View style={styles.footer}>
+      <View style={[styles.footer, { bottom: insset.bottom || ScaleSize(25) }]}>
         <View style={styles.footerSeparator} />
         <Button
           disabled={disabled || !isFormValid}
@@ -479,7 +480,6 @@ const styles = StyleSheet.create({
     paddingBottom: ScaleSize(12),
   },
   footer: {
-    bottom: ifAndroid(ScaleSize(25), 0),
     left: 0,
     zIndex: 9,
     position: 'absolute',

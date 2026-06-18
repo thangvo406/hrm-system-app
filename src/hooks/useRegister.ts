@@ -270,9 +270,9 @@ export const useRegister = () => {
     if (formData.current?.membershipId != MEMBERSHIP_TYPE.NON_MEMBER) {
       AppNavigator.showDialog({
         screen: Information,
-        desc: '조합원 가입을 위해 최초 1회 출자금 납부가 필요합니다. 계속 진행할까요?',
-        cancelTitle: '취소',
-        confirmTitle: '확인',
+        desc: t('register_flow.contribution_dialog.desc'),
+        cancelTitle: t('common.cancel'),
+        confirmTitle: t('common.confirm'),
         onConfirm: () => {
           setStep(STEP.CHOOSE_SCHOOL);
         },
