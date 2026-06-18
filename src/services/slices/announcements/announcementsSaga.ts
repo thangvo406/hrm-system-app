@@ -2,7 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   AnnouncementItem,
   GetAnnouncementsPayload,
-} from '../../../types/announcements';
+} from '@type/announcements';
 
 import { delay, takeLatest } from 'redux-saga/effects';
 import { getAnnouncementsRequest } from './announcementsSlice';

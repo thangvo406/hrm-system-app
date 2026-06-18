@@ -3,7 +3,7 @@ import { FileManager } from '@kits/core/utils/FileManager';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { updatePushIdRequest } from '@services/slices/account/accountSlice';
-import Globals from '@utils/Globals';
+import { Globals } from '@utils';
 import { useEffect, useRef } from 'react';
 import type { NotificationClickEvent } from 'react-native-onesignal';
 import { OneSignal } from 'react-native-onesignal';

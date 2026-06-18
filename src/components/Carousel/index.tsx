@@ -127,7 +127,7 @@ const Carousel = React.forwardRef(CarouselInner) as <T extends ItemWithId>(
   props: { readonly ref?: React.Ref<CarouselHandle> } & Properties<T>,
 ) => React.ReactElement;
 
-export default React.memo(Carousel);
+export default Carousel;
 
 const styles = StyleSheet.create({
   dot: {

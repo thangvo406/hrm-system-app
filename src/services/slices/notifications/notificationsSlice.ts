@@ -1,4 +1,4 @@
-import type { GetNotificationsPayload } from '../../../types/notifications';
+import type { GetNotificationsPayload } from '@type/notifications';
 
 import { createSlice } from '@reduxjs/toolkit';
 

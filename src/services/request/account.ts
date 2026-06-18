@@ -2,8 +2,7 @@ import { httpRequest } from '@services/common/httpRequest';
 import { z } from 'zod';
 import { EndPoints } from '@constants';
 import { UpdatePushIdPayload } from '@services/slices/account/accountSlice';
-
-type ApiResponse<T> = { data: T };
+import { SingleApiResponse } from '@type/common';
 
 export const profileSchema = z.object({
   avatar: z.string().optional(),
@@ -24,7 +23,7 @@ export const profileSchema = z.object({
 export type Profile = z.infer<typeof profileSchema>;
 
 export const getProfile = async (): Promise<Profile> => {
-  const response = await httpRequest.get<ApiResponse<Profile>>(
+  const response = await httpRequest.get<SingleApiResponse<Profile>>(
     EndPoints.ACCOUNT.getProfile,
     { loading: false },
   );

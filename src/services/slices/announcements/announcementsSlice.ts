@@ -1,4 +1,4 @@
-import type { GetAnnouncementsPayload } from '../../../types/announcements';
+import type { GetAnnouncementsPayload } from '@type/announcements';
 
 import { createSlice } from '@reduxjs/toolkit';
 

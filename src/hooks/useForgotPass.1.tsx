@@ -6,7 +6,7 @@ import { useAppDispatch } from '@services/common/storeHooks';
 import { sendOtpForgotPassRequest } from '@services/slices/auth/authSlice';
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IResponseRegisterSendOtp } from '../types/Auth';
+import { IResponseRegisterSendOtp } from '@type/auth';
 import { ForgotStep } from './useForgotPass';
 
 export const useForgotPass = () => {

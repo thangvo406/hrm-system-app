@@ -14,7 +14,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ScaleSize } from '@kits/core';
 import { DeviceUtils } from '@kits/core/utils';
 import { AppConstants } from '@constants';
-import { computeFormAuthErrors } from '@utils/common';
+import { CommonUtils } from '@utils';
 
 const { ifAndroid } = DeviceUtils;
 const { PASSWORD_MIN_LENGTH } = AppConstants;
@@ -73,7 +73,7 @@ function NewPassForm({ disabled = false, onSubmit }: NewPassFormProps) {
     };
   }, []);
 
-  const { valid, visible } = computeFormAuthErrors(
+  const { valid, visible } = CommonUtils.computeFormAuthErrors(
     { confirmPassword, password },
     touched,
     validateNewPassword,

@@ -5070,6 +5070,7 @@ __metadata:
     react-native-nitro-modules: 0.35.0
     react-native-onesignal: 5.2.9
     react-native-reanimated: ~4.3.1
+    react-native-reanimated-skeleton: 1.6.0
     react-native-safe-area-context: 5.5.2
     react-native-screens: 4.23.0
     react-native-svg: 15.12.1
@@ -9894,6 +9895,18 @@ __metadata:
   dependencies:
     invariant: ^2.2.2
   checksum: 635c2c8edd955a9e270027b93ca9471209c23f86969b96069806ae32b905b1368e1db50f37c4c747e7d6cb8a878e00206c46c3fedd0d11254b657cb3fc2f0922
+  languageName: node
+  linkType: hard
+
+"react-native-reanimated-skeleton@npm:1.6.0":
+  version: 1.6.0
+  resolution: "react-native-reanimated-skeleton@npm:1.6.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-linear-gradient: "*"
+    react-native-reanimated: "*"
+  checksum: 88e8e71f0611c40ce17e9d67759dad980270a155fae6c7cea1db47d2c983bab6678fcba9cb091ed0400cf3bb16382fa3e628f1cd45e9a9fe8546ea6c8fec5beb
   languageName: node
   linkType: hard
 

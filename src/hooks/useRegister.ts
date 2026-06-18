@@ -18,14 +18,14 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RootStackParamList } from '@navigation/types';
 import { Paths } from '@navigation/paths';
 import Selection from '@screens/Dialog/components/Selection';
-import { computeFormAuthErrors } from '@utils/common';
+import { CommonUtils } from '@utils';
 import { AppConstants } from '@constants';
 import Information from '@screens/Dialog/components/Information';
 import {
   IResponseRegisterSendOtp,
   IResponseRegisterVerifyOtp,
   IResponseUniversity,
-} from '../types/Auth';
+} from '@type/auth';
 
 const {
   CARRIER_ITEMS,
@@ -167,7 +167,7 @@ export const useRegister = () => {
     if (step != STEP.FORM) {
       return {};
     }
-    const registerFormState = computeFormAuthErrors(
+    const registerFormState = CommonUtils.computeFormAuthErrors(
       // eslint-disable-next-line react-hooks/refs
       formData.current,
       { email: errors.email, name: errors.name, password: errors.password },

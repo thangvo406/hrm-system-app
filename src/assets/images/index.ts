@@ -8,8 +8,10 @@ const images = {
   ic_outlet_close_white: require('./ic_outlet_close_white.png') as number,
   ic_user_fill: require('./ic_user_fill.png') as number,
   img_discount: require('./img_discount.png') as number,
+  img_header_products_default: require('./img_header_products_default.png') as number,
   img_picture: require('./img_picture.png') as number,
   img_place_map: require('./img_place_map.png') as number,
+  img_product_default: require('./img_product_default.png') as number,
   img_register_success: require('./img_register_success.png') as number,
   img_speaker: require('./img_speaker.png') as number,
 } as const;

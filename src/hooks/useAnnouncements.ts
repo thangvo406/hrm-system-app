@@ -1,4 +1,4 @@
-import type { AnnouncementItem } from '../types/announcements';
+import type { AnnouncementItem } from '@type/announcements';
 
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getAnnouncementsRequest } from '@services/slices/announcements/announcementsSlice';
@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 export type {
   AnnouncementItem,
   AnnouncementKind,
-} from '../types/announcements';
+} from '@type/announcements';
 
 export const useAnnouncements = () => {
   const dispatch = useAppDispatch();

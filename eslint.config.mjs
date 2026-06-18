@@ -61,7 +61,6 @@ export default defineConfig(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      '@typescript-eslint/consistent-type-definitions': [ERROR, 'type'],
       '@typescript-eslint/dot-notation': [ERROR, { allowKeywords: true }],
       '@typescript-eslint/no-empty-function': OFF,
       '@typescript-eslint/no-unsafe-assignment': OFF,
@@ -112,6 +111,9 @@ export default defineConfig(
       '@typescript-eslint/prefer-nullish-coalescing': OFF,
       'perfectionist/sort-switch-case': OFF,
       'unicorn/no-negated-condition': OFF,
+      'perfectionist/sort-interfaces': OFF,
+      'react/display-name': OFF,
+      '@typescript-eslint/consistent-type-definitions': OFF,
       'unicorn/prevent-abbreviations': OFF,
       'perfectionist/sort-enums': OFF,
       '@typescript-eslint/no-confusing-void-expression': OFF,

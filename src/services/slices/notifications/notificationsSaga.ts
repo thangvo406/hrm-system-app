@@ -2,7 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   GetNotificationsPayload,
   NotificationItem,
-} from '../../../types/notifications';
+} from '@type/notifications';
 
 import { delay, takeLatest } from 'redux-saga/effects';
 

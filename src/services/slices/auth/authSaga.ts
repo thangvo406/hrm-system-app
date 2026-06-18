@@ -53,8 +53,8 @@ import {
   IResponseSubmitForgotPass,
   IResponseUniversity,
   IResponseVerifyOtpForgotPass,
-} from '../../../types/Auth';
-import Globals from '@utils/Globals';
+} from '@type/auth';
+import { Globals } from '@utils';
 import { AccountSelector } from '@services/selectors';
 import { deletePushId } from '@services/request/account';
 

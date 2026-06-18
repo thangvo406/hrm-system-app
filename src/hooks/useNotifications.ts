@@ -1,4 +1,4 @@
-import type { NotificationItem } from '../types/notifications';
+import type { NotificationItem } from '@type/notifications';
 
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getNotificationsRequest } from '@services/slices/notifications/notificationsSlice';
@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 export type {
   NotificationItem,
   NotificationKind,
-} from '../types/notifications';
+} from '@type/notifications';
 
 export const useNotifications = () => {
   const dispatch = useAppDispatch();

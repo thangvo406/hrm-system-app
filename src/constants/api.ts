@@ -23,4 +23,7 @@ export const EndPoints = {
   ANNOUNCEMENTS: {
     list: 'announcements',
   },
+  PRODUCTS: {
+    list: (request: string) => `product?${request}`,
+  },
 };

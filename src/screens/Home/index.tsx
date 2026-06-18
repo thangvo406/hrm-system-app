@@ -103,13 +103,17 @@ function FeatureCard({
   );
 }
 
-function StoreSection() {
+function StoreSection({ onPressStore }: any) {
   const { t } = useTranslation();
   return (
     <View>
       <Text style={styles.sectionLabel}>{t('home.frequent_store')}</Text>
       <View style={styles.storeHeader}>
-        <View style={styles.storeNameRow}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={onPressStore}
+          style={styles.storeNameRow}
+        >
           <Image
             color="#1A1A1A"
             height={18}
@@ -118,7 +122,7 @@ function StoreSection() {
             width={18}
           />
           <Text style={styles.storeName}>{STORE_NAME}</Text>
-        </View>
+        </TouchableOpacity>
       </View>
       <ScrollView
         contentContainerStyle={styles.productList}
@@ -154,6 +158,7 @@ function Home() {
     onPressNotification,
     onPressOrder,
     openMenu,
+    onGoToStore,
     profile,
   } = useHome();
   const insets = useSafeAreaInsets();
@@ -187,7 +192,7 @@ function Home() {
             title={t('home.order_title')}
           />
         </View>
-        <StoreSection />
+        <StoreSection onPressStore={onGoToStore} />
         <View style={styles.row}>
           <FeatureCard
             desc={t('home.notice_desc')}

@@ -13,6 +13,7 @@ module.exports = {
           '@services': './src/services',
           '@tests': './src/tests',
           '@translations': './src/translations',
+          '@type': './src/types',
           '@utils': './src/utils',
           '@constants': './src/constants',
           '@kits': './kits',

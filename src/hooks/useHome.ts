@@ -63,12 +63,17 @@ export const useHome = () => {
     dispatch(getProfileRequest());
   }, []);
 
+  const onGoToStore = () => {
+    AppNavigator.navigate(Paths.Products);
+  };
+
   return {
     goToProfile,
     openMenu,
     profile,
     onPressOrder,
     onPressContribution,
+    onGoToStore,
     onPressNotice,
     onPressNotification,
   };

@@ -11,7 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Paths } from '@navigation/paths';
 import type { RootStackParamList } from '@navigation/types';
 import { useTranslation } from 'react-i18next';
-import { computeFormAuthErrors } from '@utils/common';
+import { CommonUtils } from '@utils';
 import { AppConstants, Environment } from '@constants';
 import { useRegister } from './useRegister';
 import AppNavigator from '@navigation/AppNavigator';
@@ -149,7 +149,7 @@ export const useAuthorization = () => {
       setLoginErrorsState(previous => ({ ...previous, [field]: true }));
     };
 
-  const loginFormState = computeFormAuthErrors(
+  const loginFormState = CommonUtils.computeFormAuthErrors(
     loginForm,
     loginErrorsState,
     validateLogin,

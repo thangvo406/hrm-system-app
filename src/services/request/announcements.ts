@@ -1,10 +1,9 @@
-import type { AnnouncementItem } from '../../types/announcements';
+import type { AnnouncementItem } from '@type/announcements';
 
 import { httpRequest } from '@services/common/httpRequest';
 import { z } from 'zod';
 import { EndPoints } from '@constants';
-
-type ApiResponse<T> = { data: T };
+import { SingleApiResponse } from '@type/common';
 
 export const announcementKindSchema = z.enum(['event', 'notice']);
 
@@ -21,7 +20,7 @@ export const announcementsResponseSchema = z.object({
 });
 
 export const getAnnouncements = async (): Promise<AnnouncementItem[]> => {
-  const response = await httpRequest.get<ApiResponse<AnnouncementItem[]>>(
+  const response = await httpRequest.get<SingleApiResponse<AnnouncementItem[]>>(
     EndPoints.ANNOUNCEMENTS.list,
     { loading: false },
   );

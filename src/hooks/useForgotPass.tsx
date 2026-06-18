@@ -11,7 +11,7 @@ import {
   submitForgotPassRequest,
   verifyOtpForgotPassRequest,
 } from '@services/slices/auth/authSlice';
-import { IResponseSendOtpForgotPass } from '../types/Auth';
+import { IResponseSendOtpForgotPass } from '@type/auth';
 import { Paths } from '@navigation/paths';
 
 const { CARRIER_ITEMS, DEFAULT_CARRIER } = AppConstants;

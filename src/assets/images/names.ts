@@ -10,8 +10,10 @@ const imageNames = {
   ic_outlet_close_white: 'ic_outlet_close_white',
   ic_user_fill: 'ic_user_fill',
   img_discount: 'img_discount',
+  img_header_products_default: 'img_header_products_default',
   img_picture: 'img_picture',
   img_place_map: 'img_place_map',
+  img_product_default: 'img_product_default',
   img_register_success: 'img_register_success',
   img_speaker: 'img_speaker',
 } as const satisfies Record<string, ImageName>;
