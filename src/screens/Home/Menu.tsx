@@ -93,7 +93,6 @@ const sections: readonly MenuSection[] = [
   {
     items: [
       { key: 'notice', labelKey: 'home.menu.notice' },
-      { key: 'community', labelKey: 'home.menu.community' },
       { key: 'survey', labelKey: 'home.menu.survey' },
     ],
     titleKey: 'home.menu.section_community',

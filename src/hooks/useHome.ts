@@ -16,6 +16,9 @@ import BankInformation from '../screens/Authorisation/components/RegisterFlow/Ba
 
 export type UseHome = ReturnType<typeof useHome>;
 
+const membershipOptions = MEMBERSHIP_OPTIONS.filter(
+  it => it.id != 'NON_MEMBER',
+);
 const openMenu = () => {
   AppNavigator.showMenu();
 };
@@ -34,6 +37,10 @@ const onPressNotification = () => {
 
 const onPressNotice = () => {
   AppNavigator.navigate(Paths.Announcements);
+};
+
+const onPressSurvey = () => {
+  AppNavigator.navigate(Paths.Survey);
 };
 
 export const useHome = () => {
@@ -90,7 +97,7 @@ export const useHome = () => {
         AppNavigator.hideAllPopup();
       },
       screen: ChooseMemberShipType,
-      options: MEMBERSHIP_OPTIONS,
+      options: membershipOptions,
       onSubmit: onSubmitMemberShip,
     });
   };
@@ -135,5 +142,6 @@ export const useHome = () => {
     onGoToStore,
     onPressNotice,
     onPressNotification,
+    onPressSurvey,
   };
 };
