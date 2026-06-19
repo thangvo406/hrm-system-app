@@ -161,6 +161,9 @@
     "notifications": {
       "title": "알림"
     },
+    "contribution": {
+      "title": "마이페이지"
+    },
     "announcements": {
       "title": "생협페이",
       "tab_all": "전체",

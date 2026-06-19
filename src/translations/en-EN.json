@@ -14,6 +14,12 @@
       "title": "Welcome on The $t(common_appName.full)",
       "description": "Do you want to discover some features? Just click on one of the three buttons at the bottom of the screen. The first allows you to call a REST API. The second lets you change the theme color. And the third allows you to change the language."
     },
+    "notifications": {
+      "title": "Notifications"
+    },
+    "contribution": {
+      "title": "contribution"
+    },
     "welcome": {
       "login": "Login",
       "register": "New Registration"

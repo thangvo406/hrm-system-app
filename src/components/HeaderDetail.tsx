@@ -1,6 +1,12 @@
 import Image from '@components/Image';
 import { ScaleSize } from '@kits/core';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 import React from 'react';
 import imageNames from '@assets/images/names';
 import { AppConstants } from '@constants';
@@ -14,9 +20,17 @@ type Properties = {
   readonly onPressBack?: () => void;
   readonly title: string;
   readonly hideNotify?: boolean;
+  readonly transparent?: boolean;
+  readonly style?: ViewStyle;
 };
 
-function HeaderDetail({ hideNotify = false, onPressBack, title }: Properties) {
+function HeaderDetail({
+  transparent,
+  hideNotify = false,
+  onPressBack,
+  style,
+  title,
+}: Properties) {
   const _onPressBack = () => {
     if (onPressBack) {
       onPressBack();
@@ -38,7 +52,13 @@ function HeaderDetail({ hideNotify = false, onPressBack, title }: Properties) {
   };
 
   return (
-    <View style={styles.header}>
+    <View
+      style={[
+        styles.header,
+        { backgroundColor: transparent ? 'transparent' : '#FFFFFF' },
+        style,
+      ]}
+    >
       <TouchableOpacity
         hitSlop={AppConstants.HISLOP_BUTTON}
         onPress={_onPressBack}

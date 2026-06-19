@@ -1,6 +1,6 @@
 import type { Profile as ProfileType } from '@services/request/account';
 
-import { Image, HomeHeader } from '@components';
+import { Image, HeaderDetail } from '@components';
 import { useTranslation } from 'react-i18next';
 import {
   ScrollView,
@@ -192,7 +192,13 @@ function Contribution() {
   return (
     <View style={[styles.safeArea, { paddingTop: insets.top }]}>
       <View style={styles.headerWrap}>
-        <HomeHeader onOpenMenu={onOpenMenu} profile={profile} />
+        <HeaderDetail
+          transparent
+          title={t('contribution.title')}
+          style={{
+            paddingHorizontal: 0,
+          }}
+        />
       </View>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
