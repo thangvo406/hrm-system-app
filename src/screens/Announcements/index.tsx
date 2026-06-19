@@ -1,12 +1,10 @@
 import type { ListRenderItem } from 'react-native';
 import type { AnnouncementItem } from '@hooks';
 
-import { HomeHeader, AnnouncementLoading } from '@components';
+import { AnnouncementLoading, HeaderDetail } from '@components';
 import { ScaleSize } from '@kits/core';
 import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useCallback, useMemo } from 'react';
-import { useAppSelector } from '@services/common/storeHooks';
-import { AccountSelector } from '@services/selectors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
@@ -30,7 +28,6 @@ const TAB_TEST_IDS: readonly string[] = [
 function Announcements() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const ownerProfile = useAppSelector(AccountSelector.getProfile);
   const {
     onLoadMore,
     loading,
@@ -40,7 +37,6 @@ function Announcements() {
     tabIndex,
     onPressBannerItem,
     onPressNoticeItem,
-    onOpenMenu,
   } = useAnnouncements();
 
   const renderItem: ListRenderItem<AnnouncementItem> = useCallback(
@@ -59,11 +55,7 @@ function Announcements() {
 
   return (
     <View style={[styles.safeArea, { paddingTop: insets.top }]}>
-      <HomeHeader
-        hideIconNotify
-        onOpenMenu={onOpenMenu}
-        profile={ownerProfile}
-      />
+      <HeaderDetail title={t('announcements.title')} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}

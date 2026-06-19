@@ -4,30 +4,43 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import imageNames from '@assets/images/names';
 import { AppConstants } from '@constants';
+import AppNavigator from '@navigation/AppNavigator';
+import { Paths } from '@navigation/paths';
 
 const ICON_SIZE = ScaleSize(24);
 const ACCENT_COLOR = '#5BB85C';
 
 type Properties = {
-  readonly onOpenMenu: () => void;
-  readonly onPressBack: () => void;
-  readonly onPressHome: () => void;
-  readonly onPressNotification?: () => void;
+  readonly onPressBack?: () => void;
   readonly title: string;
 };
 
-function HeaderDetail({
-  onOpenMenu,
-  onPressBack,
-  onPressHome,
-  onPressNotification = undefined,
-  title,
-}: Properties) {
+function HeaderDetail({ onPressBack, title }: Properties) {
+  const _onPressBack = () => {
+    if (onPressBack) {
+      onPressBack();
+    } else {
+      AppNavigator.goBack();
+    }
+  };
+
+  const onOpenMenu = () => {
+    AppNavigator.showMenu();
+  };
+
+  // const onPressHome = () => {
+  //   AppNavigator.reset(Paths.Home);
+  // };
+
+  const onPressNotification = () => {
+    AppNavigator.navigate(Paths.Notifications);
+  };
+
   return (
     <View style={styles.header}>
       <TouchableOpacity
         hitSlop={AppConstants.HISLOP_BUTTON}
-        onPress={onPressBack}
+        onPress={_onPressBack}
         style={styles.iconButton}
         testID="header-detail-back"
       >
@@ -45,7 +58,7 @@ function HeaderDetail({
       </Text>
 
       <View style={styles.actions}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           hitSlop={AppConstants.HISLOP_BUTTON}
           onPress={onPressHome}
           style={styles.iconButton}
@@ -58,7 +71,7 @@ function HeaderDetail({
             type="svg"
             width={ICON_SIZE}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity
           hitSlop={AppConstants.HISLOP_BUTTON}
           onPress={onPressNotification}
