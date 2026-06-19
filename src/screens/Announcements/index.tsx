@@ -3,16 +3,8 @@ import type { AnnouncementItem } from '@hooks';
 
 import { HomeHeader, AnnouncementLoading } from '@components';
 import { ScaleSize } from '@kits/core';
-import {
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useCallback, useMemo } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
-import AppNavigator from '@navigation/AppNavigator';
 import { useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,15 +19,7 @@ import ItemSeparator from './ItemSeparator';
 
 const TEXT_MUTED = '#9E9E9E';
 
-const onOpenMenu = () => {
-  AppNavigator.showMenu();
-};
-
 const keyExtractor = (item: AnnouncementItem) => String(item.id);
-
-const renderItem: ListRenderItem<AnnouncementItem> = ({ item }) => (
-  <AnnouncementRow item={item} />
-);
 
 const TAB_TEST_IDS: readonly string[] = [
   'announcement-tab-all',
@@ -49,18 +33,19 @@ function Announcements() {
   const ownerProfile = useAppSelector(AccountSelector.getProfile);
   const {
     onLoadMore,
-    onRefreshBanners,
     loading,
     onChangeTab,
     data,
     banners,
     tabIndex,
+    onPressBannerItem,
+    onPressNoticeItem,
+    onOpenMenu,
   } = useAnnouncements();
 
-  useFocusEffect(
-    useCallback(() => {
-      onRefreshBanners();
-    }, [onRefreshBanners]),
+  const renderItem: ListRenderItem<AnnouncementItem> = useCallback(
+    ({ item }) => <AnnouncementRow item={item} onPress={onPressNoticeItem} />,
+    [],
   );
 
   const labels = useMemo(
@@ -89,7 +74,11 @@ function Announcements() {
           testIDs={TAB_TEST_IDS}
           value={tabIndex}
         />
-        <BannerCarousel banners={banners} tabIndex={tabIndex} />
+        <BannerCarousel
+          banners={banners}
+          onPressItem={onPressBannerItem}
+          tabIndex={tabIndex}
+        />
         {loading ? (
           <AnnouncementLoading />
         ) : data?.length === 0 ? (

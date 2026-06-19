@@ -1,4 +1,5 @@
 export enum Paths {
+  AnnouncementDetail = 'announcement_detail',
   Announcements = 'announcements',
   Authorization = 'authorization',
   Contribution = 'contribution',

@@ -7,7 +7,7 @@ import Carousel, {
   type ICarouselInstance,
 } from 'react-native-reanimated-carousel';
 import { useSharedValue } from 'react-native-reanimated';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useEffect, useRef } from 'react';
 import React from 'react';
 
@@ -25,29 +25,40 @@ const DOT_INACTIVE_COLOR = '#E0E0E0';
 const DOT_ACTIVE_COLOR = '#54C158';
 const DOT_GAP = ScaleSize(3);
 
-const renderBanner: CarouselRenderItem<AnnouncementImage> = ({ item }) => (
-  <View style={styles.bannerSlide} testID={`announcement-banner-${item.id}`}>
-    <ProgressiveImage
-      height={BANNER_HEIGHT}
-      url={item.fileUrl}
-      resizeMode="stretch"
-      width={BANNER_WIDTH}
-    />
-  </View>
-);
-
 type Properties = {
   readonly banners: readonly AnnouncementImage[];
+  readonly onPressItem?: (item: AnnouncementImage) => void;
   readonly tabIndex: number;
 };
 
-function BannerCarousel({ banners, tabIndex }: Properties) {
+function BannerCarousel({
+  banners,
+  onPressItem = undefined,
+  tabIndex,
+}: Properties) {
   const carouselReference = useRef<ICarouselInstance>(null);
   const progress = useSharedValue(0);
 
   useEffect(() => {
     carouselReference.current?.scrollTo({ animated: true, index: 0 });
   }, [tabIndex]);
+
+  const renderBanner: CarouselRenderItem<AnnouncementImage> = ({ item }) => (
+    <View style={styles.bannerSlide} testID={`announcement-banner-${item.id}`}>
+      <TouchableOpacity
+        activeOpacity={0.85}
+        style={styles.bannerSlide}
+        onPress={() => onPressItem?.(item)}
+      >
+        <ProgressiveImage
+          height={BANNER_HEIGHT}
+          url={item.fileUrl}
+          resizeMode="stretch"
+          width={BANNER_WIDTH}
+        />
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <View style={styles.bannerContainer}>

@@ -1,7 +1,9 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
+  AnnouncementDetail,
   AnnouncementImage,
   AnnouncementItem,
+  GetAnnouncementDetailPayload,
   GetAnnouncementImagesPayload,
   GetAnnouncementsPayload,
   GetNotificationsPayload,
@@ -12,10 +14,12 @@ import { call, delay, put, takeLatest } from 'redux-saga/effects';
 
 import type { ListApiResponse } from '@type/common';
 import {
+  getAnnouncementById,
   getAnnouncementImages,
   getAnnouncements,
 } from '@services/request/notifications';
 import {
+  getAnnouncementDetailRequest,
   getAnnouncementImagesRequest,
   getAnnouncementImagesSuccess,
   getAnnouncementsRequest,
@@ -100,11 +104,31 @@ function* getAnnouncementImagesWorker(
   }
 }
 
+function* getAnnouncementDetailWorker(
+  action: PayloadAction<GetAnnouncementDetailPayload>,
+): Generator<unknown, void, AnnouncementDetail> {
+  const { announcementId, onSuccess, onFailure } = action.payload || {};
+  try {
+    const response: AnnouncementDetail = yield call(
+      getAnnouncementById,
+      announcementId,
+    );
+    onSuccess?.(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    onFailure?.(message);
+  }
+}
+
 export function* notificationsSaga() {
   yield takeLatest(getNotificationsRequest.type, getNotificationsWorker);
   yield takeLatest(getAnnouncementsRequest.type, getAnnouncementsWorker);
   yield takeLatest(
     getAnnouncementImagesRequest.type,
     getAnnouncementImagesWorker,
+  );
+  yield takeLatest(
+    getAnnouncementDetailRequest.type,
+    getAnnouncementDetailWorker,
   );
 }

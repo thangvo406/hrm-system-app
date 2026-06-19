@@ -3,6 +3,7 @@ export type {
   AnnouncementItem,
   AnnouncementKind,
 } from './useAnnouncements';
+export type { AnnouncementDetail } from './useAnnouncementDetail';
 export type {
   AuthStep,
   LoginErrors,
@@ -11,6 +12,7 @@ export type {
 } from './useAuthorization';
 export type { NotificationItem, NotificationKind } from './useNotifications';
 export type { Product } from './useProducts';
+export { useAnnouncementDetail } from './useAnnouncementDetail';
 export { useAnnouncements } from './useAnnouncements';
 export { useAuthorization } from './useAuthorization';
 export { useHome } from './useHome';

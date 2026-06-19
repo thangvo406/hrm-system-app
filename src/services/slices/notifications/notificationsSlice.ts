@@ -2,6 +2,7 @@ import type {
   AnnouncementImage,
   GetAnnouncementImagesPayload,
   GetNotificationsPayload,
+  GetAnnouncementDetailPayload,
 } from '@type/notifications';
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
@@ -18,6 +19,10 @@ const notificationsSlice = createSlice({
   initialState,
   name: 'notifications',
   reducers: {
+    getAnnouncementDetailRequest: {
+      prepare: (payload: GetAnnouncementDetailPayload) => ({ payload }),
+      reducer: () => {},
+    },
     getAnnouncementImagesRequest: {
       prepare: (payload: GetAnnouncementImagesPayload = {}) => ({ payload }),
       reducer: () => {},
@@ -42,6 +47,7 @@ const notificationsSlice = createSlice({
 });
 
 export const {
+  getAnnouncementDetailRequest,
   getAnnouncementImagesRequest,
   getAnnouncementImagesSuccess,
   getAnnouncementsRequest,

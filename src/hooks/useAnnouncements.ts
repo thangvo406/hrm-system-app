@@ -8,6 +8,10 @@ import {
 } from '@services/slices/notifications/notificationsSlice';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ListApiResponse } from '@type';
+import { Paths } from '@navigation/paths';
+import AppNavigator from '@navigation/AppNavigator';
+import { useFocusEffect } from '@react-navigation/native';
+import ImagePreview from '@dialogs/ImagePreview';
 
 export type {
   AnnouncementImage,
@@ -38,6 +42,12 @@ export const useAnnouncements = () => {
   const onRefreshBanners = useCallback(() => {
     dispatch(getAnnouncementImagesRequest({}));
   }, [dispatch]);
+
+  useFocusEffect(
+    useCallback(() => {
+      onRefreshBanners();
+    }, [onRefreshBanners]),
+  );
 
   const handleSuccess = (data: ListApiResponse<AnnouncementItem[]>) => {
     isLast.current = data.last;
@@ -89,6 +99,22 @@ export const useAnnouncements = () => {
     setCurrentPage(0);
   };
 
+  const onPressBannerItem = useCallback(item => {
+    AppNavigator.showDialog({
+      imageUrl: item.fileUrl,
+      screen: ImagePreview,
+      isFullScreen: true,
+    });
+  }, []);
+
+  const onPressNoticeItem = useCallback((item: AnnouncementItem) => {
+    AppNavigator.navigate(Paths.AnnouncementDetail, { id: item?.id });
+  }, []);
+
+  const onOpenMenu = useCallback(() => {
+    AppNavigator.showMenu();
+  }, []);
+
   return {
     banners,
     data,
@@ -96,6 +122,9 @@ export const useAnnouncements = () => {
     loading,
     onChangeTab,
     onLoadMore,
+    onOpenMenu,
+    onPressBannerItem,
+    onPressNoticeItem,
     onRefreshBanners,
     tab,
     tabIndex,

@@ -10,6 +10,8 @@ export type AnnouncementItem = {
   createdDate: string;
 };
 
+export type AnnouncementDetail = AnnouncementItem;
+
 export type AnnouncementsCallback = {
   readonly onFailure?: (error: string) => void;
   readonly onSuccess?: (items: ListApiResponse<AnnouncementItem[]>) => void;
@@ -20,6 +22,15 @@ export type GetAnnouncementsPayload = {
   page: number;
   size: number;
 } & AnnouncementsCallback;
+
+export type AnnouncementDetailCallback = {
+  readonly onFailure?: (error: string) => void;
+  readonly onSuccess?: (detail: AnnouncementDetail) => void;
+};
+
+export type GetAnnouncementDetailPayload = {
+  readonly announcementId: number | string;
+} & AnnouncementDetailCallback;
 
 export type AnnouncementImage = {
   id: number;

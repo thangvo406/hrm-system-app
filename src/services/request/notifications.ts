@@ -1,4 +1,5 @@
 import type {
+  AnnouncementDetail,
   AnnouncementImage,
   AnnouncementItem,
   GetAnnouncementsPayload,
@@ -36,4 +37,14 @@ export const getAnnouncementImages = async (): Promise<AnnouncementImage[]> => {
     SingleApiResponse<AnnouncementImage[]>
   >(EndPoints.ANNOUNCEMENTS.listImage, { loading: false });
   return response.data;
+};
+
+export const getAnnouncementById = async (
+  announcementId: number | string,
+): Promise<AnnouncementDetail> => {
+  const response = await httpRequest.get<SingleApiResponse<AnnouncementDetail>>(
+    EndPoints.ANNOUNCEMENTS.detail(announcementId),
+    { loading: false },
+  );
+  return response?.data;
 };

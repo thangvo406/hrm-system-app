@@ -30,13 +30,13 @@ type ImageLocalProps = {
 } & Omit<FastImageProps, 'resizeMode' | 'source'>;
 
 type ImageUrlProps = {
-  readonly height?: number;
+  readonly height?: number | string;
   readonly name?: never;
   readonly resizeMode?: ResizeMode;
   readonly style?: ImageStyle;
   readonly type?: 'image';
   readonly url: string;
-  readonly width?: number;
+  readonly width?: number | string;
 } & Omit<FastImageProps, 'resizeMode' | 'source'>;
 
 type Properties = ImageSvgProps | ImageLocalProps | ImageUrlProps;

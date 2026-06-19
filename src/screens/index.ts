@@ -1,3 +1,4 @@
+export { default as AnnouncementDetail } from './AnnouncementDetail';
 export { default as Announcements } from './Announcements';
 export { default as Authorization } from './Authorisation';
 export { default as Example } from './Example/Example';

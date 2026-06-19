@@ -6,6 +6,8 @@
       "@assets/*": ["./src/assets/*"],
       "@components/*": ["./src/components/*"],
       "@components": ["./src/components"],
+      "@dialogs": ["./src/screens/Dialog/components"],
+      "@dialogs/*": ["./src/screens/Dialog/components/*"],
       "@hooks": ["./src/hooks"],
       "@hooks/*": ["./src/hooks/*"],
       "@navigation/*": ["./src/navigation/*"],

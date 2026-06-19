@@ -1,6 +1,8 @@
+export { default as AnnouncementDetailLoading } from './Loading/AnnouncementDetail';
 export { default as AnnouncementLoading } from './Loading/Annoucements';
 export { default as Button } from './Button';
 export { default as Carousel } from './Carousel';
+export { default as HeaderDetail } from './HeaderDetail';
 export { default as HomeHeader } from './HomeHeader';
 export { default as Image } from './Image';
 export { default as ProductDetailLoading } from './Loading/ProductDetail';

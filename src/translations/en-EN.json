@@ -181,6 +181,11 @@
       "loading": "Loading announcements...",
       "empty": "No announcements to display."
     },
+    "announcement_detail": {
+      "title": "Notice / Event",
+      "loading": "Loading...",
+      "error": "Failed to load content."
+    },
     "profile": {
       "title": "Profile",
       "edit": "Edit Profile",
