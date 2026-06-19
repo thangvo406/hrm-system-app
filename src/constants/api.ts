@@ -25,7 +25,7 @@ export const EndPoints = {
     detail: (announcementId: number | string) =>
       `announcement/${announcementId}`,
     list: (request: string) => `announcement?${request}`,
-    listImage: 'announcement-image',
+    listImage: 'banner?pageOption=ANNOUNCEMENT',
   },
   PRODUCTS: {
     detail: (productId: number | string) => `product/${productId}`,
