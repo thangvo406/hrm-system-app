@@ -66,6 +66,11 @@ type MenuSection = {
   readonly titleKey: string;
 };
 
+const NAV_TARGETS: Readonly<Record<string, Paths>> = {
+  notice: Paths.Announcements,
+  survey: Paths.Survey,
+};
+
 const sections: readonly MenuSection[] = [
   {
     items: [
@@ -156,7 +161,12 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
   };
 
   const handleItemPress = (itemKey: string) => {
+    const target = NAV_TARGETS[itemKey];
     close(() => {
+      if (target !== undefined) {
+        AppNavigator.navigate(target);
+        return;
+      }
       AppNavigator.showSnackBar({
         message: `menu.${itemKey}`,
         type: 'info',

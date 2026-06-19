@@ -4,15 +4,17 @@ import type {
   GetSurveyDetailActionPayload,
   GetSurveyListPayload,
   IResponseSurveyDetail,
+  SubmitSurveyPayload,
   Survey,
 } from '@type/survey';
 
 import { call, takeLatest } from 'redux-saga/effects';
 
-import { getSurveyDetail, getSurveyList } from '@services/request/survey';
+import { getSurveyDetail, getSurveyList, submitSurvey } from '@services/request/survey';
 import {
   getSurveyDetailRequest,
   getSurveyListRequest,
+  submitSurveyRequest,
 } from './surveySlice';
 
 function* getSurveyListWorker(
@@ -47,7 +49,21 @@ function* getSurveyDetailWorker(
   }
 }
 
+function* submitSurveyWorker(
+  action: PayloadAction<SubmitSurveyPayload>,
+): Generator<unknown, void, void> {
+  const { onFailure, onSuccess, surveyId, answers } = action.payload;
+  try {
+    yield call(submitSurvey, surveyId, { answers });
+    onSuccess?.();
+  } catch (error_) {
+    const message = error_ instanceof Error ? error_.message : 'Unknown error';
+    onFailure?.(message);
+  }
+}
+
 export function* surveySaga() {
   yield takeLatest(getSurveyListRequest.type, getSurveyListWorker);
   yield takeLatest(getSurveyDetailRequest.type, getSurveyDetailWorker);
+  yield takeLatest(submitSurveyRequest.type, submitSurveyWorker);
 }

@@ -30,7 +30,7 @@ const keyExtractor = (item: IQuestion) => String(item.id);
 function SurveyDetail(props: RootScreenProps<Paths.SurveyDetail>) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { answers, data, error, loading, onSelectOption, onSubmit } =
+  const { answers, data, error, loading, onSelectOption, onSubmit, submitting } =
     useSurveyDetail(props);
 
   const renderItem: ListRenderItem<IQuestion> = ({ index, item }) => (
@@ -83,11 +83,16 @@ function SurveyDetail(props: RootScreenProps<Paths.SurveyDetail>) {
         >
           <TouchableOpacity
             activeOpacity={0.85}
+            disabled={submitting}
             onPress={onSubmit}
-            style={styles.submitButton}
+            style={[styles.submitButton, submitting && styles.submitButtonDisabled]}
             testID="survey-detail-submit"
           >
-            <Text style={styles.submitLabel}>{t('survey_detail.submit')}</Text>
+            {submitting ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.submitLabel}>{t('survey_detail.submit')}</Text>
+            )}
           </TouchableOpacity>
         </View>
       ) : undefined}
@@ -128,6 +133,9 @@ const styles = StyleSheet.create({
     borderRadius: ScaleSize(8),
     height: ScaleSize(52),
     justifyContent: 'center',
+  },
+  submitButtonDisabled: {
+    opacity: 0.6,
   },
   submitLabel: {
     color: '#FFFFFF',

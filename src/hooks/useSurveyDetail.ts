@@ -2,7 +2,10 @@ import type { IResponseSurveyDetail } from '@type/survey';
 import type { Paths } from '@navigation/paths';
 import type { RootScreenProps } from '@navigation/types';
 
-import { getSurveyDetailRequest } from '@services/slices/survey/surveySlice';
+import {
+  getSurveyDetailRequest,
+  submitSurveyRequest,
+} from '@services/slices/survey/surveySlice';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { useEffect, useState } from 'react';
 import AppNavigator from '@navigation/AppNavigator';
@@ -14,7 +17,7 @@ export type SurveySelection = {
   readonly answerText: string;
 };
 
-const { getParams } = AppNavigator;
+const { getParams, goBack, showSnackBar } = AppNavigator;
 
 const isMissingId = (surveyId: number | string | undefined): boolean =>
   surveyId === undefined || surveyId === '';
@@ -28,6 +31,7 @@ export const useSurveyDetail = (props: RootScreenProps<Paths.SurveyDetail>) => {
     undefined,
   );
   const [loading, setLoading] = useState<boolean>(!missingId);
+  const [submitting, setSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(
     missingId ? 'Missing survey id' : undefined,
   );
@@ -76,9 +80,34 @@ export const useSurveyDetail = (props: RootScreenProps<Paths.SurveyDetail>) => {
     return result;
   };
 
+  const onSubmitSuccess = () => {
+    setSubmitting(false);
+    showSnackBar({ message: '제출되었습니다.', type: 'success' });
+    goBack();
+  };
+
+  const onSubmitFailure = (message: string) => {
+    setSubmitting(false);
+    showSnackBar({
+      message: message || '제출에 실패했습니다.',
+      type: 'failed',
+    });
+  };
+
   const onSubmit = () => {
-    const payload = buildSelections();
-    console.warn('submit survey', data?.id, payload);
+    return;
+    if (submitting || isMissingId(surveyId) || !data) {
+      return;
+    }
+    setSubmitting(true);
+    dispatch(
+      submitSurveyRequest({
+        answers: buildSelections(),
+        onFailure: onSubmitFailure,
+        onSuccess: onSubmitSuccess,
+        surveyId: surveyId as number | string,
+      }),
+    );
   };
 
   return {
@@ -89,5 +118,6 @@ export const useSurveyDetail = (props: RootScreenProps<Paths.SurveyDetail>) => {
     onSelectOption,
     onSubmit,
     selections: buildSelections(),
+    submitting,
   };
 };
