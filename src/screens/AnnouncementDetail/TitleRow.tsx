@@ -14,9 +14,7 @@ type Properties = {
 function TitleRow({ title }: Properties) {
   return (
     <View>
-      <Text numberOfLines={1} style={styles.title}>
-        {title}
-      </Text>
+      <Text style={styles.title}>{title}</Text>
       <View style={styles.divider} />
     </View>
   );

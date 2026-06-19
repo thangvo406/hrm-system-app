@@ -31,4 +31,9 @@ export const EndPoints = {
     detail: (productId: number | string) => `product/${productId}`,
     list: (request: string) => `product?${request}`,
   },
+  SURVEY: {
+    list: (request: string) => `survey?${request}`,
+    detail: (surveyId: number | string) => `survey/${surveyId}`,
+    submitSurvey: (surveyId: number | string) => `survey/done/${surveyId}`,
+  },
 };

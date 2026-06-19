@@ -40,12 +40,12 @@ const tagsStyles: Record<string, MixedStyleDeclaration> = {
     lineHeight: ScaleSize(22),
     marginVertical: PARAGRAPH_MARGIN_VERTICAL,
   },
-  li: {
-    color: BODY_COLOR,
-    fontSize: ScaleSize(14),
-    lineHeight: ScaleSize(22),
-    marginVertical: ScaleSize(4),
-  },
+  // li: {
+  //   color: BODY_COLOR,
+  //   fontSize: ScaleSize(14),
+  //   lineHeight: ScaleSize(22),
+  //   marginVertical: ScaleSize(4),
+  // },
   span: {
     color: BODY_COLOR,
     fontSize: ScaleSize(14),

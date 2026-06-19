@@ -186,6 +186,16 @@
       "loading": "Loading...",
       "error": "Failed to load content."
     },
+    "survey": {
+      "title": "Survey",
+      "action_answer": "Check Answer",
+      "action_start": "Start Survey",
+      "closed_label": "Closed"
+    },
+    "survey_detail": {
+      "title": "Survey",
+      "submit": "Submit"
+    },
     "profile": {
       "title": "Profile",
       "edit": "Edit Profile",

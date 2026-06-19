@@ -21,6 +21,7 @@ import { appReducer } from '@services/slices/app/appSlice';
 import { authReducer } from '@services/slices/auth/authSlice';
 import { notificationsReducer } from '@services/slices/notifications/notificationsSlice';
 import { productsReducer } from '@services/slices/products/productsSlice';
+import { surveyReducer } from '@services/slices/survey/surveySlice';
 
 const reduxStorage: Storage = {
   getItem: key => Promise.resolve(storage.getString(key) ?? undefined),
@@ -40,6 +41,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   notifications: notificationsReducer,
   products: productsReducer,
+  survey: surveyReducer,
 });
 
 const persistConfig = {

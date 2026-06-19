@@ -13,9 +13,10 @@ const ACCENT_COLOR = '#5BB85C';
 type Properties = {
   readonly onPressBack?: () => void;
   readonly title: string;
+  readonly hideNotify?: boolean;
 };
 
-function HeaderDetail({ onPressBack, title }: Properties) {
+function HeaderDetail({ hideNotify = false, onPressBack, title }: Properties) {
   const _onPressBack = () => {
     if (onPressBack) {
       onPressBack();
@@ -72,18 +73,20 @@ function HeaderDetail({ onPressBack, title }: Properties) {
             width={ICON_SIZE}
           />
         </TouchableOpacity> */}
-        <TouchableOpacity
-          hitSlop={AppConstants.HISLOP_BUTTON}
-          onPress={onPressNotification}
-          style={styles.iconButton}
-          testID="header-detail-notification"
-        >
-          <Image
-            height={ICON_SIZE}
-            name={imageNames.ic_bell_green}
-            width={ICON_SIZE}
-          />
-        </TouchableOpacity>
+        {!hideNotify && (
+          <TouchableOpacity
+            hitSlop={AppConstants.HISLOP_BUTTON}
+            onPress={onPressNotification}
+            style={styles.iconButton}
+            testID="header-detail-notification"
+          >
+            <Image
+              height={ICON_SIZE}
+              name={imageNames.ic_bell_green}
+              width={ICON_SIZE}
+            />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           hitSlop={AppConstants.HISLOP_BUTTON}
           onPress={onOpenMenu}

@@ -8,3 +8,8 @@ export type ListApiResponse<T> = {
   totalPages: number;
   last: boolean;
 };
+
+export interface AppCallback {
+  readonly onFailure?: (error: string) => void;
+  readonly onSuccess?: (data?: any) => void;
+}

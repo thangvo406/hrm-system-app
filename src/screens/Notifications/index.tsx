@@ -1,8 +1,7 @@
 import type { NotificationItem, NotificationKind } from '@hooks';
-import type { Profile as ProfileType } from '@services/request/account';
 import type { ListRenderItem } from 'react-native';
 
-import { Image, HomeHeader } from '@components';
+import { Image, HeaderDetail } from '@components';
 import {
   ActivityIndicator,
   FlatList,
@@ -14,8 +13,7 @@ import {
 import React from 'react';
 import { ScaleSize } from '@kits/core';
 import AppNavigator from '@navigation/AppNavigator';
-import { useAppSelector } from '@services/common/storeHooks';
-import { AccountSelector } from '@services/selectors';
+import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -93,20 +91,13 @@ function ListEmpty({ loading }: { readonly loading: boolean }) {
 }
 
 function Notifications() {
-  const profile: ProfileType | undefined = useAppSelector(
-    AccountSelector.getProfile,
-  );
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { data, loading, refresh } = useNotifications();
 
   return (
     <View style={[styles.safeArea, { paddingTop: insets.top }]}>
-      <HomeHeader
-        isShowLabelMember
-        onOpenMenu={onOpenMenu}
-        profile={profile}
-        hideIconNotify
-      />
+      <HeaderDetail hideNotify title={t('notifications.title')} />
       <FlatList
         contentContainerStyle={styles.listContent}
         data={data}

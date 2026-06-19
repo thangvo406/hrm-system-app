@@ -8,5 +8,7 @@ export { default as Notifications } from './Notifications';
 export { default as ProductDetail } from './ProductDetail';
 export { default as Products } from './Products';
 export { default as Startup } from './Startup/Startup';
+export { default as Survey } from './Survey';
+export { default as SurveyDetail } from './SurveyDetail';
 export { default as Welcome } from './Welcome';
 export { default as ForgotPass } from './ForgotPass';

@@ -159,6 +159,7 @@ function Home() {
     onPressNotice,
     onPressNotification,
     onPressOrder,
+    onPressSurvey,
     openMenu,
     onGoToStore,
     isShowCtaContribute,
@@ -208,6 +209,7 @@ function Home() {
           <FeatureCard
             desc={t('home.survey_desc')}
             image={imageNames.img_picture}
+            onPress={onPressSurvey}
             testID="home-survey"
             title={t('home.survey_title')}
           />

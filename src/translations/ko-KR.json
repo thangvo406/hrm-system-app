@@ -158,6 +158,9 @@
         "confirm": "닫기"
       }
     },
+    "notifications": {
+      "title": "알림"
+    },
     "announcements": {
       "title": "생협페이",
       "tab_all": "전체",
@@ -170,6 +173,16 @@
       "title": "공지/이벤트",
       "loading": "불러오는 중...",
       "error": "내용을 불러오지 못했습니다."
+    },
+    "survey": {
+      "title": "설문조사",
+      "action_answer": "답변확인",
+      "action_start": "설문 진행",
+      "closed_label": "마감"
+    },
+    "survey_detail": {
+      "title": "설문조사",
+      "submit": "제출하기"
     },
     "forgot_password": {
       "desc_success": "비밀번호 변경이 완료되었습니다. 새 비밀번호로 로그인해 주세요.",
