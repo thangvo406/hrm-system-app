@@ -1,14 +1,11 @@
-import type { ICustomViewStyle } from 'react-native-reanimated-skeleton';
-
 import Skeleton from 'react-native-reanimated-skeleton';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, View } from 'react-native';
-import React from 'react';
 
 const PRODUCT_THUMB_SIZE = ScaleSize(96);
 const SKELETON_ROW_COUNT = 6;
 
-const buildRowLayout = (index: number): ICustomViewStyle => ({
+const buildRowLayout = (index: number): any => ({
   alignItems: 'center',
   flexDirection: 'row',
   key: `row-${index}`,
@@ -51,7 +48,7 @@ const buildRowLayout = (index: number): ICustomViewStyle => ({
   ],
 });
 
-const SKELETON_LAYOUT: ICustomViewStyle[] = Array.from(
+const SKELETON_LAYOUT: any[] = Array.from(
   { length: SKELETON_ROW_COUNT },
   (_, index) => buildRowLayout(index),
 );
@@ -59,11 +56,7 @@ const SKELETON_LAYOUT: ICustomViewStyle[] = Array.from(
 function ProductsLoading() {
   return (
     <View style={styles.container}>
-      <Skeleton
-        animationType="shiver"
-        isLoading
-        layout={SKELETON_LAYOUT}
-      />
+      <Skeleton animationType="shiver" isLoading layout={SKELETON_LAYOUT} />
     </View>
   );
 }
