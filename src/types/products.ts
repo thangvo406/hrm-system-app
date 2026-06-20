@@ -1,4 +1,4 @@
-import type { ListApiResponse } from './common';
+import type { AppCallback, ListApiResponse } from './common';
 
 export type ProductImage = {
   readonly fileUrl: string;
@@ -53,6 +53,25 @@ export type ProductDetailCallback = {
   readonly onSuccess?: (product: Product) => void;
 };
 
-export type GetProductByIdPayload = ProductDetailCallback & {
+export type GetProductByIdPayload = {
   productId: number | string;
-};
+} & ProductDetailCallback;
+
+export type CheckoutProductPayload = AppCallback & IRequestCheckout;
+
+export interface IRequestCheckout {
+  storeId: number
+  note?: string
+  products: ProductCheckout[]
+  vouchers?: VoucherCheckout[]
+}
+
+export interface ProductCheckout {
+  id: number
+  quantity: number
+}
+
+export interface VoucherCheckout {
+  id: number
+  quantity: number
+}

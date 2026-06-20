@@ -75,7 +75,7 @@ export const useStore = () => {
 
   const onPressProduct = useCallback(
     (_store: StoreItem, productId: number) => {
-      AppNavigator.navigate(Paths.ProductDetail, { id: productId });
+      AppNavigator.navigate(Paths.ProductDetail, { id: productId, storeId: _store?.id });
     },
     [],
   );

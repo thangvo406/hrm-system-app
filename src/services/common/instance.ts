@@ -7,6 +7,8 @@ import {
 import { store } from '@services/common/store';
 import axios from 'axios';
 import Config from 'react-native-config';
+import { EndPoints } from '@constants';
+import { SingleApiResponse } from '@type';
 
 // const baseURL = `${Config.API_URL}/`;
 const baseURL = `http://52.79.38.251/`;
@@ -39,12 +41,12 @@ const refreshAccessToken = async (): Promise<string | undefined> => {
   }
 
   try {
-    const { data } = await refreshClient.post<RefreshResponse>('auth/refresh', {
+    const { data } = await refreshClient.post<SingleApiResponse<RefreshResponse>>(EndPoints.AUTH.refreshToken, {
       refreshToken,
     });
 
-    store.dispatch(setCredentials(data));
-    return data.accessToken;
+    store.dispatch(setCredentials(data.data));
+    return data.data?.accessToken;
   } catch {
     store.dispatch(clearCredentials());
     return undefined;

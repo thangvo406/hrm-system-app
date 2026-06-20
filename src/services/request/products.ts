@@ -2,6 +2,7 @@ import type {
   Product,
   IResponseProductDetail,
   GetProductsPayload,
+  IRequestCheckout,
 } from '@type/products';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -40,6 +41,15 @@ export const getProductById = async (
   const response = await httpRequest.get<SingleApiResponse<Product>>(
     EndPoints.PRODUCTS.detail(productId),
     { loading: false },
+  );
+  return response?.data;
+};
+
+export const checkoutProduct = async (
+  request: IRequestCheckout,
+): Promise<IResponseProductDetail> => {
+  const response = await httpRequest.post<SingleApiResponse<Product>>(
+    EndPoints.PAYMENT.checkout, request
   );
   return response?.data;
 };

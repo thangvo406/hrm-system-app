@@ -15,7 +15,7 @@ export type RootStackParamList = {
   [Paths.ForgotPass]: undefined;
   [Paths.Home]: undefined;
   [Paths.Notifications]: undefined;
-  [Paths.ProductDetail]: { id: number } | undefined;
+  [Paths.ProductDetail]: { id: number, storeId: number } | undefined;
   [Paths.Products]: { data: StoreItem } | undefined;
   [Paths.Startup]: undefined;
   [Paths.Stores]: undefined;

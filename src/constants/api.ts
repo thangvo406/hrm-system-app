@@ -10,6 +10,7 @@ export const EndPoints = {
     sendOtpForgotPass: 'auth/forgot-password/send-otp',
     verifyOtpForgotPass: 'auth/forgot-password/confirm-otp',
     submitForgotPass: 'auth/forgot-password/reset',
+    refreshToken: 'auth/refresh'
   },
   ACCOUNT: {
     getProfile: 'user/profile',
@@ -40,4 +41,7 @@ export const EndPoints = {
     list: (request: string) => `store?${request}`,
     detail: (storeId: number | string) => `store/${storeId}`,
   },
+  PAYMENT: {
+    checkout: 'order/create'
+  }
 };

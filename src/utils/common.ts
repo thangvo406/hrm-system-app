@@ -73,3 +73,7 @@ export const objectToQueryParams = (o: Record<string, any> = {}) =>
       return `${encodeURIComponent(k)}=${encodeURIComponent(serialized)}`;
     })
     .join('&');
+
+export function getErrorMessageApi(error: any){
+  return error?.response?.data?.message || error?.message || "unknown error"
+}

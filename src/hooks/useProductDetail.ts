@@ -1,15 +1,18 @@
 import type { IResponseProductDetail } from '@type/products';
 
 import { useAppDispatch } from '@services/common/storeHooks';
-import { getProductByIdRequest } from '@services/slices/products/productsSlice';
+import {
+  checkoutProductRequest,
+  getProductByIdRequest,
+} from '@services/slices/products/productsSlice';
 import { useEffect, useState } from 'react';
 import AppNavigator from '@navigation/AppNavigator';
-import SelectQuality from '@screens/Dialog/components/SelectQuality';
+// import SelectQuality from '@screens/Dialog/components/SelectQuality';
 
 export type { Product } from '@type/products';
 
 export const useProductDetail = (props: any) => {
-  const { id: productId } = AppNavigator.getParams(props);
+  const { id: productId, storeId } = AppNavigator.getParams(props);
   const dispatch = useAppDispatch();
   const [data, setData] = useState<IResponseProductDetail | undefined>(
     undefined,
@@ -46,14 +49,41 @@ export const useProductDetail = (props: any) => {
 
   const onPressCart = () => {
     // TODO: navigate to cart screen once available
-    AppNavigator.showDialog({
-      screen: SelectQuality,
-      data,
-      onSubmit: handleAddCart,
-    });
+    // AppNavigator.showDialog({
+    //   screen: SelectQuality,
+    //   data,
+    //   onSubmit: handleAddCart,
+    // });
+    dispatch(
+      checkoutProductRequest({
+        note: '',
+        products: [
+          {
+            id: productId,
+            quantity: 1,
+          },
+        ],
+        storeId,
+        vouchers: [],
+        onSuccess: () => {
+          AppNavigator.showSnackBar({
+            message: 'Add to cart Successfully',
+            type: 'success',
+          });
+        },
+        onFailure: (message: string) => {
+          AppNavigator.showSnackBar({
+            message: message || '' ,
+            type: 'failed',
+          });
+        }
+      }),
+    );
   };
 
-  const handleAddCart = () => {};
+  const handleAddCart = () => {
+   
+  };
 
   return {
     error,

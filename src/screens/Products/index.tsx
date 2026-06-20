@@ -52,7 +52,7 @@ function Products(props: RootScreenProps<Paths.Products>) {
 
   const onPressProduct = React.useMemo(
     () => (item: any) => {
-      AppNavigator.navigate(Paths.ProductDetail, { id: item?.id });
+      AppNavigator.navigate(Paths.ProductDetail, { id: item?.id, storeId: storeInfo?.id });
     },
     [],
   );
