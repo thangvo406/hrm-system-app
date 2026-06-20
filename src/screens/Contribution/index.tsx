@@ -1,6 +1,6 @@
 import type { Profile as ProfileType } from '@services/request/account';
 
-import { Image, HeaderDetail } from '@components';
+import { Image, HeaderDetail, Button } from '@components';
 import { useTranslation } from 'react-i18next';
 import {
   ScrollView,
@@ -52,9 +52,9 @@ function NameBlock({ name }: { readonly name: string }) {
     <View style={styles.nameBlock}>
       <Text style={styles.name}>{name}</Text>
       <View style={styles.metaRow}>
-        <Text style={styles.metaText}>{t('profile.school_label')}</Text>
-        <Text style={styles.metaText}>{t('profile.status_label')}</Text>
-        <Text style={styles.metaText}>{t('profile.group_label')}</Text>
+        <Text style={styles.metaText}>{t('contribution.school_label')}</Text>
+        <Text style={styles.metaText}>{t('contribution.status_label')}</Text>
+        <Text style={styles.metaText}>{t('contribution.group_label')}</Text>
       </View>
     </View>
   );
@@ -66,33 +66,50 @@ function ContributionCard() {
     <View style={styles.contributionCard} testID="contribution-card">
       <GradientBackground />
       <Text style={styles.contributionTitle}>
-        {t('profile.contribution_title')}
+        {t('contribution.contribution_title')}
       </Text>
       <Text style={styles.contributionTotalLabel}>
-        {t('profile.contribution_total_label')}
+        {t('contribution.contribution_total_label')}
       </Text>
       <Text style={styles.contributionAmount}>
-        {t('profile.contribution_amount', { amount: CONTRIBUTION_AMOUNT })}
+        {t('contribution.contribution_amount', { amount: CONTRIBUTION_AMOUNT })}
       </Text>
-      <View style={styles.contributionActions}>
+      <View
+        style={{
+          marginTop: ScaleSize(28),
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <TouchableOpacity
           activeOpacity={0.85}
-          style={styles.whitePill}
+          style={[styles.whitePill, { width: '70%' }]}
           testID="contribution-history"
         >
           <Text style={styles.whitePillText}>
-            {t('profile.contribution_history')}
+            {t('contribution.contribution_history')}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.85}
-          style={styles.whitePill}
-          testID="contribution-add"
-        >
-          <Text style={styles.whitePillText}>
-            {t('profile.contribution_add')}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.contributionActions}>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={styles.whitePill}
+            testID="contribution-history"
+          >
+            <Text style={styles.whitePillText}>
+              {t('contribution.capital_contribution')}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={styles.whitePill}
+            testID="contribution-add"
+          >
+            <Text style={styles.whitePillText}>
+              {t('contribution.withdrawal_capital')}
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -104,14 +121,14 @@ function PaySection() {
   return (
     <View style={styles.paySection}>
       <View style={styles.payHeader}>
-        <Text style={styles.payTitle}>{t('profile.pay_title')}</Text>
+        <Text style={styles.payTitle}>{t('contribution.pay_title')}</Text>
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={onOpenPayCard}
           style={styles.payLinkRow}
           testID="contribution-pay-link"
         >
-          <Text style={styles.payLinkText}>{t('profile.pay_link')}</Text>
+          <Text style={styles.payLinkText}>{t('contribution.pay_link')}</Text>
           <Image
             color={TEXT_DARK}
             height={ARROW_SIZE}
@@ -122,35 +139,33 @@ function PaySection() {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.centerLabel}>{t('profile.deposit_label')}</Text>
+      <Text style={styles.centerLabel}>{t('contribution.deposit_label')}</Text>
       <Text style={styles.bigAmount}>
-        {t('profile.deposit_amount', { amount: DEPOSIT_AMOUNT })}
+        {t('contribution.deposit_amount', { amount: DEPOSIT_AMOUNT })}
       </Text>
 
       <View style={styles.payDivider} />
 
-      <Text style={styles.centerLabel}>{t('profile.point_label')}</Text>
+      <Text style={styles.centerLabel}>{t('contribution.point_label')}</Text>
       <Text style={styles.bigAmount}>
-        {t('profile.point_amount', { amount: POINT_AMOUNT })}
+        {t('contribution.point_amount', { amount: POINT_AMOUNT })}
       </Text>
 
       <View style={styles.payActions}>
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={onOpenPayCard}
-          style={styles.darkPill}
-          testID="contribution-pay-history"
-        >
-          <Text style={styles.darkPillText}>{t('profile.pay_history')}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={onOpenPayCard}
-          style={styles.darkPill}
-          testID="contribution-pay-recharge"
-        >
-          <Text style={styles.darkPillText}>{t('profile.pay_recharge')}</Text>
-        </TouchableOpacity>
+        <Button
+          type="primary"
+          title={t('contribution.pay_history')}
+          style={{
+            width: '35%',
+          }}
+        />
+        <Button
+          type="primary"
+          title={t('contribution.pay_recharge')}
+          style={{
+            width: '35%',
+          }}
+        />
       </View>
     </View>
   );
@@ -211,8 +226,7 @@ function Contribution() {
         <ContributionCard />
         <PaySection />
         <View style={styles.menuList}>
-          <MenuRow label={t('profile.menu_transaction')} />
-          <MenuRow label={t('profile.menu_faq')} />
+          <MenuRow label={t('contribution.menu_transaction')} />
         </View>
       </ScrollView>
     </View>
@@ -237,7 +251,7 @@ const styles = StyleSheet.create({
   contributionActions: {
     flexDirection: 'row',
     gap: ScaleSize(12),
-    marginTop: ScaleSize(28),
+    marginTop: ScaleSize(16),
   },
   contributionAmount: {
     color: '#FFFFFF',
@@ -280,7 +294,7 @@ const styles = StyleSheet.create({
   },
   darkPillText: {
     color: '#FFFFFF',
-    fontSize: ScaleSize(14),
+    fontSize: ScaleSize(11),
     fontWeight: '600',
     textAlign: 'center',
   },
@@ -355,6 +369,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: ScaleSize(16),
     marginTop: ScaleSize(20),
+    justifyContent: 'center',
   },
   payDivider: {
     backgroundColor: '#E0E0E0',
@@ -398,7 +413,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: ScaleSize(24),
     elevation: 3,
-    flex: 1,
+    // flex: 1,
     justifyContent: 'center',
     paddingHorizontal: ScaleSize(12),
     paddingVertical: ScaleSize(14),
@@ -406,10 +421,11 @@ const styles = StyleSheet.create({
     shadowOffset: { height: 2, width: 0 },
     shadowOpacity: 0.12,
     shadowRadius: 6,
+    width: '35%',
   },
   whitePillText: {
     color: TEXT_DARK,
-    fontSize: ScaleSize(11),
+    fontSize: ScaleSize(12),
     fontWeight: '500',
   },
 });

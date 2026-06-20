@@ -31,9 +31,6 @@
       "balance_after": "Balance: {{amount}} KRW",
       "empty": "No history to display."
     },
-    "contribution": {
-      "title": "contribution"
-    },
     "welcome": {
       "login": "Login",
       "register": "New Registration"
@@ -220,8 +217,8 @@
       "submit": "Submit",
       "title": "Survey"
     },
-    "profile": {
-      "title": "Profile",
+    "contribution": {
+      "title": "Contribution",
       "edit": "Edit Profile",
       "logout": "Log Out",
       "edit_unavailable": "Edit profile is not available yet.",
@@ -233,12 +230,13 @@
         "phone": "Mobile Phone Number",
         "year_of_birth": "Year of Birth"
       },
-      "greeting": "Nice to meet you, {{name}}!",
       "school_label": "School : Saenghyup University",
       "status_label": "Status : Enrolled (20141111)",
       "group_label": "Group : Cooperative Member (Student)",
       "contribution_title": "Contribution Details",
       "contribution_total_label": "Total Contribution Amount",
+      "capital_contribution": "추가 출자(증좌)",
+      "withdrawal_capital": "출자금 출금(감좌)",
       "contribution_amount": "{{amount}} won",
       "contribution_history": "출자 이력 / 예상 배당액 확인",
       "contribution_add": "추가 출자 진행",
@@ -250,8 +248,7 @@
       "point_amount": "{{amount}} won",
       "pay_history": "History",
       "pay_recharge": "Recharge Pay Balance",
-      "menu_transaction": "Transaction History Management",
-      "menu_faq": "FAQ"
+      "menu_transaction": "Transaction History Management"
     },
     "edit_profile": {
       "title": "Edit Profile",
