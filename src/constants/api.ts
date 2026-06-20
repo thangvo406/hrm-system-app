@@ -20,7 +20,7 @@ export const EndPoints = {
     updateMembership: 'user/membership/request',
   },
   NOTIFICATIONS: {
-    list: 'notifications',
+    list: (request: string) => `notification?${request}`,
   },
   ANNOUNCEMENTS: {
     detail: (announcementId: number | string) =>

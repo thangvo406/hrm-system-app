@@ -42,9 +42,8 @@ const SKELETON_LAYOUT: ICustomViewStyle[] = Array.from(
 
 function AnnouncementLoading() {
   return (
-    <View style={styles.container} testID="announcements-loading">
-      <Skeleton animationType="shiver" isLoading layout={SKELETON_LAYOUT} />
-    </View>
+      <Skeleton animationType="shiver" isLoading layout={SKELETON_LAYOUT}
+        containerStyle={styles.container} />
   );
 }
 

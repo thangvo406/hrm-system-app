@@ -2,6 +2,7 @@ export const Colors = {
   gray1: '#717171',
   gray2: '#DBDBDB',
   gray3: '#EFEFEF',
+  gray4: '#666666'
 } as const;
 
 export const Fonts = {} as const;

@@ -1,54 +1,46 @@
-import type { NotificationItem, NotificationKind } from '@hooks';
+import type { NotificationItem } from '@hooks';
 import type { ListRenderItem } from 'react-native';
 
-import { Image, HeaderDetail } from '@components';
 import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+  Image,
+  HeaderDetail,
+  EmptyView,
+  NotificationsLoading,
+  AppButton,
+} from '@components';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { ScaleSize } from '@kits/core';
-import AppNavigator from '@navigation/AppNavigator';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@hooks';
+import dayjs from 'dayjs';
+import { Colors } from '@constants';
 
 const ICON_BG = '#E6F4EA';
 const ICON_COLOR = '#2FA94A';
 const ICON_CIRCLE_SIZE = ScaleSize(56);
 const ICON_SIZE = ScaleSize(28);
 const TEXT_DARK = '#1A1A1A';
-const TEXT_MUTED = '#9E9E9E';
-const TEXT_DATE = '#7A7A7A';
-
-const ICON_BY_KIND: Record<NotificationKind, 'ic_clock' | 'ic_store' | 'send'> =
-  {
-    contribution_done: 'send',
-    delivery_done: 'ic_clock',
-    payment_done: 'ic_store',
-  };
-
-const onOpenMenu = () => {
-  AppNavigator.showMenu();
-};
+const TEXT_MUTED = Colors.gray4;
 
 const keyExtractor = (item: NotificationItem) => item.id;
 
 type CardProps = {
   readonly item: NotificationItem;
+  readonly onPressItem: (item: NotificationItem) => void;
+
 };
 
-function NotificationCard({ item }: CardProps) {
+function NotificationCard({ item, onPressItem }: CardProps) {
   return (
-    <View style={styles.card} testID={`notification-${item.id}`}>
+    <AppButton style={styles.card} testID={`notification-${item.id}`}
+      onPress={() => onPressItem?.(item)}>
       <View style={styles.iconCircle}>
         <Image
           color={ICON_COLOR}
           height={ICON_SIZE}
-          name={ICON_BY_KIND[item.kind]}
+          // name={ICON_BY_KIND[item.type]}
+          name="send"
           type="svg"
           width={ICON_SIZE}
         />
@@ -58,60 +50,62 @@ function NotificationCard({ item }: CardProps) {
           <Text numberOfLines={1} style={styles.title}>
             {item.title}
           </Text>
-          <Text style={styles.date}>{item.date}</Text>
+          <Text style={styles.date}>
+            {dayjs(item.createdDate).format('YYYY.MM.DD HH:mmA')}
+          </Text>
         </View>
         <Text numberOfLines={2} style={styles.description}>
-          {item.description}
+          {item.message}
         </Text>
       </View>
-    </View>
+    </AppButton>
   );
 }
 
 const MemoCard = React.memo(NotificationCard);
 
-const renderItem: ListRenderItem<NotificationItem> = ({ item }) => (
-  <MemoCard item={item} />
-);
-
-function ListEmpty({ loading }: { readonly loading: boolean }) {
-  if (loading) {
-    return (
-      <View style={styles.empty}>
-        <ActivityIndicator color={ICON_COLOR} />
-      </View>
-    );
-  }
-  return (
-    <View style={styles.empty}>
-      <Text style={styles.emptyText}>알림이 없습니다.</Text>
-    </View>
-  );
-}
 
 function Notifications() {
   const { t } = useTranslation();
-  const { data, loading, refresh } = useNotifications();
+  const { data, loading, onPressItem, onLoadMore } = useNotifications();
+
+
+const renderItem: ListRenderItem<NotificationItem> = ({ item }) => (
+  <MemoCard onPressItem={onPressItem} item={item} />
+);
+
 
   return (
     <View style={styles.safeArea}>
       <HeaderDetail hideNotify title={t('notifications.title')} />
-      <FlatList
-        contentContainerStyle={styles.listContent}
-        data={data}
-        keyExtractor={keyExtractor}
-        ListEmptyComponent={<ListEmpty loading={loading} />}
-        refreshControl={
-          <RefreshControl
-            colors={[ICON_COLOR]}
-            onRefresh={refresh}
-            refreshing={loading}
-            tintColor={ICON_COLOR}
-          />
-        }
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-      />
+
+      {loading ? (
+        <NotificationsLoading />
+      ) : data?.length > 0 ? (
+        <FlatList
+          contentContainerStyle={styles.listContent}
+          data={data}
+          keyExtractor={keyExtractor}
+          onEndReached={onLoadMore}
+          onEndReachedThreshold={1.5}
+          // refreshControl={
+          //   <RefreshControl
+          //     colors={[ICON_COLOR]}
+          //     onRefresh={refresh}
+          //     refreshing={loading}
+          //     tintColor={ICON_COLOR}
+          //   />
+          // }
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+        />
+      ) : (
+        <EmptyView
+          icon="ic_notify_gray"
+          type="svg"
+          desc={t('common.no_data')}
+        />
+      )}
     </View>
   );
 }
@@ -139,8 +133,9 @@ const styles = StyleSheet.create({
     gap: ScaleSize(6),
   },
   date: {
-    color: TEXT_DATE,
-    fontSize: ScaleSize(12),
+    color: 'black',
+    fontSize: ScaleSize(10),
+    fontWeight: 'bold',
   },
   description: {
     color: TEXT_MUTED,

@@ -50,16 +50,25 @@ export type NotificationKind =
   | 'payment_done';
 
 export type NotificationItem = {
-  date: string;
-  description: string;
-  id: string;
-  kind: NotificationKind;
-  title: string;
+  id: number
+  type: string
+  title: string
+  message: string
+  contentHtml: string
+  imageUrl: string
+  referenceId: number
+  read: boolean
+  readAt: string
+  createdDate: string
 };
 
 export type NotificationsCallback = {
   onFailure?: (error: string) => void;
-  onSuccess?: (items: NotificationItem[]) => void;
+  onSuccess?: (items: ListApiResponse<NotificationItem[]>) => void;
 };
 
-export type GetNotificationsPayload = NotificationsCallback;
+export interface IRequestGetNotifications {
+  page: number;
+  size: number;
+}
+export type GetNotificationsPayload = IRequestGetNotifications & NotificationsCallback;

@@ -5,35 +5,16 @@ import { useAnnouncementDetail } from '@hooks';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { Paths } from '@navigation/paths';
-import AppNavigator from '@navigation/AppNavigator';
 import { useTranslation } from 'react-i18next';
 
 import Content from './Content';
 
 const TEXT_MUTED = '#9E9E9E';
 
-const onOpenMenu = () => {
-  AppNavigator.showMenu();
-};
-
-const onPressHome = () => {
-  AppNavigator.reset(Paths.Home);
-};
-
-const onPressNotification = () => {
-  AppNavigator.navigate(Paths.Notifications);
-};
-
-function AnnouncementDetail({
-  navigation,
-  route,
-}: RootScreenProps<Paths.AnnouncementDetail>) {
+function AnnouncementDetail(props: RootScreenProps<Paths.AnnouncementDetail>) {
   const { t } = useTranslation();
-  const { data, loading, error } = useAnnouncementDetail({ route });
+  const { data, loading, error, hideBtnNotify } = useAnnouncementDetail(props);
 
-  const onPressBack = () => {
-    navigation.goBack();
-  };
 
   const renderBody = () => {
     if (loading) {
@@ -60,10 +41,7 @@ function AnnouncementDetail({
   return (
     <View style={styles.safeArea}>
       <HeaderDetail
-        onOpenMenu={onOpenMenu}
-        onPressBack={onPressBack}
-        onPressHome={onPressHome}
-        onPressNotification={onPressNotification}
+        hideNotify={hideBtnNotify}
         title={t('announcement_detail.title')}
       />
       <View style={styles.body}>{renderBody()}</View>
