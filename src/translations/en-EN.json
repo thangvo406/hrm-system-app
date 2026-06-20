@@ -32,7 +32,8 @@
     "product_detail": {
       "price_label": "Price",
       "cart_button": "Add to Cart",
-      "min_order_label": "Minimum delivery order"
+      "min_order_label": "Minimum delivery order",
+       "add_cart_success": "Add to cart Successfully"
     },
     "products": {
       "empty": "No products to display."

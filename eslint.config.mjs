@@ -86,6 +86,7 @@ export default defineConfig(
       'perfectionist/sort-jsx-props': OFF,
       'react-hooks/preserve-manual-memoization': OFF,
       '@typescript-eslint/no-explicit-any': OFF,
+      '@typescript-eslint/restrict-plus-operands': OFF,
       'react/require-default-props': [
         ERROR,
         {

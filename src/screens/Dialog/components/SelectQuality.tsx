@@ -1,5 +1,5 @@
 import imageNames from '@assets/images/names';
-import { Button, Image } from '@components';
+import { Button, Image, TextField } from '@components';
 import { Product } from '@hooks';
 import { ScaleSize } from '@kits/core';
 import { ProductUtils } from '@utils';
@@ -32,11 +32,13 @@ const CARD_BG = '#FFFFFF';
 type SelectQualityProps = {
   readonly data?: Product;
   readonly onRequestClose?: () => void;
+  readonly onSubmit?: (quantity: number, note: string) => void;
 };
 
-function SelectQuality({ data, onRequestClose }: SelectQualityProps) {
+function SelectQuality({ data, onRequestClose = undefined, onSubmit = undefined }: SelectQualityProps) {
   const { t } = useTranslation();
   const [quantity, setQuantity] = useState<number>(1);
+  const [note, setNote] = useState('')
 
   const handleDecrement = () => {
     setQuantity(prev => {
@@ -56,8 +58,9 @@ function SelectQuality({ data, onRequestClose }: SelectQualityProps) {
 
   const handleSubmit = () => {
     onRequestClose?.();
+    onSubmit?.(quantity, note)
   };
-
+ 
   return (
     <View
       //   onTouchStart={onRequestClose}
@@ -84,7 +87,7 @@ function SelectQuality({ data, onRequestClose }: SelectQualityProps) {
       <View
         style={[
           styles.info,
-          { justifyContent: 'space-between', alignItems: 'center' },
+          { justifyContent: 'space-between', alignItems: 'center'},
         ]}
       >
         <Text style={styles.price} testID="select-quaility-price">
@@ -112,6 +115,17 @@ function SelectQuality({ data, onRequestClose }: SelectQualityProps) {
           </TouchableOpacity>
         </View>
       </View>
+
+      <TextField
+       autoCapitalize="none"
+       onChangeText={setNote}
+       placeholder='Note for your order'
+       returnKeyType="done"
+       submitBehavior="submit"
+       testID="choose-quantity-input"
+      //  value={values.email}
+      
+      />
 
       <Button
         onPress={handleSubmit}
@@ -167,7 +181,7 @@ const styles = StyleSheet.create({
   stepper: {
     alignItems: 'center',
     alignSelf: 'center',
-    borderColor: 'gray',
+    borderColor: '#E0E0E0',
     borderRadius: ScaleSize(8),
     borderWidth: STEPPER_BORDER_WIDTH,
     flexDirection: 'row',

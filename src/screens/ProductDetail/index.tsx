@@ -16,9 +16,10 @@ import AppNavigator from '@navigation/AppNavigator';
 import Carousel from 'react-native-reanimated-carousel';
 import { useTranslation } from 'react-i18next';
 import imageNames from '@assets/images/names';
+import { DeviceUtils } from '@kits/core/utils';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
+const {ifIOS} = DeviceUtils
 const HERO_HEIGHT = ScaleSize(360);
 const BACK_BUTTON_SIZE = ScaleSize(40);
 const BACK_ICON_SIZE = ScaleSize(20);
@@ -123,7 +124,7 @@ function BottomSheet({
     <View
       style={[
         styles.sheetWrap,
-        { paddingBottom: bottomInset + SHEET_VERTICAL_PADDING },
+        { paddingBottom: bottomInset + ifIOS(0,SHEET_VERTICAL_PADDING) },
       ]}
     >
       <View style={styles.sheetInfo}>

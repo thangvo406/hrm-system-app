@@ -7,13 +7,15 @@ import {
 } from '@services/slices/products/productsSlice';
 import { useEffect, useState } from 'react';
 import AppNavigator from '@navigation/AppNavigator';
-// import SelectQuality from '@screens/Dialog/components/SelectQuality';
+import SelectQuality from '@screens/Dialog/components/SelectQuality';
+import { useTranslation } from 'react-i18next';
 
 export type { Product } from '@type/products';
 
 export const useProductDetail = (props: any) => {
   const { id: productId, storeId } = AppNavigator.getParams(props);
   const dispatch = useAppDispatch();
+  const {t} = useTranslation()
   const [data, setData] = useState<IResponseProductDetail | undefined>(
     undefined,
   );
@@ -49,25 +51,28 @@ export const useProductDetail = (props: any) => {
 
   const onPressCart = () => {
     // TODO: navigate to cart screen once available
-    // AppNavigator.showDialog({
-    //   screen: SelectQuality,
-    //   data,
-    //   onSubmit: handleAddCart,
-    // });
+    AppNavigator.showDialog({
+      screen: SelectQuality,
+      data,
+      onSubmit: handleAddCart,
+    });
+  };
+
+  const handleAddCart = (quantity: number, note: string) => {
     dispatch(
       checkoutProductRequest({
-        note: '',
+        note,
         products: [
           {
             id: productId,
-            quantity: 1,
+            quantity: quantity,
           },
         ],
         storeId,
         vouchers: [],
         onSuccess: () => {
           AppNavigator.showSnackBar({
-            message: 'Add to cart Successfully',
+            message: t('product_detail.add_cart_success'),
             type: 'success',
           });
         },
@@ -79,10 +84,6 @@ export const useProductDetail = (props: any) => {
         }
       }),
     );
-  };
-
-  const handleAddCart = () => {
-   
   };
 
   return {

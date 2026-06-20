@@ -54,15 +54,18 @@ function TextField({
 
   return (
     <View>
-      <Text style={styles.label}>{label}</Text>
+      {!!label && <Text style={styles.label}>{label}</Text>}
       <View style={[styles.inputWrapper, hasError && styles.inputWrapperError]}>
-        <Image
+        {
+          !!iconName &&
+          <Image
           color={ICON_COLOR}
           height={ICON_SIZE}
           name={iconName}
           type="svg"
           width={ICON_SIZE}
         />
+        }
         <TextInput
           autoCapitalize={autoCapitalize}
           keyboardType={keyboardType}

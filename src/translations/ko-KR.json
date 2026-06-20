@@ -201,7 +201,8 @@
     "product_detail": {
       "price_label": "가격",
       "cart_button": "장바구니",
-      "min_order_label": "배달 최소 주문 금액"
+      "min_order_label": "배달 최소 주문 금액",
+      "add_cart_success": "장바구니에 성공적으로 추가되었습니다."
     },
     "products": {
       "empty": "표시할 상품이 없습니다."

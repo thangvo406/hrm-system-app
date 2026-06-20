@@ -2,7 +2,7 @@ import { ScaleSize } from '@kits/core';
 import { SkypeIndicator } from 'react-native-indicators';
 import { StyleSheet, View } from 'react-native';
 
-const SPINNER_SIZE = ScaleSize(32);
+const SPINNER_SIZE = ScaleSize(64);
 const SPINNER_COLOR = '#5BB85C';
 const MIN_WIDTH = ScaleSize(140);
 const SPINNER_ANIMATION_DURATION = 900;
