@@ -7,7 +7,8 @@
     "common_error": "Oops! Something went wrong.",
     "common": {
       "confirm": "Confirm",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "no_data": "No data"
     },
     "screen_example": {
       "hello_user": "Hi, my name is {{name}}",
@@ -199,8 +200,9 @@
       "closed_label": "Closed"
     },
     "survey_detail": {
-      "title": "Survey",
-      "submit": "Submit"
+      "short_answer_placeholder": "Your answer",
+      "submit": "Submit",
+      "title": "Survey"
     },
     "profile": {
       "title": "Profile",

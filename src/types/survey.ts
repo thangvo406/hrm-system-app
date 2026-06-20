@@ -87,6 +87,8 @@ export interface IQuestion {
   type: string;
   sortOrder: number;
   answers: IAnswer[];
+  selectedAnswerId?: number;
+  selectedAnswerText?: string;
 }
 
 export interface IAnswer {
@@ -96,8 +98,8 @@ export interface IAnswer {
 }
 
 export type SubmitSurveyAnswer = {
-  answerId: number;
   answerText: string;
+  questionId: number;
 };
 
 export interface SubmitSurveyBody {
@@ -109,6 +111,7 @@ export type SubmitSurveyCallback = {
   readonly onSuccess?: () => void;
 };
 
-export type SubmitSurveyPayload = { readonly surveyId: number | string } &
-  SubmitSurveyBody &
+export type SubmitSurveyPayload = {
+  readonly surveyId: number | string;
+} & SubmitSurveyBody &
   SubmitSurveyCallback;

@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { AppConstants } from '@constants';
 import { HeaderDetail } from '@components';
 import { ScaleSize } from '@kits/core';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import ItemSeparator from './ItemSeparator';
 import QuestionItem from './QuestionItem';
 import TitleRow from './TitleRow';
+import AppNavigator from '@navigation/AppNavigator';
 
 const BACKGROUND_COLOR = '#FFFFFF';
 const SUBMIT_BG = '#1A1A1A';
@@ -30,17 +32,37 @@ const keyExtractor = (item: IQuestion) => String(item.id);
 function SurveyDetail(props: RootScreenProps<Paths.SurveyDetail>) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const { answers, data, error, loading, onSelectOption, onSubmit, submitting } =
-    useSurveyDetail(props);
+  const { isViewResult } = AppNavigator.getParams(props);
+  const {
+    answers,
+    data,
+    error,
+    loading,
+    onChangeTextAnswer,
+    onSelectOption,
+    onSubmit,
+    submitting,
+    textAnswers,
+  } = useSurveyDetail(props);
 
-  const renderItem: ListRenderItem<IQuestion> = ({ index, item }) => (
-    <QuestionItem
-      index={index}
-      onSelectOption={onSelectOption}
-      question={item}
-      selectedAnswerId={answers[item.id]}
-    />
-  );
+  const renderItem: ListRenderItem<IQuestion> = ({ index, item }) => {
+    const isShortAnswer = item.type === AppConstants.SURVEY_TYPE.SHORT_ANSWER;
+    const isLocked = isShortAnswer
+      ? !!item.selectedAnswerText
+      : (item.selectedAnswerId ?? 0) > 0;
+    return (
+      <QuestionItem
+        disabled={isLocked}
+        isShortAnswer={isShortAnswer}
+        index={index}
+        onChangeTextAnswer={onChangeTextAnswer}
+        onSelectOption={onSelectOption}
+        question={item}
+        selectedAnswerId={answers[item.id]}
+        textAnswer={textAnswers[item.id]}
+      />
+    );
+  };
 
   const renderBody = () => {
     if (loading) {
@@ -53,7 +75,9 @@ function SurveyDetail(props: RootScreenProps<Paths.SurveyDetail>) {
     if (error || !data) {
       return (
         <View style={styles.center}>
-          <Text style={styles.errorText}>{error ?? 'No content available.'}</Text>
+          <Text style={styles.errorText}>
+            {error ?? 'No content available.'}
+          </Text>
         </View>
       );
     }
@@ -71,10 +95,10 @@ function SurveyDetail(props: RootScreenProps<Paths.SurveyDetail>) {
   };
 
   return (
-    <View style={[styles.safeArea, { paddingTop: insets.top }]}>
+    <View style={styles.safeArea}>
       <HeaderDetail title={t('survey_detail.title')} />
       {renderBody()}
-      {data ? (
+      {!isViewResult && data ? (
         <View
           style={[
             styles.submitBar,
@@ -85,13 +109,18 @@ function SurveyDetail(props: RootScreenProps<Paths.SurveyDetail>) {
             activeOpacity={0.85}
             disabled={submitting}
             onPress={onSubmit}
-            style={[styles.submitButton, submitting && styles.submitButtonDisabled]}
+            style={[
+              styles.submitButton,
+              submitting && styles.submitButtonDisabled,
+            ]}
             testID="survey-detail-submit"
           >
             {submitting ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={styles.submitLabel}>{t('survey_detail.submit')}</Text>
+              <Text style={styles.submitLabel}>
+                {t('survey_detail.submit')}
+              </Text>
             )}
           </TouchableOpacity>
         </View>

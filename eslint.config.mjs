@@ -84,6 +84,7 @@ export default defineConfig(
       'react/no-unescaped-entities': OFF,
       'react-hooks/exhaustive-deps': OFF,
       'perfectionist/sort-jsx-props': OFF,
+      'react-hooks/preserve-manual-memoization': OFF,
       '@typescript-eslint/no-explicit-any': OFF,
       'react/require-default-props': [
         ERROR,

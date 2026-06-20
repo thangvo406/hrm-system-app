@@ -24,6 +24,7 @@ import NaverIcon from './naver.svg';
 import SendIcon from './send.svg';
 import UserIcon from './user.svg';
 import XCircleIcon from './x-circle.svg';
+import IconNotifyGray from './ic_notify_gray.svg';
 
 const icons = {
   'alert-circle': AlertCircleIcon,
@@ -38,6 +39,7 @@ const icons = {
   ic_chevron_right: IcChevronRightIcon,
   ic_clock: IcClockIcon,
   ic_home: IcHomeIcon,
+  ic_notify_gray: IconNotifyGray,
   ic_logo_unapp: IcLogoUnappIcon,
   ic_logout: IcLogoutIcon,
   ic_menu: IcMenuIcon,

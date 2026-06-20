@@ -7,12 +7,14 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React from 'react';
+import { AppConstants } from '@constants';
+import { ScaleSize } from '@kits/core';
 
 const PRIMARY_COLOR = '#5BB85C';
 const DISABLED_COLOR = '#C4C4C4';
 const BUTTON_HEIGHT = 52;
 
-type ButtonType = 'outline' | 'primary' | 'rounded';
+type ButtonType = 'outline' | 'primary' | 'rounded' | 'outline-bordered';
 
 type ButtonProps = {
   readonly title: string;
@@ -30,31 +32,35 @@ function Button({
   ...rest
 }: ButtonProps) {
   const isDisabled = disabled === true || loading;
-
+  const isOutlet = ['outlet', 'outline-bordered'].includes(type);
   return (
     <TouchableOpacity
       activeOpacity={0.8}
       disabled={isDisabled}
+      hitSlop={AppConstants.HISLOP_BUTTON}
       style={[
         styles.base,
         type === 'primary' && styles.primary,
         type === 'rounded' && styles.rounded,
         type === 'outline' && styles.outline,
-        isDisabled && type !== 'outline' && styles.disabled,
+        type === 'outline-bordered' && [
+          styles.rounded,
+          styles.outline,
+          styles.border,
+        ],
+        isDisabled && !isOutlet && styles.disabled,
         style,
       ]}
       {...rest}
     >
       {loading ? (
-        <ActivityIndicator
-          color={type === 'outline' ? PRIMARY_COLOR : '#FFFFFF'}
-        />
+        <ActivityIndicator color={isOutlet ? PRIMARY_COLOR : '#FFFFFF'} />
       ) : (
         <Text
           style={[
             styles.label,
-            type === 'outline' && styles.labelOutline,
-            isDisabled && type !== 'outline' && styles.labelDisabled,
+            isOutlet && styles.labelOutline,
+            isDisabled && !isOutlet && styles.labelDisabled,
           ]}
         >
           {title}
@@ -88,10 +94,15 @@ const styles = StyleSheet.create({
     color: '#666666',
     fontWeight: '500',
   },
+  border: {
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: ScaleSize(28),
+  },
   outline: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    elevation: 3,
+    borderRadius: ScaleSize(16),
+    elevation: ScaleSize(3),
     shadowColor: '#000000',
     shadowOffset: { height: 3, width: 0 },
     shadowOpacity: 0.1,
@@ -99,7 +110,7 @@ const styles = StyleSheet.create({
   },
   primary: {
     backgroundColor: PRIMARY_COLOR,
-    borderRadius: 28,
+    borderRadius: ScaleSize(28),
     elevation: 4,
     shadowColor: PRIMARY_COLOR,
     shadowOffset: { height: 4, width: 0 },

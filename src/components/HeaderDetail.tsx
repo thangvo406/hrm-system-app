@@ -12,6 +12,7 @@ import imageNames from '@assets/images/names';
 import { AppConstants } from '@constants';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const ICON_SIZE = ScaleSize(24);
 const ACCENT_COLOR = '#5BB85C';
@@ -31,6 +32,7 @@ function HeaderDetail({
   style,
   title,
 }: Properties) {
+  const inssets = useSafeAreaInsets();
   const _onPressBack = () => {
     if (onPressBack) {
       onPressBack();
@@ -55,7 +57,10 @@ function HeaderDetail({
     <View
       style={[
         styles.header,
-        { backgroundColor: transparent ? 'transparent' : '#FFFFFF' },
+        {
+          backgroundColor: transparent ? 'transparent' : '#FFFFFF',
+          paddingTop: inssets.top,
+        },
         style,
       ]}
     >
@@ -137,11 +142,15 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    borderBottomColor: '#F0F0F0',
-    borderBottomWidth: 1,
+    elevation: 4,
     flexDirection: 'row',
     paddingHorizontal: ScaleSize(12),
     paddingVertical: ScaleSize(10),
+    shadowColor: '#000000',
+    shadowOffset: { height: 3, width: 0 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    zIndex: 10,
   },
   iconButton: {
     alignItems: 'center',

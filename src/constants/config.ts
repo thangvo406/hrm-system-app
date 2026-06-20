@@ -52,6 +52,11 @@ export const MEMBERSHIP_OPTIONS = [
   },
 ] as const;
 
+export const SURVEY_TYPE = {
+  MULTIPLE_CHOICE: 'MULTIPLE_CHOICE',
+  SHORT_ANSWER: 'SHORT_ANSWER',
+} as const;
+
 export const ROLE_OPTIONS = [
   { id: 'employee', label: 'Employee' },
   { id: 'student', label: 'Student' },

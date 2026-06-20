@@ -2,6 +2,7 @@ import type { IResponseSurveyDetail } from '@type/survey';
 import type { Paths } from '@navigation/paths';
 import type { RootScreenProps } from '@navigation/types';
 
+import { AppConstants } from '@constants';
 import {
   getSurveyDetailRequest,
   submitSurveyRequest,
@@ -13,8 +14,9 @@ import AppNavigator from '@navigation/AppNavigator';
 export type { IAnswer, IQuestion, IResponseSurveyDetail } from '@type/survey';
 
 export type SurveySelection = {
-  readonly answerId: number;
   readonly answerText: string;
+  readonly answerId: number;
+  readonly questionId: number;
 };
 
 const { getParams, goBack, showSnackBar } = AppNavigator;
@@ -36,8 +38,31 @@ export const useSurveyDetail = (props: RootScreenProps<Paths.SurveyDetail>) => {
     missingId ? 'Missing survey id' : undefined,
   );
   const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [textAnswers, setTextAnswers] = useState<Record<number, string>>({});
 
   const handleSuccess = (detail: IResponseSurveyDetail) => {
+    const seededAnswers: Record<number, number> = {};
+    const seededTextAnswers: Record<number, string> = {};
+    for (const question of detail.questions) {
+      if (question.type === AppConstants.SURVEY_TYPE.SHORT_ANSWER) {
+        if (question.selectedAnswerText !== undefined) {
+          seededTextAnswers[question.id] = question.selectedAnswerText;
+        }
+        continue;
+      }
+      if (
+        question.selectedAnswerId !== undefined &&
+        question.selectedAnswerId > 0
+      ) {
+        seededAnswers[question.id] = question.selectedAnswerId;
+      }
+    }
+    if (Object.keys(seededAnswers).length > 0) {
+      setAnswers(seededAnswers);
+    }
+    if (Object.keys(seededTextAnswers).length > 0) {
+      setTextAnswers(seededTextAnswers);
+    }
     setData(detail);
     setLoading(false);
   };
@@ -64,18 +89,42 @@ export const useSurveyDetail = (props: RootScreenProps<Paths.SurveyDetail>) => {
     setAnswers(prev => ({ ...prev, [questionId]: answerId }));
   };
 
+  const onChangeTextAnswer = (questionId: number, text: string) => {
+    setTextAnswers(prev => ({ ...prev, [questionId]: text }));
+  };
+
   const buildSelections = (): SurveySelection[] => {
     const result: SurveySelection[] = [];
     for (const question of data?.questions || []) {
-      const selectedAnswerId = answers[question.id];
+      if (question.type === AppConstants.SURVEY_TYPE.SHORT_ANSWER) {
+        const text = textAnswers[question.id];
+        if (text === undefined || text?.trim?.() === '') {
+          continue;
+        }
+        const _req: {
+          -readonly [K in keyof SurveySelection]?: SurveySelection[K];
+        } = {
+          questionId: question?.id,
+        };
+        if (text) {
+          _req.answerText = text;
+        }
+        result.push(_req as SurveySelection);
+        continue;
+      }
+      const selectedAnswerId = answers[question?.id];
       if (selectedAnswerId === undefined) {
         continue;
       }
-      const answer = question.answers?.find(a => a.id === selectedAnswerId);
+      const answer = question?.answers?.find(a => a.id === selectedAnswerId);
       if (!answer) {
         continue;
       }
-      result.push({ answerId: answer.id, answerText: answer.title });
+      result.push({
+        answerId: answer?.id,
+        answerText: answer?.title,
+        questionId: question.id,
+      });
     }
     return result;
   };
@@ -95,7 +144,6 @@ export const useSurveyDetail = (props: RootScreenProps<Paths.SurveyDetail>) => {
   };
 
   const onSubmit = () => {
-    return;
     if (submitting || isMissingId(surveyId) || !data) {
       return;
     }
@@ -115,9 +163,11 @@ export const useSurveyDetail = (props: RootScreenProps<Paths.SurveyDetail>) => {
     data,
     error,
     loading,
+    onChangeTextAnswer,
     onSelectOption,
     onSubmit,
     selections: buildSelections(),
     submitting,
+    textAnswers,
   };
 };

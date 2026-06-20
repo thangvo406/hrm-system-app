@@ -10,7 +10,11 @@ import type {
 
 import { call, takeLatest } from 'redux-saga/effects';
 
-import { getSurveyDetail, getSurveyList, submitSurvey } from '@services/request/survey';
+import {
+  getSurveyDetail,
+  getSurveyList,
+  submitSurvey,
+} from '@services/request/survey';
 import {
   getSurveyDetailRequest,
   getSurveyListRequest,
@@ -54,10 +58,11 @@ function* submitSurveyWorker(
 ): Generator<unknown, void, void> {
   const { onFailure, onSuccess, surveyId, answers } = action.payload;
   try {
-    yield call(submitSurvey, surveyId, { answers });
+    yield call(submitSurvey, surveyId, answers);
     onSuccess?.();
-  } catch (error_) {
-    const message = error_ instanceof Error ? error_.message : 'Unknown error';
+  } catch (error_: any) {
+    const message =
+      error_?.response?.data?.message || error_?.message || 'Unknown error';
     onFailure?.(message);
   }
 }

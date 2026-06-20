@@ -1,7 +1,7 @@
 import type {
   GetSurveyPayload,
   IResponseSurveyDetail,
-  SubmitSurveyBody,
+  SubmitSurveyAnswer,
   Survey,
 } from '@type/survey';
 
@@ -34,7 +34,7 @@ export const getSurveyDetail = async (
 
 export const submitSurvey = async (
   surveyId: number | string,
-  body: SubmitSurveyBody,
+  body: SubmitSurveyAnswer[],
 ): Promise<void> => {
-  await httpRequest.post(EndPoints.SURVEY.submitSurvey(surveyId), body);
+  await httpRequest.patch(EndPoints.SURVEY.submitSurvey(surveyId), body);
 };

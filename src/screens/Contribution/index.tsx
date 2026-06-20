@@ -14,7 +14,6 @@ import { useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { ScaleSize } from '@kits/core';
 import AppNavigator from '@navigation/AppNavigator';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const CHEVRON_SIZE = ScaleSize(20);
 const ARROW_SIZE = ScaleSize(18);
@@ -185,12 +184,11 @@ function Contribution() {
   const profile: ProfileType | undefined = useAppSelector(
     AccountSelector.getProfile,
   );
-  const insets = useSafeAreaInsets();
 
   const name = profile?.name ?? '쿠비';
 
   return (
-    <View style={[styles.safeArea, { paddingTop: insets.top }]}>
+    <View style={styles.safeArea}>
       <View style={styles.headerWrap}>
         <HeaderDetail
           transparent

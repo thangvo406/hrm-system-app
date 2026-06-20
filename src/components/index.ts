@@ -10,3 +10,4 @@ export { default as ProductsLoading } from './Loading/Products';
 export { default as ProgressiveImage } from './ProgressiveImage';
 export { default as RadioButton } from './RadioButton';
 export { default as TextField } from './TextField';
+export { default as EmptyView } from './EmptyView';

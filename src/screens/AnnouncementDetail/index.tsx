@@ -5,7 +5,6 @@ import { useAnnouncementDetail } from '@hooks';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { Paths } from '@navigation/paths';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppNavigator from '@navigation/AppNavigator';
 import { useTranslation } from 'react-i18next';
 
@@ -30,7 +29,6 @@ function AnnouncementDetail({
   route,
 }: RootScreenProps<Paths.AnnouncementDetail>) {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const { data, loading, error } = useAnnouncementDetail({ route });
 
   const onPressBack = () => {
@@ -60,7 +58,7 @@ function AnnouncementDetail({
   };
 
   return (
-    <View style={[styles.safeArea, { paddingTop: insets.top }]}>
+    <View style={styles.safeArea}>
       <HeaderDetail
         onOpenMenu={onOpenMenu}
         onPressBack={onPressBack}

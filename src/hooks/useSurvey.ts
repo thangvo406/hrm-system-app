@@ -4,8 +4,9 @@ import { ListApiResponse } from '@type/common';
 import { Paths } from '@navigation/paths';
 import { getSurveyListRequest } from '@services/slices/survey/surveySlice';
 import { useAppDispatch } from '@services/common/storeHooks';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import AppNavigator from '@navigation/AppNavigator';
+import { useFocusEffect } from '@react-navigation/native';
 
 export type { Survey, SurveyStatus } from '@type/survey';
 
@@ -37,16 +38,18 @@ export const useSurvey = () => {
     isLoadingMore.current = false;
   };
 
-  useEffect(() => {
-    isLoadingMore.current = true;
-    const payload: GetSurveyListPayload = {
-      onFailure: handleFailure,
-      onSuccess: handleSuccess,
-      page: currentPage,
-      size: PAGE_SIZE,
-    };
-    dispatch(getSurveyListRequest(payload));
-  }, [currentPage, dispatch]);
+  useFocusEffect(
+    useCallback(() => {
+      isLoadingMore.current = true;
+      const payload: GetSurveyListPayload = {
+        onFailure: handleFailure,
+        onSuccess: handleSuccess,
+        page: currentPage,
+        size: PAGE_SIZE,
+      };
+      dispatch(getSurveyListRequest(payload));
+    }, [currentPage, dispatch]),
+  );
 
   const onLoadMore = useCallback(() => {
     if (isLast.current || isLoadingMore.current) {
@@ -57,7 +60,10 @@ export const useSurvey = () => {
   }, []);
 
   const onPressViewResult = useCallback((item: Survey) => {
-    AppNavigator.navigate(Paths.SurveyDetail, { id: item.id });
+    AppNavigator.navigate(Paths.SurveyDetail, {
+      id: item.id,
+      isViewResult: true,
+    });
   }, []);
 
   const onPressStart = useCallback((item: Survey) => {

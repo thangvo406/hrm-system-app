@@ -15,7 +15,6 @@ import { ScaleSize } from '@kits/core';
 import AppNavigator from '@navigation/AppNavigator';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@hooks';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const ICON_BG = '#E6F4EA';
 const ICON_COLOR = '#2FA94A';
@@ -92,11 +91,10 @@ function ListEmpty({ loading }: { readonly loading: boolean }) {
 
 function Notifications() {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const { data, loading, refresh } = useNotifications();
 
   return (
-    <View style={[styles.safeArea, { paddingTop: insets.top }]}>
+    <View style={styles.safeArea}>
       <HeaderDetail hideNotify title={t('notifications.title')} />
       <FlatList
         contentContainerStyle={styles.listContent}

@@ -113,6 +113,7 @@ const onLoginNaver = async (): Promise<SocialLoginToken | undefined> => {
     if (successResponse) {
       return {
         accessToken: successResponse.accessToken,
+        refreshToken: successResponse.refreshToken,
       };
     }
     if (failureResponse && !failureResponse.isCancel) {

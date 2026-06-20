@@ -3,9 +3,8 @@ import type { AnnouncementItem } from '@hooks';
 
 import { AnnouncementLoading, HeaderDetail } from '@components';
 import { ScaleSize } from '@kits/core';
-import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
 import { useCallback, useMemo } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { useAnnouncements } from '@hooks';
@@ -14,6 +13,8 @@ import AnimatedTabs from './AnimatedTabs';
 import AnnouncementRow from './AnnouncementRow';
 import BannerCarousel from './BannerCarousel';
 import ItemSeparator from './ItemSeparator';
+import EmptyView from '@components/EmptyView';
+import imageNames from '@assets/images/names';
 
 const TEXT_MUTED = '#9E9E9E';
 
@@ -27,7 +28,6 @@ const TAB_TEST_IDS: readonly string[] = [
 
 function Announcements() {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const {
     onLoadMore,
     loading,
@@ -54,7 +54,7 @@ function Announcements() {
   );
 
   return (
-    <View style={[styles.safeArea, { paddingTop: insets.top }]}>
+    <View style={styles.safeArea}>
       <HeaderDetail title={t('announcements.title')} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -73,11 +73,7 @@ function Announcements() {
         />
         {loading ? (
           <AnnouncementLoading />
-        ) : data?.length === 0 ? (
-          <View style={styles.empty}>
-            <Text style={styles.emptyText}>{t('announcements.empty')}</Text>
-          </View>
-        ) : (
+        ) : data?.length > 0 ? (
           <FlatList
             ItemSeparatorComponent={ItemSeparator}
             data={data}
@@ -87,6 +83,14 @@ function Announcements() {
             showsVerticalScrollIndicator={false}
             onEndReached={onLoadMore}
             onEndReachedThreshold={1.5}
+          />
+        ) : (
+          <EmptyView
+            icon={imageNames.ic_mega_phone}
+            desc={t('common.no_data')}
+            style={{
+              marginTop: ScaleSize(banners?.length > 0 ? 40 : 0),
+            }}
           />
         )}
       </ScrollView>

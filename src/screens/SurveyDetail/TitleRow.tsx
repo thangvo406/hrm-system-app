@@ -13,16 +13,12 @@ type Properties = {
 };
 
 function TitleRow({ data }: Properties) {
-  const year = data.startDate ? dayjs(data.startDate).year() : undefined;
   const dateLabel = data.createdDate
     ? dayjs(data.createdDate).format('YY-MM-DD')
     : '';
-  const titleLabel = year ? `[${year}] ${data.name}` : data.name;
   return (
     <View style={styles.container}>
-      <Text numberOfLines={1} style={styles.title}>
-        {titleLabel}
-      </Text>
+      <Text style={styles.title}>{data.name}</Text>
       <Text style={styles.date}>{dateLabel}</Text>
     </View>
   );

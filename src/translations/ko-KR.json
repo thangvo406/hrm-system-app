@@ -7,7 +7,8 @@
     "common_error": "문제가 발생했습니다.",
     "common": {
       "confirm": "확인",
-      "cancel": "취소"
+      "cancel": "취소",
+      "no_data": "No data"
     },
     "screen_example": {
       "hello_user": "안녕하세요, 제 이름은 {{name}}입니다",
@@ -184,8 +185,9 @@
       "closed_label": "마감"
     },
     "survey_detail": {
-      "title": "설문조사",
-      "submit": "제출하기"
+      "short_answer_placeholder": "답변을 입력해 주세요",
+      "submit": "제출하기",
+      "title": "설문조사"
     },
     "forgot_password": {
       "desc_success": "비밀번호 변경이 완료되었습니다. 새 비밀번호로 로그인해 주세요.",
