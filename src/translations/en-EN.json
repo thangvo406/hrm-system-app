@@ -18,6 +18,19 @@
     "notifications": {
       "title": "Notifications"
     },
+    "pay_card": {
+      "title": "Coop Pay",
+      "pay_title": "Coop Pay",
+      "recharge": "Recharge Pay Money",
+      "pay_balance": "Balance: {{amount}} KRW",
+      "point_title": "Point",
+      "point_balance": "Remaining point: {{amount}} point",
+      "history_title": "History",
+      "tab_pay": "Pay Money",
+      "tab_point": "Point",
+      "balance_after": "Balance: {{amount}} KRW",
+      "empty": "No history to display."
+    },
     "contribution": {
       "title": "contribution"
     },

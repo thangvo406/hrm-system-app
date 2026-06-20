@@ -68,6 +68,7 @@ type MenuSection = {
 
 const NAV_TARGETS: Readonly<Record<string, Paths>> = {
   notice: Paths.Announcements,
+  pay_balance: Paths.PayCard,
   survey: Paths.Survey,
   store_search: Paths.Stores,
   notification: Paths.Notifications,

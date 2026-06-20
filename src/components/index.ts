@@ -10,5 +10,6 @@ export { default as ProductsLoading } from './Loading/Products';
 export { default as StoresLoading } from './Loading/Stores';
 export { default as ProgressiveImage } from './ProgressiveImage';
 export { default as RadioButton } from './RadioButton';
+export { default as SegmentedTab } from './SegmentedTab';
 export { default as TextField } from './TextField';
 export { default as EmptyView } from './EmptyView';

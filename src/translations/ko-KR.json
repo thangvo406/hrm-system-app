@@ -162,6 +162,19 @@
     "notifications": {
       "title": "알림"
     },
+    "pay_card": {
+      "title": "생협페이",
+      "pay_title": "생협 Pay",
+      "recharge": "페이머니 충전",
+      "pay_balance": "잔액 : {{amount}}원",
+      "point_title": "Point",
+      "point_balance": "잔여 point : {{amount}} point",
+      "history_title": "이력정보",
+      "tab_pay": "페이머니",
+      "tab_point": "포인트",
+      "balance_after": "잔액 : {{amount}}원",
+      "empty": "이력이 없습니다."
+    },
     "contribution": {
       "title": "마이페이지"
     },

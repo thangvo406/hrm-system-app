@@ -23,8 +23,8 @@ const openMenu = () => {
   AppNavigator.showMenu();
 };
 
-const goToProfile = () => {
-  // AppNavigator.navigate(Paths.Profile);
+const goToPayCard = () => {
+  AppNavigator.navigate(Paths.PayCard);
 };
 
 const onPressStore = () => {
@@ -133,7 +133,7 @@ export const useHome = () => {
   };
 
   return {
-    goToProfile,
+    goToPayCard,
     openMenu,
     profile,
     isShowCtaContribute,

@@ -14,6 +14,7 @@ import { useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { ScaleSize } from '@kits/core';
 import AppNavigator from '@navigation/AppNavigator';
+import { Paths } from '@navigation/paths';
 
 const CHEVRON_SIZE = ScaleSize(20);
 const ARROW_SIZE = ScaleSize(18);
@@ -25,6 +26,10 @@ const DARK_PILL = '#2B2F33';
 const CONTRIBUTION_AMOUNT = '2,500,000';
 const DEPOSIT_AMOUNT = '100,000';
 const POINT_AMOUNT = '11,000';
+
+const onOpenPayCard = () => {
+  AppNavigator.navigate(Paths.PayCard);
+};
 
 type ContributionRowProps = {
   readonly label: string;
@@ -95,12 +100,14 @@ function ContributionCard() {
 
 function PaySection() {
   const { t } = useTranslation();
+
   return (
     <View style={styles.paySection}>
       <View style={styles.payHeader}>
         <Text style={styles.payTitle}>{t('profile.pay_title')}</Text>
         <TouchableOpacity
           activeOpacity={0.7}
+          onPress={onOpenPayCard}
           style={styles.payLinkRow}
           testID="contribution-pay-link"
         >
@@ -130,6 +137,7 @@ function PaySection() {
       <View style={styles.payActions}>
         <TouchableOpacity
           activeOpacity={0.85}
+          onPress={onOpenPayCard}
           style={styles.darkPill}
           testID="contribution-pay-history"
         >
@@ -137,6 +145,7 @@ function PaySection() {
         </TouchableOpacity>
         <TouchableOpacity
           activeOpacity={0.85}
+          onPress={onOpenPayCard}
           style={styles.darkPill}
           testID="contribution-pay-recharge"
         >
@@ -174,10 +183,6 @@ function MenuRow({ label }: ContributionRowProps) {
     </TouchableOpacity>
   );
 }
-
-const onOpenMenu = () => {
-  AppNavigator.showMenu();
-};
 
 function Contribution() {
   const { t } = useTranslation();

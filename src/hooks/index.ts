@@ -11,6 +11,7 @@ export type {
   SocialProvider,
 } from './useAuthorization';
 export type { NotificationItem, NotificationKind } from './useNotifications';
+export type { PayCardHistoryTab, PayCardTransaction } from './usePayCard';
 export type { Product } from './useProducts';
 export type { StoreItem } from './useStore';
 export type { Survey, SurveyStatus } from './useSurvey';
@@ -26,6 +27,7 @@ export { useHome } from './useHome';
 export { useForgotPass } from './useForgotPass';
 export { useI18n } from './language/useI18n';
 export { useNotifications } from './useNotifications';
+export { usePayCard } from './usePayCard';
 export { useProductDetail } from './useProductDetail';
 export { useProducts } from './useProducts';
 export { useStore } from './useStore';

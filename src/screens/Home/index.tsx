@@ -156,7 +156,7 @@ function StoreSection({ onPressStore }: any) {
 function Home() {
   const { t } = useTranslation();
   const {
-    goToProfile,
+    goToPayCard,
     onPressContribution,
     onPressNotice,
     onPressNotification,
@@ -180,7 +180,7 @@ function Home() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <PayCard onPress={goToProfile} />
+        <PayCard onPress={goToPayCard} />
         <View style={styles.row}>
           <FeatureCard
             desc={t('home.dividend_desc')}

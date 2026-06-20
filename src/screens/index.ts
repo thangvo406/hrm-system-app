@@ -5,6 +5,7 @@ export { default as Example } from './Example/Example';
 export { default as Home } from './Home';
 export { default as Contribution } from './Contribution';
 export { default as Notifications } from './Notifications';
+export { default as PayCard } from './PayCard';
 export { default as ProductDetail } from './ProductDetail';
 export { default as Products } from './Products';
 export { default as Startup } from './Startup/Startup';
