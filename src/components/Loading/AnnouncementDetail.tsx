@@ -2,15 +2,12 @@ import type { ICustomViewStyle } from 'react-native-reanimated-skeleton';
 
 import Skeleton from 'react-native-reanimated-skeleton';
 import { ScaleSize } from '@kits/core';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import React from 'react';
 
 const HORIZONTAL_PADDING = ScaleSize(20);
 
-const BANNER_HEIGHT = ScaleSize(32);
-const BANNER_BG = '#FFE0E9';
-const BANNER_BORDER = '#FFB6C1';
-
+const BANNER_HEIGHT = ScaleSize(150);
 const DIVIDER_HEIGHT = 1;
 
 const PARAGRAPH_HEIGHT = ScaleSize(13);
@@ -24,10 +21,10 @@ const SKELETON_HIGHLIGHT = '#F2F2F2';
 // Pink event banner placeholder at top — emulates the "[EVENT] ..." highlight bar.
 const BANNER_LAYOUT: ICustomViewStyle[] = [
   {
-    backgroundColor: BANNER_BG,
-    borderColor: BANNER_BORDER,
+    // backgroundColor: SKELETON_BG,
+    // borderColor: BANNER_BORDER,
     borderRadius: ScaleSize(4),
-    borderWidth: 1,
+    // borderWidth: 1,
     height: BANNER_HEIGHT,
     key: 'event-banner',
     width: '100%',
@@ -176,15 +173,14 @@ const FULL_LAYOUT: ICustomViewStyle[] = [
 
 function AnnouncementDetailLoading() {
   return (
-    <View style={styles.container} testID="announcement-detail-loading">
-      <Skeleton
-        animationType="shiver"
-        boneColor={SKELETON_BG}
-        highlightColor={SKELETON_HIGHLIGHT}
-        isLoading
-        layout={FULL_LAYOUT}
-      />
-    </View>
+    <Skeleton
+      animationType="shiver"
+      boneColor={SKELETON_BG}
+      containerStyle={styles.container}
+      highlightColor={SKELETON_HIGHLIGHT}
+      isLoading
+      layout={FULL_LAYOUT}
+    />
   );
 }
 

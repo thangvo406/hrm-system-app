@@ -12,6 +12,7 @@ export type {
 } from './useAuthorization';
 export type { NotificationItem, NotificationKind } from './useNotifications';
 export type { Product } from './useProducts';
+export type { StoreItem } from './useStore';
 export type { Survey, SurveyStatus } from './useSurvey';
 export type {
   IAnswer,
@@ -27,5 +28,6 @@ export { useI18n } from './language/useI18n';
 export { useNotifications } from './useNotifications';
 export { useProductDetail } from './useProductDetail';
 export { useProducts } from './useProducts';
+export { useStore } from './useStore';
 export { useSurvey } from './useSurvey';
 export { useSurveyDetail } from './useSurveyDetail';

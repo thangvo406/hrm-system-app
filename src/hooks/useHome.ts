@@ -27,8 +27,8 @@ const goToProfile = () => {
   // AppNavigator.navigate(Paths.Profile);
 };
 
-const onPressOrder = () => {
-  // AppNavigator.navigate(Paths.Contribution);
+const onPressStore = () => {
+  AppNavigator.navigate(Paths.Stores);
 };
 
 const onPressNotification = () => {
@@ -137,7 +137,7 @@ export const useHome = () => {
     openMenu,
     profile,
     isShowCtaContribute,
-    onPressOrder,
+    onPressStore,
     onPressContribution,
     onGoToStore,
     onPressNotice,

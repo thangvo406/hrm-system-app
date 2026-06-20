@@ -2,14 +2,13 @@ import type { ListRenderItem } from 'react-native';
 import type { Survey } from '@hooks';
 
 import { FlatList, StyleSheet, View } from 'react-native';
-import { HeaderDetail } from '@components';
+import { EmptyView, HeaderDetail } from '@components';
 import { ScaleSize } from '@kits/core';
 import { useSurvey } from '@hooks';
 import { useTranslation } from 'react-i18next';
 
 import ItemSeparator from './ItemSeparator';
 import SurveyRow from './SurveyRow';
-import { EmptyView } from '@components';
 import imageNames from '@assets/images/names';
 
 const BACKGROUND_COLOR = '#FFFFFF';

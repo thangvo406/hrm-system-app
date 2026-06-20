@@ -9,6 +9,7 @@ import IcCheckIcon from './ic_check.svg';
 import IcChevronDownIcon from './ic_chevron_down.svg';
 import IcChevronRightIcon from './ic_chevron_right.svg';
 import IcClockIcon from './ic_clock.svg';
+import IcFilterIcon from './ic_filter.svg';
 import IcHomeIcon from './ic_home.svg';
 import IcLogoUnappIcon from './ic_logo_unapp.svg';
 import IcLogoutIcon from './ic_logout.svg';
@@ -38,6 +39,7 @@ const icons = {
   ic_chevron_down: IcChevronDownIcon,
   ic_chevron_right: IcChevronRightIcon,
   ic_clock: IcClockIcon,
+  ic_filter: IcFilterIcon,
   ic_home: IcHomeIcon,
   ic_notify_gray: IconNotifyGray,
   ic_logo_unapp: IcLogoUnappIcon,

@@ -1,5 +1,6 @@
 import type { Paths } from '@navigation/paths';
 import type { StackScreenProps } from '@react-navigation/stack';
+import { StoreItem } from '@type/store';
 
 export type RootScreenProps<
   S extends keyof RootStackParamList = keyof RootStackParamList,
@@ -15,8 +16,9 @@ export type RootStackParamList = {
   [Paths.Home]: undefined;
   [Paths.Notifications]: undefined;
   [Paths.ProductDetail]: { id: number } | undefined;
-  [Paths.Products]: undefined;
+  [Paths.Products]: { data: StoreItem } | undefined;
   [Paths.Startup]: undefined;
+  [Paths.Stores]: undefined;
   [Paths.Survey]: undefined;
   [Paths.SurveyDetail]: { id: number } | undefined;
   [Paths.Welcome]: undefined;

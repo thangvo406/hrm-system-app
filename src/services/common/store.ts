@@ -21,6 +21,7 @@ import { appReducer } from '@services/slices/app/appSlice';
 import { authReducer } from '@services/slices/auth/authSlice';
 import { notificationsReducer } from '@services/slices/notifications/notificationsSlice';
 import { productsReducer } from '@services/slices/products/productsSlice';
+import { storesReducer } from '@services/slices/stores/storesSlice';
 import { surveyReducer } from '@services/slices/survey/surveySlice';
 
 const reduxStorage: Storage = {
@@ -41,6 +42,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   notifications: notificationsReducer,
   products: productsReducer,
+  stores: storesReducer,
   survey: surveyReducer,
 });
 

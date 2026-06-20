@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { ScaleSize } from '@kits/core';
 import { useTranslation } from 'react-i18next';
 import { useHome } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,7 +18,8 @@ const PAY_AMOUNT = '100,000';
 const POINT_AMOUNT = '210,000';
 const STORE_NAME = 'Cafe Coop';
 
-const FEATURE_IMAGE_SIZE = 88;
+const FEATURE_IMAGE_SIZE = ScaleSize(88);
+const STORE_ICON_SIZE = ScaleSize(18);
 
 type Product = {
   readonly color: string;
@@ -118,10 +120,10 @@ function StoreSection({ onPressStore }: any) {
         >
           <Image
             color="#1A1A1A"
-            height={18}
+            height={STORE_ICON_SIZE}
             name="ic_store"
             type="svg"
-            width={18}
+            width={STORE_ICON_SIZE}
           />
           <Text style={styles.storeName}>{STORE_NAME}</Text>
         </TouchableOpacity>
@@ -158,7 +160,7 @@ function Home() {
     onPressContribution,
     onPressNotice,
     onPressNotification,
-    onPressOrder,
+    onPressStore,
     onPressSurvey,
     openMenu,
     onGoToStore,
@@ -193,7 +195,7 @@ function Home() {
             desc={t('home.order_desc')}
             image={imageNames.img_place_map}
             testID="home-order"
-            onPress={onPressOrder}
+            onPress={onPressStore}
             title={t('home.order_title')}
           />
         </View>
@@ -224,29 +226,29 @@ export default Home;
 const styles = StyleSheet.create({
   greeting: {
     color: '#3D3D3D',
-    fontSize: 18,
+    fontSize: ScaleSize(18),
     fontWeight: '700',
   },
   row: {
     flexDirection: 'row',
-    gap: 12,
+    gap: ScaleSize(12),
   },
   safeArea: {
     backgroundColor: '#F2F2F2',
     flex: 1,
   },
   scrollContent: {
-    gap: 16,
-    paddingBottom: 32,
-    paddingHorizontal: 20,
-    paddingTop: 8,
+    gap: ScaleSize(16),
+    paddingBottom: ScaleSize(32),
+    paddingHorizontal: ScaleSize(20),
+    paddingTop: ScaleSize(8),
   },
   // PLACEHOLDER_STYLES
   payCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 18,
-    paddingHorizontal: 24,
-    paddingVertical: 24,
+    borderRadius: ScaleSize(18),
+    paddingHorizontal: ScaleSize(24),
+    paddingVertical: ScaleSize(24),
     shadowColor: '#000000',
     shadowOffset: { height: 2, width: 0 },
     shadowOpacity: 0.06,
@@ -254,42 +256,42 @@ const styles = StyleSheet.create({
   },
   payLabel: {
     color: '#1A1A1A',
-    fontSize: 20,
+    fontSize: ScaleSize(20),
     fontWeight: '700',
   },
   payAmount: {
     color: '#1A1A1A',
-    fontSize: 38,
+    fontSize: ScaleSize(38),
     fontWeight: '800',
-    marginTop: 20,
+    marginTop: ScaleSize(20),
     textAlign: 'center',
   },
   payDivider: {
     backgroundColor: '#E0E0E0',
-    height: 1,
-    marginTop: 24,
+    height: ScaleSize(1),
+    marginTop: ScaleSize(24),
   },
   payFooter: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 18,
+    marginTop: ScaleSize(18),
   },
   pointText: {
     color: '#1A1A1A',
-    fontSize: 16,
+    fontSize: ScaleSize(16),
     fontWeight: '600',
   },
   payAction: {
     color: '#1A1A1A',
-    fontSize: 15,
+    fontSize: ScaleSize(15),
   },
   featureCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    borderRadius: ScaleSize(16),
     flex: 1,
-    minHeight: 200,
-    padding: 20,
+    minHeight: ScaleSize(200),
+    padding: ScaleSize(20),
     shadowColor: '#000000',
     shadowOffset: { height: 2, width: 0 },
     shadowOpacity: 0.06,
@@ -297,8 +299,8 @@ const styles = StyleSheet.create({
   },
   featureDesc: {
     color: '#9E9E9E',
-    fontSize: 9,
-    marginTop: 8,
+    fontSize: ScaleSize(9),
+    marginTop: ScaleSize(8),
   },
   featureImageWrap: {
     alignItems: 'flex-end',
@@ -308,61 +310,61 @@ const styles = StyleSheet.create({
   featureLabel: {
     backgroundColor: '#54C158',
     borderRadius: 999,
-    paddingHorizontal: 4,
-    paddingVertical: 4,
+    paddingHorizontal: ScaleSize(4),
+    paddingVertical: ScaleSize(4),
     position: 'absolute',
     right: 0,
   },
   featureLabelText: {
     color: '#FFFFFF',
-    fontSize: 8,
+    fontSize: ScaleSize(8),
     fontWeight: '700',
   },
   featureTitle: {
     color: '#1A1A1A',
-    fontSize: 18,
+    fontSize: ScaleSize(18),
     fontWeight: '700',
   },
   featureTitleRow: {
     alignItems: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: ScaleSize(8),
     justifyContent: 'space-between',
   },
   sectionLabel: {
     color: '#5C5C5C',
-    fontSize: 14,
-    marginBottom: 10,
+    fontSize: ScaleSize(14),
+    marginBottom: ScaleSize(10),
   },
   storeHeader: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: ScaleSize(12),
   },
   storeNameRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 6,
+    gap: ScaleSize(6),
   },
   storeName: {
     color: '#1A1A1A',
-    fontSize: 18,
+    fontSize: ScaleSize(18),
     fontWeight: '700',
   },
   storeEta: {
     color: '#5C5C5C',
-    fontSize: 13,
+    fontSize: ScaleSize(13),
   },
   productList: {
-    gap: 10,
+    gap: ScaleSize(10),
   },
   productCard: {
-    borderRadius: 10,
-    height: 96,
+    borderRadius: ScaleSize(10),
+    height: ScaleSize(96),
     overflow: 'hidden',
-    width: 96,
+    width: ScaleSize(96),
   },
   productThumb: {
     flex: 1,
@@ -370,18 +372,18 @@ const styles = StyleSheet.create({
   productOverlay: {
     bottom: 0,
     left: 0,
-    padding: 8,
+    padding: ScaleSize(8),
     position: 'absolute',
     right: 0,
   },
   productName: {
     color: '#FFFFFF',
-    fontSize: 12,
+    fontSize: ScaleSize(12),
     fontWeight: '600',
   },
   productPrice: {
     color: '#FFFFFF',
-    fontSize: 13,
+    fontSize: ScaleSize(13),
     fontWeight: '700',
   },
 });

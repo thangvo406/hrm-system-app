@@ -69,6 +69,8 @@ type MenuSection = {
 const NAV_TARGETS: Readonly<Record<string, Paths>> = {
   notice: Paths.Announcements,
   survey: Paths.Survey,
+  store_search: Paths.Stores,
+  notification: Paths.Notifications,
 };
 
 const sections: readonly MenuSection[] = [

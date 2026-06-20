@@ -5,6 +5,7 @@ import { appSaga } from '@services/slices/app/appSaga';
 import { authSaga } from '@services/slices/auth/authSaga';
 import { notificationsSaga } from '@services/slices/notifications/notificationsSaga';
 import { productsSaga } from '@services/slices/products/productsSaga';
+import { storesSaga } from '@services/slices/stores/storesSaga';
 import { surveySaga } from '@services/slices/survey/surveySaga';
 
 export function* rootSaga() {
@@ -14,6 +15,7 @@ export function* rootSaga() {
     fork(accountSaga),
     fork(notificationsSaga),
     fork(productsSaga),
+    fork(storesSaga),
     fork(surveySaga),
   ]);
 }

@@ -4,15 +4,22 @@ import { useAppDispatch } from '@services/common/storeHooks';
 import { getProductsRequest } from '@services/slices/products/productsSlice';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ListApiResponse } from '@type/common';
+import type { RootScreenProps } from '@navigation/types';
+import { Paths } from '@navigation/paths';
+import AppNavigator from '@navigation/AppNavigator';
+import { getStoreDetailRequest } from '@services/slices/stores/storesSlice';
+import { StoreItem } from '@type/store';
 
 export type { Product } from '@type/products';
 
-export const useProducts = () => {
+export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   const dispatch = useAppDispatch();
+  const { data: store } = AppNavigator.getParams(props);
   const [data, setData] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(0);
+  const [storeInfo, setStoreInfo] = useState<StoreItem | undefined>(store);
 
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
@@ -49,8 +56,20 @@ export const useProducts = () => {
 
   useEffect(() => {
     dispatch(
+      getStoreDetailRequest({
+        storeId: store?.id || 1,
+        // onFailure: handleFailure,
+        onSuccess: (data: StoreItem) => {
+          setStoreInfo(data);
+        },
+      }),
+    );
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(
       getProductsRequest({
-        storeId: 1,
+        storeId: store?.id || 1,
         page: currentPage,
         size: 10,
         onFailure: handleFailure,
@@ -63,6 +82,7 @@ export const useProducts = () => {
     data,
     error,
     loading,
+    storeInfo,
     onLoadMore,
   };
 };

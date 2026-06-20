@@ -1,7 +1,7 @@
 import type { ListRenderItem } from 'react-native';
 import type { AnnouncementItem } from '@hooks';
 
-import { AnnouncementLoading, HeaderDetail } from '@components';
+import { EmptyView, AnnouncementLoading, HeaderDetail } from '@components';
 import { ScaleSize } from '@kits/core';
 import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
 import { useCallback, useMemo } from 'react';
@@ -13,7 +13,6 @@ import AnimatedTabs from './AnimatedTabs';
 import AnnouncementRow from './AnnouncementRow';
 import BannerCarousel from './BannerCarousel';
 import ItemSeparator from './ItemSeparator';
-import EmptyView from '@components/EmptyView';
 import imageNames from '@assets/images/names';
 
 const TEXT_MUTED = '#9E9E9E';

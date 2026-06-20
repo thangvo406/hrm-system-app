@@ -35,9 +35,6 @@
       "min_order_label": "Minimum delivery order"
     },
     "products": {
-      "store_name": "Cafe COOP",
-      "estimate_time": "About 15 min",
-      "min_order": "Min order: 3,500 KRW",
       "empty": "No products to display."
     },
     "authorisation": {
@@ -198,6 +195,11 @@
       "action_answer": "Check Answer",
       "action_start": "Start Survey",
       "closed_label": "Closed"
+    },
+    "stores": {
+      "title": "Smart Order",
+      "search_placeholder": "Search",
+      "section_label": "Frequently Ordered Store"
     },
     "survey_detail": {
       "short_answer_placeholder": "Your answer",

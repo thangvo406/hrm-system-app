@@ -25,12 +25,13 @@ const HERO_HEIGHT = ScaleSize(280);
 const DIVIDER_COLOR = '#F0F0F0';
 
 const keyExtractor = (item: Product) => String(item.id);
-
-function Products({ navigation }: RootScreenProps<Paths.Products>) {
+const onPressBack = () => {
+  AppNavigator.goBack();
+};
+function Products(props: RootScreenProps<Paths.Products>) {
   const insets = useSafeAreaInsets();
-  const { data, loading, onLoadMore } = useProducts();
+  const { data, storeInfo, loading, onLoadMore } = useProducts(props);
   const scrollY = React.useMemo(() => new Animated.Value(0), []);
-
   const HERO_COLLAPSED_HEIGHT = useMemo(() => {
     return ScaleSize(54) + insets.top;
   }, []);
@@ -47,9 +48,7 @@ function Products({ navigation }: RootScreenProps<Paths.Products>) {
     outputRange: [insets.top + ScaleSize(8), insets.top - ScaleSize(4)],
   });
 
-  const onPressBack = () => {
-    navigation.goBack();
-  };
+
 
   const onPressProduct = React.useMemo(
     () => (item: any) => {
@@ -77,6 +76,7 @@ function Products({ navigation }: RootScreenProps<Paths.Products>) {
         backButtonTop={backButtonTop}
         heroHeight={heroHeight}
         onPressBack={onPressBack}
+        banner={storeInfo?.banner}
       />
       {loading ? (
         <ProductsLoading />
@@ -86,7 +86,7 @@ function Products({ navigation }: RootScreenProps<Paths.Products>) {
           ListEmptyComponent={<ListEmpty loading={loading} />}
           ListHeaderComponent={
             <View>
-              <StoreInfo />
+              <StoreInfo storeInfo={storeInfo} />
               <View style={styles.headerDivider} />
             </View>
           }

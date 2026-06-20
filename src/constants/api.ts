@@ -36,4 +36,8 @@ export const EndPoints = {
     detail: (surveyId: number | string) => `survey/${surveyId}`,
     submitSurvey: (surveyId: number | string) => `survey/done/${surveyId}`,
   },
+  STORE: {
+    list: (request: string) => `store?${request}`,
+    detail: (storeId: number | string) => `store/${storeId}`,
+  },
 };

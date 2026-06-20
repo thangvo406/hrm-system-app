@@ -184,6 +184,11 @@
       "action_start": "설문 진행",
       "closed_label": "마감"
     },
+    "stores": {
+      "title": "스마트오더",
+      "search_placeholder": "Search",
+      "section_label": "자주 주문한 매장"
+    },
     "survey_detail": {
       "short_answer_placeholder": "답변을 입력해 주세요",
       "submit": "제출하기",
@@ -199,9 +204,6 @@
       "min_order_label": "배달 최소 주문 금액"
     },
     "products": {
-      "store_name": "Cafe COOP",
-      "estimate_time": "약 15분 소요 예상",
-      "min_order": "최소주문 : 3,500원",
       "empty": "표시할 상품이 없습니다."
     },
     "profile": {

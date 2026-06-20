@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React from 'react';
+import { IImage } from '@type';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -18,15 +19,17 @@ type Properties = {
   readonly backButtonTop: Animated.AnimatedInterpolation<number>;
   readonly heroHeight: Animated.AnimatedInterpolation<number>;
   readonly onPressBack: () => void;
+  readonly banner?: IImage,
 };
 
-function HeroHeader({ backButtonTop, heroHeight, onPressBack }: Properties) {
+function HeroHeader({ banner = undefined, backButtonTop, heroHeight, onPressBack }: Properties) {
   return (
     <Animated.View style={[styles.heroWrap, { height: heroHeight }]}>
       <Image
         height={HERO_HEIGHT}
         name="img_header_products_default"
         resizeMode="cover"
+        url={banner?.fileUrl}
         style={styles.heroImage}
         width={SCREEN_WIDTH}
       />

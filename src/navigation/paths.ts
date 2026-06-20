@@ -10,6 +10,7 @@ export enum Paths {
   ProductDetail = 'product_detail',
   Products = 'products',
   Startup = 'startup',
+  Stores = 'stores',
   Survey = 'survey',
   SurveyDetail = 'survey_detail',
   Welcome = 'welcome',
