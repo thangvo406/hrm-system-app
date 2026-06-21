@@ -10,7 +10,7 @@ import React from 'react';
 import { AppConstants, Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 
-const PRIMARY_COLOR = Colors.primary
+const PRIMARY_COLOR = Colors.primary;
 const DISABLED_COLOR = '#C4C4C4';
 const BUTTON_HEIGHT = 52;
 
@@ -28,11 +28,11 @@ function Button({
   title,
   loading = false,
   type = 'primary',
-  style,
+  style = undefined,
   ...rest
 }: ButtonProps) {
   const isDisabled = disabled === true || loading;
-  const isOutlet = ['outlet', 'outline-bordered'].includes(type);
+  const isOutlet = ['outline', 'outline-bordered'].includes(type);
   return (
     <TouchableOpacity
       activeOpacity={0.8}

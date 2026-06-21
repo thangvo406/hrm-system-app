@@ -16,26 +16,35 @@ import { useNotifications } from '@hooks';
 import dayjs from 'dayjs';
 import { Colors } from '@constants';
 
+const CARD_READ_BG = '#FFFFFF';
 const ICON_BG = '#E6F4EA';
 const ICON_COLOR = '#2FA94A';
 const ICON_CIRCLE_SIZE = ScaleSize(56);
 const ICON_SIZE = ScaleSize(28);
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = Colors.gray4;
+// Semi-transparent unread bg must not share a view with elevation/shadow
+// (RN draws a white underlay for shadow, which shows through rgba).
+const UNREAD_BG = 'rgba(233, 232, 232, 0.8)';
 
 const keyExtractor = (item: NotificationItem) => item.id;
 
 type CardProps = {
   readonly item: NotificationItem;
   readonly onPressItem: (item: NotificationItem) => void;
-
 };
 
 function NotificationCard({ item, onPressItem }: CardProps) {
-  const backgroundColor = item.read ? 'white' : 'rgba(188, 188, 188, 0.8)'
   return (
-    <AppButton style={[styles.card, { backgroundColor }]} testID={`notification-${item.id}`}
-      onPress={() => onPressItem?.(item)}>
+    <AppButton
+      onPress={() => onPressItem?.(item)}
+      style={[
+        styles.card,
+        item.read ? styles.cardRead : styles.cardUnread,
+        { backgroundColor: item.read ? CARD_READ_BG : UNREAD_BG },
+      ]}
+      testID={`notification-${item.id}`}
+    >
       <View style={styles.iconCircle}>
         <Image
           color={ICON_COLOR}
@@ -65,20 +74,30 @@ function NotificationCard({ item, onPressItem }: CardProps) {
 
 const MemoCard = React.memo(NotificationCard);
 
-
 function Notifications() {
   const { t } = useTranslation();
-  const { data, disabledBtnReadAll, loading, onPressItem, onMarkReadAll, onLoadMore } = useNotifications();
+  const {
+    data,
+    disabledBtnReadAll,
+    loading,
+    onPressItem,
+    onMarkReadAll,
+    onLoadMore,
+  } = useNotifications();
 
-
-const renderItem: ListRenderItem<NotificationItem> = ({ item }) => (
-  <MemoCard onPressItem={onPressItem} item={item} />
-);
-
+  const renderItem: ListRenderItem<NotificationItem> = ({ item }) => (
+    <MemoCard onPressItem={onPressItem} item={item} />
+  );
 
   return (
     <View style={styles.safeArea}>
-      <HeaderDetail disabledBtnReadAll={disabledBtnReadAll} onPressReadAll={onMarkReadAll} showIconReadAll hideNotify title={t('notifications.title')} />
+      <HeaderDetail
+        disabledBtnReadAll={disabledBtnReadAll}
+        onPressReadAll={onMarkReadAll}
+        showIconReadAll
+        hideNotify
+        title={t('notifications.title')}
+      />
 
       {loading ? (
         <NotificationsLoading />
@@ -116,18 +135,23 @@ export default Notifications;
 const styles = StyleSheet.create({
   card: {
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
     borderRadius: ScaleSize(18),
-    elevation: 2,
     flexDirection: 'row',
     gap: ScaleSize(14),
     marginBottom: ScaleSize(14),
     paddingHorizontal: ScaleSize(16),
     paddingVertical: ScaleSize(18),
+  },
+  cardRead: {
+    elevation: 2,
     shadowColor: '#000000',
     shadowOffset: { height: 2, width: 0 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
+  },
+  cardUnread: {
+    elevation: 0,
+    shadowOpacity: 0,
   },
   content: {
     flex: 1,

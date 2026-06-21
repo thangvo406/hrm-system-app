@@ -1,17 +1,18 @@
 import type { NotificationItem } from '@type/notifications';
 
 import { useAppDispatch } from '@services/common/storeHooks';
-import { getNotificationsRequest, markReadAllRequest, markReadRequest } from '@services/slices/notifications/notificationsSlice';
+import {
+  getNotificationsRequest,
+  markReadAllRequest,
+  markReadRequest,
+} from '@services/slices/notifications/notificationsSlice';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ListApiResponse } from '@type';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useTranslation } from 'react-i18next';
 
-export type {
-  NotificationItem,
-  NotificationKind,
-} from '@type/notifications';
+export type { NotificationItem, NotificationKind } from '@type/notifications';
 
 export const useNotifications = () => {
   const dispatch = useAppDispatch();
@@ -54,59 +55,64 @@ export const useNotifications = () => {
       read: markAll ? true : it.id == item?.id ? true : it.read,
     }));
     setData(newData);
-  }
+  };
 
   const disabledBtnReadAll = useMemo(() => {
-    return !(data?.length > 0)
-  }, [data])
+    return !(data?.length > 0);
+  }, [data]);
 
   const onMarkRead = (item: NotificationItem) => {
-    dispatch(markReadRequest({
-      notifyId: item.id,
-      onSuccess: () => {
-        AppNavigator.showSnackBar({
-          message: t('notifications.mark_read_success'),
-          type: 'success',
-        });
-        onRefreshReadData(false, item);
-      },
-      onFailure: (message: string) => {
-        AppNavigator.showSnackBar({
-          message: message || t('notifications.mark_read_failed'),
-          type: 'failed',
-        });
-      }
-    }));
-  }
+    dispatch(
+      markReadRequest({
+        notifyId: item.id,
+        onSuccess: () => {
+          onRefreshReadData(false, item);
+        },
+        onFailure: (message: string) => {
+          AppNavigator.showSnackBar({
+            message: message || t('notifications.mark_read_failed'),
+            type: 'failed',
+          });
+        },
+      }),
+    );
+  };
 
   const onMarkReadAll = () => {
-    dispatch(markReadAllRequest({
-      onSuccess: () => {
-        AppNavigator.showSnackBar({
-          message: t('notifications.mark_read_success'),
-          type: 'success',
-        });
-        onRefreshReadData(true);
-      },
-      onFailure: (message: string) => {
-        AppNavigator.showSnackBar({
-          message: message || t('notifications.mark_read_failed'),
-          type: 'failed',
-        });
-      }
-    }));
-  }
+    dispatch(
+      markReadAllRequest({
+        onSuccess: () => {
+          AppNavigator.showSnackBar({
+            message: t('notifications.mark_read_success'),
+            type: 'success',
+          });
+          onRefreshReadData(true);
+        },
+        onFailure: (message: string) => {
+          AppNavigator.showSnackBar({
+            message: message || t('notifications.mark_read_failed'),
+            type: 'failed',
+          });
+        },
+      }),
+    );
+  };
 
   const onPressItem = useCallback((item: NotificationItem) => {
-    onMarkRead(item);
-    AppNavigator.navigate(Paths.AnnouncementDetail, { notification: item, hideBtnNotify: true });
+    if (!item.read) {
+      onMarkRead(item);
+    }
+
+    AppNavigator.navigate(Paths.AnnouncementDetail, {
+      notification: item,
+      hideBtnNotify: true,
+    });
   }, []);
 
   const handleFailure = (message: string) => {
     setError(message);
     setLoading(false);
   };
-
 
   useEffect(() => {
     dispatch(

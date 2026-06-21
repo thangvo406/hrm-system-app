@@ -25,7 +25,7 @@ import {
 import { loginWithKakaoAccount } from '@react-native-seoul/kakao-login';
 import NaverLogin from '@react-native-seoul/naver-login';
 
-const { STEP, PASSWORD_MIN_LENGTH, NEED_INFO_LOGIN_CODE, initialLoginForm } =
+const { STEP, NEED_INFO_LOGIN_CODE, initialLoginForm } =
   AppConstants;
 export type { AuthStep, RegisterErrors } from './useRegister';
 
@@ -53,11 +53,6 @@ const validateLogin = (
     errors.email = t('authorisation.error_email_required');
   } else if (!ValidateUtils.isEmail(values.email)) {
     errors.email = t('authorisation.error_email_invalid');
-  }
-  if (values.password.length === 0) {
-    errors.password = t('authorisation.error_password_required');
-  } else if (values.password.length < PASSWORD_MIN_LENGTH) {
-    errors.password = t('authorisation.error_password_min');
   }
   return errors;
 };

@@ -4,7 +4,7 @@ import type {
   AnnouncementItem,
   GetAnnouncementsPayload,
   NotificationItem,
-  IRequestGetNotifications
+  IRequestGetNotifications,
 } from '@type/notifications';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -12,15 +12,14 @@ import { EndPoints } from '@constants';
 import { ListApiResponse, SingleApiResponse } from '@type/common';
 import { CommonUtils } from '@utils';
 
-export const getNotifications = async (request: IRequestGetNotifications): Promise<
-  ListApiResponse<NotificationItem[]>
-> => {
+export const getNotifications = async (
+  request: IRequestGetNotifications,
+): Promise<ListApiResponse<NotificationItem[]>> => {
   const _request = CommonUtils.removeEmptyFieldObject(request, true);
   const params = CommonUtils.objectToQueryParams(_request);
-  const response = await httpRequest.get<SingleApiResponse<ListApiResponse<NotificationItem[]>>>(
-    EndPoints.NOTIFICATIONS.list(params),
-    { loading: false },
-  );
+  const response = await httpRequest.get<
+    SingleApiResponse<ListApiResponse<NotificationItem[]>>
+  >(EndPoints.NOTIFICATIONS.list(params), { loading: false });
   return response.data;
 };
 
@@ -53,7 +52,13 @@ export const getAnnouncementById = async (
 };
 
 export const markRead = async (notifyId: number): Promise<void> => {
-  await httpRequest.patch(EndPoints.NOTIFICATIONS.markRead(notifyId));
+  await httpRequest.patch(
+    EndPoints.NOTIFICATIONS.markRead(notifyId),
+    undefined,
+    {
+      loading: false,
+    },
+  );
 };
 
 export const markReadAll = async (): Promise<void> => {
