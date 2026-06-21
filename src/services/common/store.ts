@@ -23,6 +23,7 @@ import { notificationsReducer } from '@services/slices/notifications/notificatio
 import { productsReducer } from '@services/slices/products/productsSlice';
 import { storesReducer } from '@services/slices/stores/storesSlice';
 import { surveyReducer } from '@services/slices/survey/surveySlice';
+import { walletReducer } from '@services/slices/wallet/walletSlice';
 
 const reduxStorage: Storage = {
   getItem: key => Promise.resolve(storage.getString(key) ?? undefined),
@@ -44,6 +45,7 @@ const rootReducer = combineReducers({
   products: productsReducer,
   stores: storesReducer,
   survey: surveyReducer,
+  wallet: walletReducer,
 });
 
 const persistConfig = {
@@ -64,14 +66,7 @@ export const store = configureStore({
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: [
-          FLUSH,
-          REHYDRATE,
-          PAUSE,
-          PERSIST,
-          PURGE,
-          REGISTER,
-        ],
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
         ignoredActionPaths: ['payload.onSuccess', 'payload.onFailure'],
       },
       thunk: false,

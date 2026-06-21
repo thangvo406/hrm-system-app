@@ -1,18 +1,14 @@
 import Image from '@components/Image';
 import { ScaleSize } from '@kits/core';
-import {
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import React from 'react';
 import imageNames from '@assets/images/names';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppButton from './AppButton';
-
+import { DeviceUtils } from '@kits/core/utils';
+const { ifIphoneX } = DeviceUtils;
 const ICON_SIZE = ScaleSize(24);
 const ACCENT_COLOR = '#5BB85C';
 const DISABLED_COLOR = '#A1A1A1';
@@ -31,7 +27,6 @@ type Properties = {
 const onOpenMenu = () => {
   AppNavigator.showMenu();
 };
-
 
 const onPressNotification = () => {
   AppNavigator.navigate(Paths.Notifications);
@@ -56,7 +51,6 @@ function HeaderDetail({
     }
   };
 
-
   // const onPressHome = () => {
   //   AppNavigator.reset(Paths.Home);
   // };
@@ -67,7 +61,7 @@ function HeaderDetail({
         styles.header,
         {
           backgroundColor: transparent ? 'transparent' : '#FFFFFF',
-          paddingTop: inssets.top,
+          paddingTop: inssets.top + ifIphoneX(0, 10),
         },
         style,
       ]}
@@ -105,7 +99,7 @@ function HeaderDetail({
             width={ICON_SIZE}
           />
         </TouchableOpacity> */}
-        
+
         {!hideNotify && (
           <AppButton
             onPress={onPressNotification}
@@ -129,7 +123,7 @@ function HeaderDetail({
             <Image
               color={disabledBtnReadAll ? DISABLED_COLOR : ACCENT_COLOR}
               height={ICON_SIZE}
-              name='ic_notify_read_all'
+              name="ic_notify_read_all"
               type="svg"
               width={ICON_SIZE}
             />

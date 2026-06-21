@@ -11,7 +11,7 @@ export const EndPoints = {
     verifyOtpForgotPass: 'auth/forgot-password/confirm-otp',
     submitForgotPass: 'auth/forgot-password/reset',
     refreshToken: 'auth/refresh',
-    logout: 'auth/logout'
+    logout: 'auth/logout',
   },
   ACCOUNT: {
     getProfile: 'user/profile',
@@ -23,7 +23,7 @@ export const EndPoints = {
   NOTIFICATIONS: {
     list: (request: string) => `notification?${request}`,
     markRead: (notifyId: number) => `notification/${notifyId}/read`,
-    markReadAll:'notification/read-all',
+    markReadAll: 'notification/read-all',
   },
   ANNOUNCEMENTS: {
     detail: (announcementId: number | string) =>
@@ -45,6 +45,9 @@ export const EndPoints = {
     detail: (storeId: number | string) => `store/${storeId}`,
   },
   PAYMENT: {
-    checkout: 'order/create'
-  }
+    checkout: 'order/create',
+  },
+  WALLET: {
+    currentWallet: 'wallet',
+  },
 };

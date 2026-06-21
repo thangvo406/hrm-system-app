@@ -7,6 +7,7 @@ import { notificationsSaga } from '@services/slices/notifications/notificationsS
 import { productsSaga } from '@services/slices/products/productsSaga';
 import { storesSaga } from '@services/slices/stores/storesSaga';
 import { surveySaga } from '@services/slices/survey/surveySaga';
+import { walletSaga } from '@services/slices/wallet/walletSaga';
 
 export function* rootSaga() {
   yield all([
@@ -17,5 +18,6 @@ export function* rootSaga() {
     fork(productsSaga),
     fork(storesSaga),
     fork(surveySaga),
+    fork(walletSaga),
   ]);
 }

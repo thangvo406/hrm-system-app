@@ -109,7 +109,7 @@
       "member_label": "조합원",
       "pay_label": "생협Pay :",
       "pay_amount": "{{amount}} 원",
-      "point_label": "Point :",
+      "point_label": "Point : {{point}}",
       "pay_action": "터치로 결재 이동",
       "dividend_title": "출자금",
       "dividend_desc": "조합원만 사용가능한 기능이에요.",

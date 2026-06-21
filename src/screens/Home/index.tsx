@@ -13,9 +13,8 @@ import { ScaleSize } from '@kits/core';
 import { useTranslation } from 'react-i18next';
 import { useHome } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Wallet } from '@type';
 
-const PAY_AMOUNT = '100,000';
-const POINT_AMOUNT = '210,000';
 const STORE_NAME = 'Cafe Coop';
 
 const FEATURE_IMAGE_SIZE = ScaleSize(88);
@@ -36,7 +35,13 @@ const PRODUCTS: readonly Product[] = [
 
 // PLACEHOLDER_MAIN_COMPONENT
 
-function PayCard({ onPress = undefined }: { readonly onPress?: () => void }) {
+function PayCard({
+  onPress = undefined,
+  data = undefined,
+}: {
+  readonly data?: Wallet;
+  readonly onPress?: () => void;
+}) {
   const { t } = useTranslation();
   return (
     <TouchableOpacity
@@ -47,12 +52,12 @@ function PayCard({ onPress = undefined }: { readonly onPress?: () => void }) {
     >
       <Text style={styles.payLabel}>{t('home.pay_label')}</Text>
       <Text style={styles.payAmount}>
-        {t('home.pay_amount', { amount: PAY_AMOUNT })}
+        {t('home.pay_amount', { amount: data?.balance || 0 })}
       </Text>
       <View style={styles.payDivider} />
       <View style={styles.payFooter}>
         <Text style={styles.pointText}>
-          {t('home.point_label')} {POINT_AMOUNT}
+          {t('home.point_label', { point: data?.pointBalance || 0 })}
         </Text>
         <Text style={styles.payAction}>{t('home.pay_action')}</Text>
       </View>
@@ -162,6 +167,7 @@ function Home() {
     onPressNotification,
     onPressStore,
     onPressSurvey,
+    currentWallet,
     openMenu,
     onGoToStore,
     isShowCtaContribute,
@@ -180,7 +186,7 @@ function Home() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <PayCard onPress={goToPayCard} />
+        <PayCard onPress={goToPayCard} data={currentWallet} />
         <View style={styles.row}>
           <FeatureCard
             desc={t('home.dividend_desc')}

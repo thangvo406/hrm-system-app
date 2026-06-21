@@ -13,8 +13,8 @@ const TEXT_MUTED = '#9E9E9E';
 
 function AnnouncementDetail(props: RootScreenProps<Paths.AnnouncementDetail>) {
   const { t } = useTranslation();
-  const { data, loading, error, hideBtnNotify } = useAnnouncementDetail(props);
-
+  const { data, loading, contentNotify, error, hideBtnNotify } =
+    useAnnouncementDetail(props);
 
   const renderBody = () => {
     if (loading) {
@@ -31,7 +31,7 @@ function AnnouncementDetail(props: RootScreenProps<Paths.AnnouncementDetail>) {
     }
     return (
       <Content
-        contentHtml={data.content}
+        contentHtml={contentNotify}
         createdDate={data.createdDate}
         title={data.title}
       />

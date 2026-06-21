@@ -5,7 +5,7 @@ import type { Product } from '@hooks';
 import { ProductsLoading } from '@components';
 import { Paths } from '@navigation/paths';
 import { Animated, Dimensions, Keyboard, StyleSheet, View } from 'react-native';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { FlatList } from 'react-native';
 import { ScaleSize } from '@kits/core';
 import { useProducts } from '@hooks';
@@ -34,53 +34,85 @@ function Products(props: RootScreenProps<Paths.Products>) {
   const flatListRef = useRef<FlatList>(null);
   const savedScrollOffset = useRef(0);
   const [isSearchActive, setIsSearchActive] = useState(false);
+  // isSearchActive is intentionally unused at render time — it
+  // exists solely to trigger a re-render so the onScroll closure
+  // captures the correct value when search opens/closes.
+  void isSearchActive;
   const HERO_COLLAPSED_HEIGHT = useMemo(() => {
     return ScaleSize(54) + insets.top;
   }, [insets.top]);
 
   const collapseScroll = HERO_HEIGHT - HERO_COLLAPSED_HEIGHT;
 
-  const heroHeight = scrollY.interpolate({
-    extrapolate: 'clamp',
-    inputRange: [0, collapseScroll],
-    outputRange: [HERO_HEIGHT, HERO_COLLAPSED_HEIGHT],
-  });
+  const heroHeight = useMemo(
+    () =>
+      scrollY.interpolate({
+        extrapolate: 'clamp',
+        inputRange: [0, collapseScroll],
+        outputRange: [HERO_HEIGHT, HERO_COLLAPSED_HEIGHT],
+      }),
+    [scrollY, collapseScroll],
+  );
 
-  const backButtonTop = scrollY.interpolate({
-    extrapolate: 'clamp',
-    inputRange: [0, collapseScroll],
-    outputRange: [insets.top + ScaleSize(8), insets.top + ScaleSize(7)],
-  });
+  const backButtonTop = useMemo(
+    () =>
+      scrollY.interpolate({
+        extrapolate: 'clamp',
+        inputRange: [0, collapseScroll],
+        outputRange: [insets.top + ScaleSize(8), insets.top + ScaleSize(7)],
+      }),
+    [scrollY, collapseScroll, insets.top],
+  );
 
-  const titleHeaderOpacity = scrollY.interpolate({
-    extrapolate: 'clamp',
-    inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
-    outputRange: [0, 1],
-  });
+  const titleHeaderOpacity = useMemo(
+    () =>
+      scrollY.interpolate({
+        extrapolate: 'clamp',
+        inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
+        outputRange: [0, 1],
+      }),
+    [scrollY, collapseScroll],
+  );
 
-  const titleStoreOpacity = scrollY.interpolate({
-    extrapolate: 'clamp',
-    inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
-    outputRange: [1, 0],
-  });
+  const titleStoreOpacity = useMemo(
+    () =>
+      scrollY.interpolate({
+        extrapolate: 'clamp',
+        inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
+        outputRange: [1, 0],
+      }),
+    [scrollY, collapseScroll],
+  );
 
-  const titleTranslateY = scrollY.interpolate({
-    extrapolate: 'clamp',
-    inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
-    outputRange: [ScaleSize(48), 0],
-  });
+  const titleTranslateY = useMemo(
+    () =>
+      scrollY.interpolate({
+        extrapolate: 'clamp',
+        inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
+        outputRange: [ScaleSize(48), 0],
+      }),
+    [scrollY, collapseScroll],
+  );
 
-  const headerOverlayOpacity = scrollY.interpolate({
-    extrapolate: 'clamp',
-    inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
-    outputRange: [0, 1],
-  });
+  const headerOverlayOpacity = useMemo(
+    () =>
+      scrollY.interpolate({
+        extrapolate: 'clamp',
+        inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
+        outputRange: [0, 1],
+      }),
+    [scrollY, collapseScroll],
+  );
 
-  const iconLightOpacity = scrollY.interpolate({
-    extrapolate: 'clamp',
-    inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
-    outputRange: [1, 0],
-  });
+  const iconLightOpacity = useMemo(
+    () =>
+      scrollY.interpolate({
+        extrapolate: 'clamp',
+        inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
+        outputRange: [1, 0],
+      }),
+    [scrollY, collapseScroll],
+  );
   const onPressProduct = React.useMemo(
     () => (item: any) => {
       AppNavigator.navigate(Paths.ProductDetail, {
@@ -100,45 +132,57 @@ function Products(props: RootScreenProps<Paths.Products>) {
     [onPressProduct],
   );
 
+  // Track the latest scroll position via a dedicated listener so
+  // savedScrollOffset is captured SYNCHRONOUSLY in handleSearchOpen,
+  // avoiding any race with the FlatList's onScroll listener closure.
+  const currentScrollOffset = useRef(0);
+  useEffect(() => {
+    const listenerId = scrollY.addListener(({ value }) => {
+      currentScrollOffset.current = value;
+    });
+    return () => scrollY.removeListener(listenerId);
+  }, [scrollY]);
+
   const onScroll = useMemo(
     () =>
       Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-        {
-          useNativeDriver: false,
-          listener: (event: any) => {
-            if (!isSearchActive) {
-              savedScrollOffset.current =
-                event.nativeEvent.contentOffset.y;
-            }
-          },
-        },
+        { useNativeDriver: false },
       ),
-    [scrollY, isSearchActive],
+    [scrollY],
   );
 
   const handleSearchOpen = useCallback(() => {
+    // Capture the pre-search scroll position synchronously, BEFORE
+    // any state change that could trigger a FlatList auto-scroll.
+    savedScrollOffset.current = currentScrollOffset.current;
     setIsSearchActive(true);
   }, []);
 
   const handleSearchClose = useCallback(() => {
     const offset = savedScrollOffset.current;
+
     const restore = () => {
       scrollY.setValue(offset);
       flatListRef.current?.scrollToOffset({ offset, animated: false });
-      setIsSearchActive(false);
     };
 
-    // Wait for keyboard to fully hide before restoring scroll
+    // Restore the scroll position immediately when search closes.
+    // HeroHeader calls this BEFORE the close animation starts so the
+    // banner expands synchronously with the search bar collapsing.
+    restore();
+    setIsSearchActive(false);
+
+    // Safety net: iOS may auto-scroll the FlatList back to keep the
+    // TextInput visible above the keyboard as it dismisses. Re-apply
+    // the saved offset once the keyboard is fully hidden.
     const sub = Keyboard.addListener('keyboardDidHide', () => {
       sub.remove();
       restore();
     });
-    // Fallback if keyboard was already hidden
     setTimeout(() => {
       sub.remove();
-      restore();
-    }, 400);
+    }, 1500);
   }, [scrollY]);
 
   return (

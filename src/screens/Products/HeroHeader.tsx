@@ -50,7 +50,13 @@ function HeaderIcon({
 
   return (
     <View style={styles.iconStack}>
-      <Animated.View style={[styles.iconLayer, styles.borderRounded, { opacity: lightOpacity }]}>
+      <Animated.View
+        style={[
+          styles.iconLayer,
+          styles.borderRounded,
+          { opacity: lightOpacity },
+        ]}
+      >
         <Image
           color={ICON_LIGHT}
           height={BACK_ICON_SIZE}
@@ -130,8 +136,7 @@ function HeroHeader({
       // Save scroll position before keyboard appears
       onSearchOpen?.();
     } else {
-      // Dismiss keyboard immediately before animation to prevent
-      // scroll offset desync between native contentOffset and scrollY
+      onSearchClose?.();
       Keyboard.dismiss();
     }
 
@@ -145,9 +150,6 @@ function HeroHeader({
     }).start(({ finished }) => {
       if (finished && nextOpen) {
         searchInputRef.current?.focus();
-      }
-      if (finished && !nextOpen) {
-        onSearchClose?.();
       }
     });
   }, [isSearchOpen, searchExpand, onSearchClose, onSearchOpen]);
@@ -187,17 +189,11 @@ function HeroHeader({
       >
         <Animated.View
           pointerEvents="none"
-          style={[
-            styles.controlsBackground,
-            { opacity: headerOverlayOpacity },
-          ]}
+          style={[styles.controlsBackground, { opacity: headerOverlayOpacity }]}
         />
         <Animated.View
           pointerEvents="none"
-          style={[
-            styles.headerBottomShadow,
-            { opacity: headerOverlayOpacity },
-          ]}
+          style={[styles.headerBottomShadow, { opacity: headerOverlayOpacity }]}
         >
           <LinearGradient
             colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0)']}

@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
-import { AccountSelector } from '@services/selectors';
+import { AccountSelector, WalletSelector } from '@services/selectors';
 import { Paths } from '@navigation/paths';
 import AppNavigator from '@navigation/AppNavigator';
 import useNotification from './useNotification';
@@ -7,12 +7,14 @@ import {
   getProfileRequest,
   updateMembershipRequest,
 } from '@services/slices/account/accountSlice';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MEMBERSHIP_OPTIONS, MEMBERSHIP_TYPE } from '@constants/config';
 import Information from '@screens/Dialog/components/Information';
 import ChooseMemberShipType from '../screens/Authorisation/components/RegisterFlow/ChooseMemberShipType';
 import BankInformation from '../screens/Authorisation/components/RegisterFlow/BankInformation';
+import { useFocusEffect } from '@react-navigation/native';
+import { getCurrentWalletRequest } from '@services/slices/wallet/walletSlice';
 
 export type UseHome = ReturnType<typeof useHome>;
 
@@ -43,9 +45,14 @@ const onPressSurvey = () => {
   AppNavigator.navigate(Paths.Survey);
 };
 
+const onGoToStore = () => {
+  AppNavigator.navigate(Paths.Products);
+};
+
 export const useHome = () => {
   const { t } = useTranslation();
   const profile = useAppSelector(AccountSelector.getProfile);
+  const currentWallet = useAppSelector(WalletSelector.getCurrentWallet);
   useNotification();
   const dispatch = useAppDispatch();
 
@@ -124,18 +131,18 @@ export const useHome = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch(getProfileRequest());
-  }, []);
-
-  const onGoToStore = () => {
-    AppNavigator.navigate(Paths.Products);
-  };
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(getCurrentWalletRequest());
+      dispatch(getProfileRequest());
+    }, []),
+  );
 
   return {
     goToPayCard,
     openMenu,
     profile,
+    currentWallet,
     isShowCtaContribute,
     onPressStore,
     onPressContribution,
