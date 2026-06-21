@@ -15,6 +15,7 @@ import AppButton from './AppButton';
 
 const ICON_SIZE = ScaleSize(24);
 const ACCENT_COLOR = '#5BB85C';
+const DISABLED_COLOR = '#A1A1A1';
 
 type Properties = {
   readonly onPressBack?: () => void;
@@ -22,6 +23,7 @@ type Properties = {
   readonly title: string;
   readonly hideNotify?: boolean;
   readonly transparent?: boolean;
+  readonly disabledBtnReadAll?: boolean;
   readonly showIconReadAll?: boolean;
   readonly style?: ViewStyle;
 };
@@ -41,6 +43,7 @@ function HeaderDetail({
   onPressBack = undefined,
   onPressReadAll = undefined,
   style = undefined,
+  disabledBtnReadAll = false,
   title,
   showIconReadAll = false,
 }: Properties) {
@@ -119,11 +122,12 @@ function HeaderDetail({
         {!!showIconReadAll && (
           <AppButton
             onPress={onPressReadAll}
+            disabled={disabledBtnReadAll}
             style={styles.iconButton}
             testID="header-detail-notification"
           >
             <Image
-              color={ACCENT_COLOR}
+              color={disabledBtnReadAll ? DISABLED_COLOR : ACCENT_COLOR}
               height={ICON_SIZE}
               name='ic_notify_read_all'
               type="svg"

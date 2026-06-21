@@ -2,7 +2,7 @@ import type { NotificationItem } from '@type/notifications';
 
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getNotificationsRequest, markReadAllRequest, markReadRequest } from '@services/slices/notifications/notificationsSlice';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ListApiResponse } from '@type';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
@@ -55,6 +55,10 @@ export const useNotifications = () => {
     }));
     setData(newData);
   }
+
+  const disabledBtnReadAll = useMemo(() => {
+    return !(data?.length > 0)
+  }, [data])
 
   const onMarkRead = (item: NotificationItem) => {
     dispatch(markReadRequest({
@@ -117,6 +121,7 @@ export const useNotifications = () => {
   return {
     data,
     error,
+    disabledBtnReadAll,
     onPressItem,
     onLoadMore,
     onMarkRead,

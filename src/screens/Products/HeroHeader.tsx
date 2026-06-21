@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import LinearGradient from 'react-native-linear-gradient';
 import { IImage } from '@type';
 import debounce from 'lodash/debounce';
+import { NOOP } from '@utils/common';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = ScaleSize(220);
@@ -82,6 +83,7 @@ type Properties = {
   readonly onPressBack: () => void;
   readonly onSearchClose?: () => void;
   readonly onSearchOpen?: () => void;
+  readonly onSearchChange?: () => void;
   readonly storeName?: string;
   readonly titleOpacity: Animated.AnimatedInterpolation<number>;
   readonly titleTranslateY: Animated.AnimatedInterpolation<number>;
@@ -94,9 +96,9 @@ function HeroHeader({
   heroHeight,
   iconLightOpacity,
   onPressBack,
-  onSearchClose,
-  onSearchOpen,
-  onSearchChange,
+  onSearchClose = undefined,
+  onSearchOpen = undefined,
+  onSearchChange = NOOP,
   storeName = '',
   titleOpacity,
   titleTranslateY,
@@ -364,7 +366,7 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
   },
   borderRounded: {
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(255,255,255,0.3)',
     borderRadius: BACK_BUTTON_SIZE / 2,
     padding: ScaleSize(16),
   },

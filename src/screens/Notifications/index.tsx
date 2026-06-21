@@ -68,7 +68,7 @@ const MemoCard = React.memo(NotificationCard);
 
 function Notifications() {
   const { t } = useTranslation();
-  const { data, loading, onPressItem, onMarkReadAll, onLoadMore } = useNotifications();
+  const { data, disabledBtnReadAll, loading, onPressItem, onMarkReadAll, onLoadMore } = useNotifications();
 
 
 const renderItem: ListRenderItem<NotificationItem> = ({ item }) => (
@@ -78,7 +78,7 @@ const renderItem: ListRenderItem<NotificationItem> = ({ item }) => (
 
   return (
     <View style={styles.safeArea}>
-      <HeaderDetail onPressReadAll={onMarkReadAll} showIconReadAll hideNotify title={t('notifications.title')} />
+      <HeaderDetail disabledBtnReadAll={disabledBtnReadAll} onPressReadAll={onMarkReadAll} showIconReadAll hideNotify title={t('notifications.title')} />
 
       {loading ? (
         <NotificationsLoading />

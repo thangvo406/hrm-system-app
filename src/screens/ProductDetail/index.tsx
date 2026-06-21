@@ -1,6 +1,6 @@
 import type { ProductImage } from '@type/products';
 
-import { Image, ProductDetailLoading, ProgressiveImage } from '@components';
+import { AppButton, Image, ProductDetailLoading, ProgressiveImage } from '@components';
 import {
   Dimensions,
   StyleSheet,
@@ -17,10 +17,11 @@ import Carousel from 'react-native-reanimated-carousel';
 import { useTranslation } from 'react-i18next';
 import imageNames from '@assets/images/names';
 import { DeviceUtils } from '@kits/core/utils';
+import LinearGradient from 'react-native-linear-gradient';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const {ifIOS} = DeviceUtils
-const HERO_HEIGHT = ScaleSize(360);
+const { ifIOS } = DeviceUtils;
+const HERO_HEIGHT = ScaleSize(300);
 const BACK_BUTTON_SIZE = ScaleSize(40);
 const BACK_ICON_SIZE = ScaleSize(20);
 const CART_BUTTON_HEIGHT = ScaleSize(56);
@@ -31,18 +32,23 @@ const TEXT_MUTED = '#7A7A7A';
 const TEXT_LABEL = '#5C5C5C';
 const SHEET_BG = '#F2F2F2';
 const CART_BTN_BG = '#1A1A1A';
+const BANNER_OVERLAY_COLORS = ['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.2)'];
 
 type BackButtonProps = {
   readonly onPress: () => void;
   readonly topInset: number;
 };
 
+
+const onPressBack = () => {
+  AppNavigator.goBack();
+};
+
 function BackButton({ onPress, topInset }: BackButtonProps) {
   return (
-    <TouchableOpacity
-      activeOpacity={0.85}
+    <AppButton
       onPress={onPress}
-      style={[styles.backButton, { top: topInset + ScaleSize(8) }]}
+      style={[styles.backButton, { top: topInset + ScaleSize(0) }]}
       testID="product-detail-back"
     >
       <Image
@@ -53,11 +59,15 @@ function BackButton({ onPress, topInset }: BackButtonProps) {
         type="svg"
         width={BACK_ICON_SIZE}
       />
-    </TouchableOpacity>
+    </AppButton>
   );
 }
 
-function ProductHero({ images }: { readonly images: ProductImage[] }) {
+function ProductHero({
+  images,
+}: {
+  readonly images: ProductImage[];
+}) {
   const items =
     images.length > 0 ? images : [{ name: imageNames.img_product_default }];
   return (
@@ -68,14 +78,24 @@ function ProductHero({ images }: { readonly images: ProductImage[] }) {
         loop
         pagingEnabled
         renderItem={({ item }) => (
-          <ProgressiveImage
-            height={HERO_HEIGHT}
-            name={item.name}
-            imageStyle={styles.heroImage}
-            resizeMode="cover"
-            url={item.fileUrl}
-            width={SCREEN_WIDTH}
-          />
+          <>
+            <ProgressiveImage
+              height={HERO_HEIGHT}
+              name={item.name}
+              imageStyle={styles.heroImage}
+              resizeMode="cover"
+              url={item.fileUrl}
+              width={SCREEN_WIDTH}
+            />
+            <View pointerEvents="none" style={styles.bannerOverlay}>
+              <LinearGradient
+                colors={BANNER_OVERLAY_COLORS}
+                end={{ x: 0, y: 1 }}
+                start={{ x: 0, y: 0 }}
+                style={styles.bannerOverlayGradient}
+              />
+            </View>
+          </>
         )}
         testID="product-detail-carousel"
         width={SCREEN_WIDTH}
@@ -124,7 +144,7 @@ function BottomSheet({
     <View
       style={[
         styles.sheetWrap,
-        { paddingBottom: bottomInset + ifIOS(0,SHEET_VERTICAL_PADDING) },
+        { paddingBottom: bottomInset + ifIOS(0, SHEET_VERTICAL_PADDING) },
       ]}
     >
       <View style={styles.sheetInfo}>
@@ -150,9 +170,6 @@ function ProductDetail(props: any) {
   const { data, loading, onPressCart } = useProductDetail(props);
   const { t } = useTranslation();
 
-  const onPressBack = () => {
-    AppNavigator.goBack();
-  };
 
   return (
     <View style={styles.safeArea}>
@@ -194,6 +211,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: BACK_BUTTON_SIZE,
     zIndex: 2,
+    borderRadius: BACK_BUTTON_SIZE/2,
+    backgroundColor: 'rgba(255,255,255,0.3)',
   },
   backIcon: {
     transform: [{ rotate: '180deg' }],
@@ -210,6 +229,26 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: ScaleSize(16),
     fontWeight: '700',
+  },
+  bannerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    height: HERO_HEIGHT,
+    zIndex: 0,
+  },
+  bannerOverlayGradient: {
+    flex: 1,
+  },
+  heroBannerClip: {
+    ...StyleSheet.absoluteFillObject,
+    height: HERO_HEIGHT,
+    overflow: 'hidden',
+  },
+  heroBannerImage: {
+    height: HERO_HEIGHT,
+    left: 0,
+    position: 'absolute',
+    top: 0,
+    width: SCREEN_WIDTH,
   },
   heroImage: {
     height: HERO_HEIGHT,
