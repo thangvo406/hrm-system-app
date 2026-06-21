@@ -7,6 +7,7 @@ export { default as HeaderDetail } from './HeaderDetail';
 export { default as HomeHeader } from './HomeHeader';
 export { default as Image } from './Image';
 export { default as ProductDetailLoading } from './Loading/ProductDetail';
+export { default as ProductList } from './ProductList';
 export { default as ProductsLoading } from './Loading/Products';
 export { default as StoresLoading } from './Loading/Stores';
 export { default as ProgressiveImage } from './ProgressiveImage';

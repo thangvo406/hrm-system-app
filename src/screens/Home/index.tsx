@@ -1,6 +1,7 @@
 import type { ImageName } from '@assets/images';
+import type { Product } from '@type/store';
 
-import { Image, HomeHeader } from '@components';
+import { Image, HomeHeader, ProductList } from '@components';
 import imageNames from '@assets/images/names';
 import {
   ScrollView,
@@ -20,17 +21,69 @@ const STORE_NAME = 'Cafe Coop';
 const FEATURE_IMAGE_SIZE = ScaleSize(88);
 const STORE_ICON_SIZE = ScaleSize(18);
 
-type Product = {
-  readonly color: string;
-  readonly name: string;
-  readonly price: string;
-};
+const HOME_STORE_ID = 0;
 
 const PRODUCTS: readonly Product[] = [
-  { color: '#3A2E2A', name: '아메리카노', price: '3,500원' },
-  { color: '#C9B79C', name: '라떼', price: '4,500원' },
-  { color: '#D7B98E', name: '마들렌', price: '4,500원' },
-  { color: '#E8C8B0', name: '딸기 조각', price: '4,500원' },
+  {
+    categoryId: 0,
+    code: 'americano',
+    description: '',
+    discountPrice: 0,
+    id: 1,
+    images: [],
+    name: '아메리카노',
+    price: 3500,
+    sortOrder: 0,
+    status: 'ACTIVE',
+    stockQuantity: 0,
+    storeId: HOME_STORE_ID,
+    thumbnail: { filePath: '', fileUrl: '' },
+  },
+  {
+    categoryId: 0,
+    code: 'latte',
+    description: '',
+    discountPrice: 0,
+    id: 2,
+    images: [],
+    name: '라떼',
+    price: 4500,
+    sortOrder: 1,
+    status: 'ACTIVE',
+    stockQuantity: 0,
+    storeId: HOME_STORE_ID,
+    thumbnail: { filePath: '', fileUrl: '' },
+  },
+  {
+    categoryId: 0,
+    code: 'madeleine',
+    description: '',
+    discountPrice: 0,
+    id: 3,
+    images: [],
+    name: '마들렌',
+    price: 4500,
+    sortOrder: 2,
+    status: 'ACTIVE',
+    stockQuantity: 0,
+    storeId: HOME_STORE_ID,
+    thumbnail: { filePath: '', fileUrl: '' },
+  },
+  {
+    categoryId: 0,
+    code: 'strawberry-piece',
+    description: '',
+    discountPrice: 0,
+    id: 4,
+    images: [],
+    name: '딸기 조각',
+    price: 4500,
+    sortOrder: 3,
+    status: 'ACTIVE',
+    stockQuantity: 0,
+    storeId: HOME_STORE_ID,
+    thumbnail: { filePath: '', fileUrl: '' },
+  },
 ];
 
 // PLACEHOLDER_MAIN_COMPONENT
@@ -112,7 +165,13 @@ function FeatureCard({
   );
 }
 
-function StoreSection({ onPressStore }: any) {
+function StoreSection({
+  onPressProduct,
+  onPressStore,
+}: {
+  readonly onPressProduct: (productId: number) => void;
+  readonly onPressStore: () => void;
+}) {
   const { t } = useTranslation();
   return (
     <View>
@@ -133,27 +192,11 @@ function StoreSection({ onPressStore }: any) {
           <Text style={styles.storeName}>{STORE_NAME}</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView
-        contentContainerStyle={styles.productList}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-      >
-        {PRODUCTS.map(product => (
-          <View
-            key={product.name}
-            style={styles.productCard}
-            testID={`home-product-${product.name}`}
-          >
-            <View
-              style={[styles.productThumb, { backgroundColor: product.color }]}
-            />
-            <View style={styles.productOverlay}>
-              <Text style={styles.productName}>{product.name}</Text>
-              <Text style={styles.productPrice}>{product.price}</Text>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
+      <ProductList
+        onPressProduct={onPressProduct}
+        products={PRODUCTS as Product[]}
+        storeId={HOME_STORE_ID}
+      />
     </View>
   );
 }
@@ -205,7 +248,7 @@ function Home() {
             title={t('home.order_title')}
           />
         </View>
-        <StoreSection onPressStore={onGoToStore} />
+        <StoreSection onPressProduct={onGoToStore} onPressStore={onGoToStore} />
         <View style={styles.row}>
           <FeatureCard
             desc={t('home.notice_desc')}
@@ -362,34 +405,5 @@ const styles = StyleSheet.create({
   storeEta: {
     color: '#5C5C5C',
     fontSize: ScaleSize(13),
-  },
-  productList: {
-    gap: ScaleSize(10),
-  },
-  productCard: {
-    borderRadius: ScaleSize(10),
-    height: ScaleSize(96),
-    overflow: 'hidden',
-    width: ScaleSize(96),
-  },
-  productThumb: {
-    flex: 1,
-  },
-  productOverlay: {
-    bottom: 0,
-    left: 0,
-    padding: ScaleSize(8),
-    position: 'absolute',
-    right: 0,
-  },
-  productName: {
-    color: '#FFFFFF',
-    fontSize: ScaleSize(12),
-    fontWeight: '600',
-  },
-  productPrice: {
-    color: '#FFFFFF',
-    fontSize: ScaleSize(13),
-    fontWeight: '700',
   },
 });
