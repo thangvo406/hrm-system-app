@@ -56,6 +56,7 @@ export type StoresCallback = {
 export interface GetStoresPayload extends AppCallback {
     page: number;
     size: number;
+    searchName?: string;
 }
 
 export type GetStoresActionPayload = Omit<

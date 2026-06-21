@@ -13,7 +13,7 @@ import {
 } from 'redux-persist';
 import createSagaMiddleware from 'redux-saga';
 
-import { reactotronReduxEnhancer } from './reactotron';
+import { reactotronReduxEnhancer } from '../../reactotron.config';
 import { rootSaga } from './rootSaga';
 import { storage } from './storage';
 import { accountReducer } from '@services/slices/account/accountSlice';

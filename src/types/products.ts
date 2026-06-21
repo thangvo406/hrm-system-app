@@ -46,6 +46,7 @@ export interface GetProductsPayload extends ProductsCallback {
   sortDirection?: 'asc' | 'desc';
   page: number;
   size: number;
+  searchName?: string;
 }
 
 export type ProductDetailCallback = {

@@ -20,7 +20,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   const [error, setError] = useState<string | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(0);
   const [storeInfo, setStoreInfo] = useState<StoreItem | undefined>(store);
-
+  const [searchKey, setSearchKey] = useState('');
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
 
@@ -38,6 +38,11 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
       return results;
     });
   };
+
+  const onSearchChange = useCallback((text: string) => {
+    setSearchKey(text);
+    setCurrentPage(0);
+  }, []);
 
   const onLoadMore = useCallback(() => {
     // Remove alert for production
@@ -71,17 +76,19 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
       getProductsRequest({
         storeId: store?.id || 1,
         page: currentPage,
+        searchName: searchKey,
         size: 10,
         onFailure: handleFailure,
         onSuccess: handleSuccess,
       }),
     );
-  }, [dispatch, currentPage]);
+  }, [dispatch, searchKey, currentPage]);
 
   return {
     data,
     error,
     loading,
+    onSearchChange,
     storeInfo,
     onLoadMore,
   };

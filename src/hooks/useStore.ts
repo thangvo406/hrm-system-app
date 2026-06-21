@@ -17,7 +17,7 @@ export const useStore = () => {
   const [data, setData] = useState<readonly StoreItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | undefined>(undefined);
-  const [keyword, setKeyword] = useState('');
+  const [searchKey, setSearchKey] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
@@ -46,11 +46,12 @@ export const useStore = () => {
         getStoresRequest({
           onFailure: handleFailure,
           onSuccess: handleSuccess,
+          searchName: searchKey,
           page: currentPage,
           size: PAGE_SIZE,
         }),
       );
-    }, [currentPage, dispatch, handleFailure, handleSuccess]),
+    }, [currentPage, searchKey, dispatch, handleFailure, handleSuccess]),
   );
 
   const onLoadMore = useCallback(() => {
@@ -60,14 +61,6 @@ export const useStore = () => {
     isLoadingMore.current = true;
     setCurrentPage(prev => prev + 1);
   }, []);
-
-  const stores = useMemo(() => {
-    const trimmed = keyword.trim().toLowerCase();
-    if (!trimmed) {
-      return data;
-    }
-    return data.filter(store => store.name.toLowerCase().includes(trimmed));
-  }, [data, keyword]);
 
   const onPressStore = useCallback((store: StoreItem) => {
     AppNavigator.navigate(Paths.Products, { data: store });
@@ -80,14 +73,18 @@ export const useStore = () => {
     [],
   );
 
+  const onSearchChange = useCallback((text: string) => {
+    setSearchKey(text);
+    setCurrentPage(0);
+  }, []);
+
   return {
     error,
-    keyword,
     loading,
     onLoadMore,
     onPressProduct,
     onPressStore,
-    setKeyword,
-    stores,
+    onSearchChange,
+    stores: data,
   };
 };

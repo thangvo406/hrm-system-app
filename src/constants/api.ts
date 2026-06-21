@@ -10,7 +10,8 @@ export const EndPoints = {
     sendOtpForgotPass: 'auth/forgot-password/send-otp',
     verifyOtpForgotPass: 'auth/forgot-password/confirm-otp',
     submitForgotPass: 'auth/forgot-password/reset',
-    refreshToken: 'auth/refresh'
+    refreshToken: 'auth/refresh',
+    logout: 'auth/logout'
   },
   ACCOUNT: {
     getProfile: 'user/profile',

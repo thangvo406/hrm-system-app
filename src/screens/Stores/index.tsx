@@ -19,18 +19,16 @@ function ItemSeparator() {
 }
 
 type SearchComponentProps = {
-  readonly keyword: string;
   readonly setKeyword: (value: string) => void;
 };
 
-function SearchComponent({ keyword, setKeyword }: SearchComponentProps) {
+function SearchComponent({ setKeyword }: SearchComponentProps) {
   const { t } = useTranslation();
   return (
     <View style={styles.listHeader}>
       <SearchBar
         onChangeText={setKeyword}
         placeholder={t('stores.search_placeholder')}
-        value={keyword}
       />
       <Text style={styles.sectionLabel}>{t('stores.section_label')}</Text>
     </View>
@@ -39,7 +37,7 @@ function SearchComponent({ keyword, setKeyword }: SearchComponentProps) {
 
 function Stores() {
   const { t } = useTranslation();
-  const { keyword, loading, onPressProduct, onPressStore, setKeyword, stores } =
+  const { loading, onPressProduct, onPressStore, onSearchChange, stores } =
     useStore();
 
   const renderItem: ListRenderItem<StoreItem> = ({ item }) => (
@@ -57,7 +55,7 @@ function Stores() {
         <StoresLoading />
       ) : stores?.length > 0 ? (
         <>
-          <SearchComponent keyword={keyword} setKeyword={setKeyword} />
+          <SearchComponent setKeyword={onSearchChange} />
           <FlatList
             ItemSeparatorComponent={ItemSeparator}
             contentContainerStyle={styles.listContent}

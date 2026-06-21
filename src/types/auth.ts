@@ -19,6 +19,9 @@ export type IResponseRegisterSendOtp = {
 export type IResponseSendOtpForgotPass = {
   phoneVerificationToken?: string;
 };
+export type LogoutRequest = {
+  refreshToken: string
+}
 export type IResponseLoginSocial = {
   //TODO: define response
 };

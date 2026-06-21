@@ -24,6 +24,7 @@ import {
   submitForgotPass,
   verifyOTP,
   verifyOtpForgotPass,
+  logout as logoutRequest
 } from '@services/request/auth';
 import axios from 'axios';
 import { call, delay, put, select, takeLatest } from 'redux-saga/effects';
@@ -55,7 +56,7 @@ import {
   IResponseVerifyOtpForgotPass,
 } from '@type/auth';
 import { Globals } from '@utils';
-import { AccountSelector } from '@services/selectors';
+import { AccountSelector, AuthSelector } from '@services/selectors';
 import { deletePushId } from '@services/request/account';
 
 const DEFAULT_ERROR = 'common_error';
@@ -201,8 +202,10 @@ function* submitForgotPassWorker(
 function* logoutWorker() {
   Globals.hasUpdateDeviceId = false;
   const pushId: string = yield select(AccountSelector.getPushId);
+  const refreshToken: string = yield select(AuthSelector.getRefreshToken);
   try {
     yield call(deletePushId, pushId);
+    yield call(logoutRequest, { refreshToken });
   } catch {
     //TODO: handle error
   }

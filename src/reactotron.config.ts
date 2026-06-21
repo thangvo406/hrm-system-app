@@ -1,18 +1,26 @@
 import type { ReactotronReactNative } from 'reactotron-react-native';
 
-import Reactotron from 'reactotron-react-native';
+import Reactotron, { reactNativeCorePlugins } from 'reactotron-react-native';
 import mmkvPlugin from 'reactotron-react-native-mmkv';
-
+import { reactotronRedux } from 'reactotron-redux';
 import config from '../app.json';
+
 import { createMMKV } from 'react-native-mmkv';
-// import { storage } from './App';
+
 const storage = createMMKV();
-Reactotron.configure({
-  // host: 'localhost',
-  host: '192.168.9.37',
+const reduxPlugin = reactotronRedux();
+
+const reactotron = Reactotron.configure({
+  host: 'localhost',
   name: config.name,
   port: 9090,
 })
-  .useReactNative()
+  .useReactNative(reactNativeCorePlugins as never)
   .use(mmkvPlugin<ReactotronReactNative>({ storage }))
+  .use(reduxPlugin)
   .connect();
+
+export const reactotronReduxEnhancer =
+  reactotron.createEnhancer?.() ?? undefined;
+
+export default reactotron;

@@ -2,36 +2,80 @@ import { AppConstants } from '@constants';
 import { Image } from '@components';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import debounce from 'lodash/debounce';
 
 const ICON_SIZE = ScaleSize(20);
 const ICON_COLOR = '#9E9E9E';
 const FILTER_ICON_COLOR = '#9E9E9E';
 const PLACEHOLDER_COLOR = '#9E9E9E';
+const SEARCH_DEBOUNCE_MS = 400;
 
 type Properties = {
   readonly onChangeText: (text: string) => void;
   readonly onPressFilter?: () => void;
   readonly placeholder: string;
-  readonly value: string;
 };
 
 function SearchBar({
   onChangeText,
   onPressFilter = undefined,
   placeholder,
-  value,
 }: Properties) {
+  const [searchText, setSearchText] = useState('');
+
+  const debouncedOnChange = useMemo(
+    () => debounce(onChangeText, SEARCH_DEBOUNCE_MS),
+    [onChangeText],
+  );
+
+  useEffect(() => {
+    return () => {
+      debouncedOnChange.cancel();
+    };
+  }, [debouncedOnChange]);
+
+  const handleChangeText = useCallback(
+    (text: string) => {
+      setSearchText(text);
+      debouncedOnChange(text);
+    },
+    [debouncedOnChange],
+  );
+
+  const handleClear = useCallback(() => {
+    setSearchText('');
+    debouncedOnChange.cancel();
+    onChangeText('');
+  }, [debouncedOnChange, onChangeText]);
+
   return (
     <View style={styles.wrap}>
       <TextInput
-        onChangeText={onChangeText}
+        onChangeText={handleChangeText}
         placeholder={placeholder}
         placeholderTextColor={PLACEHOLDER_COLOR}
         style={styles.input}
         testID="stores-search-input"
-        value={value}
+        value={searchText}
       />
+      {searchText.length > 0 ? (
+        <TouchableOpacity
+          activeOpacity={0.7}
+          hitSlop={AppConstants.HISLOP_BUTTON}
+          onPress={handleClear}
+          style={styles.clearButton}
+          testID="stores-search-clear"
+        >
+          <Image
+            color={ICON_COLOR}
+            height={ICON_SIZE}
+            name="x-circle"
+            type="svg"
+            width={ICON_SIZE}
+          />
+        </TouchableOpacity>
+      ) : undefined}
       <Image
         color={ICON_COLOR}
         height={ICON_SIZE}
@@ -62,6 +106,12 @@ function SearchBar({
 export default React.memo(SearchBar);
 
 const styles = StyleSheet.create({
+  clearButton: {
+    alignItems: 'center',
+    height: ScaleSize(28),
+    justifyContent: 'center',
+    width: ScaleSize(28),
+  },
   divider: {
     backgroundColor: '#E0E0E0',
     height: ScaleSize(20),

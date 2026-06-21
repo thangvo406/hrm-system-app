@@ -19,6 +19,7 @@ import type {
   IResponseSubmitForgotPass,
   IResponseVerifyOtpForgotPass,
   IResponseLoginSocial,
+  LogoutRequest,
 } from '@type/auth';
 import omit from 'lodash/omit';
 import { httpRequest } from '@services/common/httpRequest';
@@ -117,4 +118,10 @@ export const submitForgotPass = async (
     SingleApiResponse<IResponseSubmitForgotPass>
   >(EndPoints.AUTH.submitForgotPass, request);
   return response.data;
+};
+
+export const logout = async (
+  request: LogoutRequest,
+): Promise<void> => {
+   await httpRequest.post(EndPoints.AUTH.logout, request);
 };
