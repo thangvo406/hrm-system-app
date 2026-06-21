@@ -160,7 +160,9 @@
       }
     },
     "notifications": {
-      "title": "알림"
+      "title": "알림",
+      "mark_read_success": "업데이트 되었습니다.",
+      "mark_read_failed": "업데이트에 실패했습니다. 다시 시도해 주세요."
     },
     "pay_card": {
       "title": "생협페이",

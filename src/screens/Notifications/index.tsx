@@ -32,8 +32,9 @@ type CardProps = {
 };
 
 function NotificationCard({ item, onPressItem }: CardProps) {
+  const backgroundColor = item.read ? 'white' : 'rgba(188, 188, 188, 0.8)'
   return (
-    <AppButton style={styles.card} testID={`notification-${item.id}`}
+    <AppButton style={[styles.card, { backgroundColor }]} testID={`notification-${item.id}`}
       onPress={() => onPressItem?.(item)}>
       <View style={styles.iconCircle}>
         <Image
@@ -67,7 +68,7 @@ const MemoCard = React.memo(NotificationCard);
 
 function Notifications() {
   const { t } = useTranslation();
-  const { data, loading, onPressItem, onLoadMore } = useNotifications();
+  const { data, loading, onPressItem, onMarkReadAll, onLoadMore } = useNotifications();
 
 
 const renderItem: ListRenderItem<NotificationItem> = ({ item }) => (
@@ -77,7 +78,7 @@ const renderItem: ListRenderItem<NotificationItem> = ({ item }) => (
 
   return (
     <View style={styles.safeArea}>
-      <HeaderDetail hideNotify title={t('notifications.title')} />
+      <HeaderDetail onPressReadAll={onMarkReadAll} showIconReadAll hideNotify title={t('notifications.title')} />
 
       {loading ? (
         <NotificationsLoading />

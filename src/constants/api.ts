@@ -22,6 +22,8 @@ export const EndPoints = {
   },
   NOTIFICATIONS: {
     list: (request: string) => `notification?${request}`,
+    markRead: (notifyId: number) => `notification/${notifyId}/read`,
+    markReadAll:'notification/read-all',
   },
   ANNOUNCEMENTS: {
     detail: (announcementId: number | string) =>

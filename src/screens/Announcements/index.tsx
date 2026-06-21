@@ -55,16 +55,16 @@ function Announcements() {
   return (
     <View style={styles.safeArea}>
       <HeaderDetail title={t('announcements.title')} />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <AnimatedTabs
+      <AnimatedTabs
           labels={labels}
           onChange={onChangeTab}
           testIDs={TAB_TEST_IDS}
           value={tabIndex}
         />
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         <BannerCarousel
           banners={banners}
           onPressItem={onPressBannerItem}

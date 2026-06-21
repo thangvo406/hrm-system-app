@@ -166,7 +166,7 @@ function Products(props: RootScreenProps<Paths.Products>) {
                 storeInfo={storeInfo}
                 titleOpacity={titleStoreOpacity}
               />
-              <View style={styles.headerDivider} />
+              {/* <View style={styles.headerDivider} /> */}
             </View>
           }
           automaticallyAdjustKeyboardInsets={false}

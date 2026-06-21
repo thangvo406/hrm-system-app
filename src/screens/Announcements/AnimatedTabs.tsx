@@ -1,9 +1,11 @@
 import type { LayoutChangeEvent } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 
+import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import Animated, {
   Easing,
+  interpolate,
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
@@ -16,7 +18,6 @@ import React from 'react';
 const TAB_TIMING_DURATION = 280;
 const TAB_ROW_PADDING = ScaleSize(16);
 
-const TEXT_DARK = '#1A1A1A';
 const TEXT_TAB_INACTIVE = '#5C5C5C';
 
 type TabLayout = {
@@ -59,16 +60,32 @@ function TabButton({
     return { color };
   });
 
+  const borderStyle = useAnimatedStyle(() => {
+    const distance = Math.abs(progress.value - index);
+    const ratio = Math.min(distance, 1);
+    const color = interpolateColor(
+      ratio,
+      [0, 1],
+      ['transparent', Colors.primary],
+    );
+    const width = interpolate(ratio, [0, 1], [0, 1]);
+    return { borderColor: color, borderWidth: width };
+  });
+
   return (
-    <TouchableOpacity
-      activeOpacity={0.85}
+    <Animated.View
       onLayout={handleLayout}
-      onPress={handlePress}
-      style={styles.tab}
-      testID={testID}
+      style={[styles.tab, borderStyle]}
     >
-      <Animated.Text style={[styles.tabText, textStyle]}>{label}</Animated.Text>
-    </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={handlePress}
+        style={styles.tabButton}
+        testID={testID}
+      >
+        <Animated.Text style={[styles.tabText, textStyle]}>{label}</Animated.Text>
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
 
@@ -151,16 +168,19 @@ export default React.memo(AnimatedTabs);
 
 const styles = StyleSheet.create({
   tab: {
-    alignItems: 'center',
     borderRadius: ScaleSize(20),
     borderWidth: 1,
     height: ScaleSize(34),
-    justifyContent: 'center',
     minWidth: ScaleSize(72),
     paddingHorizontal: ScaleSize(16),
   },
+  tabButton: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
   tabIndicator: {
-    backgroundColor: TEXT_DARK,
+    backgroundColor: Colors.primary,
     borderRadius: ScaleSize(20),
     bottom: ScaleSize(12),
     height: ScaleSize(34),

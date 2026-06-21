@@ -3,6 +3,7 @@ import type {
   GetAnnouncementImagesPayload,
   GetNotificationsPayload,
   GetAnnouncementDetailPayload,
+  MarkReadPayload,
 } from '@type/notifications';
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
@@ -43,6 +44,14 @@ const notificationsSlice = createSlice({
       prepare: (payload: GetNotificationsPayload = {}) => ({ payload }),
       reducer: () => {},
     },
+    markReadAllRequest: {
+      prepare: (payload: any) => ({ payload }),
+      reducer: () => {},
+    },
+    markReadRequest: {
+      prepare: (payload: MarkReadPayload) => ({ payload }),
+      reducer: () => {},
+    },
   },
 });
 
@@ -52,5 +61,7 @@ export const {
   getAnnouncementImagesSuccess,
   getAnnouncementsRequest,
   getNotificationsRequest,
+  markReadAllRequest,
+  markReadRequest,
 } = notificationsSlice.actions;
 export const notificationsReducer = notificationsSlice.reducer;

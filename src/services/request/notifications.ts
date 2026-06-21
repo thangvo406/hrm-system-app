@@ -51,3 +51,11 @@ export const getAnnouncementById = async (
   );
   return response?.data;
 };
+
+export const markRead = async (notifyId: number): Promise<void> => {
+  await httpRequest.patch(EndPoints.NOTIFICATIONS.markRead(notifyId));
+};
+
+export const markReadAll = async (): Promise<void> => {
+  await httpRequest.patch(EndPoints.NOTIFICATIONS.markReadAll);
+};

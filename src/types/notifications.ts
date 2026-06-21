@@ -72,3 +72,12 @@ export interface IRequestGetNotifications {
   size: number;
 }
 export type GetNotificationsPayload = IRequestGetNotifications & NotificationsCallback;
+
+export type MarkReadCallback = {
+  readonly onFailure?: (error: string) => void;
+  readonly onSuccess?: () => void;
+};
+
+export type MarkReadPayload = {
+  readonly notifyId: number;
+} & MarkReadCallback;

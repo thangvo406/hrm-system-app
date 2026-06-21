@@ -7,6 +7,7 @@ import type {
   GetAnnouncementImagesPayload,
   GetAnnouncementsPayload,
   GetNotificationsPayload,
+  MarkReadPayload,
   NotificationItem,
 } from '@type/notifications';
 
@@ -18,6 +19,8 @@ import {
   getAnnouncementImages,
   getAnnouncements,
   getNotifications,
+  markRead,
+  markReadAll,
 } from '@services/request/notifications';
 import {
   getAnnouncementDetailRequest,
@@ -25,20 +28,20 @@ import {
   getAnnouncementImagesSuccess,
   getAnnouncementsRequest,
   getNotificationsRequest,
+  markReadAllRequest,
+  markReadRequest,
 } from './notificationsSlice';
+import { getErrorMessageApi } from '@utils/common';
 
 function* getNotificationsWorker(
   action: PayloadAction<GetNotificationsPayload>,
 ) {
   const { onSuccess, onFailure, ...request} = action.payload || {}
   try {
-    // TODO: replace with real API call once endpoint contract is stable:
     const response: ListApiResponse<NotificationItem[]> = yield call(getNotifications, request);
     onSuccess?.(response);
-    // yield delay(MOCK_DELAY_MS);
-    // action.payload.onSuccess?.(MOCK_NOTIFICATIONS);
   } catch (error_) {
-    const message = error_ instanceof Error ? error_.message : 'Unknown error';
+    const message = getErrorMessageApi(error_)
     onFailure?.(message);
   }
 }
@@ -54,7 +57,7 @@ function* getAnnouncementsWorker(
     );
     onSuccess?.(response);
   } catch (error_) {
-    const message = error_ instanceof Error ? error_.message : 'Unknown error';
+    const message = getErrorMessageApi(error_)
     onFailure?.(message);
   }
 }
@@ -68,7 +71,7 @@ function* getAnnouncementImagesWorker(
     yield put(getAnnouncementImagesSuccess(response));
     onSuccess?.(response);
   } catch (error_) {
-    const message = error_ instanceof Error ? error_.message : 'Unknown error';
+    const message = getErrorMessageApi(error_)
     onFailure?.(message);
   }
 }
@@ -84,7 +87,33 @@ function* getAnnouncementDetailWorker(
     );
     onSuccess?.(response);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
+    const message = getErrorMessageApi(error)
+    onFailure?.(message);
+  }
+}
+
+function* markReadWorker(
+  action: PayloadAction<MarkReadPayload>,
+): Generator<unknown, void, void> {
+  const { notifyId, onSuccess, onFailure } = action.payload || {};
+  try {
+    yield call(markRead, notifyId);
+    onSuccess?.();
+  } catch (error_) {
+    const message = getErrorMessageApi(error_)
+    onFailure?.(message);
+  }
+}
+
+function* markReadAllWorker(
+  action: PayloadAction<MarkReadPayload>,
+): Generator<unknown, void, void> {
+  const { onSuccess, onFailure } = action.payload || {};
+  try {
+    yield call(markReadAll);
+    onSuccess?.();
+  } catch (error_) {
+    const message = getErrorMessageApi(error_)
     onFailure?.(message);
   }
 }
@@ -100,4 +129,6 @@ export function* notificationsSaga() {
     getAnnouncementDetailRequest.type,
     getAnnouncementDetailWorker,
   );
+  yield takeLatest(markReadRequest.type, markReadWorker);
+  yield takeLatest(markReadAllRequest.type, markReadAllWorker);
 }

@@ -26,6 +26,7 @@ import SendIcon from './send.svg';
 import UserIcon from './user.svg';
 import XCircleIcon from './x-circle.svg';
 import IconNotifyGray from './ic_notify_gray.svg';
+import IconNotifyReadAll from './ic_notify_read_all.svg';
 
 const icons = {
   'alert-circle': AlertCircleIcon,
@@ -50,6 +51,7 @@ const icons = {
   ic_search: IcSearchIcon,
   ic_store: IcStoreIcon,
   kakao: KakaoIcon,
+  ic_notify_read_all: IconNotifyReadAll,
   language: LanguageIcon,
   lock: LockIcon,
   naver: NaverIcon,

@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React from 'react';
-import { AppConstants } from '@constants';
+import { AppConstants, Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 
-const PRIMARY_COLOR = '#5BB85C';
+const PRIMARY_COLOR = Colors.primary
 const DISABLED_COLOR = '#C4C4C4';
 const BUTTON_HEIGHT = 52;
 

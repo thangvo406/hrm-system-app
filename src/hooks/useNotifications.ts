@@ -1,11 +1,12 @@
 import type { NotificationItem } from '@type/notifications';
 
 import { useAppDispatch } from '@services/common/storeHooks';
-import { getNotificationsRequest } from '@services/slices/notifications/notificationsSlice';
+import { getNotificationsRequest, markReadAllRequest, markReadRequest } from '@services/slices/notifications/notificationsSlice';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ListApiResponse } from '@type';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
+import { useTranslation } from 'react-i18next';
 
 export type {
   NotificationItem,
@@ -14,6 +15,7 @@ export type {
 
 export const useNotifications = () => {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
   const [data, setData] = useState<NotificationItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -46,16 +48,61 @@ export const useNotifications = () => {
     setCurrentPage(prev => prev + 1);
   }, []);
 
+  const onRefreshReadData = (markAll = false, item?: NotificationItem) => {
+    const newData = data?.map(it => ({
+      ...it,
+      read: markAll ? true : it.id == item?.id ? true : it.read,
+    }));
+    setData(newData);
+  }
+
+  const onMarkRead = (item: NotificationItem) => {
+    dispatch(markReadRequest({
+      notifyId: item.id,
+      onSuccess: () => {
+        AppNavigator.showSnackBar({
+          message: t('notifications.mark_read_success'),
+          type: 'success',
+        });
+        onRefreshReadData(false, item);
+      },
+      onFailure: (message: string) => {
+        AppNavigator.showSnackBar({
+          message: message || t('notifications.mark_read_failed'),
+          type: 'failed',
+        });
+      }
+    }));
+  }
+
+  const onMarkReadAll = () => {
+    dispatch(markReadAllRequest({
+      onSuccess: () => {
+        AppNavigator.showSnackBar({
+          message: t('notifications.mark_read_success'),
+          type: 'success',
+        });
+        onRefreshReadData(true);
+      },
+      onFailure: (message: string) => {
+        AppNavigator.showSnackBar({
+          message: message || t('notifications.mark_read_failed'),
+          type: 'failed',
+        });
+      }
+    }));
+  }
+
   const onPressItem = useCallback((item: NotificationItem) => {
+    onMarkRead(item);
     AppNavigator.navigate(Paths.AnnouncementDetail, { notification: item, hideBtnNotify: true });
   }, []);
-  
-  
 
   const handleFailure = (message: string) => {
     setError(message);
     setLoading(false);
   };
+
 
   useEffect(() => {
     dispatch(
@@ -72,6 +119,8 @@ export const useNotifications = () => {
     error,
     onPressItem,
     onLoadMore,
+    onMarkRead,
+    onMarkReadAll,
     loading,
   };
 };

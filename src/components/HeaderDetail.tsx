@@ -3,34 +3,46 @@ import { ScaleSize } from '@kits/core';
 import {
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native';
 import React from 'react';
 import imageNames from '@assets/images/names';
-import { AppConstants } from '@constants';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AppButton from './AppButton';
 
 const ICON_SIZE = ScaleSize(24);
 const ACCENT_COLOR = '#5BB85C';
 
 type Properties = {
   readonly onPressBack?: () => void;
+  readonly onPressReadAll?: () => void;
   readonly title: string;
   readonly hideNotify?: boolean;
   readonly transparent?: boolean;
+  readonly showIconReadAll?: boolean;
   readonly style?: ViewStyle;
 };
 
+const onOpenMenu = () => {
+  AppNavigator.showMenu();
+};
+
+
+const onPressNotification = () => {
+  AppNavigator.navigate(Paths.Notifications);
+};
+
 function HeaderDetail({
-  transparent,
+  transparent = false,
   hideNotify = false,
-  onPressBack,
-  style,
+  onPressBack = undefined,
+  onPressReadAll = undefined,
+  style = undefined,
   title,
+  showIconReadAll = false,
 }: Properties) {
   const inssets = useSafeAreaInsets();
   const _onPressBack = () => {
@@ -41,17 +53,10 @@ function HeaderDetail({
     }
   };
 
-  const onOpenMenu = () => {
-    AppNavigator.showMenu();
-  };
 
   // const onPressHome = () => {
   //   AppNavigator.reset(Paths.Home);
   // };
-
-  const onPressNotification = () => {
-    AppNavigator.navigate(Paths.Notifications);
-  };
 
   return (
     <View
@@ -64,8 +69,7 @@ function HeaderDetail({
         style,
       ]}
     >
-      <TouchableOpacity
-        hitSlop={AppConstants.HISLOP_BUTTON}
+      <AppButton
         onPress={_onPressBack}
         style={styles.iconButton}
         testID="header-detail-back"
@@ -77,7 +81,7 @@ function HeaderDetail({
           type="svg"
           width={ICON_SIZE}
         />
-      </TouchableOpacity>
+      </AppButton>
 
       <Text numberOfLines={1} style={styles.title}>
         {title}
@@ -98,9 +102,9 @@ function HeaderDetail({
             width={ICON_SIZE}
           />
         </TouchableOpacity> */}
+        
         {!hideNotify && (
-          <TouchableOpacity
-            hitSlop={AppConstants.HISLOP_BUTTON}
+          <AppButton
             onPress={onPressNotification}
             style={styles.iconButton}
             testID="header-detail-notification"
@@ -110,10 +114,24 @@ function HeaderDetail({
               name={imageNames.ic_bell_green}
               width={ICON_SIZE}
             />
-          </TouchableOpacity>
+          </AppButton>
         )}
-        <TouchableOpacity
-          hitSlop={AppConstants.HISLOP_BUTTON}
+        {!!showIconReadAll && (
+          <AppButton
+            onPress={onPressReadAll}
+            style={styles.iconButton}
+            testID="header-detail-notification"
+          >
+            <Image
+              color={ACCENT_COLOR}
+              height={ICON_SIZE}
+              name='ic_notify_read_all'
+              type="svg"
+              width={ICON_SIZE}
+            />
+          </AppButton>
+        )}
+        <AppButton
           onPress={onOpenMenu}
           style={styles.iconButton}
           testID="header-detail-menu"
@@ -125,7 +143,7 @@ function HeaderDetail({
             type="svg"
             width={ICON_SIZE}
           />
-        </TouchableOpacity>
+        </AppButton>
       </View>
     </View>
   );

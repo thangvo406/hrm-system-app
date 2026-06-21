@@ -77,3 +77,5 @@ export const objectToQueryParams = (o: Record<string, any> = {}) =>
 export function getErrorMessageApi(error: any){
   return error?.response?.data?.message || error?.message || "unknown error"
 }
+
+export const NOOP = () => undefined
