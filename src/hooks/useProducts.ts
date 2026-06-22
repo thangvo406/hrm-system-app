@@ -17,7 +17,6 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   const { data: store } = AppNavigator.getParams(props);
   const [data, setData] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(0);
   const [storeInfo, setStoreInfo] = useState<StoreItem | undefined>(store);
   const [searchKey, setSearchKey] = useState('');
@@ -45,8 +44,6 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   }, []);
 
   const onLoadMore = useCallback(() => {
-    // Remove alert for production
-    // alert('onLoadMore');
     if (isLast.current || isLoadingMore.current) {
       return;
     }
@@ -54,9 +51,9 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
     setCurrentPage(prev => prev + 1);
   }, []);
 
-  const handleFailure = (message: string) => {
-    setError(message);
-    // setLoading(false);
+  const handleFailure = () => {
+    setLoading(false);
+    setData([]);
   };
 
   useEffect(() => {
@@ -66,6 +63,10 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
         // onFailure: handleFailure,
         onSuccess: (data: StoreItem) => {
           setStoreInfo(data);
+        },
+        onFailure: () => {
+          setLoading(false);
+          setData([]);
         },
       }),
     );
@@ -86,7 +87,6 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
 
   return {
     data,
-    error,
     loading,
     onSearchChange,
     storeInfo,

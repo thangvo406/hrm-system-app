@@ -1,13 +1,13 @@
 import type { ProductImage } from '@type/products';
 
-import { AppButton, Image, ProductDetailLoading, ProgressiveImage } from '@components';
 import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+  AppButton,
+  Button,
+  Image,
+  ProductDetailLoading,
+  ProgressiveImage,
+} from '@components';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import { ScaleSize } from '@kits/core';
 import { ProductUtils } from '@utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,7 +17,6 @@ import Carousel from 'react-native-reanimated-carousel';
 import { useTranslation } from 'react-i18next';
 import imageNames from '@assets/images/names';
 import { DeviceUtils } from '@kits/core/utils';
-import LinearGradient from 'react-native-linear-gradient';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const { ifIOS } = DeviceUtils;
@@ -31,24 +30,20 @@ const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#7A7A7A';
 const TEXT_LABEL = '#5C5C5C';
 const SHEET_BG = '#F2F2F2';
-const CART_BTN_BG = '#1A1A1A';
-const BANNER_OVERLAY_COLORS = ['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.2)'];
 
 type BackButtonProps = {
   readonly onPress: () => void;
-  readonly topInset: number;
 };
-
 
 const onPressBack = () => {
   AppNavigator.goBack();
 };
 
-function BackButton({ onPress, topInset }: BackButtonProps) {
+function BackButton({ onPress }: BackButtonProps) {
   return (
     <AppButton
       onPress={onPress}
-      style={[styles.backButton, { top: topInset + ScaleSize(0) }]}
+      style={styles.backButton}
       testID="product-detail-back"
     >
       <Image
@@ -63,11 +58,7 @@ function BackButton({ onPress, topInset }: BackButtonProps) {
   );
 }
 
-function ProductHero({
-  images,
-}: {
-  readonly images: ProductImage[];
-}) {
+function ProductHero({ images }: { readonly images: ProductImage[] }) {
   const items =
     images.length > 0 ? images : [{ name: imageNames.img_product_default }];
   return (
@@ -87,14 +78,6 @@ function ProductHero({
               url={item.fileUrl}
               width={SCREEN_WIDTH}
             />
-            <View pointerEvents="none" style={styles.bannerOverlay}>
-              <LinearGradient
-                colors={BANNER_OVERLAY_COLORS}
-                end={{ x: 0, y: 1 }}
-                start={{ x: 0, y: 0 }}
-                style={styles.bannerOverlayGradient}
-              />
-            </View>
           </>
         )}
         testID="product-detail-carousel"
@@ -151,16 +134,13 @@ function BottomSheet({
         <Text style={styles.sheetLabel}>{totalLabel}</Text>
         <Text style={styles.sheetValue}>{totalValue}</Text>
       </View>
-      <TouchableOpacity
-        activeOpacity={0.85}
+      <Button
         onPress={onPressCart}
         style={styles.cartButton}
         testID="product-detail-cart"
-      >
-        <Text style={styles.cartButtonText}>
-          {t('product_detail.cart_button')}
-        </Text>
-      </TouchableOpacity>
+        type="primary"
+        title={t('product_detail.cart_button')}
+      />
     </View>
   );
 }
@@ -170,16 +150,15 @@ function ProductDetail(props: any) {
   const { data, loading, onPressCart } = useProductDetail(props);
   const { t } = useTranslation();
 
-
   return (
     <View style={styles.safeArea}>
       {loading ? (
         <ProductDetailLoading />
       ) : (
         <>
-          <View style={styles.topSection}>
+          <View style={[styles.topSection, { marginTop: insets.top }]}>
             <ProductHero images={data?.images ?? []} />
-            <BackButton onPress={onPressBack} topInset={insets.top} />
+            <BackButton onPress={onPressBack} />
           </View>
           <View style={styles.middleSection}>
             <ProductInfo
@@ -211,15 +190,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: BACK_BUTTON_SIZE,
     zIndex: 2,
-    borderRadius: BACK_BUTTON_SIZE/2,
-    backgroundColor: 'rgba(255,255,255,0.3)',
+    // borderRadius: BACK_BUTTON_SIZE / 2,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: BACK_BUTTON_SIZE / 2,
+    padding: ScaleSize(16),
   },
   backIcon: {
     transform: [{ rotate: '180deg' }],
   },
   cartButton: {
     alignItems: 'center',
-    backgroundColor: CART_BTN_BG,
     borderRadius: ScaleSize(12),
     flex: 1,
     height: CART_BUTTON_HEIGHT,

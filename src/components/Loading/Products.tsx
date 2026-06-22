@@ -53,9 +53,9 @@ const SKELETON_LAYOUT: any[] = Array.from(
   (_, index) => buildRowLayout(index),
 );
 
-function ProductsLoading() {
+function ProductsLoading({ style }: any) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <Skeleton animationType="shiver" isLoading layout={SKELETON_LAYOUT} />
     </View>
   );

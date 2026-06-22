@@ -33,7 +33,7 @@ function ProductList({ onPressProduct, products, storeId }: Properties) {
           Globals.isScrollingRef.current = true;
         }
       }}
-      onTouchEnd={() => {
+      onScrollEndDrag={() => {
         if (Globals.isScrollingRef) {
           Globals.isScrollingRef.current = false;
         }

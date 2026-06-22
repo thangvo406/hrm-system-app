@@ -2,12 +2,7 @@ import type { Product } from '@hooks';
 
 import { Image } from '@components';
 import { ScaleSize } from '@kits/core';
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import imageNames from '@assets/images/names';
 import { ProductUtils } from '@utils';
@@ -19,10 +14,11 @@ const TEXT_PRICE = '#1A1A1A';
 
 type Properties = {
   readonly item: Product;
+  readonly isFirst: boolean;
   readonly onPress: (item: any) => void;
 };
 
-function ProductRow({ item, onPress }: Properties) {
+function ProductRow({ item, isFirst, onPress }: Properties) {
   const thumbUri = item.thumbnail?.fileUrl;
 
   const handlePress = () => {
@@ -32,7 +28,7 @@ function ProductRow({ item, onPress }: Properties) {
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={handlePress}
-      style={styles.productRow}
+      style={[styles.productRow, isFirst && { marginTop: 20 }]}
       testID={`product-${item.id}`}
     >
       <View style={styles.productInfo}>

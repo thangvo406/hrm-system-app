@@ -20,6 +20,7 @@ type Properties = {
   readonly skeletonHighlightColor?: string;
   readonly url: string;
   readonly width: number;
+  readonly name?: string;
 };
 
 function ProgressiveImage({
@@ -32,7 +33,7 @@ function ProgressiveImage({
   skeletonHighlightColor = DEFAULT_HIGHLIGHT_COLOR,
   url,
   width,
-  name,
+  name = '',
 }: Properties) {
   const [isLoading, setIsLoading] = useState(true);
 

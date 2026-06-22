@@ -3,14 +3,12 @@ import type { ICustomViewStyle } from 'react-native-reanimated-skeleton';
 import Skeleton from 'react-native-reanimated-skeleton';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import { ScaleSize } from '@kits/core';
-import React from 'react';
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const HERO_HEIGHT = Math.round(SCREEN_HEIGHT * 0.5);
 const BACK_BUTTON_SIZE = ScaleSize(40);
 const CART_BUTTON_HEIGHT = ScaleSize(56);
-const SHEET_BG = '#F2F2F2';
 
 // Hero + back button — these bones sit in the absolutely-positioned hero layer.
 const HERO_LAYOUT: ICustomViewStyle[] = [
@@ -127,17 +125,32 @@ function ProductDetailLoading() {
     <View style={styles.container} testID="product-detail-loading">
       {/* Hero pinned to the very top of the screen (no safe-area gap above). */}
       <View style={styles.heroLayer}>
-        <Skeleton animationType="shiver" isLoading layout={HERO_LAYOUT} />
+        <Skeleton
+          containerStyle={styles.container}
+          animationType="shiver"
+          isLoading
+          layout={HERO_LAYOUT}
+        />
       </View>
 
       {/* Middle info section — padded below the hero, grows to push the sheet down. */}
       <View style={styles.infoLayer}>
-        <Skeleton animationType="shiver" isLoading layout={INFO_LAYOUT} />
+        <Skeleton
+          containerStyle={styles.container}
+          animationType="shiver"
+          isLoading
+          layout={INFO_LAYOUT}
+        />
       </View>
 
       {/* Bottom sheet — sits at the bottom of the screen. */}
       <View style={styles.sheetLayer}>
-        <Skeleton animationType="shiver" isLoading layout={SHEET_LAYOUT} />
+        <Skeleton
+          containerStyle={styles.container}
+          animationType="shiver"
+          isLoading
+          layout={SHEET_LAYOUT}
+        />
       </View>
     </View>
   );
@@ -163,8 +176,7 @@ const styles = StyleSheet.create({
     paddingTop: HERO_HEIGHT + ScaleSize(20),
   },
   sheetLayer: {
-    backgroundColor: SHEET_BG,
-    paddingBottom: ScaleSize(20),
+    paddingBottom: ScaleSize(80),
     paddingHorizontal: ScaleSize(20),
     paddingTop: ScaleSize(20),
   },

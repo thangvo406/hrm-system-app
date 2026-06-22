@@ -1,4 +1,4 @@
-import { Image } from '@components';
+import { Image, ProgressiveImage } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { ProductUtils } from '@utils';
@@ -6,6 +6,7 @@ import { Animated, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { StoreItem } from '@type/store';
+import isNumber from 'lodash/isNumber';
 
 const CARD_OVERLAP = ScaleSize(68);
 const CARD_BORDER_RADIUS = ScaleSize(16);
@@ -31,22 +32,26 @@ function StoreInfo({
     ? [styles.storeName, { opacity: titleOpacity }]
     : styles.storeName;
 
-  const minOrderText = storeInfo?.minOrder
+  const minOrderText = isNumber(storeInfo?.minOrder)
     ? `${t('product_detail.min_order_label')}: ${ProductUtils.formatCurrency(storeInfo.minOrder)}`
     : '';
 
   const logoUri = storeInfo?.logo?.fileUrl;
-  const hasMeta = Boolean(storeInfo?.estimateTime || minOrderText);
+  const hasMeta = storeInfo?.estimateTime || minOrderText;
+
+  if (!storeInfo) {
+    return <></>;
+  }
 
   return (
     <View style={styles.wrapper}>
       <View style={styles.card}>
         <View style={styles.logoWrap}>
           {logoUri ? (
-            <Image
+            <ProgressiveImage
               height={LOGO_SIZE}
               resizeMode="cover"
-              style={styles.logoImage}
+              imageStyle={styles.logoImage}
               url={logoUri}
               width={LOGO_SIZE}
             />

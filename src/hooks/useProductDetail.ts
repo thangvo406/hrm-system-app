@@ -15,7 +15,7 @@ export type { Product } from '@type/products';
 export const useProductDetail = (props: any) => {
   const { id: productId, storeId } = AppNavigator.getParams(props);
   const dispatch = useAppDispatch();
-  const {t} = useTranslation()
+  const { t } = useTranslation();
   const [data, setData] = useState<IResponseProductDetail | undefined>(
     undefined,
   );
@@ -78,10 +78,10 @@ export const useProductDetail = (props: any) => {
         },
         onFailure: (message: string) => {
           AppNavigator.showSnackBar({
-            message: message || '' ,
+            message: message || '',
             type: 'failed',
           });
-        }
+        },
       }),
     );
   };

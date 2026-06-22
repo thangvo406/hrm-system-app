@@ -2,7 +2,7 @@ import type { RootScreenProps } from '@navigation/types';
 import type { ListRenderItem } from 'react-native';
 import type { Product } from '@hooks';
 
-import { ProductsLoading } from '@components';
+import { EmptyView, ProductsLoading } from '@components';
 import { Paths } from '@navigation/paths';
 import { Animated, Dimensions, StyleSheet, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -17,6 +17,8 @@ import ItemSeparator from './ItemSeparator';
 import ListEmpty from './ListEmpty';
 import ProductRow from './ProductRow';
 import StoreInfo from './StoreInfo';
+import imageNames from '@assets/images/names';
+import { useTranslation } from 'react-i18next';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = ScaleSize(220);
@@ -29,7 +31,9 @@ const onPressBack = () => {
 };
 function Products(props: RootScreenProps<Paths.Products>) {
   const insets = useSafeAreaInsets();
-  const { data, storeInfo, loading, onLoadMore, onSearchChange } = useProducts(props);
+  const { data, storeInfo, loading, onLoadMore, onSearchChange } =
+    useProducts(props);
+  const { t } = useTranslation();
   const scrollY = React.useMemo(() => new Animated.Value(0), []);
   // While search is open, frozenScrollY drives the hero height
   // instead of scrollY — this completely isolates the hero from any
@@ -128,8 +132,14 @@ function Products(props: RootScreenProps<Paths.Products>) {
 
   const renderItem = React.useMemo(
     (): ListRenderItem<Product> =>
-      function renderItem({ item }) {
-        return <ProductRow item={item} onPress={onPressProduct} />;
+      function renderItem({ item, index }) {
+        return (
+          <ProductRow
+            isFirst={index == 0}
+            item={item}
+            onPress={onPressProduct}
+          />
+        );
       },
     [onPressProduct],
   );
@@ -149,10 +159,9 @@ function Products(props: RootScreenProps<Paths.Products>) {
 
   const onScroll = useMemo(
     () =>
-      Animated.event(
-        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-        { useNativeDriver: false },
-      ),
+      Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+        useNativeDriver: false,
+      }),
     [scrollY],
   );
 
@@ -193,20 +202,18 @@ function Products(props: RootScreenProps<Paths.Products>) {
         titleTranslateY={titleTranslateY}
       />
       {loading ? (
-        <ProductsLoading />
-      ) : (
+        <ProductsLoading
+          style={{
+            marginTop: HERO_HEIGHT + ScaleSize(170),
+          }}
+        />
+      ) : data?.length > 0 ? (
         <Animated.FlatList
           ref={flatListRef}
           ItemSeparatorComponent={ItemSeparator}
           ListEmptyComponent={<ListEmpty loading={loading} />}
           ListHeaderComponent={
-            <View>
-              <StoreInfo
-                storeInfo={storeInfo}
-                titleOpacity={titleStoreOpacity}
-              />
-              {/* <View style={styles.headerDivider} /> */}
-            </View>
+            <StoreInfo storeInfo={storeInfo} titleOpacity={titleStoreOpacity} />
           }
           automaticallyAdjustKeyboardInsets={false}
           contentContainerStyle={styles.listContent}
@@ -223,6 +230,8 @@ function Products(props: RootScreenProps<Paths.Products>) {
           showsVerticalScrollIndicator={false}
           style={styles.list}
         />
+      ) : (
+        <EmptyView icon={imageNames.ic_store} desc={t('common.no_data')} />
       )}
     </View>
   );
@@ -244,7 +253,7 @@ const styles = StyleSheet.create({
   listContent: {
     backgroundColor: 'transparent',
     paddingBottom: ScaleSize(48),
-    paddingTop: HERO_HEIGHT,
+    paddingTop: HERO_HEIGHT + ScaleSize(20),
   },
   safeArea: {
     backgroundColor: '#FFFFFF',
