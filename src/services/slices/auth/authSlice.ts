@@ -29,7 +29,7 @@ export type RegisterUserPayload = {
 } & AuthCallback;
 
 export type SendOTPPayload = {
-  email: string;
+  registerToken: string;
   phone: string;
 } & AuthCallback;
 
@@ -43,20 +43,16 @@ export type LoginSocialPayload = {
   state?: string;
 } & AuthCallback;
 export type VerifyOTPPayload = {
-  email?: string;
-  otp?: string;
-  phone?: string;
   phoneVerificationToken?: string;
-  termsAgreed: boolean;
-  identityNumber?: string;
+  phone: string;
+  identityNumber: string;
+  otp: string;
+  termsAgreed: string;
 } & AuthCallback;
 
 export type CompleteRegisterPayload = {
-  email?: string;
-  membershipAffiliationType?: string;
   membershipType?: string;
   universityId?: string;
-  universityName?: string;
   signupToken?: string;
 } & AuthCallback;
 

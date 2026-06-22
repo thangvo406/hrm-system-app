@@ -52,6 +52,7 @@ export type AuthStep =
 
 export type FormData = {
   birthday?: string;
+  registerToken?: string;
   indentify?: string;
   carrier?: string;
   email: string;
@@ -124,6 +125,7 @@ export const useRegister = () => {
   const onPressCarrier = () => {
     AppNavigator.showDialog({
       cancelable: true,
+      popupType: 'bottomSheet',
       items: CARRIER_ITEMS,
       onSelect: (id: string) => {
         setCarrier(id);
@@ -186,7 +188,7 @@ export const useRegister = () => {
         onSuccess: data => {
           setUniversities(data);
         },
-        onFailure: () => setUniversities([] as IResponseUniversity),
+        onFailure: () => setUniversities([] as IResponseUniversity[]),
       }),
     );
   };
@@ -199,8 +201,9 @@ export const useRegister = () => {
         email: formData.current.email,
         name: formData.current.name,
         password: formData.current.password,
-        onSuccess: () => {
+        onSuccess: (response: any) => {
           setStep(STEP.REGISTER_INPUT);
+          formData.current.registerToken = response.registerToken;
           onGetUniversities();
         },
         onFailure: (error: string) => {
@@ -211,19 +214,20 @@ export const useRegister = () => {
     // setStep(STEP.INFO);
   };
 
-  const setSignupToken = (signupToken: string) => {
-    formData.current.signupToken = signupToken;
+  const setRegisterToken = (token: string) => {
+    formData.current.registerToken = token;
   };
 
   const onSubmitRegisterInfo = () => {
     dispatch(
       verifyOTPRequest({
-        email: formData.current.email,
-        otp: formData.current.otp,
-        phone: formData.current.phone,
+        otp: formData.current.otp ?? '',
+        phone: formData.current.phone ?? '',
         phoneVerificationToken: formData.current.phoneVerificationToken,
-        identityNumber: `${formData.current.birthday}-${formData.current.indentify}`,
-        termsAgreed: true,
+        identityNumber: `${formData.current.birthday ?? ''}-${
+          formData.current.indentify ?? ''
+        }`,
+        termsAgreed: String(true),
         onSuccess: (response: IResponseRegisterVerifyOtp) => {
           formData.current.signupToken = response.signupToken;
           setStep(STEP.CHOOSE_MEMBERSHIP);
@@ -238,9 +242,7 @@ export const useRegister = () => {
   const onCompletedRegister = () => {
     dispatch(
       completeRegisterRequest({
-        email: formData.current.email,
         universityId: formData.current?.school?.id,
-        universityName: formData.current?.school?.name,
         signupToken: formData.current?.signupToken,
         membershipType: formData.current?.membershipId,
         onSuccess: () => {
@@ -347,7 +349,7 @@ export const useRegister = () => {
     // }
     dispatch(
       sendOTPRequest({
-        email: formData.current.email,
+        registerToken: formData.current.registerToken ?? '',
         onFailure: (error: string) => {
           AppNavigator.showSnackBar({ message: error, type: 'failed' });
           onSuccess(false);
@@ -377,7 +379,7 @@ export const useRegister = () => {
     onRegisterChange,
     onSchoolKeywordChange,
     onSelectMembership,
-    setSignupToken,
+    setRegisterToken,
     onGetUniversities,
     onSelectRole,
     onSelectSchool,

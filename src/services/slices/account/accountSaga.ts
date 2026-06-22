@@ -27,8 +27,9 @@ function* getProfileWorker(action: PayloadAction<GetProfilePayload>) {
     const oldProfile: Profile = yield select(AccountSelector.getProfile);
     const profile: Profile = yield call(getProfile);
     if (
+      oldProfile &&
       JSON.stringify(oldProfile.permissionCodes) !=
-      JSON.stringify(profile.permissionCodes)
+        JSON.stringify(profile?.permissionCodes)
     ) {
       yield put(refreshTokenRequest());
     }

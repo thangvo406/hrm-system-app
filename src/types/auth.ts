@@ -18,6 +18,9 @@ export type IResponseCompletedRegister = {
   accessToken: string;
   refreshToken: string;
 };
+export type IResponseRegisterUser = {
+  phoneVerificationToken: string;
+};
 export type IResponseRegisterSendOtp = {
   phoneVerificationToken: string;
 };

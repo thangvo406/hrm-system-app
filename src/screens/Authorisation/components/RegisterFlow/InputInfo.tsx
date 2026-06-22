@@ -31,7 +31,6 @@ const OTP_MAX_LENGTH = 6;
 
 const IDENTIFY_MAX_LENGTH = 7;
 const BIRTHDAY_MAX_LENGTH = 6;
-const NAME_MAX_LENGTH = 20;
 const OTP_COOLDOWN_SECONDS = 300;
 const OTP_TICK_MS = 1000;
 const SECONDS_PER_MINUTE = 60;
@@ -46,7 +45,7 @@ const formatCountdown = (totalSeconds: number): string => {
 export type InputInfoValues = {
   birthday: string;
   indentify: string;
-  name: string;
+  // name: string;
   otp: string;
   phone: string;
 };
@@ -91,7 +90,7 @@ const formatPhoneNumber = (input: string): string => {
 const DEFAULT_INFO: InputInfoValues = {
   birthday: '',
   indentify: '',
-  name: '',
+  // name: '',
   otp: '',
   phone: '',
 };
@@ -99,13 +98,13 @@ const DEFAULT_INFO: InputInfoValues = {
 const FIELD_INPUT_INFO = {
   birthday: 'birthday',
   indentify: 'indentify',
-  name: 'name',
+  // name: 'name',
   otp: 'otp',
   phone: 'phone',
 } as const satisfies Record<keyof InputInfoValues, keyof InputInfoValues>;
 
 const FIELD_FLOW_ORDER: readonly (keyof InputInfoValues)[] = [
-  FIELD_INPUT_INFO.name,
+  // FIELD_INPUT_INFO.name,
   FIELD_INPUT_INFO.birthday,
   FIELD_INPUT_INFO.indentify,
   FIELD_INPUT_INFO.phone,
@@ -127,7 +126,7 @@ function InputInfo({
   const [otpSent, setOtpSent] = useState<boolean>(false);
   const [countDownTime, setCountDownTime] = useState<number>(0);
   const [values, setValues] = useState<InputInfoValues>(DEFAULT_INFO);
-  const nameReference = useRef<TextInput>(null);
+  // const nameReference = useRef<TextInput>(null);
   const birthdayReference = useRef<TextInput>(null);
   const indentifyReference = useRef<TextInput>(null);
   const phoneReference = useRef<TextInput>(null);
@@ -139,7 +138,6 @@ function InputInfo({
   > = {
     [FIELD_INPUT_INFO.birthday]: birthdayReference,
     [FIELD_INPUT_INFO.indentify]: indentifyReference,
-    [FIELD_INPUT_INFO.name]: nameReference,
     [FIELD_INPUT_INFO.otp]: otpReference,
     [FIELD_INPUT_INFO.phone]: phoneReference,
   };
@@ -272,7 +270,7 @@ function InputInfo({
       <View style={styles.divider} />
 
       <View style={styles.formBlock}>
-        <TextInputRegister
+        {/* <TextInputRegister
           maxLength={NAME_MAX_LENGTH}
           onChangeText={handleChange(FIELD_INPUT_INFO.name)}
           onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.name)}
@@ -282,7 +280,7 @@ function InputInfo({
           submitBehavior="submit"
           testID="register-flow-name"
           value={values.name}
-        />
+        /> */}
 
         <View style={styles.dobRow}>
           <View style={[styles.dobDateField]}>

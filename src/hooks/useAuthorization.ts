@@ -25,8 +25,7 @@ import {
 import { loginWithKakaoAccount } from '@react-native-seoul/kakao-login';
 import NaverLogin from '@react-native-seoul/naver-login';
 
-const { STEP, NEED_INFO_LOGIN_CODE, initialLoginForm } =
-  AppConstants;
+const { STEP, NEED_INFO_LOGIN_CODE, initialLoginForm } = AppConstants;
 export type { AuthStep, RegisterErrors } from './useRegister';
 
 export type SocialProvider = 'google' | 'kakao' | 'naver';
@@ -108,7 +107,6 @@ const onLoginNaver = async (): Promise<SocialLoginToken | undefined> => {
     if (successResponse) {
       return {
         accessToken: successResponse.accessToken,
-        refreshToken: successResponse.refreshToken,
       };
     }
     if (failureResponse && !failureResponse.isCancel) {
@@ -183,8 +181,7 @@ export const useAuthorization = () => {
       const step = stepMapping[error?.code];
       register.goToStep(step);
       register.onGetUniversities();
-      register.setSignupToken(error?.data?.signupToken);
-      register.onRegisterChange('email')(loginForm.email);
+      register.setRegisterToken(error?.data?.registerToken);
       return;
     }
     AppNavigator.showSnackBar({

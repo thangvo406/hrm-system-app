@@ -51,6 +51,7 @@ import {
 } from './authSlice';
 import {
   IResponseRegisterSendOtp,
+  IResponseRegisterUser,
   IResponseRegisterVerifyOtp,
   IResponseSendOtpForgotPass,
   IResponseSubmitForgotPass,
@@ -68,7 +69,7 @@ function* loginWorker(action: PayloadAction<LoginPayload>) {
     const response: AuthResponse = yield call(login, action.payload);
     yield put(authSuccess(response));
     action.payload.onSuccess?.();
-  } catch (error) {
+  } catch (error: any) {
     action.payload.onFailure?.(error?.response?.data);
     // yield put(authFailure(toErrorMessage(error)));
   }
@@ -76,9 +77,10 @@ function* loginWorker(action: PayloadAction<LoginPayload>) {
 
 function* loginSocialWorker(action: PayloadAction<LoginSocialPayload>) {
   try {
-    yield call(loginSocial, action.payload);
+    const response: AuthResponse = yield call(loginSocial, action.payload);
+    yield put(authSuccess(response));
     action.payload.onSuccess?.();
-  } catch (error) {
+  } catch (error: any) {
     action.payload.onFailure?.(error?.response?.data);
     // yield put(authFailure(toErrorMessage(error)));
   }
@@ -87,9 +89,12 @@ function* loginSocialWorker(action: PayloadAction<LoginSocialPayload>) {
 function* registerUserWorker(action: PayloadAction<RegisterUserPayload>) {
   try {
     // alert('registerUserWorker');
-    yield call(registerUser, action.payload);
+    const response: IResponseRegisterUser = yield call(
+      registerUser,
+      action.payload,
+    );
     // yield put(authSuccess(response));
-    action.payload.onSuccess?.();
+    action.payload.onSuccess?.(response);
   } catch (error) {
     // yield put(authFailure(toErrorMessage(error)));
     action.payload.onFailure?.(getErrorMessageApi(error));
@@ -124,7 +129,9 @@ function* verifyOTPWorker(action: PayloadAction<VerifyOTPPayload>) {
 
 function* refreshTokenWorker() {
   try {
-    const refreshTokenString = yield select(AuthSelector.getRefreshToken);
+    const refreshTokenString: string = yield select(
+      AuthSelector.getRefreshToken,
+    );
     const data: ResponseRefreshToken = yield call(
       refreshToken,
       refreshTokenString,

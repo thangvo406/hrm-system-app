@@ -73,6 +73,7 @@ function Selection({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+    paddingHorizontal: ScaleSize(20),
   },
   list: {
     gap: ScaleSize(8),

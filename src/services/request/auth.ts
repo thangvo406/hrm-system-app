@@ -21,6 +21,7 @@ import type {
   IResponseLoginSocial,
   LogoutRequest,
   ResponseRefreshToken,
+  IResponseRegisterUser,
 } from '@type/auth';
 import omit from 'lodash/omit';
 import { httpRequest } from '@services/common/httpRequest';
@@ -46,8 +47,11 @@ export const login = async (payload: LoginPayload): Promise<AuthResponse> => {
 
 export const registerUser = async (
   request: RegisterUserPayload,
-): Promise<void> => {
-  await httpRequest.post(EndPoints.AUTH.register, request);
+): Promise<IResponseRegisterUser> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<IResponseRegisterUser>
+  >(EndPoints.AUTH.register, request);
+  return response.data;
 };
 
 export const sendOTP = async (
