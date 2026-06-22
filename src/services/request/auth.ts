@@ -20,6 +20,7 @@ import type {
   IResponseVerifyOtpForgotPass,
   IResponseLoginSocial,
   LogoutRequest,
+  ResponseRefreshToken,
 } from '@type/auth';
 import omit from 'lodash/omit';
 import { httpRequest } from '@services/common/httpRequest';
@@ -102,6 +103,23 @@ export const sendOtpForgotPass = async (
   return response.data;
 };
 
+export const refreshToken = async (
+  refreshTokenString: string,
+): Promise<ResponseRefreshToken> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<ResponseRefreshToken>
+  >(
+    EndPoints.AUTH.refreshToken,
+    {
+      refreshToken: refreshTokenString,
+    },
+    {
+      loading: false,
+    },
+  );
+  return response.data;
+};
+
 export const verifyOtpForgotPass = async (
   request: VerifyOtpForgotPassPayload,
 ): Promise<IResponseVerifyOtpForgotPass> => {
@@ -120,8 +138,6 @@ export const submitForgotPass = async (
   return response.data;
 };
 
-export const logout = async (
-  request: LogoutRequest,
-): Promise<void> => {
-   await httpRequest.post(EndPoints.AUTH.logout, request);
+export const logout = async (request: LogoutRequest): Promise<void> => {
+  await httpRequest.post(EndPoints.AUTH.logout, request);
 };

@@ -110,6 +110,10 @@ const authSlice = createSlice({
       prepare: (payload: LoginPayload) => ({ payload }),
       reducer: () => {},
     },
+    refreshTokenRequest: {
+      prepare: (payload?: any) => ({ payload }),
+      reducer: () => {},
+    },
     // Triggers the saga; carries the social-login token + provider. Shared
     // across Google, Kakao, and Naver — the saga dispatches the same API.
     loginSocialRequest: {
@@ -180,6 +184,7 @@ export const {
   logoutSuccess,
   registerUserRequest,
   sendOTPRequest,
+  refreshTokenRequest,
   sendOtpForgotPassRequest,
   setAccessToken,
   setCredentials,

@@ -8,7 +8,7 @@ import { store } from '@services/common/store';
 import axios from 'axios';
 import Config from 'react-native-config';
 import { EndPoints } from '@constants';
-import { SingleApiResponse } from '@type';
+import { ResponseRefreshToken, SingleApiResponse } from '@type';
 
 // const baseURL = `${Config.API_URL}/`;
 const baseURL = `http://52.79.38.251/`;
@@ -26,11 +26,6 @@ const refreshClient = axios.create({
   timeout: REQUEST_TIMEOUT_MS,
 });
 
-type RefreshResponse = {
-  accessToken: string;
-  refreshToken?: string;
-};
-
 // Single-flight: concurrent 401s share one refresh request.
 let refreshPromise: Promise<string | undefined> | undefined;
 
@@ -41,7 +36,9 @@ const refreshAccessToken = async (): Promise<string | undefined> => {
   }
 
   try {
-    const { data } = await refreshClient.post<SingleApiResponse<RefreshResponse>>(EndPoints.AUTH.refreshToken, {
+    const { data } = await refreshClient.post<
+      SingleApiResponse<ResponseRefreshToken>
+    >(EndPoints.AUTH.refreshToken, {
       refreshToken,
     });
 

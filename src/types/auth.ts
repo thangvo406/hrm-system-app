@@ -8,6 +8,12 @@ export type IResponseUniversity = {
 export type IResponseRegisterVerifyOtp = {
   signupToken: string;
 };
+
+export type ResponseRefreshToken = {
+  accessToken: string;
+  refreshToken?: string;
+};
+
 export type IResponseCompletedRegister = {
   accessToken: string;
   refreshToken: string;
@@ -20,8 +26,8 @@ export type IResponseSendOtpForgotPass = {
   phoneVerificationToken?: string;
 };
 export type LogoutRequest = {
-  refreshToken: string
-}
+  refreshToken: string;
+};
 export type IResponseLoginSocial = {
   //TODO: define response
 };

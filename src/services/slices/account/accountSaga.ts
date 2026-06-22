@@ -20,12 +20,18 @@ import {
   getProfileSuccess,
 } from './accountSlice';
 import { AccountSelector } from '@services/selectors';
+import { refreshTokenRequest } from '../auth/authSlice';
 
 function* getProfileWorker(action: PayloadAction<GetProfilePayload>) {
   try {
-    const oldProfile = yield select(AccountSelector.getProfile);
+    const oldProfile: Profile = yield select(AccountSelector.getProfile);
     const profile: Profile = yield call(getProfile);
-    // if(JSON.stringify(profile.per))
+    if (
+      JSON.stringify(oldProfile.permissionCodes) !=
+      JSON.stringify(profile.permissionCodes)
+    ) {
+      yield put(refreshTokenRequest());
+    }
     yield put(getProfileSuccess(profile));
     action.payload.onSuccess?.(profile);
   } catch {

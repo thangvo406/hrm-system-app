@@ -87,6 +87,7 @@ export default defineConfig(
       'react-hooks/preserve-manual-memoization': OFF,
       '@typescript-eslint/no-explicit-any': OFF,
       '@typescript-eslint/restrict-plus-operands': OFF,
+      'react/jsx-no-useless-fragment': OFF,
       'react/require-default-props': [
         ERROR,
         {

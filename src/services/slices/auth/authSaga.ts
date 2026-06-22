@@ -24,9 +24,9 @@ import {
   submitForgotPass,
   verifyOTP,
   verifyOtpForgotPass,
-  logout as logoutRequest
+  logout as logoutRequest,
+  refreshToken,
 } from '@services/request/auth';
-import axios from 'axios';
 import { call, delay, put, select, takeLatest } from 'redux-saga/effects';
 
 import { persistor } from '@services/common/store';
@@ -40,9 +40,11 @@ import {
   loginSocialRequest,
   logout,
   logoutSuccess,
+  refreshTokenRequest,
   registerUserRequest,
   sendOTPRequest,
   sendOtpForgotPassRequest,
+  setCredentials,
   submitForgotPassRequest,
   verifyOTPRequest,
   verifyOtpForgotPassRequest,
@@ -54,21 +56,12 @@ import {
   IResponseSubmitForgotPass,
   IResponseUniversity,
   IResponseVerifyOtpForgotPass,
+  ResponseRefreshToken,
 } from '@type/auth';
 import { Globals } from '@utils';
 import { AccountSelector, AuthSelector } from '@services/selectors';
 import { deletePushId } from '@services/request/account';
-
-const DEFAULT_ERROR = 'common_error';
-
-const toErrorMessage = (error: unknown): string => {
-  if (axios.isAxiosError(error)) {
-    const message = (error.response?.data as { message?: string } | undefined)
-      ?.message;
-    return message ?? error.message;
-  }
-  return DEFAULT_ERROR;
-};
+import { getErrorMessageApi } from '@utils/common';
 
 function* loginWorker(action: PayloadAction<LoginPayload>) {
   try {
@@ -99,7 +92,7 @@ function* registerUserWorker(action: PayloadAction<RegisterUserPayload>) {
     action.payload.onSuccess?.();
   } catch (error) {
     // yield put(authFailure(toErrorMessage(error)));
-    action.payload.onFailure?.(toErrorMessage(error));
+    action.payload.onFailure?.(getErrorMessageApi(error));
   }
 }
 
@@ -112,7 +105,7 @@ function* sendOTPWorker(action: PayloadAction<SendOTPPayload>) {
     action.payload.onSuccess?.(response);
   } catch (error) {
     // yield put(authFailure(toErrorMessage(error)));
-    action.payload.onFailure?.(toErrorMessage(error));
+    action.payload.onFailure?.(getErrorMessageApi(error));
   }
 }
 
@@ -125,7 +118,21 @@ function* verifyOTPWorker(action: PayloadAction<VerifyOTPPayload>) {
     action.payload.onSuccess?.(response);
   } catch (error) {
     // yield put(authFailure(toErrorMessage(error)));
-    action.payload.onFailure?.(toErrorMessage(error));
+    action.payload.onFailure?.(getErrorMessageApi(error));
+  }
+}
+
+function* refreshTokenWorker() {
+  try {
+    const refreshTokenString = yield select(AuthSelector.getRefreshToken);
+    const data: ResponseRefreshToken = yield call(
+      refreshToken,
+      refreshTokenString,
+    );
+    yield put(setCredentials(data));
+    // action.payload.onSuccess?.();
+  } catch {
+    // action.payload.onFailure?.('');
   }
 }
 
@@ -138,7 +145,7 @@ function* completeRegisterWorker(
     action.payload.onSuccess?.();
   } catch (error) {
     // yield put(authFailure(toErrorMessage(error)));
-    action.payload.onFailure?.(toErrorMessage(error));
+    action.payload.onFailure?.(getErrorMessageApi(error));
   }
 }
 
@@ -161,8 +168,8 @@ function* sendOtpForgotPassWorker(
     );
     action.payload.onSuccess?.(response);
   } catch (error) {
-    yield put(authFailure(toErrorMessage(error)));
-    action.payload.onFailure?.(toErrorMessage(error));
+    yield put(authFailure(getErrorMessageApi(error)));
+    action.payload.onFailure?.(getErrorMessageApi(error));
   }
 }
 
@@ -176,8 +183,8 @@ function* verifyOtpForgotPassWorker(
     );
     action.payload.onSuccess?.(response);
   } catch (error) {
-    yield put(authFailure(toErrorMessage(error)));
-    action.payload.onFailure?.(toErrorMessage(error));
+    yield put(authFailure(getErrorMessageApi(error)));
+    action.payload.onFailure?.(getErrorMessageApi(error));
   }
 }
 
@@ -192,7 +199,7 @@ function* submitForgotPassWorker(
     action.payload.onSuccess?.(response);
   } catch (error) {
     // yield put(authFailure(toErrorMessage(error)));
-    action.payload.onFailure?.(toErrorMessage(error));
+    action.payload.onFailure?.(getErrorMessageApi(error));
   }
 }
 
@@ -226,4 +233,5 @@ export function* authSaga() {
   yield takeLatest(verifyOtpForgotPassRequest.type, verifyOtpForgotPassWorker);
   yield takeLatest(submitForgotPassRequest.type, submitForgotPassWorker);
   yield takeLatest(logout.type, logoutWorker);
+  yield takeLatest(refreshTokenRequest.type, refreshTokenWorker);
 }

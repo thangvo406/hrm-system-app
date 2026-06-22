@@ -18,6 +18,7 @@ export const profileSchema = z.object({
   roleCode: z.string().optional(),
   universityExternalId: z.string().optional(),
   universityName: z.string().optional(),
+  permissionCodes: z.array(z.string()).optional(),
 });
 
 export type Profile = z.infer<typeof profileSchema>;
@@ -37,7 +38,6 @@ export const updatePushId = async (
     loading: false,
   });
 };
-
 export const updateMembership = async (request: {
   membershipType: string;
 }): Promise<void> => {
