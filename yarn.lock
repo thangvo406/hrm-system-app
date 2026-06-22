@@ -2493,6 +2493,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/slider@npm:5.2.0":
+  version: 5.2.0
+  resolution: "@react-native-community/slider@npm:5.2.0"
+  checksum: f6e6cac813351d990f56f9dba7d24bc9212ad69c13da4388458d130f143fdb0b5e3e1f271b93db765120c66c6ce8d442dbeb38ff43979841ba175cb0082a6a4d
+  languageName: node
+  linkType: hard
+
 "@react-native-google-signin/google-signin@npm:16.1.2":
   version: 16.1.2
   resolution: "@react-native-google-signin/google-signin@npm:16.1.2"
@@ -5103,6 +5110,7 @@ __metadata:
     "@react-native-community/cli": 20.1.0
     "@react-native-community/cli-platform-android": 20.1.0
     "@react-native-community/cli-platform-ios": 20.1.0
+    "@react-native-community/slider": 5.2.0
     "@react-native-google-signin/google-signin": 16.1.2
     "@react-native-masked-view/masked-view": 0.3.2
     "@react-native-seoul/kakao-login": 5.4.2

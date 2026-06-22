@@ -7,6 +7,7 @@ import { useAppDispatch } from '@services/common/storeHooks';
 import { useCallback, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import AppNavigator from '@navigation/AppNavigator';
+import FilterStore from '@dialogs/FilterStore';
 
 export type { StoreItem } from '@type/store';
 
@@ -78,12 +79,20 @@ export const useStore = () => {
     setCurrentPage(0);
   }, []);
 
+  const onPressFilter = useCallback(() => {
+    AppNavigator.showDialog({
+      screen: FilterStore,
+      popupType: 'bottomSheet',
+    });
+  }, []);
+
   return {
     error,
     loading,
     onLoadMore,
     onPressProduct,
     onPressStore,
+    onPressFilter,
     onSearchChange,
     stores: data,
   };
