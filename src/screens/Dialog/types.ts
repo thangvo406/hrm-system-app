@@ -33,6 +33,23 @@ export type DialogOptions = {
   readonly variant?: DialogVariant;
 } & Record<string, unknown>;
 
+/**
+ * Bottom sheet options. Same shape as DialogOptions minus the
+ * dialog-specific chrome flags (`isFullScreen`, `transparent`, `variant`).
+ * Slides up from the bottom edge of the screen with a drag handle and
+ * supports drag-down-to-dismiss (toggleable via `draggable`).
+ */
+export type BottomSheetOptions = {
+  readonly cancelable?: boolean;
+  readonly draggable?: boolean;
+  readonly height?: number | string;
+  readonly initialSnapIndex?: number;
+  readonly onDidAppear?: () => void;
+  readonly onDismiss?: () => void;
+  readonly screen: ComponentType<Record<string, unknown>>;
+  readonly snapPoints?: readonly (number | string)[];
+} & Record<string, unknown>;
+
 export type ToastOptions = {
   readonly description?: string;
   readonly duration?: number;
@@ -53,9 +70,19 @@ export type SnackbarOptions = {
  */
 export type MenuOptions = Record<string, unknown>;
 
-export type DialogItemType = 'dialog' | 'menu' | 'snackbar' | 'toast';
+export type DialogItemType =
+  | 'bottomSheet'
+  | 'dialog'
+  | 'menu'
+  | 'snackbar'
+  | 'toast';
 
 export type DialogItem =
+  | {
+      readonly id: string;
+      readonly options: BottomSheetOptions;
+      readonly type: 'bottomSheet';
+    }
   | {
       readonly id: string;
       readonly options: DialogOptions;
@@ -79,10 +106,12 @@ export type DialogItem =
 
 export type DialogHandle = {
   closeAll: () => void;
+  closeBottomSheet: (id?: string) => void;
   closeDialog: (id?: string) => void;
   closeMenu: () => void;
   hideLoading: () => void;
   // setWillShow: (willShow: boolean) => void;
+  showBottomSheet: (options: BottomSheetOptions) => string;
   showDialog: (options: DialogOptions) => string;
   showLoading: (options?: { readonly message?: string }) => string;
   showMenu: (options?: MenuOptions) => string;

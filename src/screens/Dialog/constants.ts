@@ -28,3 +28,16 @@ export const DIALOG_Z_INDEX = {
   base: 1000,
   step: 10,
 } as const;
+
+export const BOTTOM_SHEET_SIZES = {
+  cardRadius: 20,
+  handleHeight: 4,
+  handleWidth: 36,
+  maxHeightRatio: 0.9,
+  snapVelocityThreshold: 800,
+  translateDismissThreshold: 120,
+} as const;
+
+export const BOTTOM_SHEET_TIMING = {
+  animationDuration: 240,
+} as const;

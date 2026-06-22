@@ -1,5 +1,6 @@
 import type { DialogHandle, DialogItem } from './types';
 
+import BottomSheetOverlay from './BottomSheetOverlay';
 import DialogOverlay from './DialogOverlay';
 import { DIALOG_Z_INDEX } from './constants';
 import Loading from './components/Loading';
@@ -105,12 +106,14 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
         loadingIdReference.current = undefined;
         manager.closeAll();
       },
+      closeBottomSheet: manager.closeBottomSheet,
       closeDialog: manager.closeDialog,
       closeMenu: manager.closeMenu,
       hideLoading,
       // setWillShow: (willShow: boolean) => {
       //   willShowReference.current = willShow;
       // },
+      showBottomSheet: manager.showBottomSheet,
       showDialog: guardedShowDialog,
       showLoading,
       showMenu: manager.showMenu,
@@ -123,8 +126,10 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
       guardedShowToast,
       hideLoading,
       manager.closeAll,
+      manager.closeBottomSheet,
       manager.closeDialog,
       manager.closeMenu,
+      manager.showBottomSheet,
       manager.showMenu,
       showLoading,
     ],
@@ -132,7 +137,7 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
 
   useImperativeHandle(reference, () => imperativeHandle, [imperativeHandle]);
 
-  // Android hardware back: close the topmost cancelable dialog, if any.
+  // Android hardware back: close the topmost cancelable overlay, if any.
   // Loading is non-cancelable so back-button cannot dismiss it.
   useEffect(() => {
     const subscription = BackHandler.addEventListener(
@@ -142,6 +147,10 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
           const item = manager.items[cursor] as DialogItem | undefined;
           if (item?.type === 'menu') {
             manager.closeMenu();
+            return true;
+          }
+          if (item?.type === 'bottomSheet' && item.options.cancelable !== false) {
+            manager.closeBottomSheet(item.id);
             return true;
           }
           if (item?.type === 'dialog' && item.options.cancelable !== false) {
@@ -155,7 +164,7 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
     return () => {
       subscription.remove();
     };
-  }, [manager.closeDialog, manager.closeMenu, manager.items]);
+  }, [manager.closeBottomSheet, manager.closeDialog, manager.closeMenu, manager.items]);
 
   if (manager.items.length === 0) {
     return undefined;
@@ -165,6 +174,21 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
     <View pointerEvents="box-none" style={styles.host} testID="dialog-host">
       {manager.items.map((item, index) => {
         const zIndex = computeZIndex(index);
+        if (item.type === 'bottomSheet') {
+          return (
+            <BottomSheetOverlay
+              cancelable={item.options.cancelable !== false}
+              draggable={item.options.draggable !== false}
+              key={item.id}
+              onDismiss={() => {
+                item.options.onDismiss?.();
+                manager.closeBottomSheet(item.id);
+              }}
+              options={item.options}
+              zIndex={zIndex}
+            />
+          );
+        }
         if (item.type === 'dialog') {
           return (
             <DialogOverlay
