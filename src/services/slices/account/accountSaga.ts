@@ -6,8 +6,12 @@ import type {
   UpdatePushIdPayload,
 } from './accountSlice';
 
-import { getProfile, updateMembership, updatePushId } from '@services/request/account';
-import { call, put, takeLatest } from 'redux-saga/effects';
+import {
+  getProfile,
+  updateMembership,
+  updatePushId,
+} from '@services/request/account';
+import { call, put, select, takeLatest } from 'redux-saga/effects';
 
 import {
   getProfileRequest,
@@ -15,10 +19,13 @@ import {
   updatePushIdRequest,
   getProfileSuccess,
 } from './accountSlice';
+import { AccountSelector } from '@services/selectors';
 
 function* getProfileWorker(action: PayloadAction<GetProfilePayload>) {
   try {
+    const oldProfile = yield select(AccountSelector.getProfile);
     const profile: Profile = yield call(getProfile);
+    // if(JSON.stringify(profile.per))
     yield put(getProfileSuccess(profile));
     action.payload.onSuccess?.(profile);
   } catch {

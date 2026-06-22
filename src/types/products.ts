@@ -46,7 +46,7 @@ export interface GetProductsPayload extends ProductsCallback {
   sortDirection?: 'asc' | 'desc';
   page: number;
   size: number;
-  searchName?: string;
+  keyword?: string;
 }
 
 export type ProductDetailCallback = {
@@ -61,18 +61,18 @@ export type GetProductByIdPayload = {
 export type CheckoutProductPayload = AppCallback & IRequestCheckout;
 
 export interface IRequestCheckout {
-  storeId: number
-  note?: string
-  products: ProductCheckout[]
-  vouchers?: VoucherCheckout[]
+  storeId: number;
+  note?: string;
+  products: ProductCheckout[];
+  vouchers?: VoucherCheckout[];
 }
 
 export interface ProductCheckout {
-  id: number
-  quantity: number
+  id: number;
+  quantity: number;
 }
 
 export interface VoucherCheckout {
-  id: number
-  quantity: number
+  id: number;
+  quantity: number;
 }

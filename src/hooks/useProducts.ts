@@ -76,7 +76,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
       getProductsRequest({
         storeId: store?.id || 1,
         page: currentPage,
-        searchName: searchKey,
+        keyword: searchKey,
         size: 10,
         onFailure: handleFailure,
         onSuccess: handleSuccess,

@@ -3,43 +3,43 @@ import type { IImage, ListApiResponse } from './common';
 import { AppCallback } from './common';
 
 export type StoreItem = {
-    id: number
-    universityId: number
-    code: string
-    name: string
-    phone: string
-    address: string
-    logo: IImage
-    banner: IImage
-    operatingHours: TOperatingHour[]
-    status: string
-    estimateTime: string;
-    minOrder: string;
-    sortOrder: number
-    products: Product[]
+  id: number;
+  universityId: number;
+  code: string;
+  name: string;
+  phone: string;
+  address: string;
+  logo: IImage;
+  banner: IImage;
+  operatingHours: TOperatingHour[];
+  status: string;
+  estimateTime: string;
+  minOrder: string;
+  sortOrder: number;
+  products: Product[];
 };
 
 export interface Product {
-    id: number
-    storeId: number
-    categoryId: number
-    code: string
-    name: string
-    description: string
-    price: number
-    discountPrice: number
-    stockQuantity: number
-    status: string
-    sortOrder: number
-    thumbnail: IImage
-    images: IImage[]
-  }
+  id: number;
+  storeId: number;
+  categoryId: number;
+  code: string;
+  name: string;
+  description: string;
+  price: number;
+  discountPrice: number;
+  stockQuantity: number;
+  status: string;
+  sortOrder: number;
+  thumbnail: IImage;
+  images: IImage[];
+}
 
 export interface TOperatingHour {
-    dayOfWeek: string
-    open: boolean
-    openTime: string
-    closeTime: string
+  dayOfWeek: string;
+  open: boolean;
+  openTime: string;
+  closeTime: string;
 }
 export type StoreProductItem = {
   id: number;
@@ -54,9 +54,9 @@ export type StoresCallback = {
 };
 
 export interface GetStoresPayload extends AppCallback {
-    page: number;
-    size: number;
-    searchName?: string;
+  page: number;
+  size: number;
+  keyword?: string;
 }
 
 export type GetStoresActionPayload = Omit<

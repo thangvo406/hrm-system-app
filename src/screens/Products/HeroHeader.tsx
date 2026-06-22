@@ -89,7 +89,7 @@ type Properties = {
   readonly onPressBack: () => void;
   readonly onSearchClose?: () => void;
   readonly onSearchOpen?: () => void;
-  readonly onSearchChange?: () => void;
+  readonly onSearchChange?: (text: string) => void;
   readonly storeName?: string;
   readonly titleOpacity: Animated.AnimatedInterpolation<number>;
   readonly titleTranslateY: Animated.AnimatedInterpolation<number>;

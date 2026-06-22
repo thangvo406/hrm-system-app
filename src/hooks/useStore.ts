@@ -4,7 +4,7 @@ import type { StoreItem } from '@type/store';
 import { Paths } from '@navigation/paths';
 import { getStoresRequest } from '@services/slices/stores/storesSlice';
 import { useAppDispatch } from '@services/common/storeHooks';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import AppNavigator from '@navigation/AppNavigator';
 
@@ -46,7 +46,7 @@ export const useStore = () => {
         getStoresRequest({
           onFailure: handleFailure,
           onSuccess: handleSuccess,
-          searchName: searchKey,
+          keyword: searchKey,
           page: currentPage,
           size: PAGE_SIZE,
         }),
@@ -66,12 +66,12 @@ export const useStore = () => {
     AppNavigator.navigate(Paths.Products, { data: store });
   }, []);
 
-  const onPressProduct = useCallback(
-    (_store: StoreItem, productId: number) => {
-      AppNavigator.navigate(Paths.ProductDetail, { id: productId, storeId: _store?.id });
-    },
-    [],
-  );
+  const onPressProduct = useCallback((_store: StoreItem, productId: number) => {
+    AppNavigator.navigate(Paths.ProductDetail, {
+      id: productId,
+      storeId: _store?.id,
+    });
+  }, []);
 
   const onSearchChange = useCallback((text: string) => {
     setSearchKey(text);
