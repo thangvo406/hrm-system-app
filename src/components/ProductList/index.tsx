@@ -10,6 +10,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from 'react-native';
 import React from 'react';
 
@@ -21,12 +22,18 @@ type Properties = {
   readonly onPressProduct: (productId: number) => void;
   readonly products: Product[];
   readonly storeId: number;
+  readonly style?: ViewStyle | ViewStyle[];
 };
 
-function ProductList({ onPressProduct, products, storeId }: Properties) {
+function ProductList({
+  onPressProduct,
+  style = undefined,
+  products,
+  storeId,
+}: Properties) {
   return (
     <ScrollView
-      contentContainerStyle={styles.productList}
+      contentContainerStyle={[styles.productList, style]}
       horizontal
       onTouchStart={() => {
         if (Globals.isScrollingRef) {
@@ -40,7 +47,7 @@ function ProductList({ onPressProduct, products, storeId }: Properties) {
       }}
       showsHorizontalScrollIndicator={false}
     >
-      {(products || []).map((product: Product, index: number) => {
+      {(products || []).map((product: Product) => {
         const thumbUri = product.thumbnail?.fileUrl;
         return (
           <TouchableOpacity

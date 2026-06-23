@@ -148,6 +148,8 @@
       "order_desc": "Fast order for on-campus delivery / pickup",
       "frequent_store": "Frequently Ordered Store",
       "store_eta": "About 15 min",
+      "empty_store_title": "No recent stores yet.",
+      "empty_store_desc": "Check nearby store info and try Smart Order!",
       "notice_title": "Notice / Community",
       "notice_desc": "Event",
       "survey_title": "Survey",

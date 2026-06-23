@@ -1,5 +1,6 @@
 import type {
   GetStoreDetailActionPayload,
+  GetStoreOrderRecentActionPayload,
   GetStoresActionPayload,
 } from '@type/store';
 
@@ -13,6 +14,12 @@ const storesSlice = createSlice({
       prepare: (payload: GetStoreDetailActionPayload) => ({ payload }),
       reducer: () => {},
     },
+    getStoreOrderRecentRequest: {
+      prepare: (payload: GetStoreOrderRecentActionPayload = {}) => ({
+        payload,
+      }),
+      reducer: () => {},
+    },
     getStoresRequest: {
       prepare: (payload: GetStoresActionPayload) => ({ payload }),
       reducer: () => {},
@@ -20,5 +27,9 @@ const storesSlice = createSlice({
   },
 });
 
-export const { getStoreDetailRequest, getStoresRequest } = storesSlice.actions;
+export const {
+  getStoreDetailRequest,
+  getStoreOrderRecentRequest,
+  getStoresRequest,
+} = storesSlice.actions;
 export const storesReducer = storesSlice.reducer;

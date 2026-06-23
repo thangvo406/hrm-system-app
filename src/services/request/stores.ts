@@ -27,3 +27,11 @@ export const getStoreDetail = async (
   );
   return response.data;
 };
+
+export const getStoreOrderRecent = async (): Promise<StoreItem[]> => {
+  const response = await httpRequest.get<SingleApiResponse<StoreItem[]>>(
+    EndPoints.STORE.storeOrderRecent,
+    { loading: false },
+  );
+  return response.data;
+};

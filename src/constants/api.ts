@@ -43,6 +43,7 @@ export const EndPoints = {
   STORE: {
     list: (request: string) => `store?${request}`,
     detail: (storeId: number | string) => `store/${storeId}`,
+    storeOrderRecent: 'store/store-recent',
   },
   PAYMENT: {
     checkout: 'app/cart/items',

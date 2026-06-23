@@ -18,6 +18,7 @@ const images = {
   img_product_default: require('./img_product_default.png') as number,
   img_register_success: require('./img_register_success.png') as number,
   img_speaker: require('./img_speaker.png') as number,
+  img_store_recent_default: require('./img_store_recent_default.png') as number,
 } as const;
 
 export type ImageName = keyof typeof images;

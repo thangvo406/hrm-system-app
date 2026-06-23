@@ -1,7 +1,6 @@
 import type { ImageName } from '@assets/images';
-import type { Product } from '@type/store';
 
-import { Image, HomeHeader, ProductList } from '@components';
+import { Image, HomeHeader } from '@components';
 import imageNames from '@assets/images/names';
 import {
   ScrollView,
@@ -15,76 +14,9 @@ import { useTranslation } from 'react-i18next';
 import { useHome } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Wallet } from '@type';
-
-const STORE_NAME = 'Cafe Coop';
+import StoreOrderRecent from './StoreOrderRecent';
 
 const FEATURE_IMAGE_SIZE = ScaleSize(88);
-const STORE_ICON_SIZE = ScaleSize(18);
-
-const HOME_STORE_ID = 0;
-
-const PRODUCTS: readonly Product[] = [
-  {
-    categoryId: 0,
-    code: 'americano',
-    description: '',
-    discountPrice: 0,
-    id: 1,
-    images: [],
-    name: '아메리카노',
-    price: 3500,
-    sortOrder: 0,
-    status: 'ACTIVE',
-    stockQuantity: 0,
-    storeId: HOME_STORE_ID,
-    thumbnail: { filePath: '', fileUrl: '' },
-  },
-  {
-    categoryId: 0,
-    code: 'latte',
-    description: '',
-    discountPrice: 0,
-    id: 2,
-    images: [],
-    name: '라떼',
-    price: 4500,
-    sortOrder: 1,
-    status: 'ACTIVE',
-    stockQuantity: 0,
-    storeId: HOME_STORE_ID,
-    thumbnail: { filePath: '', fileUrl: '' },
-  },
-  {
-    categoryId: 0,
-    code: 'madeleine',
-    description: '',
-    discountPrice: 0,
-    id: 3,
-    images: [],
-    name: '마들렌',
-    price: 4500,
-    sortOrder: 2,
-    status: 'ACTIVE',
-    stockQuantity: 0,
-    storeId: HOME_STORE_ID,
-    thumbnail: { filePath: '', fileUrl: '' },
-  },
-  {
-    categoryId: 0,
-    code: 'strawberry-piece',
-    description: '',
-    discountPrice: 0,
-    id: 4,
-    images: [],
-    name: '딸기 조각',
-    price: 4500,
-    sortOrder: 3,
-    status: 'ACTIVE',
-    stockQuantity: 0,
-    storeId: HOME_STORE_ID,
-    thumbnail: { filePath: '', fileUrl: '' },
-  },
-];
 
 // PLACEHOLDER_MAIN_COMPONENT
 
@@ -165,42 +97,6 @@ function FeatureCard({
   );
 }
 
-function StoreSection({
-  onPressProduct,
-  onPressStore,
-}: {
-  readonly onPressProduct: (productId: number) => void;
-  readonly onPressStore: () => void;
-}) {
-  const { t } = useTranslation();
-  return (
-    <View>
-      <Text style={styles.sectionLabel}>{t('home.frequent_store')}</Text>
-      <View style={styles.storeHeader}>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={onPressStore}
-          style={styles.storeNameRow}
-        >
-          <Image
-            color="#1A1A1A"
-            height={STORE_ICON_SIZE}
-            name="ic_store"
-            type="svg"
-            width={STORE_ICON_SIZE}
-          />
-          <Text style={styles.storeName}>{STORE_NAME}</Text>
-        </TouchableOpacity>
-      </View>
-      <ProductList
-        onPressProduct={onPressProduct}
-        products={PRODUCTS as Product[]}
-        storeId={HOME_STORE_ID}
-      />
-    </View>
-  );
-}
-
 function Home() {
   const { t } = useTranslation();
   const {
@@ -215,6 +111,9 @@ function Home() {
     onGoToStore,
     isShowCtaContribute,
     profile,
+    storeOrderRecent,
+    onPressEmptyStore,
+    onGoToProduct,
   } = useHome();
   const insets = useSafeAreaInsets();
   return (
@@ -248,7 +147,12 @@ function Home() {
             title={t('home.order_title')}
           />
         </View>
-        <StoreSection onPressProduct={onGoToStore} onPressStore={onGoToStore} />
+        <StoreOrderRecent
+          onPressProduct={onGoToProduct}
+          onPressStore={onGoToStore}
+          data={storeOrderRecent}
+          onPressEmptyStore={onPressEmptyStore}
+        />
         <View style={styles.row}>
           <FeatureCard
             desc={t('home.notice_desc')}

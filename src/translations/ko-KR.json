@@ -117,6 +117,8 @@
       "order_desc": "스마트 오더로 학내 배달 / 픽업",
       "frequent_store": "최근 주문 매장",
       "store_eta": "약 15분 소요 예상",
+      "empty_store_title": "최근 주문 매장이 없습니다.",
+      "empty_store_desc": "근처 매장 정보를 조회하고,\n스마트오더를 사용해보세요!",
       "notice_title": "공지 / 커뮤니티",
       "notice_desc": "이벤트",
       "survey_title": "설문조사",

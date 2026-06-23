@@ -7,7 +7,7 @@ import {
   getProfileRequest,
   updateMembershipRequest,
 } from '@services/slices/account/accountSlice';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MEMBERSHIP_OPTIONS, MEMBERSHIP_TYPE } from '@constants/config';
 import Information from '@screens/Dialog/components/Information';
@@ -15,6 +15,8 @@ import ChooseMemberShipType from '../screens/Authorisation/components/RegisterFl
 import BankInformation from '../screens/Authorisation/components/RegisterFlow/BankInformation';
 import { useFocusEffect } from '@react-navigation/native';
 import { getCurrentWalletRequest } from '@services/slices/wallet/walletSlice';
+import { getStoreOrderRecentRequest } from '@services/slices/stores/storesSlice';
+import { StoreItem } from '@type/store';
 
 export type UseHome = ReturnType<typeof useHome>;
 
@@ -55,6 +57,9 @@ export const useHome = () => {
   const currentWallet = useAppSelector(WalletSelector.getCurrentWallet);
   useNotification();
   const dispatch = useAppDispatch();
+  const [storeOrderRecent, setStoreOrderRecent] = useState<
+    StoreItem | undefined
+  >();
 
   const isShowCtaContribute = useMemo(() => {
     return !(
@@ -63,7 +68,13 @@ export const useHome = () => {
     );
   }, [profile]);
 
-  const onSubmitMemberShip = selectedId => {
+  const onGoToProduct = (productId: number) => {
+    AppNavigator.navigate(Paths.ProductDetail, {
+      id: productId,
+      storeId: storeOrderRecent?.id,
+    });
+  };
+  const onSubmitMemberShip = (membershipType: string) => {
     AppNavigator.showDialog({
       screen: Information,
       desc: t('register_flow.contribution_dialog.desc'),
@@ -72,7 +83,7 @@ export const useHome = () => {
       onConfirm: () => {
         dispatch(
           updateMembershipRequest({
-            membershipType: selectedId,
+            membershipType,
             onFailure: message => {
               AppNavigator.showSnackBar({
                 message: message || '',
@@ -135,6 +146,18 @@ export const useHome = () => {
     useCallback(() => {
       dispatch(getCurrentWalletRequest());
       dispatch(getProfileRequest());
+      dispatch(
+        getStoreOrderRecentRequest({
+          onSuccess(data) {
+            setStoreOrderRecent(prev => {
+              if (prev?.id == data?.id) {
+                return prev;
+              }
+              return data;
+            });
+          },
+        }),
+      );
     }, []),
   );
 
@@ -144,6 +167,9 @@ export const useHome = () => {
     profile,
     currentWallet,
     isShowCtaContribute,
+    storeOrderRecent,
+    onGoToProduct,
+    onPressEmptyStore: onPressStore,
     onPressStore,
     onPressContribution,
     onGoToStore,

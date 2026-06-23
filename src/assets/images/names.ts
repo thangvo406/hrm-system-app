@@ -20,6 +20,7 @@ const imageNames = {
   img_product_default: 'img_product_default',
   img_register_success: 'img_register_success',
   img_speaker: 'img_speaker',
+  img_store_recent_default: 'img_store_recent_default',
 } as const satisfies Record<string, ImageName>;
 
 export default imageNames;

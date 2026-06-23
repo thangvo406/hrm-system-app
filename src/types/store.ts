@@ -79,3 +79,10 @@ export type GetStoreDetailActionPayload = Omit<
   'onFailure' | 'onSuccess'
 > &
   StoreDetailCallback;
+
+export type StoreOrderRecentCallback = {
+  readonly onFailure?: (error: string) => void;
+  readonly onSuccess?: (data: StoreItem[]) => void;
+};
+
+export type GetStoreOrderRecentActionPayload = StoreOrderRecentCallback;
