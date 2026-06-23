@@ -2,11 +2,11 @@ import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useFocusEffect } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
-import { WalletSelector } from '@services/selectors';
+import { AccountSelector } from '@services/selectors';
 import {
   getCurrentWalletRequest,
   getTransactionHistoriesRequest,
-} from '@services/slices/wallet/walletSlice';
+} from '@services/slices/account/accountSlice';
 import { ListApiResponse, TransactionHistory } from '@type';
 import { useCallback, useRef, useState } from 'react';
 
@@ -50,7 +50,7 @@ const onRecharge = () => {
 export const usePayCard = () => {
   const [historyTab, setHistoryTab] = useState<PayCardHistoryTab>('pay');
   const dispatch = useAppDispatch();
-  const currentWallet = useAppSelector(WalletSelector.getCurrentWallet);
+  const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
 
   const payBalance = MOCK_PAY_BALANCE;
   const pointBalance = MOCK_POINT_BALANCE;

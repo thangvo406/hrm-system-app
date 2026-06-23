@@ -24,7 +24,6 @@ import { paymentReducer } from '@services/slices/payment/paymentSlice';
 import { productsReducer } from '@services/slices/products/productsSlice';
 import { storesReducer } from '@services/slices/stores/storesSlice';
 import { surveyReducer } from '@services/slices/survey/surveySlice';
-import { walletReducer } from '@services/slices/wallet/walletSlice';
 
 const reduxStorage: Storage = {
   getItem: key => Promise.resolve(AppStorage.getString(key) ?? undefined),
@@ -47,7 +46,6 @@ const rootReducer = combineReducers({
   products: productsReducer,
   stores: storesReducer,
   survey: surveyReducer,
-  wallet: walletReducer,
 });
 
 const persistConfig = {

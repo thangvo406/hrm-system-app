@@ -1,6 +1,6 @@
 import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch } from '@services/common/storeHooks';
-import { topUpWalletRequest } from '@services/slices/wallet/walletSlice';
+import { topUpWalletRequest } from '@services/slices/account/accountSlice';
 import uniqueId from 'lodash/uniqueId';
 import { useMemo, useState } from 'react';
 

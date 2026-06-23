@@ -15,6 +15,7 @@ import { useHome } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Wallet } from '@type';
 import StoreOrderRecent from './StoreOrderRecent';
+import { formatCurrency } from '@utils/product';
 
 const FEATURE_IMAGE_SIZE = ScaleSize(88);
 
@@ -37,7 +38,7 @@ function PayCard({
     >
       <Text style={styles.payLabel}>{t('home.pay_label')}</Text>
       <Text style={styles.payAmount}>
-        {t('home.pay_amount', { amount: data?.balance || 0 })}
+        {t('home.pay_amount', { amount: formatCurrency(data?.balance) || 0 })}
       </Text>
       <View style={styles.payDivider} />
       <View style={styles.payFooter}>

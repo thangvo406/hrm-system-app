@@ -1,22 +1,12 @@
 import { AppButton, HeaderDetail, Image } from '@components';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ScaleSize } from '@kits/core';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
 import imageNames from '@assets/images/names';
 import { PAYMENT_METHODS, useTopUp } from '@hooks';
 import { formatCurrency } from '@utils/product';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#9B9B9B';
@@ -25,7 +15,7 @@ const BORDER_COLOR = '#E0E0E0';
 const GREEN = Colors.primary;
 const GREEN_BG = '#F0FAF0';
 const ICON_SIZE = ScaleSize(44);
-const CHECK_SIZE = ScaleSize(26);
+const CHECK_SIZE = ScaleSize(16);
 const LOCK_SIZE = ScaleSize(18);
 const SHIELD_SIZE = ScaleSize(22);
 const WALLET_SIZE = ScaleSize(120);
@@ -48,7 +38,7 @@ function MethodCard({
   title,
 }: MethodCardProps) {
   return (
-    <TouchableOpacity
+    <AppButton
       activeOpacity={0.8}
       onPress={onPress}
       style={[styles.methodCard, isSelected && styles.methodCardSelected]}
@@ -75,7 +65,7 @@ function MethodCard({
       >
         {isSelected ? <View style={styles.radioInner} /> : undefined}
       </View>
-    </TouchableOpacity>
+    </AppButton>
   );
 }
 
@@ -92,8 +82,8 @@ function TopUp() {
   } = useTopUp();
 
   return (
-    <View style={[styles.safeArea, { paddingTop: insets.top }]}>
-      <HeaderDetail hideNotify title={t('top_up.title')} />
+    <View style={styles.safeArea}>
+      <HeaderDetail title={t('top_up.title')} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
@@ -168,7 +158,7 @@ function TopUp() {
         </View>
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { bottom: insets.bottom }]}>
         <AppButton
           style={[styles.nextBtn, !enabledBtnSubmit && styles.nextBtnDisabled]}
           testID="top-up-next"
@@ -209,7 +199,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     backgroundColor: '#FFFFFF',
-    paddingBottom: ScaleSize(16),
+    // paddingBottom: ScaleSize(16),
     paddingHorizontal: ScaleSize(20),
     paddingTop: ScaleSize(12),
   },
@@ -230,7 +220,7 @@ const styles = StyleSheet.create({
     marginRight: ScaleSize(12),
   },
   input: {
-    color: TEXT_MUTED,
+    // color: TEXT_MUTED,
     flex: 1,
     fontSize: ScaleSize(16),
     paddingHorizontal: ScaleSize(10),
@@ -325,8 +315,8 @@ const styles = StyleSheet.create({
   radioInner: {
     backgroundColor: '#FFFFFF',
     borderRadius: ScaleSize(5),
-    height: ScaleSize(10),
-    width: ScaleSize(10),
+    height: ScaleSize(8),
+    width: ScaleSize(8),
   },
   radioOuter: {
     alignItems: 'center',

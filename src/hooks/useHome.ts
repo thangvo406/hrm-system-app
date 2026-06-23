@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
-import { AccountSelector, WalletSelector } from '@services/selectors';
+import { AccountSelector } from '@services/selectors';
 import { Paths } from '@navigation/paths';
 import AppNavigator from '@navigation/AppNavigator';
 import useNotification from './useNotification';
@@ -14,7 +14,7 @@ import Information from '@screens/Dialog/components/Information';
 import ChooseMemberShipType from '../screens/Authorisation/components/RegisterFlow/ChooseMemberShipType';
 import BankInformation from '../screens/Authorisation/components/RegisterFlow/BankInformation';
 import { useFocusEffect } from '@react-navigation/native';
-import { getCurrentWalletRequest } from '@services/slices/wallet/walletSlice';
+import { getCurrentWalletRequest } from '@services/slices/account/accountSlice';
 import { getStoreOrderRecentRequest } from '@services/slices/stores/storesSlice';
 import { StoreItem } from '@type/store';
 
@@ -54,7 +54,7 @@ const onGoToStore = () => {
 export const useHome = () => {
   const { t } = useTranslation();
   const profile = useAppSelector(AccountSelector.getProfile);
-  const currentWallet = useAppSelector(WalletSelector.getCurrentWallet);
+  const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   useNotification();
   const dispatch = useAppDispatch();
   const [storeOrderRecent, setStoreOrderRecent] = useState<
