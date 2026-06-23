@@ -9,10 +9,7 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 import { getInfoProductCheckout } from '@services/request/payment';
 import { getErrorMessageApi } from '@utils/common';
 
-import {
-  getInfoProductCheckoutRequest,
-  getInfoProductCheckoutSuccess,
-} from './paymentSlice';
+import { getInfoProductCheckoutRequest } from './paymentSlice';
 
 function* getInfoProductCheckoutWorker(
   action: PayloadAction<GetInfoProductCheckoutPayload>,
@@ -20,7 +17,6 @@ function* getInfoProductCheckoutWorker(
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
     const response: CheckoutInfo = yield call(getInfoProductCheckout, request);
-    yield put(getInfoProductCheckoutSuccess(response));
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);

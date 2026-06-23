@@ -9,6 +9,7 @@ const imageNames = {
   ic_logout_white: 'ic_logout_white',
   ic_mega_phone: 'ic_mega_phone',
   ic_outlet_close_white: 'ic_outlet_close_white',
+  ic_sort_gray: 'ic_sort_gray',
   ic_store: 'ic_store',
   ic_survey_gray: 'ic_survey_gray',
   ic_user_fill: 'ic_user_fill',

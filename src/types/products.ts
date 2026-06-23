@@ -39,6 +39,7 @@ export interface IResponseProductDetail {
   sortOrder: number;
   thumbnail: ProductImage;
   images: ProductImage[];
+  attributes: AttributeDetail[];
 }
 export interface GetProductsPayload extends ProductsCallback {
   storeId: number;
@@ -51,7 +52,7 @@ export interface GetProductsPayload extends ProductsCallback {
 
 export type ProductDetailCallback = {
   readonly onFailure?: (error: string) => void;
-  readonly onSuccess?: (product: Product) => void;
+  readonly onSuccess?: (product: IResponseProductDetail) => void;
 };
 
 export type GetProductByIdPayload = {
@@ -60,13 +61,28 @@ export type GetProductByIdPayload = {
 
 export type CheckoutProductPayload = AppCallback & IRequestCheckout;
 
+export interface AttributeDetail {
+  id: number;
+  name: string;
+  type: any;
+  sortOrder: number;
+  items: AttributeItem[];
+}
+export interface AttributeItem {
+  id: number;
+  name: string;
+  price: number;
+  sortOrder: number;
+}
 export interface IRequestCheckout {
-  storeId: number;
-  note?: string;
-  products: ProductCheckout[];
-  vouchers?: VoucherCheckout[];
+  productId: number;
+  quantity: number;
+  selectedAttributes: AttributeCheckout[];
 }
 
+export interface AttributeCheckout {
+  attributeItemId: number;
+}
 export interface ProductCheckout {
   id: number;
   quantity: number;

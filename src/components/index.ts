@@ -3,6 +3,7 @@ export { default as AnnouncementLoading } from './Loading/Annoucements';
 export { default as NotificationsLoading } from './Loading/Notificatification';
 export { default as Button } from './Button';
 export { default as Carousel } from './Carousel';
+export { default as CheckBox } from './CheckBox';
 export { default as HeaderDetail } from './HeaderDetail';
 export { default as HomeHeader } from './HomeHeader';
 export { default as Image } from './Image';

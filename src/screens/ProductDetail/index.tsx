@@ -7,7 +7,7 @@ import {
   ProductDetailLoading,
   ProgressiveImage,
 } from '@components';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ScaleSize } from '@kits/core';
 import { ProductUtils } from '@utils';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,6 +17,8 @@ import Carousel from 'react-native-reanimated-carousel';
 import { useTranslation } from 'react-i18next';
 import imageNames from '@assets/images/names';
 import { DeviceUtils } from '@kits/core/utils';
+import ProductAttributes from './ProductAttributes';
+import ProductQuantity from './ProductQuanlity';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const { ifIOS } = DeviceUtils;
@@ -40,10 +42,11 @@ const onPressBack = () => {
 };
 
 function BackButton({ onPress }: BackButtonProps) {
+  const insets = useSafeAreaInsets();
   return (
     <AppButton
       onPress={onPress}
-      style={styles.backButton}
+      style={[styles.backButton, { top: insets.top }]}
       testID="product-detail-back"
     >
       <Image
@@ -116,13 +119,13 @@ function BottomSheet({
   onPressCart,
   totalLabel,
   totalValue,
+  title,
 }: {
   readonly bottomInset: number;
   readonly onPressCart: () => void;
   readonly totalLabel: string;
   readonly totalValue: string;
 }) {
-  const { t } = useTranslation();
   return (
     <View
       style={[
@@ -139,7 +142,7 @@ function BottomSheet({
         style={styles.cartButton}
         testID="product-detail-cart"
         type="primary"
-        title={t('product_detail.cart_button')}
+        title={title}
       />
     </View>
   );
@@ -147,7 +150,18 @@ function BottomSheet({
 
 function ProductDetail(props: any) {
   const insets = useSafeAreaInsets();
-  const { data, loading, onPressCart } = useProductDetail(props);
+  const {
+    data,
+    loading,
+    onChangeQuantity,
+    onPressCart,
+    onSelectAttribute,
+    quantity,
+    buttonTextSubmit,
+    selectedAttributes,
+    minChooseQuantity,
+    totalAmount,
+  } = useProductDetail(props);
   const { t } = useTranslation();
 
   return (
@@ -156,22 +170,37 @@ function ProductDetail(props: any) {
         <ProductDetailLoading />
       ) : (
         <>
-          <View style={[styles.topSection, { marginTop: insets.top }]}>
-            <ProductHero images={data?.images ?? []} />
-            <BackButton onPress={onPressBack} />
-          </View>
-          <View style={styles.middleSection}>
-            <ProductInfo
-              description={data?.description}
-              name={data?.name}
-              price={data?.price}
-            />
-          </View>
+          <BackButton onPress={onPressBack} />
+          <ScrollView>
+            <View style={styles.topSection}>
+              <ProductHero images={data?.images ?? []} />
+            </View>
+            <View style={styles.middleSection}>
+              <ProductInfo
+                description={data?.description}
+                name={data?.name}
+                price={data?.price}
+              />
+              <ProductAttributes
+                data={data?.attributes ?? []}
+                onSelect={onSelectAttribute}
+                selected={selectedAttributes}
+              />
+              <View style={styles.quantityWrap}>
+                <ProductQuantity
+                  onChange={onChangeQuantity}
+                  quantity={quantity}
+                  minChooseQuantity={minChooseQuantity}
+                />
+              </View>
+            </View>
+          </ScrollView>
           <BottomSheet
             bottomInset={insets.bottom}
             onPressCart={onPressCart}
+            title={buttonTextSubmit}
             totalLabel={t('product_detail.min_order_label')}
-            totalValue={ProductUtils.formatCurrency(data?.price)}
+            totalValue={ProductUtils.formatCurrency(totalAmount)}
           />
         </>
       )}
@@ -272,6 +301,11 @@ const styles = StyleSheet.create({
     color: TEXT_DARK,
     fontSize: ScaleSize(22),
     fontWeight: '800',
+  },
+  quantityWrap: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingVertical: ScaleSize(20),
   },
   safeArea: {
     backgroundColor: '#FFFFFF',

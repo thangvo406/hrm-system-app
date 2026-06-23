@@ -2,7 +2,7 @@ import type { StyleProp, ViewStyle } from 'react-native';
 
 import Image from '@components/Image';
 import { ScaleSize } from '@kits/core';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 
 const ICON_SIZE = ScaleSize(22);
@@ -19,6 +19,7 @@ type RadioButtonProps = {
   readonly selected: boolean;
   readonly style?: StyleProp<ViewStyle>;
   readonly testID?: string;
+  readonly rightLabel?: string;
 };
 
 function RadioButton({
@@ -28,6 +29,7 @@ function RadioButton({
   selected,
   style = undefined,
   testID = undefined,
+  rightLabel = undefined,
 }: RadioButtonProps) {
   return (
     <TouchableOpacity
@@ -40,18 +42,32 @@ function RadioButton({
         right: 10,
         top: 10,
       }}
-      style={[styles.container, style]}
+      style={[
+        styles.container,
+        style,
+        { justifyContent: rightLabel ? 'space-between' : 'flex-start' },
+      ]}
       testID={testID}
     >
-      <Image
-        color={selected ? PRIMARY_COLOR : UNSELECTED_COLOR}
-        height={ICON_SIZE}
-        name={selected ? 'ic_radio_selected' : 'ic_radio_unselected'}
-        type="svg"
-        width={ICON_SIZE}
-      />
-      {label === undefined ? undefined : (
-        <Text style={styles.label}>{label}</Text>
+      <View
+        style={{
+          flexDirection: 'row',
+        }}
+      >
+        <Image
+          color={selected ? PRIMARY_COLOR : UNSELECTED_COLOR}
+          height={ICON_SIZE}
+          name={selected ? 'ic_radio_selected' : 'ic_radio_unselected'}
+          type="svg"
+          width={ICON_SIZE}
+        />
+        {label === undefined ? undefined : (
+          <Text style={styles.label}>{label}</Text>
+        )}
+      </View>
+
+      {rightLabel === undefined ? undefined : (
+        <Text style={styles.label}>{rightLabel}</Text>
       )}
     </TouchableOpacity>
   );
@@ -66,6 +82,7 @@ const styles = StyleSheet.create({
   label: {
     color: TEXT_COLOR,
     fontSize: ScaleSize(16),
+    marginLeft: ScaleSize(10),
   },
 });
 

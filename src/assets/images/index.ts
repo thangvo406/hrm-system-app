@@ -7,6 +7,7 @@ const images = {
   ic_logout_white: require('./ic_logout_white.png') as number,
   ic_mega_phone: require('./ic_mega_phone.png') as number,
   ic_outlet_close_white: require('./ic_outlet_close_white.png') as number,
+  ic_sort_gray: require('./ic_sort_gray.png') as number,
   ic_store: require('./ic_store.png') as number,
   ic_survey_gray: require('./ic_survey_gray.png') as number,
   ic_user_fill: require('./ic_user_fill.png') as number,

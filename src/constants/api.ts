@@ -45,7 +45,9 @@ export const EndPoints = {
     detail: (storeId: number | string) => `store/${storeId}`,
   },
   PAYMENT: {
-    checkout: 'order/create',
+    checkout: 'app/cart/items',
+    updateProductCart: 'app/cart/items',
+    getInfoProductCheckout: (request: string) => `app/cart/check?${request}`,
   },
   WALLET: {
     currentWallet: 'wallet',

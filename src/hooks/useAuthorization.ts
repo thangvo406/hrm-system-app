@@ -77,6 +77,7 @@ const onLoginGoogle = async (): Promise<SocialLoginToken | undefined> => {
           break;
         }
         default: {
+          console.log('Error', error);
           Alert.alert('Google sign-in error 111', error.code);
         }
       }
@@ -103,8 +104,10 @@ const onLoginKakao = async (): Promise<SocialLoginToken | undefined> => {
 
 const onLoginNaver = async (): Promise<SocialLoginToken | undefined> => {
   try {
+    await NaverLogin.logout();
     const { failureResponse, successResponse } = await NaverLogin.login();
     if (successResponse) {
+      console.log('response nevar login', successResponse);
       return {
         accessToken: successResponse.accessToken,
       };
@@ -154,7 +157,7 @@ export const useAuthorization = () => {
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: Environment.GOOGLE_WEB_CLIENT_ID,
+      // webClientId: Environment.GOOGLE_ANDROID_CLIENT_ID, //Environment.GOOGLE_WEB_CLIENT_ID,
     });
     NaverLogin.initialize({
       appName: Environment.APP_NAME ?? '',
