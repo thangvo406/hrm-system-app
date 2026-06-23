@@ -12,5 +12,6 @@ export { default as Startup } from './Startup/Startup';
 export { default as Stores } from './Stores';
 export { default as Survey } from './Survey';
 export { default as SurveyDetail } from './SurveyDetail';
+export { default as TopUp } from './TopUp';
 export { default as Welcome } from './Welcome';
 export { default as ForgotPass } from './ForgotPass';

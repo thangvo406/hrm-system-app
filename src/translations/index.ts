@@ -6,14 +6,11 @@ import type { Resource } from 'i18next';
 import { SupportedLanguages } from '@hooks/language/schema';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { createMMKV } from 'react-native-mmkv';
 
 import en from './en-EN.json';
 import ko from './ko-KR.json';
-
-export const APP_LANGUAGE_KEY = 'appLanguage';
-
-const storage = createMMKV();
+import { AppStorage } from '@services/common/storage';
+import { AppConstants } from '@constants';
 
 export const defaultNS = 'myapp';
 
@@ -23,7 +20,8 @@ export const resources = {
 } as const satisfies Record<Language, unknown>;
 
 const savedLanguage =
-  storage.getString(APP_LANGUAGE_KEY) ?? SupportedLanguages.KO_KR;
+  AppStorage.getString(AppConstants.APP_LANGUAGE_KEY) ||
+  SupportedLanguages.KO_KR;
 
 void i18n
   .use(initReactI18next)

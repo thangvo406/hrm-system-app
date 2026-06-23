@@ -1,4 +1,5 @@
 import type { Wallet, IRequestGetTransactionHistories } from '@type/wallet';
+import type { IRequestTopUpWallet } from '@type/wallet';
 
 import { httpRequest } from '@services/common/httpRequest';
 import { EndPoints } from '@constants';
@@ -21,6 +22,16 @@ export const getTransactionHistories = async (
   const response = await httpRequest.get<SingleApiResponse<Wallet>>(
     EndPoints.WALLET.getTransactionHistories(params),
     { loading: false },
+  );
+  return response?.data;
+};
+
+export const topUpWallet = async (
+  request: IRequestTopUpWallet,
+): Promise<Wallet> => {
+  const response = await httpRequest.post<SingleApiResponse<Wallet>>(
+    EndPoints.WALLET.topUpWallet,
+    request,
   );
   return response?.data;
 };

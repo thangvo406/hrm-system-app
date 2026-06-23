@@ -1,4 +1,7 @@
-export const formatCurrency = (value: number | string | undefined): string => {
+export const formatCurrency = (
+  value: number | string | undefined,
+  includeCurrency = true,
+): string => {
   if (value === undefined || value === null || value === '') {
     return '';
   }
@@ -6,7 +9,9 @@ export const formatCurrency = (value: number | string | undefined): string => {
   if (Number.isNaN(numeric)) {
     return '';
   }
-  return `${Math.round(numeric).toLocaleString('ko-KR')}원`;
+  return includeCurrency
+    ? `${Math.round(numeric).toLocaleString('ko-KR')}원`
+    : Math.round(numeric).toLocaleString('ko-KR');
 };
 
 type AttributeRow = {

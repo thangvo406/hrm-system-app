@@ -1,4 +1,4 @@
-import { Image } from '@components';
+import { AppButton, Image } from '@components';
 import { useTranslation } from 'react-i18next';
 import {
   ScrollView,
@@ -22,6 +22,7 @@ import { logout } from '@services/slices/auth/authSlice';
 import { Paths } from '@navigation/paths';
 import AppNavigator from '@navigation/AppNavigator';
 import Information from '@screens/Dialog/components/Information';
+import { useI18n } from '@hooks';
 
 const MENU_WIDTH_RATIO = 0.78;
 const SLIDE_DURATION = 280;
@@ -127,6 +128,7 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
   const insets = useSafeAreaInsets();
   const [closing, setClosing] = useState(false);
   const afterCloseReference = useRef<(() => void) | undefined>(undefined);
+  const { toggleLanguage } = useI18n();
 
   useEffect(() => {
     if (closing) {
@@ -221,9 +223,14 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
         <View style={styles.safeArea}>
           <View style={[styles.headerWrap, { paddingTop: insets.top }]}>
             <View style={styles.header}>
-              <View style={styles.logoBadge}>
+              <AppButton
+                style={styles.logoBadge}
+                onPress={() => {
+                  toggleLanguage();
+                }}
+              >
                 <Text style={styles.logoText}>{LOGO_INITIALS}</Text>
-              </View>
+              </AppButton>
               <TouchableOpacity
                 accessibilityRole="button"
                 activeOpacity={0.7}

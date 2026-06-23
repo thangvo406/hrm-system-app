@@ -70,3 +70,4 @@ export const CARRIER_ITEMS = [
 ] as const;
 
 export const DEFAULT_CARRIER = 'SKT';
+export const APP_LANGUAGE_KEY = 'APP_LANGUAGE_KEY' as const;

@@ -1,19 +1,9 @@
 {
   "myapp": {
-    "common_appName": {
-      "full": "React Native MyApp",
-      "initials": "RNB"
-    },
-    "common_error": "Oops! Something went wrong.",
     "common": {
       "confirm": "Confirm",
       "cancel": "Cancel",
       "no_data": "No data"
-    },
-    "screen_example": {
-      "hello_user": "Hi, my name is {{name}}",
-      "title": "Welcome on The $t(common_appName.full)",
-      "description": "Do you want to discover some features? Just click on one of the three buttons at the bottom of the screen. The first allows you to call a REST API. The second lets you change the theme color. And the third allows you to change the language."
     },
     "notifications": {
       "title": "Notifications",
@@ -73,11 +63,6 @@
       "error_password_required": "Please enter your password",
       "error_password_min": "Password must be at least 6 characters",
       "error_phone_invalid": "Please enter a valid phone number"
-    },
-    "error_boundary": {
-      "title": "Oops! Something went wrong.",
-      "description": "We are sorry for the inconvenience. Please try again later.",
-      "cta": "Reload the screen"
     },
     "register_flow": {
       "identity_title": "Please proceed with verification\nto reset your password.",
@@ -264,6 +249,21 @@
       "cancel": "Cancel",
       "save_unavailable": "Save changes is not available yet.",
       "avatar_unavailable": "Change avatar is not available yet."
+    },
+    "top_up": {
+      "title": "Pay money Top-up",
+      "description": "Please enter the amount you would like\nto recharge to Coop Pay.",
+      "amount_label": "Enter Amount",
+      "amount_placeholder": "Please enter the amount",
+      "currency": "KRW",
+      "min_amount_hint": "Minimum recharge amount is 1 KRW.",
+      "payment_method_label": "Payment Method",
+      "method_credit_card": "Credit Card",
+      "method_credit_card_desc": "Pay easily with registered card",
+      "method_virtual_account": "Virtual Account",
+      "method_virtual_account_desc": "Recharge after deposit to virtual account",
+      "security_note": "For safe payment, all information is encrypted and protected.",
+      "next": "Next"
     }
   }
 }

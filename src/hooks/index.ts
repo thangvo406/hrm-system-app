@@ -31,5 +31,5 @@ export { usePayCard } from './usePayCard';
 export { useProductDetail } from './useProductDetail';
 export { useProducts } from './useProducts';
 export { useStore } from './useStore';
-export { useSurvey } from './useSurvey';
-export { useSurveyDetail } from './useSurveyDetail';
+export type { PaymentMethod } from './useTopUp';
+export { PAYMENT_METHODS, useTopUp } from './useTopUp';

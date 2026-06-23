@@ -1,4 +1,4 @@
-import { ListApiResponse } from './common';
+import type { AppCallback, ListApiResponse } from './common';
 
 export type IRequestGetTransactionHistories = {
   transactionType?: string;
@@ -30,6 +30,13 @@ export interface TransactionHistory {
   status: string;
   createdDate: string;
 }
+export interface IRequestTopUpWallet {
+  amount: number;
+  couponCode?: string;
+  paymentProvider: string;
+  paymentTransactionId: string;
+  description: string;
+}
 
 export type WalletCallback = {
   readonly onFailure?: (error: string) => void;
@@ -40,3 +47,5 @@ export type GetCurrentWalletPayload = WalletCallback;
 
 export type GetTransactionHistoriesPayload = IRequestGetTransactionHistories &
   WalletCallback;
+
+export type TopUpWalletPayload = AppCallback & IRequestTopUpWallet;

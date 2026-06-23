@@ -1,19 +1,9 @@
 {
   "myapp": {
-    "common_appName": {
-      "full": "리액트 네이티브 MyApp",
-      "initials": "RNB"
-    },
-    "common_error": "문제가 발생했습니다.",
     "common": {
       "confirm": "확인",
       "cancel": "취소",
       "no_data": "No data"
-    },
-    "screen_example": {
-      "hello_user": "안녕하세요, 제 이름은 {{name}}입니다",
-      "title": "$t(common_appName.full)에 오신 것을 환영합니다",
-      "description": "기능을 살펴보시겠어요? 화면 하단의 세 개 버튼 중 하나를 누르세요. 첫 번째 버튼은 REST API를 호출하고, 두 번째 버튼은 테마 색상을 변경하며, 세 번째 버튼은 언어를 변경합니다."
     },
     "welcome": {
       "login": "로그인",
@@ -41,11 +31,6 @@
       "error_password_required": "비밀번호를 입력해 주세요",
       "error_password_min": "비밀번호는 최소 6자 이상이어야 합니다",
       "error_phone_invalid": "올바른 휴대폰 번호를 입력해 주세요"
-    },
-    "error_boundary": {
-      "title": "이런! 문제가 발생했습니다.",
-      "description": "불편을 드려 죄송합니다. 잠시 후 다시 시도해 주세요.",
-      "cta": "화면 새로고침"
     },
     "register_flow": {
       "identity_title": "본인확인을 위해 인증을 진행해 주세요",
@@ -264,6 +249,21 @@
       "cancel": "취소",
       "save_unavailable": "아직 변경 사항 저장을 사용할 수 없습니다.",
       "avatar_unavailable": "아직 아바타 변경을 사용할 수 없습니다."
+    },
+    "top_up": {
+      "title": "페이머니 충전",
+      "description": "Coop Pay에 충전할\n금액을 입력해주세요.",
+      "amount_label": "금액 입력",
+      "amount_placeholder": "금액을 입력해주세요",
+      "currency": "원",
+      "min_amount_hint": "최소 충전 금액은 1원입니다.",
+      "payment_method_label": "결제 수단",
+      "method_credit_card": "신용카드",
+      "method_credit_card_desc": "등록된 카드로 간편하게 결제",
+      "method_virtual_account": "가상계좌",
+      "method_virtual_account_desc": "가상계좌로 입금 후 충전",
+      "security_note": "안전한 결제를 위해 모든 정보는 암호화되어 보호됩니다.",
+      "next": "다음"
     }
   }
 }

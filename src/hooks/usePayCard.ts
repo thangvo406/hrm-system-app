@@ -1,8 +1,14 @@
+import AppNavigator from '@navigation/AppNavigator';
+import { Paths } from '@navigation/paths';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { WalletSelector } from '@services/selectors';
-import { getTransactionHistoriesRequest } from '@services/slices/wallet/walletSlice';
+import {
+  getCurrentWalletRequest,
+  getTransactionHistoriesRequest,
+} from '@services/slices/wallet/walletSlice';
 import { ListApiResponse, TransactionHistory } from '@type';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 export type PayCardHistoryTab = 'pay' | 'point';
 
@@ -38,7 +44,7 @@ const MOCK_POINT_TRANSACTIONS: readonly PayCardTransaction[] = [
 ];
 
 const onRecharge = () => {
-  // TODO: navigate to recharge flow when available
+  AppNavigator.navigate(Paths.TopUp);
 };
 
 export const usePayCard = () => {
@@ -70,17 +76,25 @@ export const usePayCard = () => {
     });
   };
 
-  useEffect(() => {
-    dispatch(
-      getTransactionHistoriesRequest({
-        page: currentPage,
-        size: 20,
-        // transactionType: 'CREDIT',
-        onSuccess: handleGetTranSuccess,
-        // onFailure: (message) => { ... },
-      }),
-    );
-  }, [currentPage]);
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(getCurrentWalletRequest());
+    }, []),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(
+        getTransactionHistoriesRequest({
+          page: currentPage,
+          size: 20,
+          // transactionType: 'CREDIT',
+          onSuccess: handleGetTranSuccess,
+          // onFailure: (message) => { ... },
+        }),
+      );
+    }, [currentPage]),
+  );
 
   const onLoadMore = useCallback(() => {
     if (isLast.current || isLoadingMore.current) {

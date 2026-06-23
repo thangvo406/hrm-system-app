@@ -54,5 +54,6 @@ export const EndPoints = {
     currentWallet: 'wallet',
     getTransactionHistories: (request: string) =>
       `wallet/transaction?${request}`,
+    topUpWallet: 'wallet/charge',
   },
 };

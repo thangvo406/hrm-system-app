@@ -23,5 +23,6 @@ export type RootStackParamList = {
   [Paths.Stores]: undefined;
   [Paths.Survey]: undefined;
   [Paths.SurveyDetail]: { id: number } | undefined;
+  [Paths.TopUp]: undefined;
   [Paths.Welcome]: undefined;
 };

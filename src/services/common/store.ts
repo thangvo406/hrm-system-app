@@ -15,7 +15,7 @@ import createSagaMiddleware from 'redux-saga';
 
 import { reactotronReduxEnhancer } from '../../reactotron.config';
 import { rootSaga } from './rootSaga';
-import { storage } from './storage';
+import { AppStorage } from './storage';
 import { accountReducer } from '@services/slices/account/accountSlice';
 import { appReducer } from '@services/slices/app/appSlice';
 import { authReducer } from '@services/slices/auth/authSlice';
@@ -27,13 +27,13 @@ import { surveyReducer } from '@services/slices/survey/surveySlice';
 import { walletReducer } from '@services/slices/wallet/walletSlice';
 
 const reduxStorage: Storage = {
-  getItem: key => Promise.resolve(storage.getString(key) ?? undefined),
+  getItem: key => Promise.resolve(AppStorage.getString(key) ?? undefined),
   removeItem: key => {
-    storage.remove(key);
+    AppStorage.remove(key);
     return Promise.resolve();
   },
   setItem: (key, value: string) => {
-    storage.set(key, value);
+    AppStorage.set(key, value);
     return Promise.resolve(true);
   },
 };
