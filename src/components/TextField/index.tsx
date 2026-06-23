@@ -18,6 +18,7 @@ const PLACEHOLDER_COLOR = '#9E9E9E';
 
 type TextFieldProps = {
   readonly autoCapitalize?: TextInputProps['autoCapitalize'];
+  readonly defaultValue?: string;
   readonly error?: string;
   readonly iconName: IconName;
   readonly keyboardType?: KeyboardTypeOptions;
@@ -35,6 +36,7 @@ type TextFieldProps = {
 
 function TextField({
   autoCapitalize = 'sentences',
+  defaultValue = undefined,
   error = undefined,
   iconName,
   keyboardType = 'default',
@@ -68,6 +70,7 @@ function TextField({
         }
         <TextInput
           autoCapitalize={autoCapitalize}
+          defaultValue={defaultValue}
           keyboardType={keyboardType}
           onChangeText={onChangeText}
           onSubmitEditing={onSubmitEditing}

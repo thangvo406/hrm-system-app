@@ -31,15 +31,19 @@ function PayCard() {
       {
         id: 'pay' as const,
         label: t('pay_card.tab_pay'),
+        render: () => (
+          <TransactionList data={payTransactions} onLoadMore={onLoadMore} />
+        ),
         testID: 'pay-card-tab-pay',
       },
       {
         id: 'point' as const,
         label: t('pay_card.tab_point'),
+        render: () => <PointHistoryList data={pointTransactions} />,
         testID: 'pay-card-tab-point',
       },
     ],
-    [t],
+    [t, payTransactions, pointTransactions, onLoadMore],
   );
 
   return (
@@ -89,11 +93,6 @@ function PayCard() {
             style={styles.historyTabs}
             tabs={historyTabs}
           />
-          {historyTab === 'pay' ? (
-            <TransactionList data={payTransactions} onLoadMore={onLoadMore} />
-          ) : (
-            <PointHistoryList data={pointTransactions} />
-          )}
         </View>
       </ScrollView>
     </View>
