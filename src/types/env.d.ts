@@ -7,6 +7,7 @@ declare module 'react-native-config' {
     DOMAIN_CDN?: string;
     GOOGLE_IOS_CLIENT_ID?: string;
     GOOGLE_WEB_CLIENT_ID?: string;
+    GOOGLE_ANDROID_CLIENT_ID?: string;
     IS_DEV: string;
     KAKAO_APP_KEY?: string;
     NAVER_CONSUMER_KEY?: string;

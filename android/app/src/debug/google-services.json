@@ -20,6 +20,10 @@
             "package_name": "com.coop_use",
             "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
+        },
+        {
+          "client_id": "453541234898-epjmvg5fj7fst91hvc944d19nfiihqr2.apps.googleusercontent.com",
+          "client_type": 3
         }
       ],
       "api_key": [

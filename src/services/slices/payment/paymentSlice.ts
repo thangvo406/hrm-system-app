@@ -22,15 +22,8 @@ const paymentSlice = createSlice({
       prepare: (payload: GetInfoProductCheckoutPayload) => ({ payload }),
       reducer: () => {},
     },
-    getInfoProductCheckoutSuccess: (
-      state,
-      action: PayloadAction<CheckoutInfo>,
-    ) => {
-      state.checkoutInfo = action.payload;
-    },
   },
 });
 
-export const { getInfoProductCheckoutRequest, getInfoProductCheckoutSuccess } =
-  paymentSlice.actions;
+export const { getInfoProductCheckoutRequest } = paymentSlice.actions;
 export const paymentReducer = paymentSlice.reducer;

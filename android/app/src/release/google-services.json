@@ -12,15 +12,36 @@
           "package_name": "com.coop_use"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "453541234898-nkqf235ipcb93sdtrgo4p7afmqiodrks.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.coop_use",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "453541234898-epjmvg5fj7fst91hvc944d19nfiihqr2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyD61FjLE7scD-s5Ajm4DnQ9ql6N8Ng5JNg"
+          "current_key": "AIzaSyCKE4egzI3Lwrwz2lv0nPbEFEE9ej8Kgy4"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "453541234898-9h7rqnuhqbfoqrokpg3pmgabqc0lbvtl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.coopuse.dev"
+              }
+            }
+          ]
         }
       }
     }

@@ -62,7 +62,6 @@ const onLoginGoogle = async (): Promise<SocialLoginToken | undefined> => {
       showPlayServicesUpdateDialog: true,
     });
     const response = await GoogleSignin.signIn();
-
     if (isSuccessResponse(response)) {
       return {
         authorizationCode: response.data.serverAuthCode ?? undefined,
@@ -157,7 +156,8 @@ export const useAuthorization = () => {
 
   useEffect(() => {
     GoogleSignin.configure({
-      // webClientId: Environment.GOOGLE_ANDROID_CLIENT_ID, //Environment.GOOGLE_WEB_CLIENT_ID,
+      offlineAccess: true,
+      webClientId: Environment.GOOGLE_WEB_CLIENT_ID,
     });
     NaverLogin.initialize({
       appName: Environment.APP_NAME ?? '',
