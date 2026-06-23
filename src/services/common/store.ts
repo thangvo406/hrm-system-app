@@ -20,6 +20,7 @@ import { accountReducer } from '@services/slices/account/accountSlice';
 import { appReducer } from '@services/slices/app/appSlice';
 import { authReducer } from '@services/slices/auth/authSlice';
 import { notificationsReducer } from '@services/slices/notifications/notificationsSlice';
+import { paymentReducer } from '@services/slices/payment/paymentSlice';
 import { productsReducer } from '@services/slices/products/productsSlice';
 import { storesReducer } from '@services/slices/stores/storesSlice';
 import { surveyReducer } from '@services/slices/survey/surveySlice';
@@ -42,6 +43,7 @@ const rootReducer = combineReducers({
   app: appReducer,
   auth: authReducer,
   notifications: notificationsReducer,
+  payment: paymentReducer,
   products: productsReducer,
   stores: storesReducer,
   survey: surveyReducer,

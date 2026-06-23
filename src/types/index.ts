@@ -1,6 +1,7 @@
 export * from './auth';
 export * from './common';
 export * from './notifications';
+export * from './payment';
 export * from './products';
 export * from './survey';
 export * from './wallet';

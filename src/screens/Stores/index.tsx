@@ -41,6 +41,7 @@ function Stores() {
   const { t } = useTranslation();
   const {
     loading,
+    isShowSearchBar,
     onPressFilter,
     onPressProduct,
     onPressStore,
@@ -59,14 +60,16 @@ function Stores() {
   return (
     <View style={styles.safeArea}>
       <HeaderDetail title={t('stores.title')} />
+      {(stores?.length > 0 || !!isShowSearchBar) && (
+        <SearchComponent
+          onPressFilter={onPressFilter}
+          setKeyword={onSearchChange}
+        />
+      )}
       {loading ? (
         <StoresLoading />
       ) : stores?.length > 0 ? (
         <>
-          <SearchComponent
-            onPressFilter={onPressFilter}
-            setKeyword={onSearchChange}
-          />
           <FlatList
             ItemSeparatorComponent={ItemSeparator}
             contentContainerStyle={styles.listContent}

@@ -4,7 +4,7 @@ import type { StoreItem } from '@type/store';
 import { Paths } from '@navigation/paths';
 import { getStoresRequest } from '@services/slices/stores/storesSlice';
 import { useAppDispatch } from '@services/common/storeHooks';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import AppNavigator from '@navigation/AppNavigator';
 import FilterStore from '@dialogs/FilterStore';
@@ -33,6 +33,10 @@ export const useStore = () => {
     },
     [currentPage],
   );
+
+  const isShowSearchBar = useMemo(() => {
+    return !!searchKey;
+  }, [searchKey]);
 
   const handleFailure = useCallback((message: string) => {
     setError(message);
@@ -89,6 +93,7 @@ export const useStore = () => {
   return {
     error,
     loading,
+    isShowSearchBar,
     onLoadMore,
     onPressProduct,
     onPressStore,

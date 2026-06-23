@@ -4,10 +4,10 @@ import { ScaleSize } from '@kits/core';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import debounce from 'lodash/debounce';
+import imageNames from '@assets/images/names';
 
 const ICON_SIZE = ScaleSize(20);
 const ICON_COLOR = '#9E9E9E';
-const FILTER_ICON_COLOR = '#9E9E9E';
 const PLACEHOLDER_COLOR = '#9E9E9E';
 const SEARCH_DEBOUNCE_MS = 400;
 
@@ -92,10 +92,9 @@ function SearchBar({
         testID="stores-search-filter"
       >
         <Image
-          color={FILTER_ICON_COLOR}
+          tintColor={ICON_COLOR}
           height={ICON_SIZE}
-          name="ic_filter"
-          type="svg"
+          name={imageNames.ic_sort_gray}
           width={ICON_SIZE}
         />
       </TouchableOpacity>
