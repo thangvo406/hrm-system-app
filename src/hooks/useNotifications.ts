@@ -98,16 +98,19 @@ export const useNotifications = () => {
     );
   };
 
-  const onPressItem = useCallback((item: NotificationItem) => {
-    if (!item.read) {
-      onMarkRead(item);
-    }
+  const onPressItem = useCallback(
+    (item: NotificationItem) => {
+      if (!item.read) {
+        onMarkRead(item);
+      }
 
-    AppNavigator.navigate(Paths.AnnouncementDetail, {
-      notification: item,
-      hideBtnNotify: true,
-    });
-  }, []);
+      AppNavigator.navigate(Paths.AnnouncementDetail, {
+        notification: item,
+        hideBtnNotify: true,
+      });
+    },
+    [data],
+  );
 
   const handleFailure = (message: string) => {
     setError(message);

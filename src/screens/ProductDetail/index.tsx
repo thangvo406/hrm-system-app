@@ -230,7 +230,10 @@ function BottomSheet({
     <View
       style={[
         styles.sheetWrap,
-        { paddingBottom: bottomInset + ifIOS(0, SHEET_VERTICAL_PADDING) },
+        {
+          paddingBottom:
+            bottomInset + (bottomInset == 0 ? SHEET_VERTICAL_PADDING : 0),
+        },
       ]}
     >
       <View style={styles.sheetInfo}>

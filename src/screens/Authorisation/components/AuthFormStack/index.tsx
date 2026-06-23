@@ -28,17 +28,16 @@ type AuthTab = 'login' | 'registration';
 type AuthFormStackProps = {
   readonly initialTab: AuthTab;
   readonly loading: boolean;
-  readonly login: LoginValues;
   readonly loginErrors: LoginErrors;
   readonly loginWithSocial: (provider: SocialProvider) => void;
+  readonly onForgotPassword: () => void;
+  readonly onGoRegisterForm: () => void;
   readonly onLoginChange: (field: keyof LoginValues) => (value: string) => void;
   readonly onRegisterChange: (
     field: keyof RegisterValues,
   ) => (value: string) => void;
   readonly registerErrors: RegisterErrors;
   readonly submitLogin: () => void;
-  readonly onGoRegisterForm: () => void;
-  readonly onForgotPassword: () => void;
   readonly validLogin: boolean;
   readonly validRegister: boolean;
 };
@@ -46,15 +45,14 @@ type AuthFormStackProps = {
 function AuthFormStack({
   initialTab,
   loading,
-  login,
   loginErrors,
   loginWithSocial,
+  onForgotPassword,
+  onGoRegisterForm,
   onLoginChange,
   onRegisterChange,
   registerErrors,
   submitLogin,
-  onGoRegisterForm,
-  onForgotPassword,
   validLogin,
   validRegister,
 }: AuthFormStackProps) {
@@ -158,7 +156,6 @@ function AuthFormStack({
               onForgotPassword={onForgotPassword}
               onSubmit={submitLogin}
               valid={validLogin}
-              values={login}
             />
           </Animated.View>
         )}

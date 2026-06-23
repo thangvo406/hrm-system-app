@@ -16,9 +16,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Wallet } from '@type';
 import StoreOrderRecent from './StoreOrderRecent';
 import { formatCurrency } from '@utils/product';
+import { DeviceUtils } from '@kits/core/utils';
 
 const FEATURE_IMAGE_SIZE = ScaleSize(88);
-
+const { ifAndroid } = DeviceUtils;
 // PLACEHOLDER_MAIN_COMPONENT
 
 function PayCard({
@@ -117,8 +118,9 @@ function Home() {
     onGoToProduct,
   } = useHome();
   const insets = useSafeAreaInsets();
+  // alert(JSON.stringify(insets));
   return (
-    <View style={[styles.safeArea, { paddingTop: insets.top }]}>
+    <View style={[styles.safeArea, { paddingTop: ifAndroid(30, insets.top) }]}>
       <HomeHeader
         isShowLabelMember
         onOpenMenu={openMenu}

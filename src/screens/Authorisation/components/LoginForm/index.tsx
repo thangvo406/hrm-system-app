@@ -16,7 +16,6 @@ type LoginFormProps = {
   readonly onForgotPassword?: () => void;
   readonly onSubmit: () => void;
   readonly valid: boolean;
-  readonly values: LoginValues;
 };
 
 function LoginForm({
@@ -26,7 +25,6 @@ function LoginForm({
   onForgotPassword = undefined,
   onSubmit,
   valid,
-  values,
 }: LoginFormProps) {
   const { t } = useTranslation();
   const passwordReference = useRef<TextInput>(null);
@@ -39,13 +37,13 @@ function LoginForm({
         iconName="email"
         keyboardType="email-address"
         label={t('authorisation.email_label')}
+        defaultValue=""
         onChangeText={onChange('email')}
         onSubmitEditing={() => passwordReference.current?.focus()}
         placeholder={t('authorisation.email_placeholder')}
         returnKeyType="next"
         submitBehavior="submit"
         testID="auth-email-input"
-        value={values.email}
       />
 
       <TextField
@@ -53,6 +51,7 @@ function LoginForm({
         error={errors.password}
         iconName="lock"
         label={t('authorisation.password_label')}
+        defaultValue=""
         onChangeText={onChange('password')}
         onSubmitEditing={() => {
           if (valid) {
@@ -64,7 +63,6 @@ function LoginForm({
         returnKeyType="done"
         secureTextEntry
         testID="auth-password-input"
-        value={values.password}
       />
 
       <TouchableOpacity

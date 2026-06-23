@@ -9,7 +9,7 @@ import {
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Screens from '@screens';
 import AppNavigator from '@navigation/AppNavigator';
-import { Dimensions, PanResponder, View } from 'react-native';
+import { Dimensions, PanResponder, Platform, View } from 'react-native';
 import { Globals } from '@utils';
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -141,6 +141,14 @@ function ApplicationNavigator() {
     }),
   ).current;
 
+  const configTranslate =
+    Platform.OS == 'android'
+      ? {
+          presentation: 'modal',
+          animationTypeForReplace: 'push',
+          animation: 'slide_from_right',
+        }
+      : {};
   return (
     <View
       // panHandlers is built from the ref created above; the gesture system owns it.
@@ -159,7 +167,11 @@ function ApplicationNavigator() {
       >
         <Stack.Navigator
           initialRouteName={Paths.Startup}
-          screenOptions={{ gestureEnabled: false, headerShown: false }}
+          screenOptions={{
+            ...configTranslate,
+            gestureEnabled: false,
+            headerShown: false,
+          }}
         >
           {SCREEN_KEYS.map(key => (
             <ScreenAny

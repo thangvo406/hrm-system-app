@@ -3,7 +3,7 @@ import {
   loginRequest,
   loginSocialRequest,
 } from '@services/slices/auth/authSlice';
-import { useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import { ValidateUtils } from '@kits/core/utils';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -11,7 +11,6 @@ import { useNavigation } from '@react-navigation/native';
 import { Paths } from '@navigation/paths';
 import type { RootStackParamList } from '@navigation/types';
 import { useTranslation } from 'react-i18next';
-import { CommonUtils } from '@utils';
 import { AppConstants, Environment } from '@constants';
 import { useRegister } from './useRegister';
 import AppNavigator from '@navigation/AppNavigator';
@@ -42,6 +41,20 @@ export type SocialLoginToken = {
   authorizationCode?: string;
   idToken?: string;
 };
+
+// Configure once at module level — no need to re-run on every hook mount
+GoogleSignin.configure({
+  offlineAccess: true,
+  webClientId: Environment.GOOGLE_WEB_CLIENT_ID,
+});
+NaverLogin.initialize({
+  appName: Environment.APP_NAME ?? '',
+  consumerKey: Environment.NAVER_CONSUMER_KEY ?? '',
+  consumerSecret: Environment.NAVER_CONSUMER_SECRET ?? '',
+  disableNaverAppAuthAndroid: true,
+  disableNaverAppAuthIOS: true,
+  serviceUrlSchemeIOS: Environment.NAVER_URL_SCHEME ?? '',
+});
 
 const validateLogin = (
   values: typeof initialLoginForm,
@@ -76,8 +89,7 @@ const onLoginGoogle = async (): Promise<SocialLoginToken | undefined> => {
           break;
         }
         default: {
-          console.log('Error', error);
-          Alert.alert('Google sign-in error 111', error.code);
+          Alert.alert('Google sign-in error', error.code);
         }
       }
     } else {
@@ -106,7 +118,6 @@ const onLoginNaver = async (): Promise<SocialLoginToken | undefined> => {
     await NaverLogin.logout();
     const { failureResponse, successResponse } = await NaverLogin.login();
     if (successResponse) {
-      console.log('response nevar login', successResponse);
       return {
         accessToken: successResponse.accessToken,
       };
@@ -124,50 +135,39 @@ const onLoginNaver = async (): Promise<SocialLoginToken | undefined> => {
 export const useAuthorization = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
+  // Initialize with errors so button is disabled on mount
+  const [loginErrors, setLoginErrors] = useState<LoginErrors>(() =>
+    validateLogin(initialLoginForm, k => k),
+  );
+  const [touchedFields, setTouchedFields] = useState<
+    ReadonlySet<keyof LoginErrors>
+  >(() => new Set());
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { t } = useTranslation();
-  const [loginForm, setLoginForm] = useState(initialLoginForm);
-  const [loginErrorsState, setLoginErrorsState] = useState<{
-    email?: boolean;
-    password?: boolean;
-  }>({});
+  // Ref: no re-render on keystroke — TextInput uses defaultValue (uncontrolled)
+  const loginFormRef = useRef({ ...initialLoginForm });
 
   const register = useRegister();
+
+  const onLoginChange =
+    (field: keyof typeof initialLoginForm) => (value: string) => {
+      loginFormRef.current[field] = value.trim();
+      // Mark field as touched on first change
+      setTouchedFields(prev =>
+        prev.has(field) ? prev : new Set([...prev, field]),
+      );
+      // Validate and only update state when error for this field changes
+      const newErrors = validateLogin(loginFormRef.current, t);
+      setLoginErrors(prev => {
+        if (prev[field] === newErrors[field]) return prev;
+        return { ...prev, [field]: newErrors[field] };
+      });
+    };
 
   const onLoginSuccess = () => {
     setLoading(false);
     navigation.reset({ index: 0, routes: [{ name: Paths.Home }] });
   };
-
-  const onLoginChange =
-    (field: keyof typeof initialLoginForm) => (value: string) => {
-      setLoginForm(previous => ({ ...previous, [field]: value?.trim?.() }));
-      setLoginErrorsState(previous => ({ ...previous, [field]: true }));
-    };
-
-  const loginFormState = CommonUtils.computeFormAuthErrors(
-    loginForm,
-    loginErrorsState,
-    validateLogin,
-    t,
-  );
-  const visibleLoginErrors = loginFormState.visible;
-  const isLoginValid = loginFormState.valid;
-
-  useEffect(() => {
-    GoogleSignin.configure({
-      offlineAccess: true,
-      webClientId: Environment.GOOGLE_WEB_CLIENT_ID,
-    });
-    NaverLogin.initialize({
-      appName: Environment.APP_NAME ?? '',
-      consumerKey: Environment.NAVER_CONSUMER_KEY ?? '',
-      consumerSecret: Environment.NAVER_CONSUMER_SECRET ?? '',
-      disableNaverAppAuthAndroid: true,
-      disableNaverAppAuthIOS: true,
-      serviceUrlSchemeIOS: Environment.NAVER_URL_SCHEME ?? '',
-    });
-  }, []);
 
   const onLoginFailure = (error: any) => {
     setLoading(false);
@@ -178,8 +178,8 @@ export const useAuthorization = () => {
       ].includes(error?.code)
     ) {
       const stepMapping = {
-        [NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED]: STEP.REGISTER_INPUT,
         [NEED_INFO_LOGIN_CODE.MEMBERSHIP_INCOMPLETE]: STEP.CHOOSE_MEMBERSHIP,
+        [NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED]: STEP.REGISTER_INPUT,
       };
       const step = stepMapping[error?.code];
       register.goToStep(step);
@@ -188,8 +188,8 @@ export const useAuthorization = () => {
       return;
     }
     AppNavigator.showSnackBar({
-      type: 'failed',
       message: error?.message,
+      type: 'failed',
     });
   };
 
@@ -198,15 +198,17 @@ export const useAuthorization = () => {
   };
 
   const submitLogin = () => {
-    setLoginErrorsState({ email: true, password: true });
-    if (!isLoginValid) return;
+    const errors = validateLogin(loginFormRef.current, t);
+    setLoginErrors(errors);
+    if (Object.keys(errors).length > 0) return;
 
+    setLoading(true);
     dispatch(
       loginRequest({
-        email: loginForm?.email,
+        email: loginFormRef.current.email,
         onFailure: onLoginFailure,
         onSuccess: onLoginSuccess,
-        password: loginForm.password,
+        password: loginFormRef.current.password,
       }),
     );
   };
@@ -232,20 +234,24 @@ export const useAuthorization = () => {
     dispatch(
       loginSocialRequest({
         ...token,
-        provider: provider.toUpperCase() as 'GOOGLE' | 'KAKAO' | 'NAVER',
         onFailure: onLoginFailure,
         onSuccess: onLoginSuccess,
+        provider: provider.toUpperCase() as 'GOOGLE' | 'KAKAO' | 'NAVER',
       }),
     );
   };
 
+  const visibleErrors: LoginErrors = {
+    email: touchedFields.has('email') ? loginErrors.email : undefined,
+    password: touchedFields.has('password') ? loginErrors.password : undefined,
+  };
+
   return {
-    isLoginValid,
+    isLoginValid: !loginErrors.email && !!loginFormRef.current?.password,
     loading,
-    login: loginForm,
-    loginErrors: visibleLoginErrors,
-    onForgotPassword,
+    loginErrors: visibleErrors,
     loginWithSocial,
+    onForgotPassword,
     onLoginChange,
     register,
     submitLogin,
