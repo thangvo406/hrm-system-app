@@ -31,15 +31,16 @@
       "tab_pay": "Pay Money",
       "tab_point": "Point",
       "balance_after": "Balance: {{amount}} KRW",
-      "empty": "No history to display."
+      "empty": "No history to display.",
+      "transaction_failed": "Transaction failed"
     },
     "welcome": {
       "login": "Login",
       "register": "New Registration"
     },
     "forgot_password": {
-      "desc_success": "비밀번호 변경이 완료되었습니다. 새 비밀번호로 로그인해 주세요.",
-      "title_register_info": "비밀번호 재설정을 위해 인증을 진행해 주세요"
+      "desc_success": "Password change completed. Please log in with your new password.",
+      "title_register_info": "Please proceed with verification to reset your password."
     },
     "product_detail": {
       "price_label": "Price",
@@ -136,7 +137,7 @@
     },
     "home": {
       "greeting": "Nice to meet you!",
-      "greeting_prefix": "님",
+      "greeting_prefix": "",
       "member_label": "Member",
       "pay_label": "Coop Pay :",
       "pay_amount": "{{amount}} KRW",
@@ -239,11 +240,11 @@
       "group_label": "Group : Cooperative Member (Student)",
       "contribution_title": "Contribution Details",
       "contribution_total_label": "Total Contribution Amount",
-      "capital_contribution": "추가 출자(증좌)",
-      "withdrawal_capital": "출자금 출금(감좌)",
+      "capital_contribution": "Additional Contribution (Increase)",
+      "withdrawal_capital": "Withdraw Contribution (Decrease)",
       "contribution_amount": "{{amount}} won",
-      "contribution_history": "출자 이력 / 예상 배당액 확인",
-      "contribution_add": "추가 출자 진행",
+      "contribution_history": "Contribution History / Check Expected Dividend",
+      "contribution_add": "Proceed with Additional Contribution",
       "pay_title": "Co-op Pay :",
       "pay_link": "Co-op Pay",
       "deposit_label": "Deposit Amount",

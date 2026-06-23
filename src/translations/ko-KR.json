@@ -177,7 +177,8 @@
       "tab_pay": "페이머니",
       "tab_point": "포인트",
       "balance_after": "잔액 : {{amount}}원",
-      "empty": "이력이 없습니다."
+      "empty": "이력이 없습니다.",
+      "transaction_failed": "거래 실패"
     },
     "announcements": {
       "title": "생협페이",

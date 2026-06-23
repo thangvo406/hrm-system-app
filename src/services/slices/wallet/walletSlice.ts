@@ -1,5 +1,9 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { GetCurrentWalletPayload, Wallet } from '@type/wallet';
+import type {
+  GetCurrentWalletPayload,
+  GetTransactionHistoriesPayload,
+  Wallet,
+} from '@type/wallet';
 
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -22,9 +26,16 @@ const walletSlice = createSlice({
     getCurrentWalletSuccess: (state, action: PayloadAction<Wallet>) => {
       state.currentWallet = action.payload;
     },
+    getTransactionHistoriesRequest: {
+      prepare: (payload: GetTransactionHistoriesPayload) => ({ payload }),
+      reducer: () => {},
+    },
   },
 });
 
-export const { getCurrentWalletRequest, getCurrentWalletSuccess } =
-  walletSlice.actions;
+export const {
+  getCurrentWalletRequest,
+  getCurrentWalletSuccess,
+  getTransactionHistoriesRequest,
+} = walletSlice.actions;
 export const walletReducer = walletSlice.reducer;

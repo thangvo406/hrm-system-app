@@ -10,6 +10,7 @@ const images = {
   ic_sort_gray: require('./ic_sort_gray.png') as number,
   ic_store: require('./ic_store.png') as number,
   ic_survey_gray: require('./ic_survey_gray.png') as number,
+  ic_tran_history: require('./ic_tran_history.png') as number,
   ic_user_fill: require('./ic_user_fill.png') as number,
   img_discount: require('./img_discount.png') as number,
   img_header_products_default: require('./img_header_products_default.png') as number,

@@ -12,6 +12,7 @@ const imageNames = {
   ic_sort_gray: 'ic_sort_gray',
   ic_store: 'ic_store',
   ic_survey_gray: 'ic_survey_gray',
+  ic_tran_history: 'ic_tran_history',
   ic_user_fill: 'ic_user_fill',
   img_discount: 'img_discount',
   img_header_products_default: 'img_header_products_default',

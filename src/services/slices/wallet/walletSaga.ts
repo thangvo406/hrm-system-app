@@ -1,14 +1,22 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { GetCurrentWalletPayload, Wallet } from '@type/wallet';
+import type {
+  GetCurrentWalletPayload,
+  GetTransactionHistoriesPayload,
+  Wallet,
+} from '@type/wallet';
 
 import { call, put, takeLatest } from 'redux-saga/effects';
 
-import { getCurrentWallet } from '@services/request/wallet';
+import {
+  getCurrentWallet,
+  getTransactionHistories,
+} from '@services/request/wallet';
 import { getErrorMessageApi } from '@utils/common';
 
 import {
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
+  getTransactionHistoriesRequest,
 } from './walletSlice';
 
 function* getCurrentWalletWorker(
@@ -25,6 +33,23 @@ function* getCurrentWalletWorker(
   }
 }
 
+function* getTransactionHistoriesWorker(
+  action: PayloadAction<GetTransactionHistoriesPayload>,
+): Generator<unknown, void, Wallet> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const data: Wallet = yield call(getTransactionHistories, request);
+    onSuccess?.(data);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 export function* walletSaga() {
   yield takeLatest(getCurrentWalletRequest.type, getCurrentWalletWorker);
+  yield takeLatest(
+    getTransactionHistoriesRequest.type,
+    getTransactionHistoriesWorker,
+  );
 }

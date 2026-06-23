@@ -1,68 +1,29 @@
-import type { PayCardTransaction } from '@hooks';
-import type { ListRenderItem } from 'react-native';
-
 import { Button, HeaderDetail, SegmentedTab } from '@components';
-import {
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import React, { useMemo } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useMemo } from 'react';
 import { ScaleSize } from '@kits/core';
 import { usePayCard } from '@hooks';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
+import { formatCurrency } from '@utils/product';
+import PointHistoryList from './PointHistoryList';
+import TransactionList from './TransactionList';
 
 const TEXT_DARK = '#1A1A1A';
-const TEXT_MUTED = '#7A7A7A';
 const SECTION_DIVIDER = Colors.gray3;
 const SCREEN_BACKGROUND = '#F2F2F2';
-
-type TransactionRowProps = {
-  readonly item: PayCardTransaction;
-};
-
-function TransactionRow({ item }: TransactionRowProps) {
-  const { t } = useTranslation();
-
-  return (
-    <View
-      style={styles.transactionRow}
-      testID={`pay-card-transaction-${item.id}`}
-    >
-      <View style={styles.transactionTopRow}>
-        <Text style={styles.transactionAmount}>{item.amount}</Text>
-        <Text style={styles.transactionDate}>{item.date}</Text>
-      </View>
-      <View style={styles.transactionBottomRow}>
-        <Text style={styles.transactionDescription}>{item.description}</Text>
-        <Text style={styles.transactionBalance}>
-          {t('pay_card.balance_after', { amount: item.balanceAfter })}
-        </Text>
-      </View>
-    </View>
-  );
-}
-
-const MemoTransactionRow = React.memo(TransactionRow);
-
-const keyExtractor = (item: PayCardTransaction) => item.id;
-
-const renderItem: ListRenderItem<PayCardTransaction> = ({ item }) => (
-  <MemoTransactionRow item={item} />
-);
 
 function PayCard() {
   const { t } = useTranslation();
   const {
+    currentWallet,
     historyTab,
+    onLoadMore,
     onRecharge,
-    payBalance,
+    payTransactions,
     pointBalance,
+    pointTransactions,
     setHistoryTab,
-    transactions,
   } = usePayCard();
 
   const historyTabs = useMemo(
@@ -87,6 +48,7 @@ function PayCard() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        style={styles.scrollView}
       >
         <View style={styles.section}>
           <View style={styles.payHeaderRow}>
@@ -100,7 +62,9 @@ function PayCard() {
             />
           </View>
           <Text style={styles.balanceText}>
-            {t('pay_card.pay_balance', { amount: payBalance })}
+            {t('pay_card.pay_balance', {
+              amount: formatCurrency(currentWallet?.balance),
+            })}
           </Text>
         </View>
 
@@ -125,13 +89,11 @@ function PayCard() {
             style={styles.historyTabs}
             tabs={historyTabs}
           />
-          <FlatList
-            data={transactions}
-            keyExtractor={keyExtractor}
-            renderItem={renderItem}
-            scrollEnabled={false}
-            showsVerticalScrollIndicator={false}
-          />
+          {historyTab === 'pay' ? (
+            <TransactionList data={payTransactions} onLoadMore={onLoadMore} />
+          ) : (
+            <PointHistoryList data={pointTransactions} />
+          )}
         </View>
       </ScrollView>
     </View>
@@ -150,6 +112,7 @@ const styles = StyleSheet.create({
   },
   historySection: {
     backgroundColor: '#FFFFFF',
+    flex: 1,
     paddingBottom: ScaleSize(16),
     paddingHorizontal: ScaleSize(20),
     paddingTop: ScaleSize(20),
@@ -189,7 +152,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
+    flexGrow: 1,
     paddingBottom: ScaleSize(32),
+  },
+  scrollView: {
+    flex: 1,
   },
   section: {
     backgroundColor: '#FFFFFF',
@@ -204,40 +171,5 @@ const styles = StyleSheet.create({
     color: TEXT_DARK,
     fontSize: ScaleSize(16),
     fontWeight: '700',
-  },
-  transactionAmount: {
-    color: TEXT_DARK,
-    fontSize: ScaleSize(24),
-    fontWeight: '700',
-  },
-  transactionBalance: {
-    color: TEXT_MUTED,
-    fontSize: ScaleSize(16),
-  },
-  transactionBottomRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: ScaleSize(8),
-  },
-  transactionDate: {
-    color: TEXT_MUTED,
-    fontSize: ScaleSize(12),
-  },
-  transactionDescription: {
-    color: TEXT_MUTED,
-    flex: 1,
-    fontSize: ScaleSize(16),
-    marginRight: ScaleSize(8),
-  },
-  transactionRow: {
-    borderTopColor: '#EFEFEF',
-    borderTopWidth: 1,
-    paddingVertical: ScaleSize(16),
-  },
-  transactionTopRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
   },
 });

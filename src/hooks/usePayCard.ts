@@ -1,4 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { WalletSelector } from '@services/selectors';
+import { getTransactionHistoriesRequest } from '@services/slices/wallet/walletSlice';
+import { ListApiResponse, TransactionHistory } from '@type';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type PayCardHistoryTab = 'pay' | 'point';
 
@@ -13,41 +17,6 @@ export type PayCardTransaction = {
 
 const MOCK_PAY_BALANCE = '100,000';
 const MOCK_POINT_BALANCE = '11,000';
-
-const MOCK_PAY_TRANSACTIONS: readonly PayCardTransaction[] = [
-  {
-    amount: '-10,000원',
-    balanceAfter: '100,000',
-    date: '2026-04-12 10:00AM',
-    description: '모바일 오더 사용',
-    id: 'pay-1',
-    type: 'pay',
-  },
-  {
-    amount: '-10,000원',
-    balanceAfter: '100,000',
-    date: '2026-04-12 10:00AM',
-    description: '모바일 오더 사용',
-    id: 'pay-2',
-    type: 'pay',
-  },
-  {
-    amount: '-10,000원',
-    balanceAfter: '100,000',
-    date: '2026-04-12 10:00AM',
-    description: '모바일 오더 사용',
-    id: 'pay-3',
-    type: 'pay',
-  },
-  {
-    amount: '-10,000원',
-    balanceAfter: '100,000',
-    date: '2026-04-12 10:00AM',
-    description: '모바일 오더 사용',
-    id: 'pay-4',
-    type: 'pay',
-  },
-];
 
 const MOCK_POINT_TRANSACTIONS: readonly PayCardTransaction[] = [
   {
@@ -74,23 +43,66 @@ const onRecharge = () => {
 
 export const usePayCard = () => {
   const [historyTab, setHistoryTab] = useState<PayCardHistoryTab>('pay');
+  const dispatch = useAppDispatch();
+  const currentWallet = useAppSelector(WalletSelector.getCurrentWallet);
 
   const payBalance = MOCK_PAY_BALANCE;
   const pointBalance = MOCK_POINT_BALANCE;
+  const [currentPage, setCurrentPage] = useState(0);
+  const [tranHistories, setTranHistories] = useState<TransactionHistory[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const isLast = useRef(false);
+  const isLoadingMore = useRef(false);
 
-  const transactions = useMemo(() => {
-    if (historyTab === 'pay') {
-      return MOCK_PAY_TRANSACTIONS;
+  const handleGetTranSuccess = (
+    data: ListApiResponse<TransactionHistory[]>,
+  ) => {
+    isLast.current = data.last;
+    setLoading(false);
+    setTranHistories(prev => {
+      let results = [];
+      results =
+        currentPage != 0
+          ? (prev || [])?.concat?.(data?.content)
+          : data?.content;
+      isLoadingMore.current = false;
+      return results;
+    });
+  };
+
+  useEffect(() => {
+    dispatch(
+      getTransactionHistoriesRequest({
+        page: currentPage,
+        size: 20,
+        // transactionType: 'CREDIT',
+        onSuccess: handleGetTranSuccess,
+        // onFailure: (message) => { ... },
+      }),
+    );
+  }, [currentPage]);
+
+  const onLoadMore = useCallback(() => {
+    if (isLast.current || isLoadingMore.current) {
+      return;
     }
-    return MOCK_POINT_TRANSACTIONS;
-  }, [historyTab]);
+    isLoadingMore.current = true;
+    setCurrentPage(prev => prev + 1);
+  }, []);
+
+  const payTransactions = tranHistories;
+  const pointTransactions = MOCK_POINT_TRANSACTIONS;
 
   return {
+    currentWallet,
     historyTab,
+    loading,
+    onLoadMore,
     onRecharge,
     payBalance,
+    payTransactions,
     pointBalance,
+    pointTransactions,
     setHistoryTab,
-    transactions,
   };
 };
