@@ -206,7 +206,6 @@ function InputInfo({
 
   const isFormValid =
     agreed &&
-    values.name.trim().length > 0 &&
     values.birthday.trim().length == BIRTHDAY_MAX_LENGTH &&
     values.indentify.trim().length == IDENTIFY_MAX_LENGTH &&
     values.phone.trim().length > 0 &&

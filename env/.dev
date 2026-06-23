@@ -1,9 +1,9 @@
 API_URL=https://api.example.com
 APP_NAME=Coop Test
 APP_ID=com.coop_use
-APP_IOS_ID=com.coopuse
-GOOGLE_IOS_CLIENT_ID=com.googleusercontent.apps.453541234898-bju88qinunom5ntb6q1i3cqqrl3fs610
-GOOGLE_WEB_CLIENT_ID=453541234898-bju88qinunom5ntb6q1i3cqqrl3fs610.apps.googleusercontent.com
+APP_IOS_ID=com.coopuse.dev
+GOOGLE_IOS_CLIENT_ID=com.googleusercontent.apps.453541234898-9h7rqnuhqbfoqrokpg3pmgabqc0lbvtl
+GOOGLE_WEB_CLIENT_ID=453541234898-9h7rqnuhqbfoqrokpg3pmgabqc0lbvtl.apps.googleusercontent.com
 ONE_SIGNAL_ID=027a3d1e-406d-4233-955d-06e5869d7374
 KAKAO_APP_KEY=5dce720828d2c9e03cbe43b7bb08af0c
 NAVER_CONSUMER_KEY=GbSp0z47zko3inGIeper

@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>453541234898-bju88qinunom5ntb6q1i3cqqrl3fs610.apps.googleusercontent.com</string>
+	<string>453541234898-9h7rqnuhqbfoqrokpg3pmgabqc0lbvtl.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.453541234898-bju88qinunom5ntb6q1i3cqqrl3fs610</string>
+	<string>com.googleusercontent.apps.453541234898-9h7rqnuhqbfoqrokpg3pmgabqc0lbvtl</string>
 	<key>API_KEY</key>
 	<string>AIzaSyAdDYa1rZ1HSKvAOz6Sh8_c2CUvSgfhGBU</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.coopuse</string>
+	<string>com.coopuse.dev</string>
 	<key>PROJECT_ID</key>
 	<string>coop-b66de</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:453541234898:ios:e4a844d2fd5f99c44b450b</string>
+	<string>1:453541234898:ios:1f30ce0501d8ea644b450b</string>
 </dict>
 </plist>
