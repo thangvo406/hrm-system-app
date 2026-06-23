@@ -1,3 +1,4 @@
+import TransactionDetail from '@dialogs/TransactionDetail';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useFocusEffect } from '@react-navigation/native';
@@ -21,7 +22,6 @@ export type PayCardTransaction = {
   readonly type: PayCardHistoryTab;
 };
 
-const MOCK_PAY_BALANCE = '100,000';
 const MOCK_POINT_BALANCE = '11,000';
 
 const MOCK_POINT_TRANSACTIONS: readonly PayCardTransaction[] = [
@@ -52,7 +52,6 @@ export const usePayCard = () => {
   const dispatch = useAppDispatch();
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
 
-  const payBalance = MOCK_PAY_BALANCE;
   const pointBalance = MOCK_POINT_BALANCE;
   const [currentPage, setCurrentPage] = useState(0);
   const [tranHistories, setTranHistories] = useState<TransactionHistory[]>([]);
@@ -104,19 +103,24 @@ export const usePayCard = () => {
     setCurrentPage(prev => prev + 1);
   }, []);
 
-  const payTransactions = tranHistories;
-  const pointTransactions = MOCK_POINT_TRANSACTIONS;
+  const onPressTranItem = useCallback((item: any) => {
+    AppNavigator.showDialog({
+      screen: TransactionDetail,
+      popupType: 'bottomSheet',
+      data: item,
+    });
+  }, []);
 
   return {
     currentWallet,
     historyTab,
     loading,
     onLoadMore,
+    onPressTranItem,
     onRecharge,
-    payBalance,
-    payTransactions,
+    tranHistories,
     pointBalance,
-    pointTransactions,
+    pointTransactions: MOCK_POINT_TRANSACTIONS,
     setHistoryTab,
   };
 };

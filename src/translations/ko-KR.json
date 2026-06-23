@@ -163,7 +163,13 @@
       "tab_point": "포인트",
       "balance_after": "잔액 : {{amount}}원",
       "empty": "이력이 없습니다.",
-      "transaction_failed": "거래 실패"
+      "transaction_failed": "거래 실패",
+      "transaction_detail": {
+        "title": "출자 내역",
+        "date_label": "출자일시",
+        "amount_label": "출자금",
+        "type_label": "출자 유형"
+      }
     },
     "announcements": {
       "title": "생협페이",

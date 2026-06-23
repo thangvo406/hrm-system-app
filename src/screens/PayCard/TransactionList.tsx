@@ -1,7 +1,7 @@
 import type { ListRenderItem } from 'react-native';
 import type { TransactionHistory } from '@type';
 
-import { EmptyView } from '@components';
+import { AppButton, EmptyView } from '@components';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { ScaleSize } from '@kits/core';
@@ -9,6 +9,7 @@ import { formatCurrency } from '@utils/product';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import imageNames from '@assets/images/names';
+import { TransactionHistoriesLoading } from '@components';
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#7A7A7A';
@@ -16,7 +17,13 @@ const AMOUNT_CREDIT_COLOR = '#3eb44a';
 const AMOUNT_DEBIT_COLOR = 'rgba(211, 47, 47, 0.5)';
 const AMOUNT_TRAN_FAILED = '#D32F2F';
 
-function TransactionRow({ item }: { readonly item: TransactionHistory }) {
+function TransactionRow({
+  item,
+  onPress,
+}: {
+  readonly item: TransactionHistory;
+  readonly onPress: (data: any) => void;
+}) {
   const { t } = useTranslation();
   const isSuccess = item.status === 'SUCCESS';
   const isCredit = item.transactionDirection === 'CREDIT';
@@ -27,7 +34,11 @@ function TransactionRow({ item }: { readonly item: TransactionHistory }) {
       : AMOUNT_DEBIT_COLOR;
 
   return (
-    <View style={styles.row} testID={`pay-card-transaction-${item.id}`}>
+    <AppButton
+      onPress={() => onPress?.(item)}
+      style={styles.row}
+      testID={`pay-card-transaction-${item.id}`}
+    >
       <View style={styles.topRow}>
         <Text style={[styles.amount, { color: amountColor }]}>
           {`${isCredit ? '+' : '-'} ${formatCurrency(item.amount)}`}
@@ -49,7 +60,7 @@ function TransactionRow({ item }: { readonly item: TransactionHistory }) {
           {t('pay_card.transaction_failed')}
         </Text>
       )}
-    </View>
+    </AppButton>
   );
 }
 
@@ -57,37 +68,45 @@ const MemoTransactionRow = React.memo(TransactionRow);
 
 const keyExtractor = (item: TransactionHistory) => String(item.id);
 
-const renderItem: ListRenderItem<TransactionHistory> = ({ item }) => (
-  <MemoTransactionRow item={item} />
-);
-
 type TransactionListProps = {
   readonly data: TransactionHistory[];
+  readonly loading: boolean;
   readonly onLoadMore?: () => void;
+  readonly onPressItem: (data: any) => void;
 };
 
 function TransactionList({
   data,
   onLoadMore = undefined,
+  onPressItem,
+  loading,
 }: TransactionListProps) {
   const { t } = useTranslation();
-
-  if (data.length === 0) {
-    return (
-      <EmptyView desc={t('common.no_data')} icon={imageNames.ic_tran_history} />
-    );
-  }
+  const renderItem: ListRenderItem<TransactionHistory> = ({ item }) => (
+    <MemoTransactionRow onPress={onPressItem} item={item} />
+  );
 
   return (
-    <FlatList
-      data={data}
-      keyExtractor={keyExtractor}
-      onEndReached={onLoadMore}
-      onEndReachedThreshold={0.4}
-      renderItem={renderItem}
-      scrollEnabled={false}
-      showsVerticalScrollIndicator={false}
-    />
+    <>
+      {loading ? (
+        <TransactionHistoriesLoading />
+      ) : data?.length > 0 ? (
+        <FlatList
+          data={data}
+          keyExtractor={keyExtractor}
+          onEndReached={onLoadMore}
+          onEndReachedThreshold={0.4}
+          renderItem={renderItem}
+          scrollEnabled={false}
+          showsVerticalScrollIndicator={false}
+        />
+      ) : (
+        <EmptyView
+          desc={t('common.no_data')}
+          icon={imageNames.ic_tran_history}
+        />
+      )}
+    </>
   );
 }
 

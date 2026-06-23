@@ -1,7 +1,7 @@
 import type { ListRenderItem } from 'react-native';
 import type { PayCardTransaction } from '@hooks';
 
-import { EmptyView } from '@components';
+import { EmptyView, TransactionHistoriesLoading } from '@components';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { ScaleSize } from '@kits/core';
@@ -39,19 +39,32 @@ const renderItem: ListRenderItem<PayCardTransaction> = ({ item }) => (
 
 type PointHistoryListProps = {
   readonly data: readonly PayCardTransaction[];
+  readonly loading: boolean;
 };
 
-function PointHistoryList({ data }: PointHistoryListProps) {
+function PointHistoryList({ loading, data }: PointHistoryListProps) {
   const { t } = useTranslation();
 
-  if (data.length === 0) {
-    return (
-      <EmptyView
-        desc={t('common.no_data')}
-        icon={imageNames.ic_tran_history}
-      />
-    );
-  }
+  return (
+    <>
+      {loading ? (
+        <TransactionHistoriesLoading />
+      ) : data?.length > 0 ? (
+        <FlatList
+          data={data}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          scrollEnabled={false}
+          showsVerticalScrollIndicator={false}
+        />
+      ) : (
+        <EmptyView
+          desc={t('common.no_data')}
+          icon={imageNames.ic_tran_history}
+        />
+      )}
+    </>
+  );
 
   return (
     <FlatList

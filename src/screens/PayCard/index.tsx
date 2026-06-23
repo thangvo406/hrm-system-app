@@ -20,10 +20,12 @@ function PayCard() {
     historyTab,
     onLoadMore,
     onRecharge,
-    payTransactions,
+    tranHistories,
     pointBalance,
     pointTransactions,
+    loading,
     setHistoryTab,
+    onPressTranItem,
   } = usePayCard();
 
   const historyTabs = useMemo(
@@ -32,18 +34,25 @@ function PayCard() {
         id: 'pay' as const,
         label: t('pay_card.tab_pay'),
         render: () => (
-          <TransactionList data={payTransactions} onLoadMore={onLoadMore} />
+          <TransactionList
+            data={tranHistories}
+            onPressItem={onPressTranItem}
+            onLoadMore={onLoadMore}
+            loading={loading}
+          />
         ),
         testID: 'pay-card-tab-pay',
       },
       {
         id: 'point' as const,
         label: t('pay_card.tab_point'),
-        render: () => <PointHistoryList data={pointTransactions} />,
+        render: () => (
+          <PointHistoryList loading={loading} data={pointTransactions} />
+        ),
         testID: 'pay-card-tab-point',
       },
     ],
-    [t, payTransactions, pointTransactions, onLoadMore],
+    [t, tranHistories, loading, pointTransactions, onLoadMore],
   );
 
   return (

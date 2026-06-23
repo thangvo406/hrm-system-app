@@ -8,11 +8,10 @@ import {
   FlatList,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { AppConstants } from '@constants';
-import { HeaderDetail } from '@components';
+import { Button, HeaderDetail } from '@components';
 import { ScaleSize } from '@kits/core';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useSurveyDetail } from '@hooks';
@@ -102,27 +101,14 @@ function SurveyDetail(props: RootScreenProps<Paths.SurveyDetail>) {
         <View
           style={[
             styles.submitBar,
-            { paddingBottom: insets.bottom + ScaleSize(12) },
+            { paddingBottom: insets.bottom + (insets.bottom == 0 ? 20 : 0) },
           ]}
         >
-          <TouchableOpacity
-            activeOpacity={0.85}
+          <Button
+            title={t('survey_detail.submit')}
             disabled={submitting}
             onPress={onSubmit}
-            style={[
-              styles.submitButton,
-              submitting && styles.submitButtonDisabled,
-            ]}
-            testID="survey-detail-submit"
-          >
-            {submitting ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.submitLabel}>
-                {t('survey_detail.submit')}
-              </Text>
-            )}
-          </TouchableOpacity>
+          />
         </View>
       ) : undefined}
     </View>

@@ -22,7 +22,13 @@
       "tab_point": "Point",
       "balance_after": "Balance: {{amount}} KRW",
       "empty": "No history to display.",
-      "transaction_failed": "Transaction failed"
+      "transaction_failed": "Transaction failed",
+      "transaction_detail": {
+        "title": "Transaction history",
+        "date_label": "Date",
+        "amount_label": "Amount",
+        "type_label": "Transaction Type"
+      }
     },
     "welcome": {
       "login": "Login",
