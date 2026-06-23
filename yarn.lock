@@ -5170,6 +5170,7 @@ __metadata:
     react-native-render-html: 6.3.4
     react-native-safe-area-context: 5.5.2
     react-native-screens: 4.23.0
+    react-native-splash-screen: 3.3.0
     react-native-svg: 15.12.1
     react-native-svg-transformer: 1.5.0
     react-native-worklets: ~0.8.3
@@ -10162,6 +10163,15 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 9b7d4cc2aed913a68abd725c51b41ae1d3c24abe3b47285f7a397d15c2f672710fa16819a8062ced3b60fb36e623d58d929a700863e1ae6e764a7f3ff981dd58
+  languageName: node
+  linkType: hard
+
+"react-native-splash-screen@npm:3.3.0":
+  version: 3.3.0
+  resolution: "react-native-splash-screen@npm:3.3.0"
+  peerDependencies:
+    react-native: ">=0.57.0"
+  checksum: 14c565d5d4214f55586dcf6f7abd12d99d3e0667f67de3bda7aa24988971567b283a4187fbc0c6269c83b3c21d59d1950335c61bb0780ec2d065e20b3b9199d0
   languageName: node
   linkType: hard
 

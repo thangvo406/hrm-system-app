@@ -3,3 +3,4 @@
 //
 
 #import <GoogleSignIn/GoogleSignIn.h>
+#import "RNSplashScreen.h"

@@ -31,8 +31,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       in: window,
       launchOptions: launchOptions
     )
+    
+    RNSplashScreen.show()
 
-    return true
+   return true
   }
 
   func application(
@@ -55,7 +57,6 @@ class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()
   }
-  
 
   override func bundleURL() -> URL? {
 #if DEBUG
