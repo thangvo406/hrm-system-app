@@ -2,6 +2,7 @@ import UIKit
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
+import GoogleMaps
 import GoogleSignIn
 import KakaoSDKAuth
 import NaverThirdPartyLogin
@@ -23,6 +24,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     reactNativeDelegate = delegate
     reactNativeFactory = factory
+
+    if let apiKey = Bundle.main.object(forInfoDictionaryKey: "GMSApiKey") as? String {
+      GMSServices.provideAPIKey(apiKey)
+    }
 
     window = UIWindow(frame: UIScreen.main.bounds)
 
