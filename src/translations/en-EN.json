@@ -134,9 +134,9 @@
       "pay_amount": "{{amount}} KRW",
       "point_label": "Point : {{point}}",
       "pay_action": "Tap to pay",
-      "dividend_title": "Check Contribution",
+      "dividend_title": "Contribution",
       "dividend_desc": "Curious about your expected dividend?",
-      "order_title": "Mobile Order",
+      "order_title": "Smart Order",
       "order_desc": "Fast order for on-campus delivery / pickup",
       "frequent_store": "Frequently Ordered Store",
       "store_eta": "About 15 min",
@@ -206,7 +206,18 @@
     "stores": {
       "title": "Smart Order",
       "search_placeholder": "Search",
-      "section_label": "Frequently Ordered Store"
+      "section_label": "Frequently Ordered Store",
+      "filter": {
+        "title": "Storting",
+        "sort_by": "Sort by",
+        "sort_direction": "Sort direction",
+        "sort_by_order": "Default",
+        "sort_by_name": "Store name",
+        "sort_by_opening": "Opening hours",
+        "direction_asc": "Ascending",
+        "direction_desc": "Descending",
+        "submit": "Apply"
+      }
     },
     "survey_detail": {
       "short_answer_placeholder": "Your answer",

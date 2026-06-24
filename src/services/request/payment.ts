@@ -1,6 +1,7 @@
 import type {
   CheckoutInfo,
   GetInfoProductCheckoutPayload,
+  RemoveCartItemPayload,
 } from '@type/payment';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -23,4 +24,12 @@ export const getInfoProductCheckout = async (
     { loading: false },
   );
   return response?.data;
+};
+
+type RemoveCartItemRequest = Omit<RemoveCartItemPayload, 'onFailure' | 'onSuccess'>;
+
+export const removeCartItem = async (
+  request: RemoveCartItemRequest,
+): Promise<void> => {
+  await httpRequest.delete(EndPoints.PAYMENT.removeCartItem(request.productId));
 };

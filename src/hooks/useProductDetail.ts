@@ -8,7 +8,10 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import AppNavigator from '@navigation/AppNavigator';
 import { useTranslation } from 'react-i18next';
-import { getInfoProductCheckoutRequest } from '@services/slices/payment/paymentSlice';
+import {
+  getInfoProductCheckoutRequest,
+  removeCartItemRequest,
+} from '@services/slices/payment/paymentSlice';
 import { CheckoutInfo } from '@type';
 import { groupAttributeItemsByAttributeId } from '@utils/product';
 
@@ -136,6 +139,26 @@ export const useProductDetail = (props: any) => {
   };
 
   const onPressCart = () => {
+    if (quantity == 0) {
+      dispatch(
+        removeCartItemRequest({
+          productId,
+          onSuccess: () => {
+            AppNavigator.showSnackBar({
+              message: 'Remove item successfully',
+              type: 'success',
+            });
+          },
+          onFailure: (message: string) => {
+            AppNavigator.showSnackBar({
+              message: message || '',
+              type: 'failed',
+            });
+          },
+        }),
+      );
+      return;
+    }
     const flatAttributes = Object.values(selectedAttributes)
       .flat()
       .map(attributeItemId => ({ attributeItemId }));

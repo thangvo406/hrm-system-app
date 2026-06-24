@@ -19,3 +19,7 @@ export type CheckoutInfo = {
 export type GetInfoProductCheckoutPayload = {
   productId: number;
 } & AppCallback;
+
+export type RemoveCartItemPayload = {
+  readonly productId: number;
+} & AppCallback;

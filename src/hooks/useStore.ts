@@ -1,5 +1,6 @@
 import type { ListApiResponse } from '@type/common';
 import type { StoreItem } from '@type/store';
+import type { StoreFilterValue } from '@dialogs/FilterStore';
 
 import { Paths } from '@navigation/paths';
 import { getStoresRequest } from '@services/slices/stores/storesSlice';
@@ -12,6 +13,10 @@ import FilterStore from '@dialogs/FilterStore';
 export type { StoreItem } from '@type/store';
 
 const PAGE_SIZE = 10;
+const DEFAULT_FILTER: StoreFilterValue = {
+  sortBy: 'sortOrder',
+  sortDirection: 'asc',
+};
 
 export const useStore = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +25,7 @@ export const useStore = () => {
   const [error, setError] = useState<string | undefined>(undefined);
   const [searchKey, setSearchKey] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
+  const [filter, setFilter] = useState<StoreFilterValue>(DEFAULT_FILTER);
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
 
@@ -54,9 +60,17 @@ export const useStore = () => {
           keyword: searchKey,
           page: currentPage,
           size: PAGE_SIZE,
+          ...(filter || {}),
         }),
       );
-    }, [currentPage, searchKey, dispatch, handleFailure, handleSuccess]),
+    }, [
+      currentPage,
+      filter,
+      searchKey,
+      dispatch,
+      handleFailure,
+      handleSuccess,
+    ]),
   );
 
   const onLoadMore = useCallback(() => {
@@ -83,15 +97,23 @@ export const useStore = () => {
     setCurrentPage(0);
   }, []);
 
+  const handleFilterSubmit = useCallback((value: StoreFilterValue) => {
+    setFilter(value);
+    setCurrentPage(0);
+  }, []);
+
   const onPressFilter = useCallback(() => {
     AppNavigator.showDialog({
       screen: FilterStore,
       popupType: 'bottomSheet',
+      initialValue: filter,
+      onSubmit: handleFilterSubmit,
     });
-  }, []);
+  }, [filter, handleFilterSubmit]);
 
   return {
     error,
+    filter,
     loading,
     isShowSearchBar,
     onLoadMore,

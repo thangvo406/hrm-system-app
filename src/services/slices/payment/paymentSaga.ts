@@ -2,14 +2,15 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   CheckoutInfo,
   GetInfoProductCheckoutPayload,
+  RemoveCartItemPayload,
 } from '@type/payment';
 
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, takeLatest } from 'redux-saga/effects';
 
-import { getInfoProductCheckout } from '@services/request/payment';
+import { getInfoProductCheckout, removeCartItem } from '@services/request/payment';
 import { getErrorMessageApi } from '@utils/common';
 
-import { getInfoProductCheckoutRequest } from './paymentSlice';
+import { getInfoProductCheckoutRequest, removeCartItemRequest } from './paymentSlice';
 
 function* getInfoProductCheckoutWorker(
   action: PayloadAction<GetInfoProductCheckoutPayload>,
@@ -24,9 +25,23 @@ function* getInfoProductCheckoutWorker(
   }
 }
 
+function* removeCartItemWorker(
+  action: PayloadAction<RemoveCartItemPayload>,
+): Generator<unknown, void, void> {
+  const { onSuccess, onFailure, ...request } = action.payload || {};
+  try {
+    yield call(removeCartItem, request);
+    onSuccess?.();
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 export function* paymentSaga() {
   yield takeLatest(
     getInfoProductCheckoutRequest.type,
     getInfoProductCheckoutWorker,
   );
+  yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
 }

@@ -193,7 +193,18 @@
     "stores": {
       "title": "스마트오더",
       "search_placeholder": "Search",
-      "section_label": "자주 주문한 매장"
+      "section_label": "자주 주문한 매장",
+      "filter": {
+        "title": "저장",
+        "sort_by": "정렬 기준",
+        "sort_direction": "정렬 방향",
+        "sort_by_order": "기본순",
+        "sort_by_name": "매장명",
+        "sort_by_opening": "영업 시간",
+        "direction_asc": "오름차순",
+        "direction_desc": "내림차순",
+        "submit": "적용"
+      }
     },
     "survey_detail": {
       "short_answer_placeholder": "답변을 입력해 주세요",

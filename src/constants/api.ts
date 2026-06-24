@@ -49,6 +49,7 @@ export const EndPoints = {
     checkout: 'app/cart/items',
     updateProductCart: 'app/cart/items',
     getInfoProductCheckout: (request: string) => `app/cart/check?${request}`,
+    removeCartItem: (productId: number) => `app/cart/items/${productId}`,
   },
   WALLET: {
     currentWallet: 'wallet',
