@@ -26,10 +26,15 @@ export const getInfoProductCheckout = async (
   return response?.data;
 };
 
-type RemoveCartItemRequest = Omit<RemoveCartItemPayload, 'onFailure' | 'onSuccess'>;
+type RemoveCartItemRequest = Omit<
+  RemoveCartItemPayload,
+  'onFailure' | 'onSuccess'
+>;
 
 export const removeCartItem = async (
   request: RemoveCartItemRequest,
 ): Promise<void> => {
-  await httpRequest.delete(EndPoints.PAYMENT.removeCartItem(request.productId));
+  await httpRequest.delete(
+    EndPoints.PAYMENT.removeCartItem(request.cartItemId),
+  );
 };

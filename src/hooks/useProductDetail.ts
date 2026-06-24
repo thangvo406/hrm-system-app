@@ -32,6 +32,7 @@ export const useProductDetail = (props: any) => {
   const [selectedAttributes, setSelectedAttributes] =
     useState<SelectedAttributes>({});
   const [checkoutInfo, setCheckoutInfo] = useState<CheckoutInfo | null>();
+  const [refreshCheckoutInfo, setRefreshCheckoutInfo] = useState(false);
 
   useEffect(() => {
     setQuantity(checkoutInfo?.quantity || 1);
@@ -121,6 +122,21 @@ export const useProductDetail = (props: any) => {
     );
   }, [dispatch, productId]);
 
+  useEffect(() => {
+    if (productId == null || productId === '') {
+      setLoading(false);
+      setError('Missing product id');
+      return;
+    }
+    dispatch(
+      getInfoProductCheckoutRequest({
+        // onFailure: handleFailure,
+        onSuccess: handleGetCheckoutInfoSuccess,
+        productId,
+      }),
+    );
+  }, [dispatch, productId, refreshCheckoutInfo]);
+
   const onSelectAttribute = (attribute: AttributeDetail, itemId: number) => {
     setSelectedAttributes(prev => {
       const current = prev[attribute.id] ?? [];
@@ -142,12 +158,13 @@ export const useProductDetail = (props: any) => {
     if (quantity == 0) {
       dispatch(
         removeCartItemRequest({
-          productId,
+          cartItemId: checkoutInfo?.cartItemId || 0,
           onSuccess: () => {
             AppNavigator.showSnackBar({
               message: 'Remove item successfully',
               type: 'success',
             });
+            setCheckoutInfo(undefined);
           },
           onFailure: (message: string) => {
             AppNavigator.showSnackBar({
@@ -174,6 +191,7 @@ export const useProductDetail = (props: any) => {
             message: t('product_detail.add_cart_success'),
             type: 'success',
           });
+          setRefreshCheckoutInfo(prev => !prev);
         },
         onFailure: (message: string) => {
           AppNavigator.showSnackBar({

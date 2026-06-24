@@ -14,6 +14,7 @@ export type CheckoutInfo = {
   readonly finalPrice: number;
   readonly selectedAttributes: CheckoutInfoItem[];
   readonly subTotal: number;
+  readonly cartItemId: number;
 };
 
 export type GetInfoProductCheckoutPayload = {
@@ -21,5 +22,5 @@ export type GetInfoProductCheckoutPayload = {
 } & AppCallback;
 
 export type RemoveCartItemPayload = {
-  readonly productId: number;
+  readonly cartItemId: number;
 } & AppCallback;
