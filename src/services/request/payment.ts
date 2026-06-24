@@ -1,13 +1,16 @@
 import type {
+  CartItem,
   CheckoutInfo,
   GetInfoProductCheckoutPayload,
+  GetListCartPayload,
   RemoveCartItemPayload,
+  UpdateCartItemPayload,
 } from '@type/payment';
 
 import { httpRequest } from '@services/common/httpRequest';
 import { EndPoints } from '@constants';
 import { CommonUtils } from '@utils';
-import { SingleApiResponse } from '@type/common';
+import { ListApiResponse, SingleApiResponse } from '@type/common';
 
 type GetInfoProductCheckoutRequest = Omit<
   GetInfoProductCheckoutPayload,
@@ -36,5 +39,31 @@ export const removeCartItem = async (
 ): Promise<void> => {
   await httpRequest.delete(
     EndPoints.PAYMENT.removeCartItem(request.cartItemId),
+  );
+};
+
+type UpdateCartItemRequest = Omit<
+  UpdateCartItemPayload,
+  'onFailure' | 'onSuccess'
+>;
+
+export const updateCartItem = async (
+  request: UpdateCartItemRequest,
+): Promise<void> => {
+  const { cartItemId, ...body } = request;
+  await httpRequest.patch(
+    EndPoints.PAYMENT.updateProductCart(cartItemId),
+    body,
+  );
+};
+
+type GetListCartRequest = Omit<GetListCartPayload, 'onFailure' | 'onSuccess'>;
+
+export const getListCart = async (
+  request: GetListCartRequest,
+): Promise<ListApiResponse<CartItem[]>> => {
+  const params = CommonUtils.objectToQueryParams(request);
+  return httpRequest.get<ListApiResponse<CartItem[]>>(
+    EndPoints.PAYMENT.getListCart(params),
   );
 };

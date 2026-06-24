@@ -1,7 +1,9 @@
 import type {
   CheckoutInfo,
   GetInfoProductCheckoutPayload,
+  GetListCartPayload,
   RemoveCartItemPayload,
+  UpdateCartItemPayload,
 } from '@type/payment';
 
 import { createSlice } from '@reduxjs/toolkit';
@@ -22,13 +24,25 @@ const paymentSlice = createSlice({
       prepare: (payload: GetInfoProductCheckoutPayload) => ({ payload }),
       reducer: () => {},
     },
+    getListCartRequest: {
+      prepare: (payload: GetListCartPayload) => ({ payload }),
+      reducer: () => {},
+    },
     removeCartItemRequest: {
       prepare: (payload: RemoveCartItemPayload) => ({ payload }),
+      reducer: () => {},
+    },
+    updateCartItemRequest: {
+      prepare: (payload: UpdateCartItemPayload) => ({ payload }),
       reducer: () => {},
     },
   },
 });
 
-export const { getInfoProductCheckoutRequest, removeCartItemRequest } =
-  paymentSlice.actions;
+export const {
+  getInfoProductCheckoutRequest,
+  getListCartRequest,
+  removeCartItemRequest,
+  updateCartItemRequest,
+} = paymentSlice.actions;
 export const paymentReducer = paymentSlice.reducer;

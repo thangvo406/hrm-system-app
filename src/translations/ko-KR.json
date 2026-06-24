@@ -206,6 +206,11 @@
         "submit": "적용"
       }
     },
+    "carts": {
+      "title": "장바구니",
+      "manage": "관리",
+      "done": "완료"
+    },
     "survey_detail": {
       "short_answer_placeholder": "답변을 입력해 주세요",
       "submit": "제출하기",

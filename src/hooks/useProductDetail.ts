@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import {
   getInfoProductCheckoutRequest,
   removeCartItemRequest,
+  updateCartItemRequest,
 } from '@services/slices/payment/paymentSlice';
 import { CheckoutInfo } from '@type';
 import { groupAttributeItemsByAttributeId } from '@utils/product';
@@ -164,7 +165,10 @@ export const useProductDetail = (props: any) => {
               message: 'Remove item successfully',
               type: 'success',
             });
-            setCheckoutInfo(undefined);
+            setCheckoutInfo(prev => ({
+              ...prev,
+              quantity: 0,
+            }));
           },
           onFailure: (message: string) => {
             AppNavigator.showSnackBar({
@@ -179,9 +183,14 @@ export const useProductDetail = (props: any) => {
     const flatAttributes = Object.values(selectedAttributes)
       .flat()
       .map(attributeItemId => ({ attributeItemId }));
+    const actionExecutor =
+      checkoutInfo?.quantity > 0
+        ? updateCartItemRequest
+        : checkoutProductRequest;
     dispatch(
-      checkoutProductRequest({
+      actionExecutor({
         productId,
+        cartItemId: checkoutInfo?.cartItemId,
         quantity: quantity,
         selectedAttributes: flatAttributes,
         // storeId,

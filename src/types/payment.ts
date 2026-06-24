@@ -1,4 +1,5 @@
-import type { AppCallback } from './common';
+import type { AppCallback, ListApiResponse } from './common';
+import type { IRequestCheckout } from './products';
 
 export type CheckoutInfoItem = {
   readonly attributeItemId: number;
@@ -17,9 +18,31 @@ export type CheckoutInfo = {
   readonly cartItemId: number;
 };
 
+export type CartItem = {
+  readonly cartItemId: number;
+  readonly productId: number;
+  readonly productName: string;
+  readonly quantity: number;
+  readonly unitPrice: number;
+  readonly totalPrice: number;
+  readonly thumbnail?: string;
+};
+
+export interface IRequestGetListCart {
+  page: number;
+  size: number;
+}
+
+export type GetListCartPayload = IRequestGetListCart & {
+  readonly onSuccess?: (data: ListApiResponse<CartItem[]>) => void;
+  readonly onFailure?: (error: string) => void;
+};
+
 export type GetInfoProductCheckoutPayload = {
   productId: number;
 } & AppCallback;
+
+export type UpdateCartItemPayload = { readonly cartItemId: number } & AppCallback & IRequestCheckout;
 
 export type RemoveCartItemPayload = {
   readonly cartItemId: number;
