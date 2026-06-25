@@ -22,10 +22,11 @@ function PaymentCart(props: any) {
     setDeliveryTab,
     setPaymentMethod,
     onPressPickupTime,
+    onPressOrder,
   } = usePaymentCart(props);
 
   return (
-    <SafeAreaView edges={['bottom']} style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <HeaderDetail title="Payment" />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -59,14 +60,14 @@ function PaymentCart(props: any) {
           </Text>
         </View>
         <Button
-          onPress={() => undefined}
+          onPress={onPressOrder}
           style={styles.orderButton}
           testID="payment-order-now"
           title="Order Now"
           type="primary"
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

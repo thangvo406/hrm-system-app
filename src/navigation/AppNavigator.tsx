@@ -132,6 +132,10 @@ function goBack() {
     navigator?.goBack?.();
   }
 }
+function canGoBack() {
+  return navigator?.canGoBack?.();
+}
+
 function reset(name: string, params = {}) {
   navigator.dispatch(
     CommonActions.reset({
@@ -283,6 +287,7 @@ export default {
   showLoading,
   showMenu,
   closeMenu,
+  canGoBack,
   hideAllPopup,
   showDialogErrorOpenCamera,
   showDialogErrorOpenPhoto,

@@ -47,6 +47,7 @@ function Stores() {
     onPressStore,
     onSearchChange,
     stores,
+    onBack,
   } = useStore();
 
   const renderItem: ListRenderItem<StoreItem> = ({ item }) => (
@@ -59,7 +60,7 @@ function Stores() {
 
   return (
     <View style={styles.safeArea}>
-      <HeaderDetail title={t('stores.title')} />
+      <HeaderDetail title={t('stores.title')} onPressBack={onBack} />
       {(stores?.length > 0 || !!isShowSearchBar) && (
         <SearchComponent
           onPressFilter={onPressFilter}

@@ -1,5 +1,13 @@
 import AlertCircleIcon from './alert-circle.svg';
+import IcCalendarIcon from './ic_calendar.svg';
+import IcCopyIcon from './ic_copy.svg';
 import EmailIcon from './email.svg';
+import IcMapPinIcon from './ic_map_pin.svg';
+import IcOrderReceiptIcon from './ic_order_receipt.svg';
+import IcShieldCheckIcon from './ic_shield_check.svg';
+import IcShoppingBagIcon from './ic_shopping_bag.svg';
+import IcTruckIcon from './ic_truck.svg';
+import IcWalletIcon from './ic_wallet.svg';
 import EyeOffIcon from './eye-off.svg';
 import EyeIcon from './eye.svg';
 import FireIcon from './fire.svg';
@@ -32,6 +40,14 @@ import IconNotifyReadAll from './ic_notify_read_all.svg';
 const icons = {
   'alert-circle': AlertCircleIcon,
   email: EmailIcon,
+  ic_calendar: IcCalendarIcon,
+  ic_copy: IcCopyIcon,
+  ic_map_pin: IcMapPinIcon,
+  ic_order_receipt: IcOrderReceiptIcon,
+  ic_shield_check: IcShieldCheckIcon,
+  ic_shopping_bag: IcShoppingBagIcon,
+  ic_truck: IcTruckIcon,
+  ic_wallet: IcWalletIcon,
   'eye-off': EyeOffIcon,
   eye: EyeIcon,
   fire: FireIcon,

@@ -6,9 +6,10 @@ import {
   getListCartRequest,
   removeCartItemRequest,
 } from '@services/slices/payment/paymentSlice';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
+import { useTranslation } from 'react-i18next';
 
 const PAGE_SIZE = 20;
 
@@ -20,6 +21,11 @@ export const useCart = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
+  const { t } = useTranslation();
+
+  const titleManageCart = useMemo(() => {
+    return isManaging ? t('carts.done') : t('carts.manage');
+  }, [isManaging]);
 
   const handleSuccess = (data: ListApiResponse<StoreCartItem[]>) => {
     isLast.current = data.last;
@@ -66,7 +72,7 @@ export const useCart = () => {
       removeCartItemRequest({
         cartItemId,
         onSuccess: () => {
-          setItems(prev => prev.filter(item => item.cartItemId !== cartItemId));
+          setItems(prev => prev.filter(item => item.id !== cartItemId));
           AppNavigator.showSnackBar({
             message: 'Đã xóa sản phẩm',
             type: 'success',
@@ -89,6 +95,7 @@ export const useCart = () => {
     isManaging,
     items,
     loading,
+    titleManageCart,
     onRemoveItem,
     onToggleManage,
     onLoadMore,

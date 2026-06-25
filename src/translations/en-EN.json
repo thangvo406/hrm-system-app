@@ -287,6 +287,21 @@
       "method_virtual_account_desc": "Recharge after deposit to virtual account",
       "security_note": "For safe payment, all information is encrypted and protected.",
       "next": "Next"
+    },
+    "order_completed": {
+      "title": "Order Placed Successfully!",
+      "subtitle": "Thank you for your purchase.\nYour order is being processed.",
+      "order_code": "Order Code",
+      "copy": "Copy",
+      "order_date": "Order Date",
+      "delivery_address": "Delivery Address",
+      "shipping_method": "Shipping Method",
+      "payment_method": "Payment Method",
+      "notify_title": "We will notify you",
+      "notify_subtitle": "when your order is confirmed and shipped.",
+      "view_detail": "View Order Detail",
+      "continue_shopping": "Continue Shopping",
+      "go_home": "Go to Home"
     }
   }
 }

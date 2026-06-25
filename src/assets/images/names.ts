@@ -16,6 +16,7 @@ const imageNames = {
   ic_right_topup: 'ic_right_topup',
   ic_sort_gray: 'ic_sort_gray',
   ic_store: 'ic_store',
+  ic_success_check: 'ic_success_check',
   ic_survey_gray: 'ic_survey_gray',
   ic_tran_history: 'ic_tran_history',
   ic_user_fill: 'ic_user_fill',

@@ -25,6 +25,7 @@ import {
   IResponseRegisterSendOtp,
   IResponseRegisterVerifyOtp,
 } from '@type/auth';
+import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
 
 const {
   CARRIER_ITEMS,
@@ -109,7 +110,6 @@ export const useRegister = () => {
   const [selectedMembershipId, setSelectedMembershipId] = useState<
     string | undefined
   >();
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [agreed, setAgreed] = useState(false);
   const [carrier, setCarrier] = useState<string>(DEFAULT_CARRIER);
 
@@ -284,6 +284,7 @@ export const useRegister = () => {
       }
       case STEP.REGISTER_COMPLETED: {
         AppNavigator.replace(AppStacks.App);
+        dispatch(getTotalItemCartRequest());
         break;
       }
       default: {

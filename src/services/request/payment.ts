@@ -1,11 +1,13 @@
 import type {
   StoreCartItem,
   CheckoutInfo,
+  CreateOrderPayload,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
   RemoveCartItemPayload,
   TotalItemCart,
   UpdateCartItemPayload,
+  CreateOrderResponse,
 } from '@type/payment';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -77,4 +79,18 @@ export const getTotalItemCart = async (): Promise<TotalItemCart> => {
     { loading: false },
   );
   return response?.data;
+};
+
+type CreateOrderRequestBody = Omit<
+  CreateOrderPayload,
+  'onFailure' | 'onSuccess'
+>;
+
+export const createOrder = async (
+  request: CreateOrderRequestBody,
+): Promise<CreateOrderResponse> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<CreateOrderResponse>
+  >(EndPoints.PAYMENT.createOrder, request);
+  return response.data;
 };

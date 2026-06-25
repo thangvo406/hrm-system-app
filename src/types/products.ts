@@ -75,6 +75,11 @@ export type IRequestCheckout = {
 
 export type AttributeCheckout = {
   attributeItemId: number;
+  attributeId: number;
+  attributeName: string;
+  attributeType: string;
+  attributeItemName: string;
+  price: number;
 };
 
 export type ProductCheckout = {
@@ -86,4 +91,3 @@ export type VoucherCheckout = {
   id: number;
   quantity: number;
 };
-

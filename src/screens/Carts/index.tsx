@@ -96,6 +96,7 @@ function Carts() {
     onRemoveItem,
     onToggleManage,
     onPressItem,
+    titleManageCart,
   } = useCart();
 
   const renderItem: ListRenderItem<StoreCartItem> = ({ item }) => (
@@ -114,6 +115,7 @@ function Carts() {
         hideNotify
         title={t('carts.title')}
         onPressCartManage={onToggleManage}
+        titleManage={titleManageCart}
       />
 
       {loading ? (

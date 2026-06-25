@@ -18,6 +18,15 @@ const DEFAULT_FILTER: StoreFilterValue = {
   sortDirection: 'asc',
 };
 
+const onBack = () => {
+  const canBack = AppNavigator.canGoBack();
+  if (canBack) {
+    AppNavigator.goBack();
+  } else {
+    AppNavigator.reset(Paths.Home);
+  }
+};
+
 export const useStore = () => {
   const dispatch = useAppDispatch();
   const [data, setData] = useState<readonly StoreItem[]>([]);
@@ -121,6 +130,7 @@ export const useStore = () => {
     onPressStore,
     onPressFilter,
     onSearchChange,
+    onBack,
     stores: data,
   };
 };

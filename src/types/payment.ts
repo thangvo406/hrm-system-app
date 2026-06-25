@@ -1,5 +1,5 @@
 import type { AppCallback, IImage, ListApiResponse } from './common';
-import type { IRequestCheckout } from './products';
+import type { IRequestCheckout, Product } from './products';
 
 export type CheckoutInfoItem = {
   readonly attributeItemId: number;
@@ -29,6 +29,23 @@ export type StoreCartItem = {
   thumbnail: IImage;
   storeReceiveMethod: string[];
 };
+
+export interface ProductCreateOrder {
+  id: number;
+  quantity: number;
+  selectedAttributes: AttributeCart[];
+}
+export interface VoucherOrder {
+  id: number;
+  quantity: number;
+}
+export interface CreateOrderRequest {
+  storeId: number;
+  note: string;
+  address: string;
+  products: ProductCreateOrder[];
+  vouchers: VoucherOrder[];
+}
 
 export type StoreAddress = {
   addressText: string;
@@ -80,3 +97,36 @@ export type UpdateCartItemPayload = {
 export type RemoveCartItemPayload = {
   readonly cartItemId: number;
 } & AppCallback;
+
+export type CreateOrderPayload = AppCallback<CreateOrderResponse> &
+  CreateOrderRequest;
+
+export interface CreateOrderResponse {
+  id: number;
+  userId: number;
+  storeId: number;
+  storeName: string;
+  createdBy: any;
+  status: string;
+  note: string;
+  address: OrderAddress;
+  summary: OrderSummary;
+  paymentDueAt: string;
+  createdTime: string;
+  updatedTime: string;
+}
+
+export interface OrderAddress {
+  addressText: string;
+  latitude: any;
+  longitude: any;
+}
+
+export interface OrderSummary {
+  productPrice: number;
+  attributePrice: number;
+  voucherPrice: number;
+  totalPrice: number;
+  discountPrice: number;
+  finalPrice: number;
+}

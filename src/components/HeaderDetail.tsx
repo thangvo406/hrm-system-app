@@ -45,6 +45,7 @@ function HeaderDetail({
   showIconReadAll = false,
   showCartManage = false,
   onPressCartManage,
+  titleManage,
 }: Properties) {
   const inssets = useSafeAreaInsets();
   const _onPressBack = () => {
@@ -136,14 +137,10 @@ function HeaderDetail({
         {!!showCartManage && (
           <AppButton
             onPress={onPressCartManage}
-            style={styles.iconButton}
+            style={[styles.iconButton, { width: ScaleSize(50) }]}
             testID="header-detail-notification"
           >
-            <Image
-              height={ICON_SIZE}
-              name={imageNames.ic_cart_manage}
-              width={ICON_SIZE}
-            />
+            <Text style={styles.textManageCart}>{titleManage}</Text>
           </AppButton>
         )}
         <AppButton
@@ -167,6 +164,11 @@ function HeaderDetail({
 export default React.memo(HeaderDetail);
 
 const styles = StyleSheet.create({
+  textManageCart: {
+    fontSize: ScaleSize(12),
+    fontWeight: 'bold',
+    color: ACCENT_COLOR,
+  },
   actions: {
     alignItems: 'center',
     flexDirection: 'row',

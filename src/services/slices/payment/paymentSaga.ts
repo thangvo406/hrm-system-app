@@ -2,6 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   StoreCartItem,
   CheckoutInfo,
+  CreateOrderPayload,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
   RemoveCartItemPayload,
@@ -12,6 +13,7 @@ import type { ListApiResponse } from '@type/common';
 import { call, takeLatest } from 'redux-saga/effects';
 
 import {
+  createOrder,
   getInfoProductCheckout,
   getListCart,
   removeCartItem,
@@ -20,6 +22,7 @@ import {
 import { getErrorMessageApi } from '@utils/common';
 
 import {
+  createOrderRequest,
   getInfoProductCheckoutRequest,
   getListCartRequest,
   removeCartItemRequest,
@@ -81,7 +84,21 @@ function* updateCartItemWorker(
   }
 }
 
+function* createOrderWorker(
+  action: PayloadAction<CreateOrderPayload>,
+): Generator<unknown, void, void> {
+  const { onSuccess, onFailure, ...request } = action.payload || {};
+  try {
+    const response = yield call(createOrder, request);
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 export function* paymentSaga() {
+  yield takeLatest(createOrderRequest.type, createOrderWorker);
   yield takeLatest(
     getInfoProductCheckoutRequest.type,
     getInfoProductCheckoutWorker,

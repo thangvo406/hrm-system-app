@@ -23,6 +23,7 @@ import {
 } from '@react-native-google-signin/google-signin';
 import { loginWithKakaoAccount } from '@react-native-seoul/kakao-login';
 import NaverLogin from '@react-native-seoul/naver-login';
+import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
 
 const { STEP, NEED_INFO_LOGIN_CODE, initialLoginForm } = AppConstants;
 export type { AuthStep, RegisterErrors } from './useRegister';
@@ -167,6 +168,7 @@ export const useAuthorization = () => {
   const onLoginSuccess = () => {
     setLoading(false);
     AppNavigator.replace(AppStacks.App);
+    dispatch(getTotalItemCartRequest());
   };
 
   const onLoginFailure = (error: any) => {

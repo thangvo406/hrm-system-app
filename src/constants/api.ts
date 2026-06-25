@@ -52,6 +52,7 @@ export const EndPoints = {
     removeCartItem: (productId: number) => `app/cart/items/${productId}`,
     getListCart: (request: string) => `app/cart?${request}`,
     countTotalItemCart: 'app/cart/sum',
+    createOrder: 'order/create',
   },
   WALLET: {
     currentWallet: 'wallet',

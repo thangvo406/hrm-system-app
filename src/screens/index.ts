@@ -6,6 +6,7 @@ export { default as Example } from './Example/Example';
 export { default as Home } from './Home';
 export { default as Contribution } from './Contribution';
 export { default as Notifications } from './Notifications';
+export { default as OrderCompleted } from './OrderCompleted';
 export { default as PayCard } from './PayCard';
 export { default as PaymentCart } from './PaymentCart';
 export { default as ProductDetail } from './ProductDetail';
