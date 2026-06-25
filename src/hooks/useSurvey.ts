@@ -1,4 +1,4 @@
-import type { GetSurveyListPayload, Survey } from '@type/survey';
+import type { GetSurveyPayload, Survey } from '@type/survey';
 
 import { ListApiResponse } from '@type/common';
 import { Paths } from '@navigation/paths';
@@ -41,7 +41,7 @@ export const useSurvey = () => {
   useFocusEffect(
     useCallback(() => {
       isLoadingMore.current = true;
-      const payload: GetSurveyListPayload = {
+      const payload: GetSurveyPayload = {
         onFailure: handleFailure,
         onSuccess: handleSuccess,
         page: currentPage,

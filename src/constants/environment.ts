@@ -11,3 +11,5 @@ export const Environment = {
   NAVER_CONSUMER_SECRET: Config.NAVER_CONSUMER_SECRET,
   NAVER_URL_SCHEME: Config.NAVER_URL_SCHEME,
 };
+
+// AIzaSyAc0ybo-kEviDiIiy8z8kOSh_WyoCjAkts

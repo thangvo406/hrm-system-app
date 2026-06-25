@@ -18,7 +18,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 const IS_PAN_RESPONDER_ENABLED = true;
 
-const HIDDEN_CART_PATHS = new Set<string>([Paths.Carts]);
+const HIDDEN_CART_PATHS = new Set<string>([Paths.Carts, Paths.PaymentCart]);
 
 const handleNavigationStateChange = () => {
   const currentName = AppNavigator.getCurrentRoute()?.name ?? '';

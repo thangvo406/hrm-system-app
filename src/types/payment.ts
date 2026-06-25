@@ -27,6 +27,7 @@ export type StoreCartItem = {
   totalQuantity: number;
   items: ProductCart[];
   thumbnail: IImage;
+  storeReceiveMethod: string[];
 };
 
 export type StoreAddress = {

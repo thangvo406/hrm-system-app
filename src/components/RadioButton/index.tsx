@@ -1,4 +1,4 @@
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
 
 import Image from '@components/Image';
 import { ScaleSize } from '@kits/core';
@@ -14,7 +14,9 @@ const NOOP = (): void => undefined;
 
 type RadioButtonProps = {
   readonly disabled?: boolean;
+  readonly iconColor?: string;
   readonly label?: string;
+  readonly labelStyle?: StyleProp<TextStyle>;
   readonly onPress?: () => void;
   readonly selected: boolean;
   readonly style?: StyleProp<ViewStyle>;
@@ -24,7 +26,9 @@ type RadioButtonProps = {
 
 function RadioButton({
   disabled = false,
+  iconColor = undefined,
   label = undefined,
+  labelStyle = undefined,
   onPress = NOOP,
   selected,
   style = undefined,
@@ -55,19 +59,19 @@ function RadioButton({
         }}
       >
         <Image
-          color={selected ? PRIMARY_COLOR : UNSELECTED_COLOR}
+          color={iconColor ?? (selected ? PRIMARY_COLOR : UNSELECTED_COLOR)}
           height={ICON_SIZE}
           name={selected ? 'ic_radio_selected' : 'ic_radio_unselected'}
           type="svg"
           width={ICON_SIZE}
         />
         {label === undefined ? undefined : (
-          <Text style={styles.label}>{label}</Text>
+          <Text style={[styles.label, labelStyle]}>{label}</Text>
         )}
       </View>
 
       {rightLabel === undefined ? undefined : (
-        <Text style={styles.label}>{rightLabel}</Text>
+        <Text style={[styles.label, labelStyle]}>{rightLabel}</Text>
       )}
     </TouchableOpacity>
   );

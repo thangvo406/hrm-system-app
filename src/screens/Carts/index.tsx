@@ -9,7 +9,12 @@ import {
   View,
 } from 'react-native';
 import { ScaleSize } from '@kits/core';
-import { AnnouncementLoading, EmptyView, ProgressiveImage } from '@components';
+import {
+  AnnouncementLoading,
+  AppButton,
+  EmptyView,
+  ProgressiveImage,
+} from '@components';
 import { useCart } from '@hooks';
 import { useTranslation } from 'react-i18next';
 import { ProductUtils } from '@utils';
@@ -31,14 +36,18 @@ type CartRowProps = {
   readonly onRemove: (cartItemId: number) => void;
 };
 
-function CartRow({ isManaging, item, onRemove }: CartRowProps) {
+function CartRow({ isManaging, item, onRemove, onPressItem }: CartRowProps) {
   const { t } = useTranslation();
   const handleRemove = () => {
     onRemove(item.id);
   };
 
   return (
-    <View style={styles.row} testID={`cart-item-${item.id}`}>
+    <AppButton
+      style={styles.row}
+      testID={`cart-item-${item.id}`}
+      onPress={() => onPressItem?.(item)}
+    >
       <View style={styles.rowContent}>
         <ProgressiveImage
           containerStyle={styles.thumbnail}
@@ -67,7 +76,7 @@ function CartRow({ isManaging, item, onRemove }: CartRowProps) {
           <Text style={styles.removeText}>{t('carts.remove')}</Text>
         </TouchableOpacity>
       ) : undefined}
-    </View>
+    </AppButton>
   );
 }
 
@@ -86,10 +95,16 @@ function Carts() {
     loading,
     onRemoveItem,
     onToggleManage,
+    onPressItem,
   } = useCart();
 
   const renderItem: ListRenderItem<StoreCartItem> = ({ item }) => (
-    <MemoCartRow isManaging={isManaging} item={item} onRemove={onRemoveItem} />
+    <MemoCartRow
+      isManaging={isManaging}
+      item={item}
+      onRemove={onRemoveItem}
+      onPressItem={onPressItem}
+    />
   );
 
   return (

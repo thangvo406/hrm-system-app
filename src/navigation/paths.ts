@@ -9,6 +9,7 @@ export enum Paths {
   Home = 'home',
   Notifications = 'notifications',
   PayCard = 'pay_card',
+  PaymentCart = 'payment_cart',
   ProductDetail = 'product_detail',
   Products = 'products',
   Startup = 'startup',

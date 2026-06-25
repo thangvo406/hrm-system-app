@@ -10,10 +10,10 @@ import AppNavigator from '@navigation/AppNavigator';
 import { useTranslation } from 'react-i18next';
 import {
   getInfoProductCheckoutRequest,
-  getTotalItemCartRequest,
   removeCartItemRequest,
   updateCartItemRequest,
 } from '@services/slices/payment/paymentSlice';
+import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
 import { CheckoutInfo } from '@type';
 import { groupAttributeItemsByAttributeId } from '@utils/product';
 

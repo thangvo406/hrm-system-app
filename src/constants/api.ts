@@ -6,7 +6,7 @@ export const EndPoints = {
     register: 'auth/register',
     sendOTP: 'auth/register/phone/send-otp',
     verifyOTP: 'auth/register/phone/confirm-otp',
-    getUniversities: 'university',
+    getUniversities: (request: string) => `university?${request}`,
     sendOtpForgotPass: 'auth/forgot-password/send-otp',
     verifyOtpForgotPass: 'auth/forgot-password/confirm-otp',
     submitForgotPass: 'auth/forgot-password/reset',

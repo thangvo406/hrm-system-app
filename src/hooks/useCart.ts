@@ -8,6 +8,7 @@ import {
 } from '@services/slices/payment/paymentSlice';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import AppNavigator from '@navigation/AppNavigator';
+import { Paths } from '@navigation/paths';
 
 const PAGE_SIZE = 20;
 
@@ -78,6 +79,12 @@ export const useCart = () => {
     );
   };
 
+  const onPressItem = (item: StoreCartItem) => {
+    AppNavigator.navigate(Paths.PaymentCart, {
+      data: item,
+    });
+  };
+
   return {
     isManaging,
     items,
@@ -85,5 +92,6 @@ export const useCart = () => {
     onRemoveItem,
     onToggleManage,
     onLoadMore,
+    onPressItem,
   };
 };

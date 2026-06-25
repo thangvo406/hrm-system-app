@@ -20,6 +20,7 @@ export type RootStackParamList = {
   [Paths.Home]: undefined;
   [Paths.Notifications]: undefined;
   [Paths.PayCard]: undefined;
+  [Paths.PaymentCart]: undefined;
   [Paths.ProductDetail]: { id: number, storeId: number } | undefined;
   [Paths.Products]: { data: StoreItem } | undefined;
   [Paths.Startup]: undefined;

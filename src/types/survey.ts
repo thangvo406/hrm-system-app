@@ -1,4 +1,4 @@
-import { AppCallback, ListApiResponse } from './common';
+import type { AppCallback, ListApiResponse } from './common';
 
 export type SurveyStatus = 'CLOSED' | 'OPEN';
 
@@ -36,40 +36,19 @@ export type SurveyDetail = {
   questions: SurveyQuestion[];
 };
 
-export interface GetSurveyDetailPayload extends AppCallback {
+export type GetSurveyDetailPayload = {
   surveyId: number | string;
-}
-export interface GetSurveyPayload extends AppCallback {
+} & AppCallback<IResponseSurveyDetail>;
+
+export type GetSurveyPayload = {
   fromDate?: string;
   toDate?: string;
   page?: number;
   size?: number;
   name?: string;
-}
+} & AppCallback<ListApiResponse<Survey[]>>;
 
-export type SurveyListCallback = {
-  readonly onFailure?: (error: string) => void;
-  readonly onSuccess?: (response: ListApiResponse<Survey[]>) => void;
-};
-
-export type GetSurveyListPayload = Omit<
-  GetSurveyPayload,
-  'onFailure' | 'onSuccess'
-> &
-  SurveyListCallback;
-
-export type SurveyDetailCallback = {
-  readonly onFailure?: (error: string) => void;
-  readonly onSuccess?: (detail: IResponseSurveyDetail) => void;
-};
-
-export type GetSurveyDetailActionPayload = Omit<
-  GetSurveyDetailPayload,
-  'onFailure' | 'onSuccess'
-> &
-  SurveyDetailCallback;
-
-export interface IResponseSurveyDetail {
+export type IResponseSurveyDetail = {
   id: number;
   name: string;
   startDate: string;
@@ -79,9 +58,9 @@ export interface IResponseSurveyDetail {
   questions: IQuestion[];
   allowToViewResponse: boolean;
   allowToStartSurvey: boolean;
-}
+};
 
-export interface IQuestion {
+export type IQuestion = {
   id: number;
   title: string;
   type: string;
@@ -89,29 +68,24 @@ export interface IQuestion {
   answers: IAnswer[];
   selectedAnswerId?: number;
   selectedAnswerText?: string;
-}
+};
 
-export interface IAnswer {
+export type IAnswer = {
   id: number;
   title: string;
   sortOrder: number;
-}
+};
 
 export type SubmitSurveyAnswer = {
   answerText: string;
   questionId: number;
 };
 
-export interface SubmitSurveyBody {
+export type SubmitSurveyBody = {
   answers: SubmitSurveyAnswer[];
-}
-
-export type SubmitSurveyCallback = {
-  readonly onFailure?: (error: string) => void;
-  readonly onSuccess?: () => void;
 };
 
 export type SubmitSurveyPayload = {
   readonly surveyId: number | string;
-} & SubmitSurveyBody &
-  SubmitSurveyCallback;
+} & AppCallback & SubmitSurveyBody;
+

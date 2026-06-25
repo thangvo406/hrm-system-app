@@ -74,8 +74,15 @@ export const objectToQueryParams = (o: Record<string, any> = {}) =>
     })
     .join('&');
 
-export function getErrorMessageApi(error: any){
-  return error?.response?.data?.message || error?.message || "unknown error"
+export function getErrorMessageApi(error: any) {
+  return error?.response?.data?.message || error?.message || 'unknown error';
 }
 
-export const NOOP = () => undefined
+export const NOOP = () => undefined;
+
+export const upperCaseFirstChar = (value: string | undefined): string => {
+  if (!value) {
+    return '';
+  }
+  return value.charAt(0).toUpperCase() + value.slice(1);
+};
