@@ -12,8 +12,9 @@ import Image from '@components/Image';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import AppButton from '@components/AppButton';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useAppSelector } from '@services/common/storeHooks';
+import { AccountSelector } from '@services/selectors';
 
 const BUTTON_SIZE = ScaleSize(60);
 const ICON_SIZE = ScaleSize(32);
@@ -26,6 +27,7 @@ const HIDE_DURATION = 200;
 
 function FloatingCartButton() {
   const showFloatingCart = useAppSelector(state => state.app.showFloatingCart);
+  const countStore = useAppSelector(AccountSelector.getTotalItemCart);
   const insets = useSafeAreaInsets();
   const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
@@ -38,8 +40,6 @@ function FloatingCartButton() {
   const startY = useSharedValue(initialY);
   const scale = useSharedValue(0);
   const opacity = useSharedValue(0);
-  const [countStore, setCountStore] = useState(3);
-  void setCountStore;
 
   useEffect(() => {
     if (showFloatingCart) {

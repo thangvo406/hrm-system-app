@@ -2,6 +2,7 @@ import type {
   CheckoutInfo,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
+  GetTotalItemCartPayload,
   RemoveCartItemPayload,
   UpdateCartItemPayload,
 } from '@type/payment';
@@ -20,6 +21,10 @@ const paymentSlice = createSlice({
   initialState,
   name: 'payment',
   reducers: {
+    getTotalItemCartRequest: {
+      prepare: (payload: GetTotalItemCartPayload = {}) => ({ payload }),
+      reducer: () => {},
+    },
     getInfoProductCheckoutRequest: {
       prepare: (payload: GetInfoProductCheckoutPayload) => ({ payload }),
       reducer: () => {},
@@ -40,6 +45,7 @@ const paymentSlice = createSlice({
 });
 
 export const {
+  getTotalItemCartRequest,
   getInfoProductCheckoutRequest,
   getListCartRequest,
   removeCartItemRequest,

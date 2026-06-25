@@ -4,6 +4,7 @@ import type {
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
   RemoveCartItemPayload,
+  TotalItemCart,
   UpdateCartItemPayload,
 } from '@type/payment';
 
@@ -67,5 +68,13 @@ export const getListCart = async (
   const response = await httpRequest.get<
     SingleApiResponse<ListApiResponse<StoreCartItem[]>>
   >(EndPoints.PAYMENT.getListCart(params), { loading: false });
+  return response?.data;
+};
+
+export const getTotalItemCart = async (): Promise<TotalItemCart> => {
+  const response = await httpRequest.get<SingleApiResponse<TotalItemCart>>(
+    EndPoints.PAYMENT.countTotalItemCart,
+    { loading: false },
+  );
   return response?.data;
 };

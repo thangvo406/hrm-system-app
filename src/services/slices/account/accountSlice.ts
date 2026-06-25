@@ -6,6 +6,7 @@ import type {
   TopUpWalletPayload,
   Wallet,
 } from '@type/wallet';
+import type { GetTotalItemCartPayload, TotalItemCart } from '@type/payment';
 
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -37,12 +38,14 @@ export type AccountState = {
   currentWallet: Wallet | undefined;
   profile: Profile | undefined;
   pushId: string | undefined;
+  totalItemCart: number;
 };
 
 const initialState: AccountState = {
   currentWallet: undefined,
   profile: undefined,
   pushId: undefined,
+  totalItemCart: 0,
 };
 
 const accountSlice = createSlice({
@@ -53,8 +56,14 @@ const accountSlice = createSlice({
   name: 'account',
   reducers: {
     clearProfile: () => initialState,
-    getCurrentWalletRequest: {
-      prepare: (payload: GetCurrentWalletPayload = {}) => ({ payload }),
+    getTotalItemCartRequest: {
+      prepare: (payload: GetTotalItemCartPayload = {}) => ({ payload }),
+      reducer: () => {},
+    },
+    getTotalItemCartSuccess: (state, action: PayloadAction<TotalItemCart>) => {
+      state.totalItemCart = action.payload.totalCart;
+    },
+    getCurrentWalletRequest: {      prepare: (payload: GetCurrentWalletPayload = {}) => ({ payload }),
       reducer: () => {},
     },
     getCurrentWalletSuccess: (state, action: PayloadAction<Wallet>) => {
@@ -94,6 +103,8 @@ export const {
   getCurrentWalletSuccess,
   getProfileRequest,
   getProfileSuccess,
+  getTotalItemCartRequest,
+  getTotalItemCartSuccess,
   getTransactionHistoriesRequest,
   topUpWalletRequest,
   updateMembershipRequest,

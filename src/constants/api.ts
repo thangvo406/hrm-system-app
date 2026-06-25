@@ -51,6 +51,7 @@ export const EndPoints = {
     getInfoProductCheckout: (request: string) => `app/cart/check?${request}`,
     removeCartItem: (productId: number) => `app/cart/items/${productId}`,
     getListCart: (request: string) => `app/cart?${request}`,
+    countTotalItemCart: 'app/cart/sum',
   },
   WALLET: {
     currentWallet: 'wallet',

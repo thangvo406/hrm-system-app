@@ -10,6 +10,7 @@ import AppNavigator from '@navigation/AppNavigator';
 import { useTranslation } from 'react-i18next';
 import {
   getInfoProductCheckoutRequest,
+  getTotalItemCartRequest,
   removeCartItemRequest,
   updateCartItemRequest,
 } from '@services/slices/payment/paymentSlice';
@@ -155,6 +156,10 @@ export const useProductDetail = (props: any) => {
     setQuantity(prev => Math.max(0, prev + delta));
   };
 
+  const updateCountCart = () => {
+    dispatch(getTotalItemCartRequest());
+  };
+
   const onPressCart = () => {
     if (quantity == 0) {
       dispatch(
@@ -169,6 +174,7 @@ export const useProductDetail = (props: any) => {
               ...prev,
               quantity: 0,
             }));
+            updateCountCart();
           },
           onFailure: (message: string) => {
             AppNavigator.showSnackBar({
@@ -201,6 +207,7 @@ export const useProductDetail = (props: any) => {
             type: 'success',
           });
           setRefreshCheckoutInfo(prev => !prev);
+          updateCountCart();
         },
         onFailure: (message: string) => {
           AppNavigator.showSnackBar({

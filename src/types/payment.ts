@@ -18,6 +18,14 @@ export type CheckoutInfo = {
   readonly cartItemId: number;
 };
 
+export type TotalItemCart = {
+  readonly totalCart: number;
+};
+
+export type GetTotalItemCartPayload = {
+  readonly onFailure?: (error: string) => void;
+  readonly onSuccess?: (data: TotalItemCart) => void;
+};
 export interface StoreCartItem {
   id: number;
   userId: number;

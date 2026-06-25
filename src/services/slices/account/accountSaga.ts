@@ -13,6 +13,7 @@ import type {
 } from '@type/wallet';
 import type { ListApiResponse } from '@type/common';
 import type { TransactionHistory } from '@type/wallet';
+import type { GetTotalItemCartPayload, TotalItemCart } from '@type/payment';
 
 import {
   getProfile,
@@ -24,6 +25,7 @@ import {
   getTransactionHistories,
   topUpWallet,
 } from '@services/request/wallet';
+import { getTotalItemCart } from '@services/request/payment';
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 import { getErrorMessageApi } from '@utils/common';
 
@@ -32,6 +34,8 @@ import {
   getCurrentWalletSuccess,
   getProfileRequest,
   getProfileSuccess,
+  getTotalItemCartRequest,
+  getTotalItemCartSuccess,
   getTransactionHistoriesRequest,
   topUpWalletRequest,
   updateMembershipRequest,
@@ -39,6 +43,20 @@ import {
 } from './accountSlice';
 import { AccountSelector } from '@services/selectors';
 import { refreshTokenRequest } from '../auth/authSlice';
+
+function* getTotalItemCartWorker(
+  action: PayloadAction<GetTotalItemCartPayload>,
+): Generator<unknown, void, TotalItemCart> {
+  const { onSuccess, onFailure } = action.payload || {};
+  try {
+    const data: TotalItemCart = yield call(getTotalItemCart);
+    yield put(getTotalItemCartSuccess(data));
+    onSuccess?.(data);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
 
 function* getProfileWorker(action: PayloadAction<GetProfilePayload>) {
   try {
@@ -126,6 +144,7 @@ function* topUpWalletWorker(
 }
 
 export function* accountSaga() {
+  yield takeLatest(getTotalItemCartRequest.type, getTotalItemCartWorker);
   yield takeLatest(getProfileRequest.type, getProfileWorker);
   yield takeLatest(updateMembershipRequest.type, updateMembershipWorker);
   yield takeLatest(updatePushIdRequest.type, updatePushIdWorker);
