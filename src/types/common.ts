@@ -1,4 +1,4 @@
-export type SingleApiResponse<T> = { data: T; content: T };
+export type SingleApiResponse<T> = { data: T };
 
 export type ListApiResponse<T> = {
   content: T;
@@ -9,12 +9,12 @@ export type ListApiResponse<T> = {
   last: boolean;
 };
 
-export interface AppCallback {
+export type AppCallback<T = void> = {
   readonly onFailure?: (error: string) => void;
-  readonly onSuccess?: (data?: any) => void;
-}
+  readonly onSuccess?: (data: T) => void;
+};
 
-export interface IImage {
-    readonly filePath: string;
-    readonly fileUrl: string;
-}
+export type IImage = {
+  readonly filePath: string;
+  readonly fileUrl: string;
+};

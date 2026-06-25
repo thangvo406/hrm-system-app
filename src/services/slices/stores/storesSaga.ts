@@ -1,9 +1,9 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { ListApiResponse } from '@type/common';
 import type {
-  GetStoreDetailActionPayload,
+  GetStoreDetailPayload,
   GetStoreOrderRecentActionPayload,
-  GetStoresActionPayload,
+  GetStoresPayload,
   StoreItem,
 } from '@type/store';
 
@@ -22,7 +22,7 @@ import {
 import { getErrorMessageApi } from '@utils/common';
 
 function* getStoresWorker(
-  action: PayloadAction<GetStoresActionPayload>,
+  action: PayloadAction<GetStoresPayload>,
 ): Generator<unknown, void, ListApiResponse<StoreItem[]>> {
   const { onFailure, onSuccess, ...request } = action.payload || {};
   try {
@@ -38,7 +38,7 @@ function* getStoresWorker(
 }
 
 function* getStoreDetailWorker(
-  action: PayloadAction<GetStoreDetailActionPayload>,
+  action: PayloadAction<GetStoreDetailPayload>,
 ): Generator<unknown, void, StoreItem> {
   const { onFailure, onSuccess, storeId } = action.payload;
   try {

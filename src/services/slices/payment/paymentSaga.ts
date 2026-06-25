@@ -4,9 +4,7 @@ import type {
   CheckoutInfo,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
-  GetTotalItemCartPayload,
   RemoveCartItemPayload,
-  TotalItemCart,
   UpdateCartItemPayload,
 } from '@type/payment';
 import type { ListApiResponse } from '@type/common';
@@ -16,7 +14,6 @@ import { call, takeLatest } from 'redux-saga/effects';
 import {
   getInfoProductCheckout,
   getListCart,
-  getTotalItemCart,
   removeCartItem,
   updateCartItem,
 } from '@services/request/payment';
@@ -25,23 +22,9 @@ import { getErrorMessageApi } from '@utils/common';
 import {
   getInfoProductCheckoutRequest,
   getListCartRequest,
-  getTotalItemCartRequest,
   removeCartItemRequest,
   updateCartItemRequest,
 } from './paymentSlice';
-
-function* getTotalItemCartWorker(
-  action: PayloadAction<GetTotalItemCartPayload>,
-): Generator<unknown, void, TotalItemCart> {
-  const { onSuccess, onFailure } = action.payload || {};
-  try {
-    const response: TotalItemCart = yield call(getTotalItemCart);
-    onSuccess?.(response);
-  } catch (error_) {
-    const message = getErrorMessageApi(error_);
-    onFailure?.(message);
-  }
-}
 
 function* getInfoProductCheckoutWorker(
   action: PayloadAction<GetInfoProductCheckoutPayload>,
@@ -99,7 +82,6 @@ function* updateCartItemWorker(
 }
 
 export function* paymentSaga() {
-  yield takeLatest(getTotalItemCartRequest.type, getTotalItemCartWorker);
   yield takeLatest(
     getInfoProductCheckoutRequest.type,
     getInfoProductCheckoutWorker,

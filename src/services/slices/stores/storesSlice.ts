@@ -1,7 +1,7 @@
 import type {
-  GetStoreDetailActionPayload,
+  GetStoreDetailPayload,
   GetStoreOrderRecentActionPayload,
-  GetStoresActionPayload,
+  GetStoresPayload,
 } from '@type/store';
 
 import { createSlice } from '@reduxjs/toolkit';
@@ -11,7 +11,7 @@ const storesSlice = createSlice({
   name: 'stores',
   reducers: {
     getStoreDetailRequest: {
-      prepare: (payload: GetStoreDetailActionPayload) => ({ payload }),
+      prepare: (payload: GetStoreDetailPayload) => ({ payload }),
       reducer: () => {},
     },
     getStoreOrderRecentRequest: {
@@ -21,7 +21,7 @@ const storesSlice = createSlice({
       reducer: () => {},
     },
     getStoresRequest: {
-      prepare: (payload: GetStoresActionPayload) => ({ payload }),
+      prepare: (payload: GetStoresPayload) => ({ payload }),
       reducer: () => {},
     },
   },

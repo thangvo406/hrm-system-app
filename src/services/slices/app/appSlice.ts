@@ -1,4 +1,5 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
+import type { AppCallback } from '@type/common';
 
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -9,10 +10,7 @@ export type AppState = {
   showFloatingCart: boolean;
 };
 
-export type StartupAppPayload = {
-  onFailure?: (error: string) => void;
-  onSuccess?: (isAuthenticated: boolean) => void;
-};
+export type StartupAppPayload = AppCallback<boolean>;
 
 const initialState: AppState = {
   counter: 0,

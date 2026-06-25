@@ -1,8 +1,8 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { ListApiResponse } from '@type/common';
 import type {
-  GetSurveyDetailActionPayload,
-  GetSurveyListPayload,
+  GetSurveyDetailPayload,
+  GetSurveyPayload,
   IResponseSurveyDetail,
   SubmitSurveyPayload,
   Survey,
@@ -22,7 +22,7 @@ import {
 } from './surveySlice';
 
 function* getSurveyListWorker(
-  action: PayloadAction<GetSurveyListPayload>,
+  action: PayloadAction<GetSurveyPayload>,
 ): Generator<unknown, void, ListApiResponse<Survey[]>> {
   const { onFailure, onSuccess, ...request } = action.payload || {};
   try {
@@ -38,7 +38,7 @@ function* getSurveyListWorker(
 }
 
 function* getSurveyDetailWorker(
-  action: PayloadAction<GetSurveyDetailActionPayload>,
+  action: PayloadAction<GetSurveyDetailPayload>,
 ): Generator<unknown, void, IResponseSurveyDetail> {
   const { onFailure, onSuccess, surveyId } = action.payload;
   try {

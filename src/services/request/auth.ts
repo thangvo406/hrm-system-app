@@ -27,7 +27,8 @@ import omit from 'lodash/omit';
 import { httpRequest } from '@services/common/httpRequest';
 import { z } from 'zod';
 import { EndPoints } from '@constants';
-import { SingleApiResponse } from '@type/common';
+import { ListApiResponse, SingleApiResponse } from '@type/common';
+import { CommonUtils } from '@utils';
 
 export const authResponseSchema = z.object({
   accessToken: z.string(),
@@ -72,11 +73,13 @@ export const verifyOTP = async (
   return response.data;
 };
 
-export const getUniversities = async (): Promise<IResponseUniversity[]> => {
-  const response = await httpRequest.get<
-    SingleApiResponse<IResponseUniversity[]>
-  >(EndPoints.AUTH.getUniversities, { loading: false });
-  return response.data.content;
+export const getUniversities = async (request: any): Promise<ListApiResponse<IResponseUniversity[]>> => {
+   const _request = CommonUtils.removeEmptyFieldObject(request, true);
+   const params = CommonUtils.objectToQueryParams(_request);
+   const response = await httpRequest.get<
+     SingleApiResponse<ListApiResponse<IResponseUniversity[]>>
+   >(EndPoints.AUTH.getUniversities(params), { loading: false });
+  return response.data;
 };
 
 export const loginSocial = async (

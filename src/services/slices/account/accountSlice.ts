@@ -1,4 +1,5 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
+import type { AppCallback } from '@type/common';
 import type { Profile } from '@services/request/account';
 import type {
   GetCurrentWalletPayload,
@@ -12,12 +13,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { logoutSuccess } from '@services/slices/auth/authSlice';
 
-export type AccountCallback = {
-  onFailure?: (error: string) => void;
-  onSuccess?: (profile: Profile) => void;
-};
-
-export type GetProfilePayload = AccountCallback;
+export type GetProfilePayload = AppCallback<Profile>;
 
 export type UpdatePushIdPayload = {
   optedIn: boolean;
@@ -25,14 +21,9 @@ export type UpdatePushIdPayload = {
   subscriptionId: string;
 };
 
-export type UpdateMembershipCallback = {
-  onFailure?: (error: string) => void;
-  onSuccess?: () => void;
-};
-
-export type UpdateMembershipPayload = UpdateMembershipCallback & {
+export type UpdateMembershipPayload = {
   membershipType: string;
-};
+} & AppCallback;
 
 export type AccountState = {
   currentWallet: Wallet | undefined;
@@ -85,7 +76,7 @@ const accountSlice = createSlice({
       reducer: () => {},
     },
     updateMembershipRequest: {
-      prepare: (payload: UpdateMembershipPayload = {}) => ({ payload }),
+      prepare: (payload: UpdateMembershipPayload) => ({ payload }),
       reducer: () => {},
     },
     updatePushIdRequest: {

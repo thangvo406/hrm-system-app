@@ -13,7 +13,7 @@ export type Wallet = {
   status: string;
 };
 
-export interface TransactionHistory {
+export type TransactionHistory = {
   id: number;
   walletId: number;
   userId: number;
@@ -29,23 +29,20 @@ export interface TransactionHistory {
   description: string;
   status: string;
   createdDate: string;
-}
-export interface IRequestTopUpWallet {
+};
+
+export type IRequestTopUpWallet = {
   amount: number;
   couponCode?: string;
   paymentProvider: string;
   paymentTransactionId: string;
   description: string;
-}
-
-export type WalletCallback = {
-  readonly onFailure?: (error: string) => void;
-  readonly onSuccess?: (data: ListApiResponse<TransactionHistory[]>) => void;
 };
 
-export type GetCurrentWalletPayload = WalletCallback;
+export type GetCurrentWalletPayload = AppCallback<Wallet>;
 
-export type GetTransactionHistoriesPayload = IRequestGetTransactionHistories &
-  WalletCallback;
+export type GetTransactionHistoriesPayload = AppCallback<ListApiResponse<TransactionHistory[]>> &
+  IRequestGetTransactionHistories;
 
 export type TopUpWalletPayload = AppCallback & IRequestTopUpWallet;
+

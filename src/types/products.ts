@@ -20,12 +20,7 @@ export type Product = {
   images: ProductImage[];
 };
 
-export type ProductsCallback = {
-  readonly onFailure?: (error: string) => void;
-  readonly onSuccess?: (response: ListApiResponse<Product[]>) => void;
-};
-
-export interface IResponseProductDetail {
+export type IResponseProductDetail = {
   id: number;
   storeId: number;
   categoryId: number;
@@ -40,55 +35,55 @@ export interface IResponseProductDetail {
   thumbnail: ProductImage;
   images: ProductImage[];
   attributes: AttributeDetail[];
-}
-export interface GetProductsPayload extends ProductsCallback {
+};
+
+export type GetProductsPayload = {
   storeId: number;
   sortBy?: 'price' | 'name' | 'sortOrder';
   sortDirection?: 'asc' | 'desc';
   page: number;
   size: number;
   keyword?: string;
-}
-
-export type ProductDetailCallback = {
-  readonly onFailure?: (error: string) => void;
-  readonly onSuccess?: (product: IResponseProductDetail) => void;
-};
+} & AppCallback<ListApiResponse<Product[]>>;
 
 export type GetProductByIdPayload = {
   productId: number | string;
-} & ProductDetailCallback;
+} & AppCallback<IResponseProductDetail>;
 
 export type CheckoutProductPayload = AppCallback & IRequestCheckout;
 
-export interface AttributeDetail {
+export type AttributeDetail = {
   id: number;
   name: string;
   type: any;
   sortOrder: number;
   items: AttributeItem[];
-}
-export interface AttributeItem {
+};
+
+export type AttributeItem = {
   id: number;
   name: string;
   price: number;
   sortOrder: number;
-}
-export interface IRequestCheckout {
+};
+
+export type IRequestCheckout = {
   productId: number;
   quantity: number;
   selectedAttributes: AttributeCheckout[];
-}
+};
 
-export interface AttributeCheckout {
+export type AttributeCheckout = {
   attributeItemId: number;
-}
-export interface ProductCheckout {
-  id: number;
-  quantity: number;
-}
+};
 
-export interface VoucherCheckout {
+export type ProductCheckout = {
   id: number;
   quantity: number;
-}
+};
+
+export type VoucherCheckout = {
+  id: number;
+  quantity: number;
+};
+

@@ -1,6 +1,6 @@
 import type {
-  GetSurveyDetailActionPayload,
-  GetSurveyListPayload,
+  GetSurveyDetailPayload,
+  GetSurveyPayload,
   SubmitSurveyPayload,
 } from '@type/survey';
 
@@ -11,11 +11,11 @@ const surveySlice = createSlice({
   name: 'survey',
   reducers: {
     getSurveyDetailRequest: {
-      prepare: (payload: GetSurveyDetailActionPayload) => ({ payload }),
+      prepare: (payload: GetSurveyDetailPayload) => ({ payload }),
       reducer: () => {},
     },
     getSurveyListRequest: {
-      prepare: (payload: GetSurveyListPayload = {}) => ({ payload }),
+      prepare: (payload: GetSurveyPayload = {}) => ({ payload }),
       reducer: () => {},
     },
     submitSurveyRequest: {

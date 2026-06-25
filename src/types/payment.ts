@@ -3,11 +3,6 @@ import type { IRequestCheckout } from './products';
 
 export type CheckoutInfoItem = {
   readonly attributeItemId: number;
-  // readonly name: string;
-  // readonly productId: number;
-  // readonly quantity: number;
-  // readonly thumbnail?: string;
-  // readonly unitPrice: number;
 };
 
 export type CheckoutInfo = {
@@ -22,11 +17,7 @@ export type TotalItemCart = {
   readonly totalCart: number;
 };
 
-export type GetTotalItemCartPayload = {
-  readonly onFailure?: (error: string) => void;
-  readonly onSuccess?: (data: TotalItemCart) => void;
-};
-export interface StoreCartItem {
+export type StoreCartItem = {
   id: number;
   userId: number;
   storeId: number;
@@ -34,29 +25,51 @@ export interface StoreCartItem {
   storeAddress: StoreAddress;
   subtotal: number;
   totalQuantity: number;
-  items: any[];
+  items: ProductCart[];
   thumbnail: IImage;
-}
+};
 
-export interface StoreAddress {
+export type StoreAddress = {
   addressText: string;
   latitude: string;
   longitude: string;
-}
-
-export interface IRequestGetListCart {
-  page: number;
-  size: number;
-}
-
-export type GetListCartPayload = IRequestGetListCart & {
-  readonly onSuccess?: (data: ListApiResponse<StoreCartItem[]>) => void;
-  readonly onFailure?: (error: string) => void;
 };
 
-export type GetInfoProductCheckoutPayload = {
+export type IRequestGetListCart = {
+  page: number;
+  size: number;
+};
+
+export interface ProductCart {
+  id: number;
   productId: number;
-} & AppCallback;
+  productCode: string;
+  productName: string;
+  productThumbnailUrl: IImage;
+  unitPrice: number;
+  quantity: number;
+  totalAmount: number;
+  selected: boolean;
+  selectedAttributes: AttributeCart[];
+}
+
+export interface AttributeCart {
+  attributeId: number;
+  attributeName: string;
+  attributeType: string;
+  attributeItemId: number;
+  attributeItemName: string;
+  price: number;
+}
+
+export type GetTotalItemCartPayload = AppCallback<TotalItemCart>;
+
+export type GetListCartPayload = AppCallback<ListApiResponse<StoreCartItem[]>> &
+  IRequestGetListCart;
+
+export type GetInfoProductCheckoutPayload = {
+  readonly productId: number;
+} & AppCallback<CheckoutInfo>;
 
 export type UpdateCartItemPayload = {
   readonly cartItemId: number;

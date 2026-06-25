@@ -1,6 +1,4 @@
-import type { IImage, ListApiResponse } from './common';
-
-import { AppCallback } from './common';
+import type { AppCallback, IImage, ListApiResponse } from './common';
 
 export type StoreItem = {
   id: number;
@@ -19,7 +17,7 @@ export type StoreItem = {
   products: Product[];
 };
 
-export interface Product {
+export type Product = {
   id: number;
   storeId: number;
   categoryId: number;
@@ -33,14 +31,15 @@ export interface Product {
   sortOrder: number;
   thumbnail: IImage;
   images: IImage[];
-}
+};
 
-export interface TOperatingHour {
+export type TOperatingHour = {
   dayOfWeek: string;
   open: boolean;
   openTime: string;
   closeTime: string;
-}
+};
+
 export type StoreProductItem = {
   id: number;
   name: string;
@@ -48,41 +47,15 @@ export type StoreProductItem = {
   thumbnail?: { fileUrl: string };
 };
 
-export type StoresCallback = {
-  readonly onFailure?: (error: string) => void;
-  readonly onSuccess?: (response: ListApiResponse<StoreItem[]>) => void;
-};
+export type GetStoreDetailPayload = {
+  storeId: number | string;
+} & AppCallback<StoreItem>;
 
-export interface GetStoresPayload extends AppCallback {
+export type GetStoreOrderRecentActionPayload = AppCallback<StoreItem[]>;
+
+export type GetStoresPayload = {
   page: number;
   size: number;
   keyword?: string;
-}
+} & AppCallback<ListApiResponse<StoreItem[]>>;
 
-export type GetStoresActionPayload = Omit<
-  GetStoresPayload,
-  'onFailure' | 'onSuccess'
-> &
-  StoresCallback;
-
-export type StoreDetailCallback = {
-  readonly onFailure?: (error: string) => void;
-  readonly onSuccess?: (detail: StoreItem) => void;
-};
-
-export interface GetStoreDetailPayload extends AppCallback {
-  storeId: number | string;
-}
-
-export type GetStoreDetailActionPayload = Omit<
-  GetStoreDetailPayload,
-  'onFailure' | 'onSuccess'
-> &
-  StoreDetailCallback;
-
-export type StoreOrderRecentCallback = {
-  readonly onFailure?: (error: string) => void;
-  readonly onSuccess?: (data: StoreItem) => void;
-};
-
-export type GetStoreOrderRecentActionPayload = StoreOrderRecentCallback;
