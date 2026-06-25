@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ComponentType } from 'react';
+import { useEffect, useRef } from 'react';
 import type { RootStackParamList } from '@navigation/types';
 
 import { AppStacks, Paths } from '@navigation/paths';
@@ -7,23 +7,23 @@ import {
   useNavigationContainerRef,
 } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import * as Screens from '@screens';
 import AppNavigator from '@navigation/AppNavigator';
 import { Dimensions, PanResponder, Platform, View } from 'react-native';
 import { Globals } from '@utils';
-import FloatingCartButton from './FloatingCartButton';
-import { AuthStack } from './Stacks';
+import { store } from '@services/common/store';
+import { setShowFloatingCart } from '@services/slices/app/appSlice';
+import { AppStack, AuthStack } from './Stacks';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
-type ScreenKey = keyof typeof Paths;
-const SCREEN_KEYS = Object.keys(Paths) as ScreenKey[];
-const ScreenAny = Stack.Screen as ComponentType<{
-  component: ComponentType<unknown>;
-  name: string;
-}>;
-
 const IS_PAN_RESPONDER_ENABLED = true;
+
+const HIDDEN_CART_PATHS = new Set<string>([Paths.Carts]);
+
+const handleNavigationStateChange = () => {
+  const currentName = AppNavigator.getCurrentRoute()?.name ?? '';
+  store.dispatch(setShowFloatingCart(!HIDDEN_CART_PATHS.has(currentName)));
+};
 
 function ApplicationNavigator() {
   const navigationReference = useNavigationContainerRef<RootStackParamList>();
@@ -165,10 +165,11 @@ function ApplicationNavigator() {
         onReady={() => {
           AppNavigator.setRootNavigator(navigationReference);
         }}
+        onStateChange={handleNavigationStateChange}
         ref={navigationReference}
       >
         <Stack.Navigator
-          initialRouteName={Paths.Startup}
+          initialRouteName={AppStacks.Auth}
           screenOptions={{
             ...configTranslate,
             gestureEnabled: false,
@@ -177,31 +178,15 @@ function ApplicationNavigator() {
         >
           <Stack.Screen
             component={AuthStack}
-            name={AppStacks.Auth as string}
-            options={{
-              headerShown: false,
-              // ...optionDefault,
-              ...configTranslate,
-            }}
+            name={AppStacks.Auth}
+            options={{ headerShown: false, ...configTranslate }}
           />
           <Stack.Screen
-            component={AuthStack}
+            component={AppStack}
             name={AppStacks.App}
-            options={{
-              headerShown: false,
-              // ...optionDefault,
-              ...configTranslate,
-            }}
+            options={{ headerShown: false, ...configTranslate }}
           />
-          {SCREEN_KEYS.map(key => (
-            <ScreenAny
-              key={key}
-              component={Screens[key] as ComponentType<unknown>}
-              name={Paths[key]}
-            />
-          ))}
         </Stack.Navigator>
-        <FloatingCartButton />
       </NavigationContainer>
     </View>
   );

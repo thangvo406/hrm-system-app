@@ -1,4 +1,4 @@
-import type { Paths } from '@navigation/paths';
+import type { AppStacks, Paths } from '@navigation/paths';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { NotificationItem } from '@type';
 import { StoreItem } from '@type/store';
@@ -8,6 +8,8 @@ export type RootScreenProps<
 > = StackScreenProps<RootStackParamList, S>;
 
 export type RootStackParamList = {
+  [AppStacks.Auth]: undefined;
+  [AppStacks.App]: undefined;
   [Paths.AnnouncementDetail]: { id: number, notification?: NotificationItem, hideBtnNotify?: boolean } | undefined;
   [Paths.Announcements]: undefined;
   [Paths.Authorization]: { isLogin: boolean } | undefined;

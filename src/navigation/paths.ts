@@ -18,3 +18,8 @@ export enum Paths {
   TopUp = 'top_up',
   Welcome = 'welcome',
 }
+
+export enum AppStacks {
+  Auth = 'Auth',
+  App = 'App',
+}

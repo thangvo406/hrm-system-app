@@ -1,4 +1,3 @@
-export type { CartItem } from './useCart';
 export type {
   AnnouncementImage,
   AnnouncementItem,

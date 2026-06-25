@@ -6,6 +6,7 @@ import { logoutSuccess } from '@services/slices/auth/authSlice';
 
 export type AppState = {
   counter: number;
+  showFloatingCart: boolean;
 };
 
 export type StartupAppPayload = {
@@ -15,6 +16,7 @@ export type StartupAppPayload = {
 
 const initialState: AppState = {
   counter: 0,
+  showFloatingCart: false,
 };
 
 const appSlice = createSlice({
@@ -39,6 +41,9 @@ const appSlice = createSlice({
       state.counter += action.payload;
     },
     reset: () => initialState,
+    setShowFloatingCart: (state, action: PayloadAction<boolean>) => {
+      state.showFloatingCart = action.payload;
+    },
     // Triggers the saga at app cold-start; result is delivered via callbacks.
     startupApp: {
       prepare: (payload: StartupAppPayload = {}) => ({ payload }),
@@ -55,6 +60,7 @@ export const {
   incrementAsync,
   incrementAsyncSuccess,
   reset,
+  setShowFloatingCart,
   startupApp,
 } = appSlice.actions;
 

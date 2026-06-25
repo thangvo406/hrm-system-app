@@ -8,7 +8,7 @@ import { Alert } from 'react-native';
 import { ValidateUtils } from '@kits/core/utils';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
-import { Paths } from '@navigation/paths';
+import { AppStacks, Paths } from '@navigation/paths';
 import type { RootStackParamList } from '@navigation/types';
 import { useTranslation } from 'react-i18next';
 import { AppConstants, Environment } from '@constants';
@@ -166,7 +166,8 @@ export const useAuthorization = () => {
 
   const onLoginSuccess = () => {
     setLoading(false);
-    navigation.reset({ index: 0, routes: [{ name: Paths.Home }] });
+    AppNavigator.replace(AppStacks.App);
+    // navigation.reset({ index: 0, routes: [{ name: Paths.Home }] });
   };
 
   const onLoginFailure = (error: any) => {
