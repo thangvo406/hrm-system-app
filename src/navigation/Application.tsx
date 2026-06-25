@@ -1,7 +1,7 @@
 import { useEffect, useRef, type ComponentType } from 'react';
 import type { RootStackParamList } from '@navigation/types';
 
-import { Paths } from '@navigation/paths';
+import { AppStacks, Paths } from '@navigation/paths';
 import {
   NavigationContainer,
   useNavigationContainerRef,
@@ -11,6 +11,8 @@ import * as Screens from '@screens';
 import AppNavigator from '@navigation/AppNavigator';
 import { Dimensions, PanResponder, Platform, View } from 'react-native';
 import { Globals } from '@utils';
+import FloatingCartButton from './FloatingCartButton';
+import { AuthStack } from './Stacks';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -143,11 +145,11 @@ function ApplicationNavigator() {
 
   const configTranslate =
     Platform.OS == 'android'
-      ? {
+      ? ({
           presentation: 'modal',
           animationTypeForReplace: 'push',
           animation: 'slide_from_right',
-        }
+        } as const)
       : {};
   return (
     <View
@@ -173,6 +175,24 @@ function ApplicationNavigator() {
             headerShown: false,
           }}
         >
+          <Stack.Screen
+            component={AuthStack}
+            name={AppStacks.Auth as string}
+            options={{
+              headerShown: false,
+              // ...optionDefault,
+              ...configTranslate,
+            }}
+          />
+          <Stack.Screen
+            component={AuthStack}
+            name={AppStacks.App}
+            options={{
+              headerShown: false,
+              // ...optionDefault,
+              ...configTranslate,
+            }}
+          />
           {SCREEN_KEYS.map(key => (
             <ScreenAny
               key={key}
@@ -181,6 +201,7 @@ function ApplicationNavigator() {
             />
           ))}
         </Stack.Navigator>
+        <FloatingCartButton />
       </NavigationContainer>
     </View>
   );

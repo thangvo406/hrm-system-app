@@ -222,7 +222,8 @@
     "carts": {
       "title": "My Cart",
       "manage": "Manage",
-      "done": "Done"
+      "done": "Done",
+      "remove": "Remove"
     },
     "survey_detail": {
       "short_answer_placeholder": "Your answer",

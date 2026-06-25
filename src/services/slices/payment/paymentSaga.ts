@@ -1,6 +1,6 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
-  CartItem,
+  StoreCartItem,
   CheckoutInfo,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
@@ -41,10 +41,13 @@ function* getInfoProductCheckoutWorker(
 
 function* getListCartWorker(
   action: PayloadAction<GetListCartPayload>,
-): Generator<unknown, void, ListApiResponse<CartItem[]>> {
+): Generator<unknown, void, ListApiResponse<StoreCartItem[]>> {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
-    const response: ListApiResponse<CartItem[]> = yield call(getListCart, request);
+    const response: ListApiResponse<StoreCartItem[]> = yield call(
+      getListCart,
+      request,
+    );
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);

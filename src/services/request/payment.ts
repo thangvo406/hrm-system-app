@@ -1,5 +1,5 @@
 import type {
-  CartItem,
+  StoreCartItem,
   CheckoutInfo,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
@@ -61,9 +61,11 @@ type GetListCartRequest = Omit<GetListCartPayload, 'onFailure' | 'onSuccess'>;
 
 export const getListCart = async (
   request: GetListCartRequest,
-): Promise<ListApiResponse<CartItem[]>> => {
-  const params = CommonUtils.objectToQueryParams(request);
-  return httpRequest.get<ListApiResponse<CartItem[]>>(
-    EndPoints.PAYMENT.getListCart(params),
-  );
+): Promise<ListApiResponse<StoreCartItem[]>> => {
+  const _request = CommonUtils.removeEmptyFieldObject(request, true);
+  const params = CommonUtils.objectToQueryParams(_request);
+  const response = await httpRequest.get<
+    SingleApiResponse<ListApiResponse<StoreCartItem[]>>
+  >(EndPoints.PAYMENT.getListCart(params), { loading: false });
+  return response?.data;
 };

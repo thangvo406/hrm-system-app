@@ -209,7 +209,8 @@
     "carts": {
       "title": "장바구니",
       "manage": "관리",
-      "done": "완료"
+      "done": "완료",
+      "remove": "삭제"
     },
     "survey_detail": {
       "short_answer_placeholder": "답변을 입력해 주세요",

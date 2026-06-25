@@ -9,11 +9,11 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Dialog from '@screens/Dialog';
 import AppNavigator from '@navigation/AppNavigator';
-import { StatusBar } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 
 function App() {
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView style={styles.root}>
       <Provider store={store}>
         <PersistGate persistor={persistor}>
           <SafeAreaProvider>
@@ -32,3 +32,9 @@ function App() {
 }
 
 export default App;
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+});

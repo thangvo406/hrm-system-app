@@ -11,6 +11,7 @@ export type RootStackParamList = {
   [Paths.AnnouncementDetail]: { id: number, notification?: NotificationItem, hideBtnNotify?: boolean } | undefined;
   [Paths.Announcements]: undefined;
   [Paths.Authorization]: { isLogin: boolean } | undefined;
+  [Paths.Carts]: undefined;
   [Paths.Contribution]: undefined;
   [Paths.Example]: undefined;
   [Paths.ForgotPass]: undefined;

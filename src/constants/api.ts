@@ -47,9 +47,10 @@ export const EndPoints = {
   },
   PAYMENT: {
     checkout: 'app/cart/items',
-    updateProductCart: 'app/cart/items',
+    updateProductCart: (cartId: number) => `app/cart/items/${cartId}`,
     getInfoProductCheckout: (request: string) => `app/cart/check?${request}`,
     removeCartItem: (productId: number) => `app/cart/items/${productId}`,
+    getListCart: (request: string) => `app/cart?${request}`,
   },
   WALLET: {
     currentWallet: 'wallet',

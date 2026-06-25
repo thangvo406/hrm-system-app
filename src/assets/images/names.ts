@@ -4,6 +4,7 @@ const imageNames = {
   ic_arrow_left_gray: 'ic_arrow_left_gray',
   ic_bank_green: 'ic_bank_green',
   ic_bell_green: 'ic_bell_green',
+  ic_cart_manage: 'ic_cart_manage',
   ic_credit_card_green: 'ic_credit_card_green',
   ic_info_white: 'ic_info_white',
   ic_logo_banner: 'ic_logo_banner',

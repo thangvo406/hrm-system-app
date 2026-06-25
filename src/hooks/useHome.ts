@@ -17,6 +17,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { getCurrentWalletRequest } from '@services/slices/account/accountSlice';
 import { getStoreOrderRecentRequest } from '@services/slices/stores/storesSlice';
 import { StoreItem } from '@type/store';
+// import Address from '@screens/Address';
 
 export type UseHome = ReturnType<typeof useHome>;
 
@@ -121,6 +122,11 @@ export const useHome = () => {
   };
 
   const onPressContribution = () => {
+    // AppNavigator.showDialog({
+    //   screen: Address,
+    //   isFullScreen: true,
+    // });
+    // return;
     if (profile?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER) {
       AppNavigator.showDialog({
         screen: Information,

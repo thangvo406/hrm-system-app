@@ -15,12 +15,14 @@ const DISABLED_COLOR = '#A1A1A1';
 
 type Properties = {
   readonly onPressBack?: () => void;
+  readonly onPressCartManage?: () => void;
   readonly onPressReadAll?: () => void;
   readonly title: string;
   readonly hideNotify?: boolean;
   readonly transparent?: boolean;
   readonly disabledBtnReadAll?: boolean;
   readonly showIconReadAll?: boolean;
+  readonly showCartManage?: boolean;
   readonly style?: ViewStyle;
 };
 
@@ -41,6 +43,8 @@ function HeaderDetail({
   disabledBtnReadAll = false,
   title,
   showIconReadAll = false,
+  showCartManage = false,
+  onPressCartManage,
 }: Properties) {
   const inssets = useSafeAreaInsets();
   const _onPressBack = () => {
@@ -125,6 +129,19 @@ function HeaderDetail({
               height={ICON_SIZE}
               name="ic_notify_read_all"
               type="svg"
+              width={ICON_SIZE}
+            />
+          </AppButton>
+        )}
+        {!!showCartManage && (
+          <AppButton
+            onPress={onPressCartManage}
+            style={styles.iconButton}
+            testID="header-detail-notification"
+          >
+            <Image
+              height={ICON_SIZE}
+              name={imageNames.ic_cart_manage}
               width={ICON_SIZE}
             />
           </AppButton>
