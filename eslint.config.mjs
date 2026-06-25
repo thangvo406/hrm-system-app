@@ -88,6 +88,7 @@ export default defineConfig(
       '@typescript-eslint/no-explicit-any': OFF,
       '@typescript-eslint/restrict-plus-operands': OFF,
       'react/jsx-no-useless-fragment': OFF,
+      'perfectionist/sort-sets': OFF,
       'react/require-default-props': [
         ERROR,
         {
