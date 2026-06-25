@@ -72,7 +72,7 @@
     },
     "register_flow": {
       "identity_title": "Please proceed with verification\nto reset your password.",
-      "agree_label": "Agree to all terms for identity verification service",
+      "agree_label": "Agree to all terms for identity\nverification service",
       "terms_of_use": "Agree to the Terms of Use for Mobile Phone Identity Verification Service (Required)",
       "carrier_terms": "Agree to the Mobile Carrier Terms of Use (Required)",
       "name_label": "Name",
@@ -80,7 +80,7 @@
       "dob_label": "First 6 digits of ID",
       "identify_label": "Last 7 digits of ID",
       "phone_placeholder": "Phone Number",
-      "request_verification": "Request",
+      "request_verification": "Request Verification",
       "warning": "*If you register using someone else's personal information, your service access may be restricted and you may be subject to legal penalties.",
       "next": "Verify",
       "otp_label": "Verification Code",
@@ -94,7 +94,7 @@
     "choose_school": {
       "title": "School Verification",
       "search_label": "School Lookup",
-      "search_placeholder": "Search",
+      "search_placeholder": "School name",
       "empty": "No results found.",
       "next": "Next"
     },

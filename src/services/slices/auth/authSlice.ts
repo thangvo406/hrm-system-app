@@ -56,7 +56,11 @@ export type CompleteRegisterPayload = {
   signupToken?: string;
 } & AuthCallback;
 
-export type GetUniversitiesPayload = AuthCallback;
+export type GetUniversitiesPayload = {
+  keyword?: string;
+  page?: number;
+  size?: number;
+} & AuthCallback;
 
 export type SendOtpForgotPassPayload = {
   identifier: string;

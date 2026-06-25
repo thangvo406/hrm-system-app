@@ -19,7 +19,7 @@ import { ScaleSize } from '@kits/core';
 import imageNames from '@assets/images/names';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { logout } from '@services/slices/auth/authSlice';
-import { Paths } from '@navigation/paths';
+import { AppStacks, Paths } from '@navigation/paths';
 import AppNavigator from '@navigation/AppNavigator';
 import Information from '@screens/Dialog/components/Information';
 import { useI18n } from '@hooks';
@@ -188,7 +188,9 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
         cancelTitle: t('home.logout.button_cancel'),
         onConfirm: () => {
           dispatch(logout());
-          AppNavigator.reset(Paths.Authorization);
+          AppNavigator.reset(AppStacks.Auth, {
+            screen: Paths.Authorization,
+          });
         },
       });
     });

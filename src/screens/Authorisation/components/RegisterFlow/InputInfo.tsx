@@ -546,7 +546,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: ScaleSize(18),
     textAlign: 'right',
-    width: ScaleSize(60),
+    width: ScaleSize(100),
   },
   footerSeparator: {
     width: '100%',

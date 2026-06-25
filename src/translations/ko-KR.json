@@ -192,7 +192,7 @@
     },
     "stores": {
       "title": "스마트오더",
-      "search_placeholder": "Search",
+      "search_placeholder": "School name",
       "section_label": "자주 주문한 매장",
       "filter": {
         "title": "저장",

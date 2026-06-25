@@ -1,22 +1,28 @@
-import { Button } from '@components';
+import { AppButton, Button } from '@components';
 import Image from '@components/Image';
 import RegisterHeader from './Header';
 import { useTranslation } from 'react-i18next';
 import {
+  ActivityIndicator,
   FlatList,
+  Keyboard,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useDeferredValue, useEffect, useRef, useState } from 'react';
 import { ScaleSize } from '@kits/core';
-import { IResponseUniversity } from '../../../../types/Auth';
+import type { IResponseUniversity } from '@type/auth';
+import type { ListApiResponse } from '@type/common';
+import { useAppDispatch } from '@services/common/storeHooks';
+import { getUniversitiesRequest } from '@services/slices/auth/authSlice';
 
 const BACK_ICON_SIZE = 24;
 const ICON_CLEAR_SIZE = 16;
 const ICON_SEARCH_SIZE = 22;
+const PAGE_SIZE = 20;
 const PRIMARY_COLOR = '#5BB85C';
 const ICON_COLOR = '#1A1A1A';
 const BORDER_COLOR = '#D9D9D9';
@@ -30,58 +36,144 @@ type ChooseSchoolValues = {
 
 type ChooseSchoolProps = {
   readonly disabled?: boolean;
-  readonly filteredSchools: readonly IResponseUniversity[];
-  readonly onSchoolKeywordChange: (value: string) => void;
   readonly onSelectSchool: (school: IResponseUniversity) => void;
   readonly onSubmit: (values: ChooseSchoolValues) => void;
-  readonly schoolKeyword: string;
-  readonly selectedSchool?: IResponseUniversity;
   readonly selectedSchoolId?: string;
 };
 
+const UniversityItem = React.memo(function UniversityItem({
+  item,
+  isSelected,
+  onPress,
+}: {
+  readonly item: IResponseUniversity;
+  readonly isSelected: boolean;
+  readonly onPress: (item: IResponseUniversity) => void;
+}) {
+  return (
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() => onPress(item)}
+      style={[styles.schoolItem, isSelected && styles.schoolItemActive]}
+      testID={`choose-school-item-${item.id}`}
+    >
+      <Text style={[styles.schoolName, isSelected && styles.schoolTextActive]}>
+        {item.name}
+      </Text>
+      <Text
+        style={[styles.schoolAddress, isSelected && styles.schoolTextActive]}
+      >
+        {item.address}
+      </Text>
+    </TouchableOpacity>
+  );
+});
+
 function ChooseSchool({
   disabled = false,
-  filteredSchools,
-  onSchoolKeywordChange,
   onSelectSchool,
   onSubmit,
-  schoolKeyword,
-  selectedSchool = undefined,
   selectedSchoolId = undefined,
 }: ChooseSchoolProps) {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  const [universities, setUniversities] = useState<IResponseUniversity[]>([]);
+  const [keyword, setKeyword] = useState('');
+  const [selectedSchool, setSelectedSchool] = useState<
+    IResponseUniversity | undefined
+  >();
+
+  const deferredKeyword = useDeferredValue(keyword);
+  const currentPage = useRef(0);
+  const isLast = useRef(false);
+  const isLoadingMore = useRef(false);
+  const inputRef = useRef<TextInput>(null);
+
+  const fetchUniversities = (reset: boolean) => {
+    const page = reset ? 0 : currentPage.current;
+    dispatch(
+      getUniversitiesRequest({
+        keyword: deferredKeyword || undefined,
+        page,
+        size: PAGE_SIZE,
+        onSuccess: (data: ListApiResponse<IResponseUniversity[]>) => {
+          isLast.current = data.last;
+          isLoadingMore.current = false;
+          setUniversities(prev =>
+            reset ? data.content : [...prev, ...data.content],
+          );
+        },
+        onFailure: () => {
+          isLoadingMore.current = false;
+        },
+      }),
+    );
+  };
+
+  useEffect(() => {
+    currentPage.current = 0;
+    isLast.current = false;
+    fetchUniversities(true);
+  }, [deferredKeyword]);
+
+  const onLoadMore = () => {
+    if (isLast.current || isLoadingMore.current) return;
+    isLoadingMore.current = true;
+    currentPage.current += 1;
+    fetchUniversities(false);
+  };
+
+  const handleSelectSchool = (school: IResponseUniversity) => {
+    setSelectedSchool(school);
+    onSelectSchool(school);
+  };
+
+  const handleClearKeyword = () => setKeyword('');
 
   const handleSubmit = () => {
     if (selectedSchool) onSubmit({ school: selectedSchool });
   };
 
+  const renderItem = ({ item }: { item: IResponseUniversity }) => (
+    <UniversityItem
+      isSelected={item.id === (selectedSchool?.id ?? selectedSchoolId)}
+      item={item}
+      onPress={handleSelectSchool}
+    />
+  );
+
+  const isStale = keyword !== deferredKeyword;
+
   return (
-    <View style={styles.container}>
+    <AppButton style={styles.container} onPress={Keyboard.dismiss}>
       <RegisterHeader />
 
       <View style={styles.searchBlock}>
         <Text style={styles.title}>{t('choose_school.title')}</Text>
-
         <Text style={styles.searchLabel}>
           {t('choose_school.search_label')}
         </Text>
-
         <View style={styles.searchRow}>
-          <View style={styles.searchField}>
+          <AppButton
+            activeOpacity={1}
+            onPress={() => inputRef.current?.focus()}
+            style={styles.searchField}
+          >
             <TextInput
-              onChangeText={onSchoolKeywordChange}
+              ref={inputRef}
+              defaultValue=""
+              onChangeText={setKeyword}
+              value={keyword}
               placeholder={t('choose_school.search_placeholder')}
               placeholderTextColor={PLACEHOLDER_COLOR}
               style={styles.searchInput}
               testID="choose-school-search"
-              value={schoolKeyword}
             />
-            {schoolKeyword.length > 0 && (
+            {keyword.length > 0 && (
               <TouchableOpacity
                 activeOpacity={0.8}
-                onPress={() => {
-                  onSchoolKeywordChange('');
-                }}
+                onPress={handleClearKeyword}
                 style={styles.clearButton}
                 testID="choose-school-clear"
               >
@@ -94,92 +186,60 @@ function ChooseSchool({
                 />
               </TouchableOpacity>
             )}
-          </View>
-          <TouchableOpacity
+          </AppButton>
+          <AppButton
             activeOpacity={0.8}
             style={styles.searchButton}
             testID="choose-school-search-button"
           >
-            <Image
-              color={ICON_COLOR}
-              height={ICON_SEARCH_SIZE}
-              name="ic_search"
-              type="svg"
-              width={ICON_SEARCH_SIZE}
-            />
-          </TouchableOpacity>
+            {isStale ? (
+              <ActivityIndicator color={ICON_COLOR} size="small" />
+            ) : (
+              <Image
+                color={ICON_COLOR}
+                height={ICON_SEARCH_SIZE}
+                name="ic_search"
+                type="svg"
+                width={ICON_SEARCH_SIZE}
+              />
+            )}
+          </AppButton>
         </View>
       </View>
 
       <FlatList
         ListEmptyComponent={
-          schoolKeyword.length > 0 ? (
+          keyword.length > 0 ? (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>{t('choose_school.empty')}</Text>
             </View>
           ) : undefined
         }
-        data={filteredSchools}
+        data={universities}
         keyExtractor={item => item.id}
         keyboardShouldPersistTaps="handled"
-        renderItem={({ item }) => {
-          const isSelected = item.id === selectedSchoolId;
-          return (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => {
-                onSelectSchool(item);
-              }}
-              style={[styles.schoolItem, isSelected && styles.schoolItemActive]}
-              testID={`choose-school-item-${item.id}`}
-            >
-              <Text
-                style={[
-                  styles.schoolName,
-                  isSelected && styles.schoolTextActive,
-                ]}
-              >
-                {item.name}
-              </Text>
-              <Text
-                style={[
-                  styles.schoolAddress,
-                  isSelected && styles.schoolTextActive,
-                ]}
-              >
-                {item.address}
-              </Text>
-            </TouchableOpacity>
-          );
-        }}
+        maxToRenderPerBatch={10}
+        onEndReached={onLoadMore}
+        onEndReachedThreshold={1.5}
+        removeClippedSubviews
+        renderItem={renderItem}
         showsVerticalScrollIndicator={false}
         style={styles.list}
+        windowSize={5}
       />
 
       <View style={styles.footer}>
-        <View
-          style={{
-            width: '100%',
-            height: ScaleSize(10),
-            backgroundColor: '#F0F0F0',
-            marginBottom: ScaleSize(30),
-            // position: 'absolute',
-            // bottom: ScaleSize(20),
-          }}
-        />
+        <View style={styles.footerDivider} />
         <Button
           disabled={disabled || selectedSchool === undefined}
           onPress={handleSubmit}
-          style={{
-            width: '90%',
-            alignSelf: 'center',
-          }}
+          style={styles.submitButton}
           testID="choose-school-next"
           title={t('choose_school.next')}
           type="primary"
         />
       </View>
-    </View>
+    </AppButton>
   );
 }
 
@@ -213,6 +273,12 @@ const styles = StyleSheet.create({
   footer: {
     paddingBottom: 24,
     paddingTop: 12,
+  },
+  footerDivider: {
+    backgroundColor: '#F0F0F0',
+    height: ScaleSize(10),
+    marginBottom: ScaleSize(30),
+    width: '100%',
   },
   list: {
     flex: 1,
@@ -255,9 +321,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     flex: 1,
-    paddingHorizontal: 14,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingHorizontal: 14,
   },
   searchInput: {
     color: TEXT_COLOR,
@@ -274,6 +340,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     marginBottom: 20,
+  },
+  submitButton: {
+    alignSelf: 'center',
+    width: '90%',
   },
   title: {
     color: TEXT_COLOR,

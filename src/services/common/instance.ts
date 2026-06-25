@@ -10,7 +10,7 @@ import Config from 'react-native-config';
 import { EndPoints } from '@constants';
 import { ResponseRefreshToken, SingleApiResponse } from '@type';
 import AppNavigator from '@navigation/AppNavigator';
-import { Paths } from '@navigation/paths';
+import { AppStacks, Paths } from '@navigation/paths';
 
 // const baseURL = `${Config.API_URL}/`;
 const baseURL = `http://52.79.38.251/`;
@@ -93,7 +93,9 @@ instance.interceptors.response.use(
     originalRequest._retry = true;
     const newToken = await requestRefresh();
     if (newToken === undefined) {
-      AppNavigator.reset(Paths.Authorization);
+      AppNavigator.reset(AppStacks.Auth, {
+        screen: Paths.Authorization,
+      });
       throw error;
     }
 

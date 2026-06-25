@@ -157,11 +157,15 @@ function* completeRegisterWorker(
 }
 
 function* getUniversitiesWorker(action: PayloadAction<GetUniversitiesPayload>) {
+  const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
-    const response: IResponseUniversity[] = yield call(getUniversities);
-    action.payload.onSuccess?.(response);
+    const response: IResponseUniversity[] = yield call(
+      getUniversities,
+      request,
+    );
+    onSuccess?.(response);
   } catch {
-    action.payload.onFailure?.('');
+    onFailure?.('');
   }
 }
 
@@ -218,8 +222,12 @@ function* logoutWorker() {
   const pushId: string = yield select(AccountSelector.getPushId);
   const refreshToken: string = yield select(AuthSelector.getRefreshToken);
   try {
-    yield call(deletePushId, pushId);
-    yield call(logoutRequest, { refreshToken });
+    if (pushId) {
+      yield call(deletePushId, pushId);
+    }
+    if (refreshToken) {
+      yield call(logoutRequest, { refreshToken });
+    }
   } catch {
     //TODO: handle error
   }

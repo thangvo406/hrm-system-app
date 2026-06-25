@@ -167,7 +167,6 @@ export const useAuthorization = () => {
   const onLoginSuccess = () => {
     setLoading(false);
     AppNavigator.replace(AppStacks.App);
-    // navigation.reset({ index: 0, routes: [{ name: Paths.Home }] });
   };
 
   const onLoginFailure = (error: any) => {
@@ -184,8 +183,12 @@ export const useAuthorization = () => {
       };
       const step = stepMapping[error?.code];
       register.goToStep(step);
-      register.onGetUniversities();
-      register.setRegisterToken(error?.data?.registerToken);
+      const { registerToken, signupToken } = error?.data || {};
+      if (registerToken) {
+        register.setRegisterToken(registerToken);
+      } else if (signupToken) {
+        register.setSignupToken(signupToken);
+      }
       return;
     }
     AppNavigator.showSnackBar({
