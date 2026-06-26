@@ -2,12 +2,11 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { ListApiResponse } from '@type/common';
 import type {
   GetStoreDetailPayload,
-  GetStoreOrderRecentActionPayload,
   GetStoresPayload,
   StoreItem,
 } from '@type/store';
 
-import { call, takeLatest } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
 
 import {
   getStoreDetail,
@@ -18,6 +17,7 @@ import {
   getStoreDetailRequest,
   getStoreOrderRecentRequest,
   getStoresRequest,
+  setStoreOrderRecent,
 } from './storesSlice';
 import { getErrorMessageApi } from '@utils/common';
 
@@ -50,16 +50,12 @@ function* getStoreDetailWorker(
   }
 }
 
-function* getStoreOrderRecentWorker(
-  action: PayloadAction<GetStoreOrderRecentActionPayload>,
-): Generator<unknown, void, StoreItem[]> {
-  const { onFailure, onSuccess } = action.payload || {};
+function* getStoreOrderRecentWorker(): Generator<unknown, void, StoreItem[]> {
   try {
-    const response: StoreItem[] = yield call(getStoreOrderRecent);
-    onSuccess?.(response);
-  } catch (error_) {
-    const message = getErrorMessageApi(error_);
-    onFailure?.(message);
+    const response: StoreItem = yield call(getStoreOrderRecent);
+    yield put(setStoreOrderRecent(response));
+  } catch {
+    //TODO: //handle error
   }
 }
 

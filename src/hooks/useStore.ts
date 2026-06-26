@@ -4,11 +4,12 @@ import type { StoreFilterValue } from '@dialogs/FilterStore';
 
 import { Paths } from '@navigation/paths';
 import { getStoresRequest } from '@services/slices/stores/storesSlice';
-import { useAppDispatch } from '@services/common/storeHooks';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import AppNavigator from '@navigation/AppNavigator';
 import FilterStore from '@dialogs/FilterStore';
+import { StoresSelector } from '@services/selectors';
 
 export type { StoreItem } from '@type/store';
 
@@ -29,6 +30,7 @@ const onBack = () => {
 
 export const useStore = () => {
   const dispatch = useAppDispatch();
+  const storeOrderRecent = useAppSelector(StoresSelector.getStoreOrderRecent);
   const [data, setData] = useState<readonly StoreItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | undefined>(undefined);
@@ -125,6 +127,7 @@ export const useStore = () => {
     filter,
     loading,
     isShowSearchBar,
+    storeOrderRecent,
     onLoadMore,
     onPressProduct,
     onPressStore,

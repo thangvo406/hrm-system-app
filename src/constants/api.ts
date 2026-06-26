@@ -54,6 +54,9 @@ export const EndPoints = {
     countTotalItemCart: 'app/cart/sum',
     createOrder: 'order/create',
   },
+  ORDER: {
+    histories: (request: string) => `order/history?${request}`,
+  },
   WALLET: {
     currentWallet: 'wallet',
     getTransactionHistories: (request: string) =>

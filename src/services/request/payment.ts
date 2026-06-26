@@ -4,6 +4,8 @@ import type {
   CreateOrderPayload,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
+  GetOrderHistoriesRequest,
+  OrderHistoryItem,
   RemoveCartItemPayload,
   TotalItemCart,
   UpdateCartItemPayload,
@@ -92,5 +94,17 @@ export const createOrder = async (
   const response = await httpRequest.post<
     SingleApiResponse<CreateOrderResponse>
   >(EndPoints.PAYMENT.createOrder, request);
+  return response.data;
+};
+
+export const getOrderHistories = async (
+  request: GetOrderHistoriesRequest,
+): Promise<ListApiResponse<OrderHistoryItem[]>> => {
+  const params = CommonUtils.objectToQueryParams(
+    CommonUtils.removeEmptyFieldObject(request, true),
+  );
+  const response = await httpRequest.get<
+    SingleApiResponse<ListApiResponse<OrderHistoryItem[]>>
+  >(EndPoints.ORDER.histories(params), { loading: false });
   return response.data;
 };

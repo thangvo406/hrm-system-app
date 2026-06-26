@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
-import { AccountSelector } from '@services/selectors';
+import { AccountSelector, StoresSelector } from '@services/selectors';
 import { Paths } from '@navigation/paths';
 import AppNavigator from '@navigation/AppNavigator';
 import useNotification from './useNotification';
@@ -7,7 +7,7 @@ import {
   getProfileRequest,
   updateMembershipRequest,
 } from '@services/slices/account/accountSlice';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MEMBERSHIP_OPTIONS, MEMBERSHIP_TYPE } from '@constants/config';
 import Information from '@screens/Dialog/components/Information';
@@ -16,7 +16,6 @@ import BankInformation from '../screens/Authorisation/components/RegisterFlow/Ba
 import { useFocusEffect } from '@react-navigation/native';
 import { getCurrentWalletRequest } from '@services/slices/account/accountSlice';
 import { getStoreOrderRecentRequest } from '@services/slices/stores/storesSlice';
-import { StoreItem } from '@type/store';
 // import Address from '@screens/Address';
 
 export type UseHome = ReturnType<typeof useHome>;
@@ -56,11 +55,9 @@ export const useHome = () => {
   const { t } = useTranslation();
   const profile = useAppSelector(AccountSelector.getProfile);
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
+  const storeOrderRecent = useAppSelector(StoresSelector.getStoreOrderRecent);
   useNotification();
   const dispatch = useAppDispatch();
-  const [storeOrderRecent, setStoreOrderRecent] = useState<
-    StoreItem | undefined
-  >();
 
   const isShowCtaContribute = useMemo(() => {
     return !(
@@ -122,11 +119,6 @@ export const useHome = () => {
   };
 
   const onPressContribution = () => {
-    // AppNavigator.showDialog({
-    //   screen: Address,
-    //   isFullScreen: true,
-    // });
-    // return;
     if (profile?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER) {
       AppNavigator.showDialog({
         screen: Information,
@@ -152,18 +144,7 @@ export const useHome = () => {
     useCallback(() => {
       dispatch(getCurrentWalletRequest());
       dispatch(getProfileRequest());
-      dispatch(
-        getStoreOrderRecentRequest({
-          onSuccess(data) {
-            setStoreOrderRecent(prev => {
-              if (prev?.id == data?.id) {
-                return prev;
-              }
-              return data;
-            });
-          },
-        }),
-      );
+      dispatch(getStoreOrderRecentRequest());
     }, []),
   );
 

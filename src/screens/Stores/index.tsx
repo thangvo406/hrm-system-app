@@ -47,16 +47,22 @@ function Stores() {
     onPressStore,
     onSearchChange,
     stores,
+    storeOrderRecent,
     onBack,
   } = useStore();
 
-  const renderItem: ListRenderItem<StoreItem> = ({ item }) => (
-    <StoreCard
-      onPressProduct={onPressProduct}
-      onPressStore={onPressStore}
-      store={item}
-    />
-  );
+  const renderItem: ListRenderItem<StoreItem> = ({ item }) => {
+    return (
+      <StoreCard
+        onPressProduct={onPressProduct}
+        onPressStore={onPressStore}
+        store={item}
+      />
+    );
+  };
+
+  const isShowList =
+    storeOrderRecent?.products?.length > 0 || stores?.length > 0;
 
   return (
     <View style={styles.safeArea}>
@@ -69,12 +75,21 @@ function Stores() {
       )}
       {loading ? (
         <StoresLoading />
-      ) : stores?.length > 0 ? (
+      ) : isShowList ? (
         <>
           <FlatList
             ItemSeparatorComponent={ItemSeparator}
             contentContainerStyle={styles.listContent}
             data={stores}
+            ListHeaderComponent={
+              storeOrderRecent ? (
+                <StoreCard
+                  onPressProduct={onPressProduct}
+                  onPressStore={onPressStore}
+                  store={storeOrderRecent}
+                />
+              ) : undefined
+            }
             keyExtractor={keyExtractor}
             renderItem={renderItem}
             showsVerticalScrollIndicator={false}
@@ -104,7 +119,7 @@ const styles = StyleSheet.create({
   sectionLabel: {
     color: '#5C5C5C',
     fontSize: ScaleSize(14),
-    marginVertical: ScaleSize(30),
+    marginTop: ScaleSize(30),
   },
   separator: {
     height: ScaleSize(8),

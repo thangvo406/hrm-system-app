@@ -1,5 +1,5 @@
 import type { AppCallback, IImage, ListApiResponse } from './common';
-import type { IRequestCheckout, Product } from './products';
+import type { IRequestCheckout } from './products';
 
 export type CheckoutInfoItem = {
   readonly attributeItemId: number;
@@ -130,3 +130,23 @@ export interface OrderSummary {
   discountPrice: number;
   finalPrice: number;
 }
+
+export type OrderHistoryAction = 'rate' | 'reorder';
+
+export type OrderHistoryItem = {
+  readonly actions: OrderHistoryAction[];
+  readonly id: string;
+  readonly imageUrl: string;
+  readonly points: number;
+  readonly price: number;
+  readonly storeName: string;
+  readonly time: string;
+};
+
+export type GetOrderHistoriesRequest = {
+  readonly page: number;
+  readonly size: number;
+};
+
+export type GetOrderHistoriesPayload = GetOrderHistoriesRequest &
+  AppCallback<ListApiResponse<OrderHistoryItem[]>>;

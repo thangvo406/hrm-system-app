@@ -36,5 +36,6 @@ export { useProducts } from './useProducts';
 export { useSurvey } from './useSurvey';
 export { useSurveyDetail } from './useSurveyDetail';
 export { useStore } from './useStore';
-export type { PaymentMethod } from './useTopUp';
+export type { OrderHistoryAction, OrderHistoryItem } from '@type/payment';
+export { useOrderHistories } from './useOrderHistories';
 export { PAYMENT_METHODS, useTopUp } from './useTopUp';
