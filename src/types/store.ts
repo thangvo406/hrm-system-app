@@ -14,6 +14,7 @@ export type StoreItem = {
   estimateTime: string;
   minOrder: string;
   sortOrder: number;
+  receiveMethod: string[];
   products: Product[];
 };
 
@@ -58,4 +59,3 @@ export type GetStoresPayload = {
   size: number;
   keyword?: string;
 } & AppCallback<ListApiResponse<StoreItem[]>>;
-

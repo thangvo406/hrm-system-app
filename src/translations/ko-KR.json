@@ -3,7 +3,7 @@
     "common": {
       "confirm": "확인",
       "cancel": "취소",
-      "no_data": "No data"
+      "no_data": "데이터 없음"
     },
     "welcome": {
       "login": "로그인",
@@ -56,7 +56,7 @@
     "choose_school": {
       "title": "학적 인증",
       "search_label": "학교 조회",
-      "search_placeholder": "Search",
+      "search_placeholder": "학교 이름",
       "empty": "검색 결과가 없습니다.",
       "next": "다음"
     },
@@ -192,7 +192,11 @@
     },
     "stores": {
       "title": "스마트오더",
-      "search_placeholder": "School name",
+      "search_placeholder": "매장 이름",
+      "delivery_label": {
+        "pickup": "픽업",
+        "delivery": "배달"
+      },
       "section_label": "자주 주문한 매장",
       "filter": {
         "title": "저장",
@@ -265,9 +269,9 @@
     },
     "edit_profile": {
       "title": "프로필 수정",
-      "change_avatar": "Change Avatar",
-      "update": "Update",
-      "update_info_below": "Update your profile information below.",
+      "change_avatar": "아바타 변경",
+      "update": "업데이트",
+      "update_info_below": "아래에서 프로필 정보를 수정하세요.",
       "save": "변경 사항 저장",
       "cancel": "취소",
       "save_unavailable": "아직 변경 사항 저장을 사용할 수 없습니다.",

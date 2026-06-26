@@ -6,13 +6,11 @@ import { ProductUtils } from '@utils';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Colors } from '@constants';
 
 const ICON_SIZE = ScaleSize(18);
-const META_ICON_SIZE = ScaleSize(14);
 const TEXT_DARK = '#1A1A1A';
-const TEXT_MUTED = '#5C5C5C';
-
-const DEFAULT_ESTIMATE_TIME = '약 15분 소요 예상';
 
 type Properties = {
   readonly onPressProduct: (store: StoreItem, productId: number) => void;
@@ -21,6 +19,7 @@ type Properties = {
 };
 
 function StoreCard({ onPressProduct, onPressStore, store }: Properties) {
+  const { t } = useTranslation();
   const handlePressStore = () => {
     onPressStore(store);
   };
@@ -59,16 +58,17 @@ function StoreCard({ onPressProduct, onPressStore, store }: Properties) {
 
       <View style={styles.metaRow}>
         <View style={styles.metaItem}>
-          <Image
-            color={TEXT_MUTED}
-            height={META_ICON_SIZE}
-            name="ic_clock"
-            type="svg"
-            width={META_ICON_SIZE}
-          />
-          <Text style={styles.metaText}>
-            {store.estimateTime || DEFAULT_ESTIMATE_TIME}
-          </Text>
+          {store.receiveMethod?.length > 0 ? (
+            store.receiveMethod?.map(item => (
+              <View key={item} style={styles.containerDeliver}>
+                <Text style={styles.labelDeliver}>
+                  {t(`stores.delivery_label.${item?.toLowerCase()}`)}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.metaText}>--</Text>
+          )}
         </View>
         {minOrderText ? (
           <Text style={styles.metaText}>{minOrderText}</Text>
@@ -85,6 +85,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingTop: ScaleSize(16),
   },
+  containerDeliver: {
+    paddingVertical: ScaleSize(4),
+    paddingHorizontal: ScaleSize(8),
+    borderWidth: 1,
+    borderColor: Colors.primary,
+    backgroundColor: Colors.primary,
+    borderRadius: ScaleSize(30),
+  },
+  labelDeliver: {
+    color: Colors.white,
+    fontSize: ScaleSize(13),
+    fontWeight: 'bold',
+  },
   metaItem: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -93,12 +106,13 @@ const styles = StyleSheet.create({
   metaRow: {
     alignItems: 'center',
     flexDirection: 'row',
+    justifyContent: 'space-between',
     gap: ScaleSize(20),
     marginTop: ScaleSize(8),
     paddingHorizontal: ScaleSize(20),
   },
   metaText: {
-    color: TEXT_MUTED,
+    color: 'black',
     fontSize: ScaleSize(13),
   },
   nameRow: {

@@ -5,6 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import imageNames from '@assets/images/names';
 import React from 'react';
+import { Colors } from '@constants';
 
 const STORE_ICON_SIZE = ScaleSize(18);
 const EMPTY_IMAGE_SIZE = ScaleSize(88);
@@ -72,6 +73,19 @@ function StoreOrderRecent({
           </Text>
         </View>
       </View>
+      <View
+        style={{
+          flexDirection: 'row',
+        }}
+      >
+        {data?.receiveMethod?.map(item => (
+          <View key={item} style={styles.containerDeliver}>
+            <Text style={styles.labelDeliver}>
+              {t(`stores.delivery_label.${item?.toLowerCase()}`)}
+            </Text>
+          </View>
+        ))}
+      </View>
       <ProductList
         onPressProduct={onPressProduct}
         products={data.products}
@@ -97,6 +111,20 @@ const styles = StyleSheet.create({
     gap: ScaleSize(12),
     justifyContent: 'space-between',
     padding: ScaleSize(20),
+  },
+  containerDeliver: {
+    paddingVertical: ScaleSize(4),
+    paddingHorizontal: ScaleSize(8),
+    borderWidth: 1,
+    borderColor: Colors.primary,
+    backgroundColor: Colors.primary,
+    borderRadius: ScaleSize(30),
+    marginRight: ScaleSize(8),
+  },
+  labelDeliver: {
+    color: Colors.white,
+    fontSize: ScaleSize(13),
+    fontWeight: 'bold',
   },
   emptyDesc: {
     color: SUBTITLE_COLOR,

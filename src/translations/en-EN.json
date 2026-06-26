@@ -205,8 +205,12 @@
     },
     "stores": {
       "title": "Smart Order",
-      "search_placeholder": "Search",
+      "search_placeholder": "Store name",
       "section_label": "Frequently Ordered Store",
+      "delivery_label": {
+        "pickup": "Pickup",
+        "delivery": "Delivery"
+      },
       "filter": {
         "title": "Storting",
         "sort_by": "Sort by",

@@ -90,6 +90,19 @@ function StoreInfo({
               ) : undefined}
             </View>
           ) : undefined}
+          <View
+            style={{
+              flexDirection: 'row',
+            }}
+          >
+            {storeInfo.receiveMethod?.map(item => (
+              <View key={item} style={styles.containerDeliver}>
+                <Text style={styles.labelDeliver}>
+                  {t(`stores.delivery_label.${item?.toLowerCase()}`)}
+                </Text>
+              </View>
+            ))}
+          </View>
         </View>
       </View>
     </View>
@@ -110,6 +123,20 @@ const styles = StyleSheet.create({
     shadowOffset: { height: ScaleSize(4), width: 0 },
     shadowOpacity: 0.12,
     shadowRadius: ScaleSize(12),
+  },
+  containerDeliver: {
+    paddingVertical: ScaleSize(3),
+    paddingHorizontal: ScaleSize(8),
+    borderWidth: 1,
+    borderColor: Colors.primary,
+    backgroundColor: Colors.primary,
+    borderRadius: ScaleSize(30),
+    marginRight: ScaleSize(10),
+  },
+  labelDeliver: {
+    color: Colors.white,
+    fontSize: ScaleSize(13),
+    fontWeight: 'bold',
   },
   details: {
     flex: 1,
