@@ -53,6 +53,7 @@ export const EndPoints = {
     getListCart: (request: string) => `app/cart?${request}`,
     countTotalItemCart: 'app/cart/sum',
     createOrder: 'order/create',
+    orderHistories: (request: string) => `order?${request}`,
   },
   ORDER: {
     histories: (request: string) => `order/history?${request}`,

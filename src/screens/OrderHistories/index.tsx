@@ -18,17 +18,16 @@ function ItemSeparator() {
 }
 
 function OrderHistories() {
-  const { data, onLoadMore, onRate, onReorder } = useOrderHistories();
+  const { data, onLoadMore, onPressItem, onReOrder } = useOrderHistories();
 
   const renderItem: ListRenderItem<OrderHistoryItem> = ({ item }) => (
     <OrderHistoryRow
-      actions={item.actions}
-      points={item.points}
-      price={item.price}
+      price={item.totalAmount}
       storeName={item.storeName}
-      time={item.time}
-      onRate={onRate}
-      onReorder={onReorder}
+      orderCode={item.orderNumber}
+      onPressItem={() => onPressItem(item)}
+      onReOrder={() => onReOrder(item)}
+      storeLogo={item.storeLogo?.fileUrl}
     />
   );
 

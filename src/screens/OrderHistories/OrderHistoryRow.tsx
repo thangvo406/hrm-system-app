@@ -1,10 +1,11 @@
-import type { OrderHistoryAction } from '@type/payment';
-
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import dayjs from 'dayjs';
+import { formatCurrency } from '@utils/product';
+import Image from '@components/Image';
+import AppButton from '@components/AppButton';
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_GRAY = '#9E9E9E';
@@ -13,71 +14,59 @@ const ICON_BG = '#E8F5E8';
 const THUMB_SIZE = ScaleSize(52);
 
 type Properties = {
-  readonly actions: OrderHistoryAction[];
-  readonly points: number;
   readonly price: number;
   readonly storeName: string;
   readonly time: string;
-  readonly onReorder: () => void;
-  readonly onRate: () => void;
+  readonly orderCode: string;
+  readonly storeLogo: string;
+  readonly onReOrder: () => void;
+  readonly onPressItem: () => void;
 };
 
-function formatPrice(value: number) {
-  return `${value.toLocaleString('vi-VN')}đ`;
-}
-
 function OrderHistoryRow({
-  actions,
-  points,
   price,
+  actions,
+  storeLogo,
+  orderCode,
   storeName,
   time,
-  onReorder,
-  onRate,
+  onReOrder,
+  onPressItem,
 }: Properties) {
   const formattedTime = dayjs(time).format('HH:mm, DD [thg] M YYYY');
-  const hasActions = actions.length > 0;
 
   return (
-    <View style={styles.container}>
+    <AppButton style={styles.container} onPress={onPressItem}>
       <View style={styles.row}>
         {/* Thumbnail placeholder */}
         <View style={styles.thumb}>
-          <View style={styles.thumbInner} />
+          <Image url={storeLogo} width="100%" height="100%" />
         </View>
 
         {/* Content */}
         <View style={styles.content}>
           <View style={styles.topRow}>
-            <Text numberOfLines={2} style={styles.storeName}>
-              {storeName}
-            </Text>
-            <View style={styles.priceCol}>
-              <Text style={styles.price}>{formatPrice(price)}</Text>
-              <Text style={styles.points}>+{points.toLocaleString('vi-VN')} GrabXu</Text>
-            </View>
+            <Text style={styles.storeName}>{storeName}</Text>
+            <Text style={styles.price}>{formatCurrency(price)}</Text>
           </View>
+          <Text style={styles.orderCode}>{orderCode}</Text>
           <Text style={styles.time}>{formattedTime}</Text>
         </View>
       </View>
-
-      {hasActions ? (
-        <View style={styles.actions}>
-          {actions.includes('rate') ? (
+      <View style={styles.actions}>
+        {/* {actions.includes('rate') ? (
             <Pressable hitSlop={8} onPress={onRate} style={styles.actionBtn}>
               <Text style={styles.actionLabel}>Đánh giá & gửi tiền típ</Text>
               <Text style={styles.actionArrow}> →</Text>
             </Pressable>
-          ) : undefined}
-          {actions.includes('reorder') ? (
-            <Pressable hitSlop={8} onPress={onReorder} style={styles.actionBtn}>
-              <Text style={styles.actionLabel}>Đặt lại</Text>
-              <Text style={styles.actionArrow}> →</Text>
-            </Pressable>
-          ) : undefined}
-        </View>
-      ) : undefined}
-    </View>
+          ) : undefined} */}
+        <AppButton onPress={onReOrder} style={styles.actionBtn}>
+          <Text style={styles.actionLabel}>Đặt lại</Text>
+          <Text style={styles.actionArrow}> →</Text>
+        </AppButton>
+      </View>
+      )
+    </AppButton>
   );
 }
 
@@ -140,6 +129,13 @@ const styles = StyleSheet.create({
     color: TEXT_DARK,
     flex: 1,
     fontSize: ScaleSize(15),
+    fontWeight: '500',
+    lineHeight: ScaleSize(22),
+  },
+  orderCode: {
+    color: TEXT_DARK,
+    flex: 1,
+    fontSize: ScaleSize(13),
     fontWeight: '500',
     lineHeight: ScaleSize(22),
   },

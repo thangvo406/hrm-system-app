@@ -134,13 +134,11 @@ export interface OrderSummary {
 export type OrderHistoryAction = 'rate' | 'reorder';
 
 export type OrderHistoryItem = {
-  readonly actions: OrderHistoryAction[];
   readonly id: string;
-  readonly imageUrl: string;
-  readonly points: number;
-  readonly price: number;
+  readonly storeLogo: IImage;
+  readonly totalAmount: number;
   readonly storeName: string;
-  readonly time: string;
+  readonly orderNumber: string;
 };
 
 export type GetOrderHistoriesRequest = {

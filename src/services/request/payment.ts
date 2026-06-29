@@ -105,6 +105,6 @@ export const getOrderHistories = async (
   );
   const response = await httpRequest.get<
     SingleApiResponse<ListApiResponse<OrderHistoryItem[]>>
-  >(EndPoints.ORDER.histories(params), { loading: false });
+  >(EndPoints.PAYMENT.orderHistories(params), { loading: false });
   return response.data;
 };

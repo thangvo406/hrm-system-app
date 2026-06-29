@@ -10,6 +10,7 @@ export enum Paths {
   Notifications = 'notifications',
   OrderCompleted = 'order_completed',
   OrderHistories = 'order_histories',
+  OrderHistoryDetail = 'order_history_detail',
   PayCard = 'pay_card',
   PaymentCart = 'payment_cart',
   ProductDetail = 'product_detail',

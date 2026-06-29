@@ -5,25 +5,24 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getOrderHistoriesRequest } from '@services/slices/payment/paymentSlice';
+import AppNavigator from '@navigation/AppNavigator';
+import { Paths } from '@navigation/paths';
 
 const PAGE_SIZE = 10;
 
-function onReorder() {
-  // navigate to reorder flow
-}
-
-function onRate() {
-  // navigate to rate flow
+function onPressItem(item: any) {
+  AppNavigator.navigate(Paths.OrderHistoryDetail, { data: item });
 }
 
 export function useOrderHistories() {
   const dispatch = useAppDispatch();
-  const [data, setData] = useState<OrderHistoryItem[]>([]);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(0);
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
+  const timoutLoadMore = useRef(false);
 
   const handleSuccess = (response: ListApiResponse<OrderHistoryItem[]>) => {
     isLast.current = response.last;
@@ -36,6 +35,7 @@ export function useOrderHistories() {
     });
   };
 
+  const onReOrder = (message: string) => {};
   const handleFailure = (message: string) => {
     setError(message);
     setLoading(false);
@@ -53,17 +53,20 @@ export function useOrderHistories() {
   }, [dispatch, currentPage]);
 
   const onLoadMore = useCallback(() => {
-    if (isLast.current || isLoadingMore.current) return;
-    isLoadingMore.current = true;
-    setCurrentPage(prev => prev + 1);
-  }, []);
+    clearTimeout(timoutLoadMore.current);
+    timoutLoadMore.current = setTimeout(() => {
+      if (isLast.current || isLoadingMore.current) return;
+      isLoadingMore.current = true;
+      setCurrentPage(prev => prev + 1);
+    }, 350);
+  }, [currentPage]);
 
   return {
     data,
     error,
     loading,
     onLoadMore,
-    onRate,
-    onReorder,
+    onReOrder,
+    onPressItem,
   };
 }
