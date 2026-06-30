@@ -139,6 +139,7 @@ export type OrderHistoryItem = {
   readonly totalAmount: number;
   readonly storeName: string;
   readonly orderNumber: string;
+  readonly orderedAt: string;
 };
 
 export type GetOrderHistoriesRequest = {

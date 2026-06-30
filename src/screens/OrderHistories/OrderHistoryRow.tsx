@@ -7,6 +7,7 @@ import { formatCurrency } from '@utils/product';
 import Image from '@components/Image';
 import AppButton from '@components/AppButton';
 import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_GRAY = '#9E9E9E';
@@ -19,6 +20,7 @@ type Properties = {
   readonly storeName: string;
   readonly orderCode: string;
   readonly storeLogo: string;
+  readonly time: string;
   readonly onReOrder: () => void;
   readonly onPressItem: () => void;
 };
@@ -28,6 +30,7 @@ function OrderHistoryRow({
   storeLogo,
   orderCode,
   storeName,
+  time,
   onReOrder,
   onPressItem,
 }: Properties) {
@@ -47,6 +50,9 @@ function OrderHistoryRow({
             <Text style={styles.price}>{formatCurrency(price)}</Text>
           </View>
           <Text style={styles.orderCode}>{orderCode}</Text>
+          <Text style={styles.time}>
+            {dayjs(time).format('YYYY-MM-DD hh:mmA')}
+          </Text>
         </View>
       </View>
       <View style={styles.actions}>

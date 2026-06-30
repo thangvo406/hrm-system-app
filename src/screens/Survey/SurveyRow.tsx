@@ -37,7 +37,7 @@ function SurveyRow({ item, onPressViewResult, onPressStart }: Properties) {
           <Button
             onPress={handleViewResult}
             title={t('survey.action_answer')}
-            type="outline-bordered"
+            type="outline-bordered-rounded"
             style={buttonStyle}
           />
         )}

@@ -87,7 +87,7 @@ function ProductList({
                 {product.name}
               </Text>
               <Text style={styles.productPrice}>
-                {ProductUtils.formatCurrency(product.price)}
+                {ProductUtils.formatCurrency(product.sellingPrice)}
               </Text>
             </View>
           </TouchableOpacity>

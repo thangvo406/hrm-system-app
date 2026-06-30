@@ -336,7 +336,8 @@
       "reorder": "재주문",
       "contact_support": "고객 지원 문의",
       "status_pending": "대기 중",
-      "status_completed": "완료"
+      "status_completed": "완료",
+      "copy_order_number_success": "주문 코드가 복사되었습니다"
     }
   }
 }

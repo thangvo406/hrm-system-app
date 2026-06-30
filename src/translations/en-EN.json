@@ -157,8 +157,8 @@
         "deposit_pay": "Pay Deposit",
         "dividend_inquiry": "Dividend Inquiry",
         "payment_method": "Register Payment Method",
-        "pay": "Pay",
-        "pay_balance": "Check Coop Pay Balance",
+        "pay": "Payment",
+        "pay_balance": "Coop Pay Balance",
         "order": "Order",
         "store_search": "Store Search",
         "notice": "Notices",
@@ -336,7 +336,8 @@
       "reorder": "Reorder",
       "contact_support": "Contact Support",
       "status_pending": "Pending",
-      "status_completed": "Completed"
+      "status_completed": "Completed",
+      "copy_order_number_success": "Order code copied successfully"
     }
   }
 }

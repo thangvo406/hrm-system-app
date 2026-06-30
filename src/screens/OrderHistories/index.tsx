@@ -29,6 +29,7 @@ function OrderHistories() {
       price={item.totalAmount}
       storeName={item.storeName}
       orderCode={item.orderNumber}
+      time={item.orderedAt || ''}
       onPressItem={() => onPressItem(item)}
       onReOrder={() => onReOrder(item)}
       storeLogo={item.storeLogo?.fileUrl}

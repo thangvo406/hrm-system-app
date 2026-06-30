@@ -14,6 +14,7 @@ const imageNames = {
   ic_mega_phone: 'ic_mega_phone',
   ic_outlet_close_white: 'ic_outlet_close_white',
   ic_package: 'ic_package',
+  ic_phone: 'ic_phone',
   ic_protect_green: 'ic_protect_green',
   ic_right_topup: 'ic_right_topup',
   ic_sort_gray: 'ic_sort_gray',

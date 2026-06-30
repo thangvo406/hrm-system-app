@@ -12,6 +12,7 @@ const images = {
   ic_mega_phone: require('./ic_mega_phone.png') as number,
   ic_outlet_close_white: require('./ic_outlet_close_white.png') as number,
   ic_package: require('./ic_package.png') as number,
+  ic_phone: require('./ic_phone.png') as number,
   ic_protect_green: require('./ic_protect_green.png') as number,
   ic_right_topup: require('./ic_right_topup.png') as number,
   ic_sort_gray: require('./ic_sort_gray.png') as number,

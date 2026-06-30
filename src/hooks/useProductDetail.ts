@@ -73,7 +73,7 @@ export const useProductDetail = (props: any) => {
   }, [checkoutInfo, quantity]);
 
   const totalAmount = useMemo(() => {
-    const basePrice = data?.price ?? 0;
+    const basePrice = data?.sellingPrice ?? 0;
     let attributesPrice = 0;
     for (const attribute of data?.attributes ?? []) {
       const selectedIds = selectedAttributes[attribute.id] ?? [];

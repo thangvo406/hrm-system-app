@@ -14,8 +14,15 @@ const PRIMARY_COLOR = Colors.primary;
 const DISABLED_COLOR = '#C4C4C4';
 const BUTTON_HEIGHT = 52;
 
-type ButtonType = 'outline' | 'primary' | 'rounded' | 'outline-bordered';
+type ButtonType =
+  | 'outline'
+  | 'primary'
+  | 'rounded'
+  | 'outline-bordered'
+  | 'outline-bordered-rounded';
 
+const typeOutletBorderedRounded = 'outline-bordered-rounded';
+const typeOutletBordered = 'outline-bordered';
 type ButtonProps = {
   readonly title: string;
   readonly loading?: boolean;
@@ -32,7 +39,11 @@ function Button({
   ...rest
 }: ButtonProps) {
   const isDisabled = disabled === true || loading;
-  const isOutlet = ['outline', 'outline-bordered'].includes(type);
+  const isOutlet = [
+    'outline',
+    typeOutletBorderedRounded,
+    typeOutletBordered,
+  ].includes(type);
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -43,10 +54,16 @@ function Button({
         type === 'primary' && styles.primary,
         type === 'rounded' && styles.rounded,
         type === 'outline' && styles.outline,
-        type === 'outline-bordered' && [
+        type === typeOutletBorderedRounded && [
           styles.rounded,
           styles.outline,
           styles.border,
+        ],
+        type === typeOutletBordered && [
+          styles.rounded,
+          styles.outline,
+          styles.border,
+          { borderRadius: ScaleSize(16) },
         ],
         isDisabled && !isOutlet && styles.disabled,
         style,

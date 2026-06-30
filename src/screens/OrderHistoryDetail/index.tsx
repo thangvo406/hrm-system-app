@@ -5,12 +5,13 @@ import type { Product } from '@type/products';
 import { AppButton, Button, HeaderDetail, Image } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatCurrency } from '@utils/product';
 import { useOrderHistoryDetail } from '@hooks';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
+import imageNames from '@assets/images/names';
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_GRAY = '#9E9E9E';
@@ -95,7 +96,7 @@ function ProductRow({ product }: ProductRowProps) {
       <View style={styles.productContent}>
         <Text style={styles.productName}>{product.name}</Text>
         {product.selectedAttributes?.map(item => (
-          <Text key={item.attributeName} style={styles.productAttr}>
+          <Text key={item.attributeItemId} style={styles.productAttr}>
             {item.attributeName}
           </Text>
         ))}
@@ -109,7 +110,7 @@ function ProductRow({ product }: ProductRowProps) {
 function OrderHistoryDetail(props: any) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { data, showAllProducts, toggleShowAllProducts, visibleProducts } =
+  const { data, showAllProducts, toggleShowAllProducts, visibleProducts, onPressCopyOrderNumber } =
     useOrderHistoryDetail(props);
 
   return (
@@ -141,7 +142,10 @@ function OrderHistoryDetail(props: any) {
               </Text>
               <View style={styles.codeRow}>
                 <Text style={styles.orderCode}>{data?.orderNumber}</Text>
-                <Pressable hitSlop={8} style={styles.copyIcon}>
+                <AppButton
+                  style={styles.copyIcon}
+                  onPress={onPressCopyOrderNumber}
+                >
                   <Image
                     color={Colors.primary}
                     height={ScaleSize(18)}
@@ -149,7 +153,7 @@ function OrderHistoryDetail(props: any) {
                     type="svg"
                     width={ScaleSize(18)}
                   />
-                </Pressable>
+                </AppButton>
               </View>
               <Text style={styles.orderTime}>
                 {dayjs(data?.orderedAt).format('YYYY-MM-DD hh:mmA')}
@@ -213,7 +217,12 @@ function OrderHistoryDetail(props: any) {
               <Text style={styles.recipientName}>{data?.userName}</Text>
             </View>
             <View style={styles.phoneRow}>
-              <Text style={styles.phoneText}>☎ {data?.recipientPhone}</Text>
+              <Image
+                name={imageNames.ic_phone}
+                width={ScaleSize(16)}
+                height={ScaleSize(16)}
+              />
+              <Text style={styles.phoneText}>{data?.userPhone}</Text>
             </View>
           </View>
           <View style={styles.divider} />
@@ -307,14 +316,14 @@ function OrderHistoryDetail(props: any) {
           style={styles.reorderBtn}
           testID="order-detail-reorder"
           title={t('order_history_detail.reorder')}
-          type="outline"
+          type="outline-bordered"
         />
         <Button
           onPress={() => {}}
           style={styles.supportBtn}
           testID="order-detail-support"
           title={t('order_history_detail.contact_support')}
-          type="primary"
+          type="rounded"
         />
       </View>
     </View>

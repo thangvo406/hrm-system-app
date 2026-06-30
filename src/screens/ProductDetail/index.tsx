@@ -170,7 +170,7 @@ function ProductHero({ images }: { readonly images: ProductImage[] }) {
         data={items}
         height={HERO_HEIGHT}
         loop
-        autoPlay
+        autoPlay={items?.length > 1}
         pagingEnabled
         renderItem={({ item }) => (
           <ProgressiveImage
@@ -290,7 +290,7 @@ function ProductDetail(props: any) {
               <ProductInfo
                 description={data?.description}
                 name={data?.name}
-                price={data?.price}
+                price={data?.sellingPrice}
               />
               <ProductAttributes
                 data={data?.attributes ?? []}
