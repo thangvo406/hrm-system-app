@@ -3979,6 +3979,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"add@npm:2.0.6":
+  version: 2.0.6
+  resolution: "add@npm:2.0.6"
+  checksum: e2d23d40494565dfed4acd65e478570c444db5ac6c053551ed429c39ea0f2c99d83df63e7befec936df601827d2254d06a2fb6f7dcfd2022e810b25eab818b8c
+  languageName: node
+  linkType: hard
+
 "agent-base@npm:6":
   version: 6.0.2
   resolution: "agent-base@npm:6.0.2"
@@ -5129,6 +5136,7 @@ __metadata:
     "@types/react": 19.2.0
     "@types/react-test-renderer": 19.1.0
     "@typescript-eslint/parser": 8.29.0
+    add: 2.0.6
     axios: 1.17.0
     babel-plugin-module-resolver: 5.0.0
     babel-plugin-root-import: 6.6.0
@@ -5155,6 +5163,7 @@ __metadata:
     react-error-boundary: 6.1.1
     react-i18next: 16.5.4
     react-native: 0.81.5
+    react-native-barcode-creator: 0.2.0
     react-native-config: 1.6.1
     react-native-device-info: 15.0.2
     react-native-fs: 2.20.0
@@ -5164,6 +5173,7 @@ __metadata:
     react-native-mmkv: 4.3.1
     react-native-nitro-modules: 0.35.0
     react-native-onesignal: 5.2.9
+    react-native-qrcode-svg: 6.3.21
     react-native-reanimated: ~4.3.1
     react-native-reanimated-carousel: 4.0.3
     react-native-reanimated-skeleton: 1.6.0
@@ -5183,6 +5193,7 @@ __metadata:
     redux-saga: 1.5.0
     typescript: 5.8.3
     typescript-eslint: 8.38.0
+    yarn: 1.22.22
     zod: 4.0.14
   languageName: unknown
   linkType: soft
@@ -5491,6 +5502,13 @@ __metadata:
   version: 3.1.0
   resolution: "detect-newline@npm:3.1.0"
   checksum: ae6cd429c41ad01b164c59ea36f264a2c479598e61cba7c99da24175a7ab80ddf066420f2bec9a1c57a6bead411b4655ff15ad7d281c000a89791f48cbe939e7
+  languageName: node
+  linkType: hard
+
+"dijkstrajs@npm:^1.0.1":
+  version: 1.0.3
+  resolution: "dijkstrajs@npm:1.0.3"
+  checksum: 82ff2c6633f235dd5e6bed04ec62cdfb1f327b4d7534557bd52f18991313f864ee50654543072fff4384a92b643ada4d5452f006b7098dbdfad6c8744a8c9e08
   languageName: node
   linkType: hard
 
@@ -9713,6 +9731,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pngjs@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "pngjs@npm:5.0.0"
+  checksum: 04e912cc45fb9601564e2284efaf0c5d20d131d9b596244f8a6789fc6cdb6b18d2975a6bbf7a001858d7e159d5c5c5dd7b11592e97629b7137f7f5cef05904c8
+  languageName: node
+  linkType: hard
+
 "possible-typed-array-names@npm:^1.0.0, possible-typed-array-names@npm:^1.1.0":
   version: 1.1.0
   resolution: "possible-typed-array-names@npm:1.1.0"
@@ -9803,7 +9828,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.10, prop-types@npm:^15.5.7, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.5.10, prop-types@npm:^15.5.7, prop-types@npm:^15.8.0, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -9832,6 +9857,19 @@ __metadata:
   version: 7.0.1
   resolution: "pure-rand@npm:7.0.1"
   checksum: 4f543b97a487857a791b8e4c139aad54937397dc8177f1353f7da88556bfa40f5c32bfce3856843b1c3fc3a00b8472cceb22957c10b21c14e59e36a02ec9353b
+  languageName: node
+  linkType: hard
+
+"qrcode@npm:^1.5.4":
+  version: 1.5.4
+  resolution: "qrcode@npm:1.5.4"
+  dependencies:
+    dijkstrajs: ^1.0.1
+    pngjs: ^5.0.0
+    yargs: ^15.3.1
+  bin:
+    qrcode: bin/qrcode
+  checksum: 0a162822e12c02b0333315462fd4ccad22255002130f86806773be7592aec5ef295efaffa3eb148cbf00e290839c7b610f63b0d62a0c5efc5bc52a68f4189684
   languageName: node
   linkType: hard
 
@@ -9969,6 +10007,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-barcode-creator@npm:0.2.0":
+  version: 0.2.0
+  resolution: "react-native-barcode-creator@npm:0.2.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: e956348dc0c392d855721c84b15afa2aba7b4cfb7f4fe69816dbd6b9ef013486bef6e13dce348ded94050c6cabf7a75796edb046957517da0a43d78e0b9bb722
+  languageName: node
+  linkType: hard
+
 "react-native-config@npm:1.6.1":
   version: 1.6.1
   resolution: "react-native-config@npm:1.6.1"
@@ -10082,6 +10130,21 @@ __metadata:
   dependencies:
     invariant: ^2.2.2
   checksum: 635c2c8edd955a9e270027b93ca9471209c23f86969b96069806ae32b905b1368e1db50f37c4c747e7d6cb8a878e00206c46c3fedd0d11254b657cb3fc2f0922
+  languageName: node
+  linkType: hard
+
+"react-native-qrcode-svg@npm:6.3.21":
+  version: 6.3.21
+  resolution: "react-native-qrcode-svg@npm:6.3.21"
+  dependencies:
+    prop-types: ^15.8.0
+    qrcode: ^1.5.4
+    text-encoding: ^0.7.0
+  peerDependencies:
+    react: "*"
+    react-native: ">=0.63.4"
+    react-native-svg: ">=14.0.0"
+  checksum: 53c4b310ccef3568cd3ed937fadf999edcdca758679a3099d118ed120e09bd87941e60cee7d9254460367bb5e2b3616cd54efba38b30375b1116d96e0dda2440
   languageName: node
   linkType: hard
 
@@ -11414,6 +11477,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"text-encoding@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "text-encoding@npm:0.7.0"
+  checksum: b6109a843fb1b8748b32e1ecd6df74d370f46c13ac136bcb6ca15db70209bb0b8ec1f296ebb4b0dd9961150e205dcc044b89f8cf7657f6faef78c7569a2a81bc
+  languageName: node
+  linkType: hard
+
 "throat@npm:^5.0.0":
   version: 5.0.0
   resolution: "throat@npm:5.0.0"
@@ -12146,7 +12216,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:^15.1.0":
+"yargs@npm:^15.1.0, yargs@npm:^15.3.1":
   version: 15.4.1
   resolution: "yargs@npm:15.4.1"
   dependencies:
@@ -12177,6 +12247,16 @@ __metadata:
     y18n: ^5.0.5
     yargs-parser: ^21.1.1
   checksum: 16fb2d4866f04aaf74f206d3df843e7a80b58a26fda47af29be51b27564c19966b1674c3acf679a26fdfa8a7e4b1b442a63cdab5db8cd3c57db7912f4473e343
+  languageName: node
+  linkType: hard
+
+"yarn@npm:1.22.22":
+  version: 1.22.22
+  resolution: "yarn@npm:1.22.22"
+  bin:
+    yarn: bin/yarn.js
+    yarnpkg: bin/yarn.js
+  checksum: 59aeef5ccfd3347287f939448e6d3594f0a42f74025b9bdc2a277641c1d4070c07a38b6e7c35e695f77410b0269a5a43c78535786564f86f39c9f781e6efa311
   languageName: node
   linkType: hard
 

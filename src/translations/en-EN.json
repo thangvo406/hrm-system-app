@@ -311,6 +311,13 @@
       "title": "Order History",
       "reorder": "Reorder"
     },
+    "qr_code_payment": {
+      "title": "QR Code Payment",
+      "card_title": "COOPPay",
+      "pay_balance_label": "Pay money balance",
+      "point_label": "Point",
+      "scan_button": "QR Scan"
+    },
     "order_history_detail": {
       "order_code_label": "Order Code",
       "recipient_label": "Recipient",

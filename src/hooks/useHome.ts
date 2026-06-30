@@ -51,6 +51,10 @@ const onGoToStore = () => {
   AppNavigator.navigate(Paths.Products);
 };
 
+const onPressPayNow = () => {
+  AppNavigator.navigate(Paths.QRCodePayment);
+};
+
 export const useHome = () => {
   const { t } = useTranslation();
   const profile = useAppSelector(AccountSelector.getProfile);
@@ -156,6 +160,7 @@ export const useHome = () => {
     isShowCtaContribute,
     storeOrderRecent,
     onGoToProduct,
+    onPressPayNow,
     onPressEmptyStore: onPressStore,
     onPressStore,
     onPressContribution,

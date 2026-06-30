@@ -1,6 +1,6 @@
 import type { ImageName } from '@assets/images';
 
-import { Image, HomeHeader } from '@components';
+import { Image, HomeHeader, AppButton } from '@components';
 import imageNames from '@assets/images/names';
 import {
   ScrollView,
@@ -25,9 +25,11 @@ const { ifAndroid } = DeviceUtils;
 function PayCard({
   onPress = undefined,
   data = undefined,
+  onPressPayNow,
 }: {
   readonly data?: Wallet;
   readonly onPress?: () => void;
+  readonly onPressPayNow: () => void;
 }) {
   const { t } = useTranslation();
   return (
@@ -46,7 +48,9 @@ function PayCard({
         <Text style={styles.pointText}>
           {t('home.point_label', { point: data?.pointBalance || 0 })}
         </Text>
-        <Text style={styles.payAction}>{t('home.pay_action')}</Text>
+        <AppButton onPress={onPressPayNow}>
+          <Text style={styles.payAction}>{t('home.pay_action')}</Text>
+        </AppButton>
       </View>
     </TouchableOpacity>
   );
@@ -116,6 +120,7 @@ function Home() {
     storeOrderRecent,
     onPressEmptyStore,
     onGoToProduct,
+    onPressPayNow,
   } = useHome();
   const insets = useSafeAreaInsets();
   // alert(JSON.stringify(insets));
@@ -131,7 +136,11 @@ function Home() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <PayCard onPress={goToPayCard} data={currentWallet} />
+        <PayCard
+          onPress={goToPayCard}
+          data={currentWallet}
+          onPressPayNow={onPressPayNow}
+        />
         <View style={styles.row}>
           <FeatureCard
             desc={t('home.dividend_desc')}

@@ -40,3 +40,5 @@ export type { OrderHistoryAction, OrderHistoryItem } from '@type/payment';
 export { useOrderHistories } from './useOrderHistories';
 export { useOrderHistoryDetail } from './useOrderHistoryDetail';
 export { PAYMENT_METHODS, useTopUp } from './useTopUp';
+export { useQRCodePayment } from './useQRCodePayment';
+export type { QRCodePaymentData } from './useQRCodePayment';

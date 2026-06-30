@@ -23,6 +23,7 @@ export type RootStackParamList = {
   [Paths.OrderHistories]: undefined;
   [Paths.PayCard]: undefined;
   [Paths.PaymentCart]: undefined;
+  [Paths.QRCodePayment]: undefined;
   [Paths.ProductDetail]: { id: number, storeId: number } | undefined;
   [Paths.Products]: { data: StoreItem } | undefined;
   [Paths.Startup]: undefined;

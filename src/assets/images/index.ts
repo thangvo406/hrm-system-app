@@ -2,6 +2,7 @@ const images = {
   ic_arrow_left_gray: require('./ic_arrow_left_gray.png') as number,
   ic_bank_green: require('./ic_bank_green.png') as number,
   ic_bell_green: require('./ic_bell_green.png') as number,
+  ic_camera: require('./ic_camera.png') as number,
   ic_cart_manage: require('./ic_cart_manage.png') as number,
   ic_credit_card_green: require('./ic_credit_card_green.png') as number,
   ic_info_white: require('./ic_info_white.png') as number,

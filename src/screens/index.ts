@@ -11,6 +11,7 @@ export { default as OrderHistories } from './OrderHistories';
 export { default as OrderHistoryDetail } from './OrderHistoryDetail';
 export { default as PayCard } from './PayCard';
 export { default as PaymentCart } from './PaymentCart';
+export { default as QRCodePayment } from './QRCodePayment/index';
 export { default as ProductDetail } from './ProductDetail';
 export { default as Products } from './Products';
 export { default as Startup } from './Startup/Startup';

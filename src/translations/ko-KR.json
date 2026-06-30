@@ -311,6 +311,13 @@
       "title": "주문 내역",
       "reorder": "재주문"
     },
+    "qr_code_payment": {
+      "title": "QR 코드 결제",
+      "card_title": "COOPPay",
+      "pay_balance_label": "페이 머니 잔액",
+      "point_label": "포인트",
+      "scan_button": "QR 스캔"
+    },
     "order_history_detail": {
       "order_code_label": "주문 코드",
       "recipient_label": "수령인",

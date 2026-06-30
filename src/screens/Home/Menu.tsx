@@ -74,6 +74,7 @@ const NAV_TARGETS: Readonly<Record<string, Paths>> = {
   store_search: Paths.Stores,
   notification: Paths.Notifications,
   order: Paths.OrderHistories,
+  pay: Paths.QRCodePayment,
 };
 
 const sections: readonly MenuSection[] = [
