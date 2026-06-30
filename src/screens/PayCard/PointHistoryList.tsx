@@ -54,7 +54,6 @@ function PointHistoryList({ loading, data }: PointHistoryListProps) {
           data={data}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
-          scrollEnabled={false}
           showsVerticalScrollIndicator={false}
         />
       ) : (
@@ -64,16 +63,6 @@ function PointHistoryList({ loading, data }: PointHistoryListProps) {
         />
       )}
     </>
-  );
-
-  return (
-    <FlatList
-      data={data}
-      keyExtractor={keyExtractor}
-      renderItem={renderItem}
-      scrollEnabled={false}
-      showsVerticalScrollIndicator={false}
-    />
   );
 }
 

@@ -2,10 +2,11 @@ import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import dayjs from 'dayjs';
+
 import { formatCurrency } from '@utils/product';
 import Image from '@components/Image';
 import AppButton from '@components/AppButton';
+import { useTranslation } from 'react-i18next';
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_GRAY = '#9E9E9E';
@@ -16,7 +17,6 @@ const THUMB_SIZE = ScaleSize(52);
 type Properties = {
   readonly price: number;
   readonly storeName: string;
-  readonly time: string;
   readonly orderCode: string;
   readonly storeLogo: string;
   readonly onReOrder: () => void;
@@ -25,16 +25,13 @@ type Properties = {
 
 function OrderHistoryRow({
   price,
-  actions,
   storeLogo,
   orderCode,
   storeName,
-  time,
   onReOrder,
   onPressItem,
 }: Properties) {
-  const formattedTime = dayjs(time).format('HH:mm, DD [thg] M YYYY');
-
+  const { t } = useTranslation();
   return (
     <AppButton style={styles.container} onPress={onPressItem}>
       <View style={styles.row}>
@@ -50,22 +47,14 @@ function OrderHistoryRow({
             <Text style={styles.price}>{formatCurrency(price)}</Text>
           </View>
           <Text style={styles.orderCode}>{orderCode}</Text>
-          <Text style={styles.time}>{formattedTime}</Text>
         </View>
       </View>
       <View style={styles.actions}>
-        {/* {actions.includes('rate') ? (
-            <Pressable hitSlop={8} onPress={onRate} style={styles.actionBtn}>
-              <Text style={styles.actionLabel}>Đánh giá & gửi tiền típ</Text>
-              <Text style={styles.actionArrow}> →</Text>
-            </Pressable>
-          ) : undefined} */}
         <AppButton onPress={onReOrder} style={styles.actionBtn}>
-          <Text style={styles.actionLabel}>Đặt lại</Text>
+          <Text style={styles.actionLabel}>{t('order_histories.reorder')}</Text>
           <Text style={styles.actionArrow}> →</Text>
         </AppButton>
       </View>
-      )
     </AppButton>
   );
 }

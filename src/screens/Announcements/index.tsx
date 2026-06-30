@@ -56,11 +56,11 @@ function Announcements() {
     <View style={styles.safeArea}>
       <HeaderDetail title={t('announcements.title')} />
       <AnimatedTabs
-          labels={labels}
-          onChange={onChangeTab}
-          testIDs={TAB_TEST_IDS}
-          value={tabIndex}
-        />
+        labels={labels}
+        onChange={onChangeTab}
+        testIDs={TAB_TEST_IDS}
+        value={tabIndex}
+      />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -78,7 +78,6 @@ function Announcements() {
             data={data}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
-            scrollEnabled={false}
             showsVerticalScrollIndicator={false}
             onEndReached={onLoadMore}
             onEndReachedThreshold={1.5}

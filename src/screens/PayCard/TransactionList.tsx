@@ -97,7 +97,6 @@ function TransactionList({
           onEndReached={onLoadMore}
           onEndReachedThreshold={0.4}
           renderItem={renderItem}
-          scrollEnabled={false}
           showsVerticalScrollIndicator={false}
         />
       ) : (

@@ -5,6 +5,8 @@ import type {
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
   GetOrderHistoriesRequest,
+  GetOrderHistoryDetailRequest,
+  OrderHistoryDetailItem,
   OrderHistoryItem,
   RemoveCartItemPayload,
   TotalItemCart,
@@ -94,6 +96,15 @@ export const createOrder = async (
   const response = await httpRequest.post<
     SingleApiResponse<CreateOrderResponse>
   >(EndPoints.PAYMENT.createOrder, request);
+  return response.data;
+};
+
+export const getOrderHistoryDetail = async (
+  request: GetOrderHistoryDetailRequest,
+): Promise<OrderHistoryDetailItem> => {
+  const response = await httpRequest.get<
+    SingleApiResponse<OrderHistoryDetailItem>
+  >(EndPoints.PAYMENT.orderHistoryDetail(request.orderId), { loading: false });
   return response.data;
 };
 

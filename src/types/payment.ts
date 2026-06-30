@@ -1,5 +1,5 @@
 import type { AppCallback, IImage, ListApiResponse } from './common';
-import type { IRequestCheckout } from './products';
+import type { IRequestCheckout, Product } from './products';
 
 export type CheckoutInfoItem = {
   readonly attributeItemId: number;
@@ -148,3 +148,51 @@ export type GetOrderHistoriesRequest = {
 
 export type GetOrderHistoriesPayload = GetOrderHistoriesRequest &
   AppCallback<ListApiResponse<OrderHistoryItem[]>>;
+
+export type OrderHistoryDetailItem = {
+  id: number;
+  orderNumber: string;
+  orderedAt: string;
+  orderReceiveMethod: string;
+  userId: number;
+  userName: string;
+  storeId: number;
+  storeName: string;
+  storeAddress: StoreAddress;
+  storeLogo: IImage;
+  status: string;
+  note: any;
+  products: Product[];
+  totalAmount: number;
+  address: any;
+  addressDetail: any;
+  summary: OrderSummary;
+  paymentDueAt: string;
+  createdDate: string;
+  updatedDate: string;
+};
+
+export interface OrderSummary {
+  productPrice: number;
+  attributePrice: number;
+  voucherPrice: any;
+  totalPrice: number;
+  discountPrice: number;
+  finalPrice: number;
+}
+
+export type OrderHistoryDetailProduct = {
+  readonly id: string;
+  readonly name: string;
+  readonly attributes: string;
+  readonly quantity: number;
+  readonly price: number;
+  readonly imageUrl: string;
+};
+
+export type GetOrderHistoryDetailRequest = {
+  readonly orderId: string;
+};
+
+export type GetOrderHistoryDetailPayload = GetOrderHistoryDetailRequest &
+  AppCallback<OrderHistoryDetailItem>;

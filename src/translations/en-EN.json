@@ -306,6 +306,30 @@
       "view_detail": "View Order Detail",
       "continue_shopping": "Continue Shopping",
       "go_home": "Go to Home"
+    },
+    "order_histories": {
+      "title": "Order History",
+      "reorder": "Reorder"
+    },
+    "order_history_detail": {
+      "order_code_label": "Order Code",
+      "recipient_label": "Recipient",
+      "delivery_address_label": "Delivery Address",
+      "shipping_method_label": "Shipping Method",
+      "payment_method_label": "Payment Method",
+      "subtotal_label": "Subtotal",
+      "shipping_fee_label": "Shipping Fee",
+      "shipping_fee_free": "Free shipping",
+      "total_label": "Total",
+      "products_label": "Ordered Products",
+      "delivery_section_title": "Delivery Info",
+      "payment_section_title": "Payment Info",
+      "show_more": "View all products",
+      "show_less": "Show less",
+      "reorder": "Reorder",
+      "contact_support": "Contact Support",
+      "status_pending": "Pending",
+      "status_completed": "Completed"
     }
   }
 }

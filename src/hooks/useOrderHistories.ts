@@ -35,7 +35,7 @@ export function useOrderHistories() {
     });
   };
 
-  const onReOrder = (message: string) => {};
+  const onReOrder = () => {};
   const handleFailure = (message: string) => {
     setError(message);
     setLoading(false);

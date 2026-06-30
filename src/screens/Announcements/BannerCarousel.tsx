@@ -52,7 +52,7 @@ function BannerCarousel({
       >
         <ProgressiveImage
           height={BANNER_HEIGHT}
-          url={item.fileUrl}
+          url={item.image?.fileUrl}
           resizeMode="stretch"
           width={BANNER_WIDTH}
         />

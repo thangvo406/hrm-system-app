@@ -1,4 +1,5 @@
 import type { AppCallback, ListApiResponse } from './common';
+import { AttributeCart } from './payment';
 
 export type ProductImage = {
   readonly fileUrl: string;
@@ -18,6 +19,8 @@ export type Product = {
   sortOrder: number;
   thumbnail: ProductImage;
   images: ProductImage[];
+  selectedAttributes?: AttributeCart[];
+  quantity?: number;
 };
 
 export type IResponseProductDetail = {

@@ -39,5 +39,4 @@ export { useStore } from './useStore';
 export type { OrderHistoryAction, OrderHistoryItem } from '@type/payment';
 export { useOrderHistories } from './useOrderHistories';
 export { useOrderHistoryDetail } from './useOrderHistoryDetail';
-export type { OrderDetail, OrderDetailProduct } from './useOrderHistoryDetail';
 export { PAYMENT_METHODS, useTopUp } from './useTopUp';

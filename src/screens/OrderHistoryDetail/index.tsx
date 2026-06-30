@@ -1,17 +1,16 @@
+import type { IconName } from '@assets/icons';
+import type { Product } from '@type/products';
+// IconName is used via SectionCardProps below
+
 import { AppButton, Button, HeaderDetail, Image } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatCurrency } from '@utils/product';
 import { useOrderHistoryDetail } from '@hooks';
-import type { OrderDetailProduct } from '@hooks';
+import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_GRAY = '#9E9E9E';
@@ -19,12 +18,18 @@ const TEXT_LABEL = '#717171';
 const SCREEN_BG = '#F7F7F7';
 const CARD_BG = '#FFFFFF';
 const ICON_BG = '#E8F5E8';
+const STATUS_COMPLETED_BG = '#E8F5E8';
+const STATUS_COMPLETED_TEXT = '#2E7D32';
+const STATUS_PENDING_BG = '#FFF8E1';
+const STATUS_PENDING_TEXT = '#F59E0B';
+const STATUS_DEFAULT_BG = '#F3F4F6';
+const STATUS_DEFAULT_TEXT = '#6B7280';
 const DIVIDER = '#E5E7EB';
 const THUMB_SIZE = ScaleSize(64);
 const SECTION_ICON_SIZE = ScaleSize(40);
 
 type SectionCardProps = {
-  readonly iconName: string;
+  readonly iconName: IconName;
   readonly title: string;
   readonly children: React.ReactNode;
 };
@@ -56,7 +61,12 @@ type InfoRowProps = {
   readonly showDivider?: boolean;
 };
 
-function InfoRow({ label, value, valueStyle, showDivider = true }: InfoRowProps) {
+function InfoRow({
+  label,
+  value,
+  valueStyle,
+  showDivider = true,
+}: InfoRowProps) {
   return (
     <View>
       <View style={styles.infoRow}>
@@ -69,7 +79,7 @@ function InfoRow({ label, value, valueStyle, showDivider = true }: InfoRowProps)
 }
 
 type ProductRowProps = {
-  readonly product: OrderDetailProduct;
+  readonly product: Product;
 };
 
 function ProductRow({ product }: ProductRowProps) {
@@ -84,22 +94,27 @@ function ProductRow({ product }: ProductRowProps) {
       </View>
       <View style={styles.productContent}>
         <Text style={styles.productName}>{product.name}</Text>
-        <Text style={styles.productAttr}>{product.attributes}</Text>
-        <Text style={styles.productQty}>x{product.quantity}</Text>
+        {product.selectedAttributes?.map(item => (
+          <Text key={item.attributeName} style={styles.productAttr}>
+            {item.attributeName}
+          </Text>
+        ))}
+        <Text style={styles.productQty}>x{product?.quantity}</Text>
       </View>
       <Text style={styles.productPrice}>{formatCurrency(product.price)}</Text>
     </View>
   );
 }
 
-function OrderHistoryDetail() {
+function OrderHistoryDetail(props: any) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const { data, showAllProducts, toggleShowAllProducts, visibleProducts } =
-    useOrderHistoryDetail();
+    useOrderHistoryDetail(props);
 
   return (
     <View style={styles.root}>
-      <HeaderDetail hideNotify title="Chi tiết đơn hàng" />
+      <HeaderDetail title={data?.storeName} />
 
       <ScrollView
         contentContainerStyle={[
@@ -121,9 +136,11 @@ function OrderHistoryDetail() {
               />
             </View>
             <View style={styles.summaryMeta}>
-              <Text style={styles.summaryMetaLabel}>Mã đơn hàng</Text>
+              <Text style={styles.summaryMetaLabel}>
+                {t('order_history_detail.order_code_label')}
+              </Text>
               <View style={styles.codeRow}>
-                <Text style={styles.orderCode}>{data.orderCode}</Text>
+                <Text style={styles.orderCode}>{data?.orderNumber}</Text>
                 <Pressable hitSlop={8} style={styles.copyIcon}>
                   <Image
                     color={Colors.primary}
@@ -134,113 +151,169 @@ function OrderHistoryDetail() {
                   />
                 </Pressable>
               </View>
-              <Text style={styles.orderTime}>{data.orderTime}</Text>
+              <Text style={styles.orderTime}>
+                {dayjs(data?.orderedAt).format('YYYY-MM-DD hh:mmA')}
+              </Text>
             </View>
             <View style={styles.summaryRight}>
-              <View style={styles.statusBadge}>
-                <Text style={styles.statusText}>{data.status}</Text>
+              <View
+                style={[
+                  styles.statusBadge,
+                  {
+                    backgroundColor:
+                      data?.status === 'COMPLETED'
+                        ? STATUS_COMPLETED_BG
+                        : data?.status === 'PENDING'
+                          ? STATUS_PENDING_BG
+                          : STATUS_DEFAULT_BG,
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.statusText,
+                    {
+                      color:
+                        data?.status === 'COMPLETED'
+                          ? STATUS_COMPLETED_TEXT
+                          : data?.status === 'PENDING'
+                            ? STATUS_PENDING_TEXT
+                            : STATUS_DEFAULT_TEXT,
+                    },
+                  ]}
+                >
+                  {data?.status === 'COMPLETED'
+                    ? t('order_history_detail.status_completed')
+                    : data?.status === 'PENDING'
+                      ? t('order_history_detail.status_pending')
+                      : data?.status}
+                </Text>
               </View>
-              <Text style={styles.totalLabel}>Tổng tiền</Text>
-              <Text style={styles.totalAmount}>
-                {formatCurrency(data.totalAmount)}
+              <Text style={styles.totalLabel}>
+                {t('order_history_detail.total_label')}
               </Text>
-              <Text style={styles.paymentMethodNote}>{data.paymentMethod}</Text>
+              <Text style={styles.totalAmount}>
+                {formatCurrency(data?.summary.totalPrice)}
+              </Text>
+              <Text style={styles.paymentMethodNote}>{'paymentMethod'}</Text>
             </View>
           </View>
         </View>
 
         {/* Delivery info */}
-        <SectionCard iconName="ic_map_pin" title="Thông tin giao hàng">
+        <SectionCard
+          iconName="ic_map_pin"
+          title={t('order_history_detail.delivery_section_title')}
+        >
           <View style={styles.deliveryRecipientRow}>
             <View>
-              <Text style={styles.infoLabel}>Người nhận</Text>
-              <Text style={styles.recipientName}>{data.recipientName}</Text>
+              <Text style={styles.infoLabel}>
+                {t('order_history_detail.recipient_label')}
+              </Text>
+              <Text style={styles.recipientName}>{data?.userName}</Text>
             </View>
             <View style={styles.phoneRow}>
-              <Image
-                color={TEXT_DARK}
-                height={ScaleSize(16)}
-                name="ic_phone"
-                type="svg"
-                width={ScaleSize(16)}
-              />
-              <Text style={styles.phoneText}>{data.recipientPhone}</Text>
+              <Text style={styles.phoneText}>☎ {data?.recipientPhone}</Text>
             </View>
           </View>
           <View style={styles.divider} />
           <View style={styles.deliveryFieldBlock}>
-            <Text style={styles.infoLabel}>Địa chỉ giao hàng</Text>
-            <Text style={styles.deliveryValue}>{data.deliveryAddress}</Text>
+            <Text style={styles.infoLabel}>
+              {t('order_history_detail.delivery_address_label')}
+            </Text>
+            <Text style={styles.deliveryValue}>
+              {data?.address?.address_name}
+            </Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.deliveryFieldBlock}>
-            <Text style={styles.infoLabel}>Phương thức giao hàng</Text>
-            <Text style={styles.deliveryValue}>{data.shippingMethod}</Text>
-          </View>
-        </SectionCard>
-
-        {/* Payment info */}
-        <SectionCard iconName="ic_wallet" title="Thông tin thanh toán">
-          <InfoRow
-            label="Phương thức thanh toán"
-            value={data.paymentMethod}
-          />
-          <InfoRow
-            label="Tạm tính"
-            value={formatCurrency(data.subtotal)}
-          />
-          <InfoRow
-            label="Phí giao hàng"
-            value={formatCurrency(data.shippingFee)}
-            showDivider={false}
-          />
-          <View style={[styles.divider, { marginTop: ScaleSize(12) }]} />
-          <View style={styles.totalRow}>
-            <Text style={styles.totalRowLabel}>Tổng tiền</Text>
-            <Text style={styles.totalRowAmount}>
-              {formatCurrency(data.totalAmount)}
+            <Text style={styles.infoLabel}>
+              {t('order_history_detail.shipping_method_label')}
             </Text>
+            <Text style={styles.deliveryValue}>{data?.orderReceiveMethod}</Text>
           </View>
         </SectionCard>
 
         {/* Products */}
-        <SectionCard iconName="ic_shopping_bag" title="Sản phẩm đã đặt">
-          {visibleProducts.map(product => (
+        <SectionCard
+          iconName="ic_shopping_bag"
+          title={t('order_history_detail.products_label')}
+        >
+          {visibleProducts?.map(product => (
             <ProductRow key={product.id} product={product} />
           ))}
-          {data.products.length > 3 ? (
-            <AppButton onPress={toggleShowAllProducts} style={styles.showMoreBtn}>
+          {data?.products?.length > 3 ? (
+            <AppButton
+              onPress={toggleShowAllProducts}
+              style={styles.showMoreBtn}
+            >
               <Text style={styles.showMoreLabel}>
                 {showAllProducts
-                  ? 'Ẩn bớt sản phẩm'
-                  : 'Xem chi tiết sản phẩm'}
+                  ? t('order_history_detail.show_less')
+                  : t('order_history_detail.show_more')}
               </Text>
-              <Image
-                color={Colors.primary}
-                height={ScaleSize(16)}
-                name={showAllProducts ? 'ic_chevron_up' : 'ic_chevron_down'}
-                type="svg"
-                width={ScaleSize(16)}
-              />
+              <View style={showAllProducts ? styles.chevronUp : undefined}>
+                <Image
+                  color={Colors.primary}
+                  height={ScaleSize(16)}
+                  name="ic_chevron_down"
+                  type="svg"
+                  width={ScaleSize(16)}
+                />
+              </View>
             </AppButton>
           ) : undefined}
+        </SectionCard>
+
+        {/* Payment info */}
+        <SectionCard
+          iconName="ic_wallet"
+          title={t('order_history_detail.payment_section_title')}
+        >
+          <InfoRow
+            label={t('order_history_detail.payment_method_label')}
+            value={data?.paymentMethod}
+          />
+          <InfoRow
+            label={t('order_history_detail.subtotal_label')}
+            value={formatCurrency(data?.summary?.totalPrice)}
+          />
+          <InfoRow
+            label={t('order_history_detail.shipping_fee_label')}
+            value={t('order_history_detail.shipping_fee_free')}
+            showDivider={false}
+          />
+          <View style={[styles.divider, { marginTop: ScaleSize(12) }]} />
+          <View style={styles.totalRow}>
+            <Text style={styles.totalRowLabel}>
+              {t('order_history_detail.total_label')}
+            </Text>
+            <Text style={styles.totalRowAmount}>
+              {formatCurrency(data?.summary?.finalPrice)}
+            </Text>
+          </View>
         </SectionCard>
       </ScrollView>
 
       {/* Bottom actions */}
-      <View style={[styles.bottomBar, { paddingBottom: insets.bottom + ScaleSize(8) }]}>
+      <View
+        style={[
+          styles.bottomBar,
+          { paddingBottom: insets.bottom + ScaleSize(8) },
+        ]}
+      >
         <Button
           onPress={() => {}}
           style={styles.reorderBtn}
           testID="order-detail-reorder"
-          title="Đặt lại đơn hàng"
+          title={t('order_history_detail.reorder')}
           type="outline"
         />
         <Button
           onPress={() => {}}
           style={styles.supportBtn}
           testID="order-detail-support"
-          title="Liên hệ hỗ trợ"
+          title={t('order_history_detail.contact_support')}
           type="primary"
         />
       </View>
@@ -266,6 +339,9 @@ const styles = StyleSheet.create({
     marginBottom: ScaleSize(10),
     marginHorizontal: ScaleSize(12),
     padding: ScaleSize(16),
+  },
+  chevronUp: {
+    transform: [{ rotate: '180deg' }],
   },
   codeRow: {
     alignItems: 'center',
@@ -314,7 +390,7 @@ const styles = StyleSheet.create({
   },
   orderCode: {
     color: Colors.primary,
-    fontSize: ScaleSize(17),
+    fontSize: ScaleSize(14),
     fontWeight: '700',
   },
   orderTime: {
@@ -428,14 +504,12 @@ const styles = StyleSheet.create({
   },
   statusBadge: {
     alignSelf: 'flex-end',
-    backgroundColor: ICON_BG,
     borderRadius: ScaleSize(20),
     marginBottom: ScaleSize(8),
     paddingHorizontal: ScaleSize(12),
     paddingVertical: ScaleSize(4),
   },
   statusText: {
-    color: Colors.primary,
     fontSize: ScaleSize(12),
     fontWeight: '600',
   },

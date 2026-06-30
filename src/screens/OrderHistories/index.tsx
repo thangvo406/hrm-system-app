@@ -1,12 +1,13 @@
 import type { OrderHistoryItem } from '@type/payment';
 import type { ListRenderItem } from 'react-native';
 
-import { HeaderDetail } from '@components';
+import { EmptyView, HeaderDetail, OrderHistoriesLoading } from '@components';
 import { ScaleSize } from '@kits/core';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useOrderHistories } from '@hooks';
 import OrderHistoryRow from './OrderHistoryRow';
-
+import imageNames from '@assets/images/names';
+import { useTranslation } from 'react-i18next';
 const SCREEN_BG = '#F7F7F7';
 
 function keyExtractor(item: OrderHistoryItem) {
@@ -18,7 +19,10 @@ function ItemSeparator() {
 }
 
 function OrderHistories() {
-  const { data, onLoadMore, onPressItem, onReOrder } = useOrderHistories();
+  const { data, loading, onLoadMore, onPressItem, onReOrder } =
+    useOrderHistories();
+
+  const { t } = useTranslation();
 
   const renderItem: ListRenderItem<OrderHistoryItem> = ({ item }) => (
     <OrderHistoryRow
@@ -33,17 +37,23 @@ function OrderHistories() {
 
   return (
     <View style={styles.container}>
-      <HeaderDetail title="Lịch sử hoạt động" />
-      <FlatList
-        contentContainerStyle={styles.listContent}
-        data={data}
-        ItemSeparatorComponent={ItemSeparator}
-        keyExtractor={keyExtractor}
-        onEndReached={onLoadMore}
-        onEndReachedThreshold={0.3}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-      />
+      <HeaderDetail title={t('order_histories.title')} />
+      {loading ? (
+        <OrderHistoriesLoading />
+      ) : data?.length > 0 ? (
+        <FlatList
+          contentContainerStyle={styles.listContent}
+          ItemSeparatorComponent={ItemSeparator}
+          data={data}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+          onEndReached={onLoadMore}
+          onEndReachedThreshold={1.5}
+        />
+      ) : (
+        <EmptyView icon={imageNames.ic_package} desc={t('common.no_data')} />
+      )}
     </View>
   );
 }

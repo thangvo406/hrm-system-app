@@ -1,4 +1,4 @@
-import type { AppCallback, ListApiResponse } from './common';
+import type { AppCallback, IImage, ListApiResponse } from './common';
 
 export type AnnouncementKind = 'event' | 'announcement';
 
@@ -24,7 +24,7 @@ export type GetAnnouncementDetailPayload = {
 
 export type AnnouncementImage = {
   id: number;
-  fileUrl: string;
+  image: IImage;
 };
 
 export type GetAnnouncementImagesPayload = AppCallback<AnnouncementImage[]>;
@@ -52,10 +52,11 @@ export type IRequestGetNotifications = {
   size: number;
 };
 
-export type GetNotificationsPayload = AppCallback<ListApiResponse<NotificationItem[]>> &
+export type GetNotificationsPayload = AppCallback<
+  ListApiResponse<NotificationItem[]>
+> &
   IRequestGetNotifications;
 
 export type MarkReadPayload = {
   readonly notifyId: number;
 } & AppCallback;
-

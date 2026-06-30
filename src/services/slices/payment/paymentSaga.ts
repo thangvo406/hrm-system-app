@@ -7,6 +7,8 @@ import type {
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
   GetOrderHistoriesPayload,
+  GetOrderHistoryDetailPayload,
+  OrderHistoryDetailItem,
   OrderHistoryItem,
   RemoveCartItemPayload,
   UpdateCartItemPayload,
@@ -20,6 +22,7 @@ import {
   getInfoProductCheckout,
   getListCart,
   getOrderHistories,
+  getOrderHistoryDetail,
   removeCartItem,
   updateCartItem,
 } from '@services/request/payment';
@@ -30,6 +33,7 @@ import {
   getInfoProductCheckoutRequest,
   getListCartRequest,
   getOrderHistoriesRequest,
+  getOrderHistoryDetailRequest,
   removeCartItemRequest,
   updateCartItemRequest,
 } from './paymentSlice';
@@ -118,6 +122,22 @@ function* getOrderHistoriesWorker(
   }
 }
 
+function* getOrderHistoryDetailWorker(
+  action: PayloadAction<GetOrderHistoryDetailPayload>,
+): Generator<unknown, void, OrderHistoryDetailItem> {
+  const { onFailure, onSuccess, orderId } = action.payload;
+  try {
+    const response: OrderHistoryDetailItem = yield call(
+      getOrderHistoryDetail,
+      { orderId },
+    );
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 export function* paymentSaga() {
   yield takeLatest(createOrderRequest.type, createOrderWorker);
   yield takeLatest(
@@ -126,6 +146,7 @@ export function* paymentSaga() {
   );
   yield takeLatest(getListCartRequest.type, getListCartWorker);
   yield takeLatest(getOrderHistoriesRequest.type, getOrderHistoriesWorker);
+  yield takeLatest(getOrderHistoryDetailRequest.type, getOrderHistoryDetailWorker);
   yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
   yield takeLatest(updateCartItemRequest.type, updateCartItemWorker);
 }
