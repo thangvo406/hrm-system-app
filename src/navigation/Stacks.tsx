@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as Screens from '@screens';
 import { Paths } from './paths';
 import FloatingCartButton from './FloatingCartButton';
+import { Globals } from '@utils';
 
 // ─── Auth stack ───────────────────────────────────────────────────────────────
 
@@ -78,7 +79,7 @@ export function AppStack() {
           />
         ))}
       </AppNavigator.Navigator>
-      <FloatingCartButton />
+      <FloatingCartButton ref={ref => (Globals.cartBtnRef = ref)} />
     </>
   );
 }

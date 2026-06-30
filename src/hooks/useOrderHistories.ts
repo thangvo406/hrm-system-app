@@ -35,7 +35,13 @@ export function useOrderHistories() {
     });
   };
 
-  const onReOrder = () => {};
+  const onReOrder = () => {
+    //   dispatch(checkoutProductRequest({
+    //      productId: number;
+    // quantity: number;
+    //       selectedAttributes: AttributeCheckout[];
+    //   }))
+  };
   const handleFailure = (message: string) => {
     setError(message);
     setLoading(false);

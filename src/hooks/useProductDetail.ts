@@ -5,17 +5,17 @@ import {
   checkoutProductRequest,
   getProductByIdRequest,
 } from '@services/slices/products/productsSlice';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import AppNavigator from '@navigation/AppNavigator';
 import { useTranslation } from 'react-i18next';
 import {
   getInfoProductCheckoutRequest,
-  removeCartItemRequest,
   updateCartItemRequest,
 } from '@services/slices/payment/paymentSlice';
 import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
 import { CheckoutInfo } from '@type';
 import { groupAttributeItemsByAttributeId } from '@utils/product';
+import { useFocusEffect } from '@react-navigation/native';
 
 export type { Product } from '@type/products';
 
@@ -124,20 +124,22 @@ export const useProductDetail = (props: any) => {
     );
   }, [dispatch, productId]);
 
-  useEffect(() => {
-    if (productId == null || productId === '') {
-      setLoading(false);
-      setError('Missing product id');
-      return;
-    }
-    dispatch(
-      getInfoProductCheckoutRequest({
-        // onFailure: handleFailure,
-        onSuccess: handleGetCheckoutInfoSuccess,
-        productId,
-      }),
-    );
-  }, [dispatch, productId, refreshCheckoutInfo]);
+  useFocusEffect(
+    useCallback(() => {
+      if (productId == null || productId === '') {
+        setLoading(false);
+        setError('Missing product id');
+        return;
+      }
+      dispatch(
+        getInfoProductCheckoutRequest({
+          // onFailure: handleFailure,
+          onSuccess: handleGetCheckoutInfoSuccess,
+          productId,
+        }),
+      );
+    }, [dispatch, productId, refreshCheckoutInfo]),
+  );
 
   const onSelectAttribute = (attribute: AttributeDetail, itemId: number) => {
     setSelectedAttributes(prev => {
@@ -161,9 +163,15 @@ export const useProductDetail = (props: any) => {
   };
 
   const onPressCart = () => {
+    const flatAttributes = Object.values(selectedAttributes)
+      .flat()
+      .map(attributeItemId => ({ attributeItemId }));
     if (quantity == 0) {
       dispatch(
-        removeCartItemRequest({
+        updateCartItemRequest({
+          quantity,
+          productId,
+          selectedAttributes: flatAttributes,
           cartItemId: checkoutInfo?.cartItemId || 0,
           onSuccess: () => {
             AppNavigator.showSnackBar({
@@ -186,9 +194,7 @@ export const useProductDetail = (props: any) => {
       );
       return;
     }
-    const flatAttributes = Object.values(selectedAttributes)
-      .flat()
-      .map(attributeItemId => ({ attributeItemId }));
+
     const actionExecutor =
       checkoutInfo?.quantity > 0
         ? updateCartItemRequest
@@ -199,8 +205,6 @@ export const useProductDetail = (props: any) => {
         cartItemId: checkoutInfo?.cartItemId,
         quantity: quantity,
         selectedAttributes: flatAttributes,
-        // storeId,
-        // vouchers: [],
         onSuccess: () => {
           AppNavigator.showSnackBar({
             message: t('product_detail.add_cart_success'),

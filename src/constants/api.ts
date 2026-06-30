@@ -49,7 +49,7 @@ export const EndPoints = {
     checkout: 'app/cart/items',
     updateProductCart: (cartId: number) => `app/cart/items/${cartId}`,
     getInfoProductCheckout: (request: string) => `app/cart/check?${request}`,
-    removeCartItem: (productId: number) => `app/cart/items/${productId}`,
+    removeCartItem: (productId: number) => `app/cart/${productId}`,
     getListCart: (request: string) => `app/cart?${request}`,
     countTotalItemCart: 'app/cart/sum',
     createOrder: 'order/create',

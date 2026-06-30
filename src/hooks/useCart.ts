@@ -6,10 +6,11 @@ import {
   getListCartRequest,
   removeCartItemRequest,
 } from '@services/slices/payment/paymentSlice';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useTranslation } from 'react-i18next';
+import { useFocusEffect } from '@react-navigation/native';
 
 const PAGE_SIZE = 20;
 
@@ -41,19 +42,21 @@ export const useCart = () => {
     });
   };
 
-  useEffect(() => {
-    setLoading(true);
-    dispatch(
-      getListCartRequest({
-        page: 0,
-        size: PAGE_SIZE,
-        onSuccess: handleSuccess,
-        onFailure: () => {
-          setLoading(false);
-        },
-      }),
-    );
-  }, [dispatch]);
+  useFocusEffect(
+    useCallback(() => {
+      setLoading(true);
+      dispatch(
+        getListCartRequest({
+          page: 0,
+          size: PAGE_SIZE,
+          onSuccess: handleSuccess,
+          onFailure: () => {
+            setLoading(false);
+          },
+        }),
+      );
+    }, [dispatch]),
+  );
 
   const onToggleManage = () => {
     setIsManaging(prev => !prev);

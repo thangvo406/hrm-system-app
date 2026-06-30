@@ -25,8 +25,14 @@ const HIDDEN_CART_PATHS = new Set<string>([
 ]);
 
 const handleNavigationStateChange = () => {
+  console.log('currentRoute', AppNavigator.getCurrentRoute());
   const currentName = AppNavigator.getCurrentRoute()?.name ?? '';
-  store.dispatch(setShowFloatingCart(!HIDDEN_CART_PATHS.has(currentName)));
+  if (HIDDEN_CART_PATHS.has(currentName)) {
+    Globals.cartBtnRef?.hide?.();
+  } else {
+    Globals.cartBtnRef?.show?.();
+  }
+  // store.dispatch(setShowFloatingCart(!HIDDEN_CART_PATHS.has(currentName)));
 };
 
 function ApplicationNavigator() {

@@ -2,7 +2,6 @@ import { Button, HeaderDetail } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatCurrency } from '@utils/product';
 import { usePaymentCart } from '@hooks';
 import PaymentMethod from './components/PaymentMethod';
@@ -23,6 +22,7 @@ function PaymentCart(props: any) {
     setPaymentMethod,
     onPressPickupTime,
     onPressOrder,
+    onChangeQuantity,
   } = usePaymentCart(props);
 
   return (
@@ -32,7 +32,7 @@ function PaymentCart(props: any) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <ProductInfo items={data?.items} />
+        <ProductInfo items={data?.items} onChangeQuantity={onChangeQuantity} />
 
         <View style={styles.spacer} />
 
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: ScaleSize(12),
     paddingBottom: ScaleSize(16),
-    paddingHorizontal: ScaleSize(16),
+    paddingHorizontal: ScaleSize(32),
     paddingTop: ScaleSize(12),
   },
   finalPrice: {

@@ -2,10 +2,15 @@ import Selection from '@dialogs/Selection';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useAppDispatch } from '@services/common/storeHooks';
-import { createOrderRequest } from '@services/slices/payment/paymentSlice';
+import {
+  createOrderRequest,
+  removeCartItemRequest,
+  updateCartItemRequest,
+} from '@services/slices/payment/paymentSlice';
 import type { CreateOrderResponse } from '@type';
 import { upperCaseFirstChar } from '@utils/common';
-import { useEffect, useMemo, useState } from 'react';
+import { debounce } from 'lodash';
+import { useMemo, useRef, useState } from 'react';
 
 export type DeliveryTab = 'DELIVERY' | 'PICKUP';
 export type PaymentCartMethod = 'coop_pay' | 'credit_card' | 'easy_payment';
@@ -35,9 +40,15 @@ const DATA_PICKUP_TIME = [
 const PICKUP_DEFAULT = DATA_PICKUP_TIME[0];
 
 export const usePaymentCart = (props: any) => {
-  const { data } = AppNavigator.getParams(props);
-  const [deliveryTab, setDeliveryTab] = useState<DeliveryTab>();
+  const { data: dataCart } = AppNavigator.getParams(props);
+  const [data, setData] = useState(dataCart);
+  const [deliveryTab, setDeliveryTab] = useState<DeliveryTab>(
+    data.storeReceiveMethod?.length > 0
+      ? data.storeReceiveMethod[0]
+      : undefined,
+  );
   const dispatch = useAppDispatch();
+  const debounceIdChangeQuanlity = useRef(undefined);
 
   const [paymentMethod, setPaymentMethod] =
     useState<PaymentCartMethod>('coop_pay');
@@ -52,11 +63,44 @@ export const usePaymentCart = (props: any) => {
     });
   }, [data]);
 
-  useEffect(() => {
-    if (data.storeReceiveMethod?.length > 0) {
-      setDeliveryTab(data.storeReceiveMethod[0]);
-    }
-  }, [data]);
+  const onChangeQuantity = (product: any) => {
+    debounceIdChangeQuanlity.current?.cancel?.();
+    debounceIdChangeQuanlity.current = debounce(() => {
+      dispatch(
+        updateCartItemRequest({
+          productId: product?.productId,
+          quantity: product?.quantity,
+          selectedAttributes: product?.selectedAttributes,
+          cartItemId: product?.id,
+          onSuccess: () => {
+            if (product?.quantity == 0) {
+              const newData = { ...data };
+              newData.items = newData.items?.filter?.(
+                it => it.id != product?.id,
+              );
+              setData(newData);
+            }
+          },
+        }),
+      );
+    }, 350);
+    debounceIdChangeQuanlity.current();
+  };
+
+  const onRemoveProduct = (cartItemId: number) => {
+    dispatch(
+      removeCartItemRequest({
+        cartItemId,
+        onSuccess: () => {
+          const newData = { ...data };
+          newData.items = newData.items?.filter(
+            (it: { id: number }) => it.id !== cartItemId,
+          );
+          setData(newData);
+        },
+      }),
+    );
+  };
 
   const onPressPickupTime = () => {
     AppNavigator.showDialog({
@@ -108,11 +152,13 @@ export const usePaymentCart = (props: any) => {
     deliveryTab,
     paymentMethod,
     data,
+    onRemoveProduct,
     pickupTime,
     onPressOrder,
     onPressPickupTime,
     setDeliveryTab,
     setPaymentMethod,
+    onChangeQuantity,
     setPickupTime,
     shippingTabs,
   };

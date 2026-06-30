@@ -1,7 +1,7 @@
 import { AppButton, Button, Image } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useEffect } from 'react';
@@ -111,6 +111,7 @@ function ConfettiBit({
 
 import type { IconName } from '@assets/icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 type InfoRowProps = {
   readonly icon: IconName;
@@ -159,10 +160,6 @@ function InfoRow({
   );
 }
 
-function handleCopyCode() {
-  // clipboard copy — placeholder
-}
-
 function onGoToTranDetail() {}
 function onGoToStores() {
   AppNavigator.reset(Paths.Stores);
@@ -176,6 +173,15 @@ function OrderCompleted(props: any) {
   const inssets = useSafeAreaInsets();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+
+  const handleCopyCode = () => {
+    // clipboard copy — placeholder
+    Clipboard.setString(data?.orderNumber);
+    AppNavigator.showSnackBar({
+      message: t('order_history_detail.copy_order_number_success'),
+      type: 'success',
+    });
+  };
 
   useEffect(() => {
     dispatch(getTotalItemCartRequest());
@@ -228,14 +234,10 @@ function OrderCompleted(props: any) {
                 {t('order_completed.order_code')}
               </Text>
               <Text style={[styles.infoValue, styles.orderCodeValue]}>
-                {data?.orderCode ?? 'DH2505180001'}
+                {data?.orderNumber ?? ''}
               </Text>
             </View>
-            <Pressable
-              hitSlop={8}
-              onPress={handleCopyCode}
-              style={styles.copyBtn}
-            >
+            <AppButton onPress={handleCopyCode} style={styles.copyBtn}>
               <Image
                 color={Colors.primary}
                 height={ScaleSize(20)}
@@ -244,7 +246,7 @@ function OrderCompleted(props: any) {
                 width={ScaleSize(20)}
               />
               <Text style={styles.copyLabel}>{t('order_completed.copy')}</Text>
-            </Pressable>
+            </AppButton>
           </View>
           <View style={styles.divider} />
 
@@ -257,7 +259,7 @@ function OrderCompleted(props: any) {
             icon="ic_map_pin"
             label={t('order_completed.delivery_address')}
             showChevron
-            value={data?.address?.addressText ?? ''}
+            value={data?.address?.addressText ?? data?.address?.address_name}
           />
           <InfoRow
             icon="ic_truck"
@@ -324,7 +326,7 @@ function OrderCompleted(props: any) {
       </ScrollView>
 
       {/* Primary CTA */}
-      <View style={styles.bottomBar}>
+      <View style={[styles.bottomBar, { marginBottom: inssets.bottom }]}>
         <Button
           onPress={handleGoHome}
           testID="order-completed-home"

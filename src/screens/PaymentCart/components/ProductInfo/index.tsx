@@ -1,10 +1,9 @@
-import Image from '@components/Image';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from '@utils/product';
-import type { ProductCart } from '@type';
-import React, { useState } from 'react';
+import type { AttributeCart, ProductCart } from '@type';
+import React, { useEffect, useRef, useState } from 'react';
 import Animated, {
   FadeInUp,
   FadeOutDown,
@@ -13,15 +12,26 @@ import Animated, {
   useDerivedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { AppButton, Image } from '@components';
+import AppNavigator from '@navigation/AppNavigator';
+import Information from '@dialogs/Information';
+import debounce from 'lodash/debounce';
+import type { DebouncedFunc } from 'lodash';
+import imageNames from '@assets/images/names';
 
 const TEXT_DARK = '#1A1A1A';
 const CARD_BG = '#FFFFFF';
 const IMAGE_SIZE = ScaleSize(80);
 const SECTION_TITLE = 'Selected Items';
 const ANIM_DURATION = 200;
+const STEPPER_HEIGHT = ScaleSize(28);
+const STEPPER_BTN_WIDTH = ScaleSize(36);
+const STEPPER_ICON_COLOR = '#AAAAAA';
+const DEBOUNCE_REMOVE_MS = 250;
 
 type ProductInfoProperties = {
   readonly items: readonly ProductCart[] | undefined;
+  readonly onChangeQuantity: (item: ProductCart) => void;
 };
 
 function ChevronIcon({ expanded }: { readonly expanded: boolean }) {
@@ -36,17 +46,60 @@ function ChevronIcon({ expanded }: { readonly expanded: boolean }) {
   );
 }
 
-function ProductInfo({ items }: ProductInfoProperties) {
+function ProductInfo({ onChangeQuantity, items }: ProductInfoProperties) {
   const [expanded, setExpanded] = useState(true);
   const hasItems = (items?.length ?? 0) > 0;
+  const [products, setProducts] = useState<ProductCart[]>(
+    items ? [...items] : [],
+  );
+  const debounceShowPopup = useRef<DebouncedFunc<() => void> | undefined>(
+    undefined,
+  );
+
+  useEffect(() => {
+    setProducts(items);
+  }, [items]);
 
   const handleToggle = () => {
     setExpanded(prev => !prev);
   };
 
+  const _onChangeQuantity =
+    (type: string, index: number, quantity: number) => () => {
+      const newQuantity = Math.max(
+        0,
+        type === 'plus' ? quantity + 1 : quantity - 1,
+      );
+
+      if (debounceShowPopup.current) {
+        return;
+      }
+      const newItems = [...products];
+      newItems[index] = { ...newItems[index], quantity: newQuantity };
+      if (newQuantity === 0) {
+        debounceShowPopup.current = debounce(() => {
+          debounceShowPopup.current = undefined;
+          AppNavigator.showDialog({
+            screen: Information,
+            title: 'Bạn muốn xoá cart này?',
+            cancelTitle: 'No',
+            confirmTitle: 'Confirm',
+            onConfirm: () => {
+              onChangeQuantity(newItems[index]);
+            },
+          });
+        }, DEBOUNCE_REMOVE_MS);
+        debounceShowPopup.current();
+        return;
+      }
+
+      setProducts(newItems);
+      onChangeQuantity(newItems[index]);
+    };
+
   return (
     <View style={styles.card}>
-      <TouchableOpacity
+      <AppButton
         activeOpacity={0.7}
         onPress={handleToggle}
         style={styles.header}
@@ -54,7 +107,7 @@ function ProductInfo({ items }: ProductInfoProperties) {
       >
         <Text style={styles.sectionTitle}>{SECTION_TITLE}</Text>
         {hasItems ? <ChevronIcon expanded={expanded} /> : undefined}
-      </TouchableOpacity>
+      </AppButton>
 
       {hasItems && expanded ? (
         <Animated.View
@@ -62,35 +115,51 @@ function ProductInfo({ items }: ProductInfoProperties) {
           exiting={FadeOutDown.duration(ANIM_DURATION)}
           layout={LinearTransition.duration(ANIM_DURATION)}
         >
-          {items?.map(item => {
-            return (
-              <View style={styles.itemRow} key={item.id}>
-                <Image
-                  height={IMAGE_SIZE}
-                  resizeMode="cover"
-                  style={styles.itemImage}
-                  url={item.productThumbnailUrl?.fileUrl}
-                  width={IMAGE_SIZE}
-                />
-                <View style={styles.itemInfo}>
-                  <Text style={styles.itemName}>{item.productName}</Text>
-                  {item.selectedAttributes?.map(attribute => {
-                    return (
-                      <Text
-                        style={styles.itemDescription}
-                        key={attribute.attributeName}
-                      >
-                        {attribute.attributeName}
-                      </Text>
-                    );
-                  })}
-                  <Text style={styles.itemPrice}>
-                    {formatCurrency(item.totalAmount)}
-                  </Text>
+          {products.map((item: ProductCart, index: number) => (
+            <View style={styles.itemRow} key={item.id}>
+              <Image
+                height={IMAGE_SIZE}
+                resizeMode="cover"
+                name={imageNames.img_product_default}
+                style={styles.itemImage}
+                url={item.productThumbnailUrl?.fileUrl}
+                width={IMAGE_SIZE}
+              />
+              <View style={styles.itemInfo}>
+                <Text style={styles.itemName}>{item.productName}</Text>
+
+                <View style={styles.stepper}>
+                  <AppButton
+                    onPress={_onChangeQuantity('minus', index, item.quantity)}
+                    style={styles.stepperBtn}
+                    testID={`stepper-minus-${item.id}`}
+                  >
+                    <Text style={styles.stepperIcon}>−</Text>
+                  </AppButton>
+                  <Text style={styles.stepperCount}>{item.quantity}</Text>
+                  <AppButton
+                    onPress={_onChangeQuantity('plus', index, item.quantity)}
+                    style={styles.stepperBtn}
+                    testID={`stepper-plus-${item.id}`}
+                  >
+                    <Text style={styles.stepperIcon}>+</Text>
+                  </AppButton>
                 </View>
+
+                {item.selectedAttributes?.map((attribute: AttributeCart) => (
+                  <Text
+                    style={styles.itemDescription}
+                    key={attribute.attributeName}
+                  >
+                    {attribute.attributeName}
+                  </Text>
+                ))}
+                <Text style={styles.itemPrice}>
+                  {formatCurrency(item.totalAmount)}
+                </Text>
               </View>
-            );
-          })}
+            </View>
+          ))}
         </Animated.View>
       ) : undefined}
     </View>
@@ -151,5 +220,35 @@ const styles = StyleSheet.create({
     color: TEXT_DARK,
     fontSize: ScaleSize(15),
     fontWeight: '700',
+  },
+  stepper: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    borderColor: Colors.primary,
+    borderRadius: STEPPER_HEIGHT / 2,
+    borderWidth: 1.5,
+    flexDirection: 'row',
+    height: STEPPER_HEIGHT,
+    marginTop: ScaleSize(6),
+    overflow: 'hidden',
+  },
+  stepperBtn: {
+    alignItems: 'center',
+    height: STEPPER_HEIGHT,
+    justifyContent: 'center',
+    width: STEPPER_BTN_WIDTH,
+  },
+  stepperCount: {
+    color: TEXT_DARK,
+    fontSize: ScaleSize(15),
+    fontWeight: '700',
+    minWidth: ScaleSize(28),
+    textAlign: 'center',
+  },
+  stepperIcon: {
+    color: STEPPER_ICON_COLOR,
+    fontSize: ScaleSize(18),
+    fontWeight: '400',
+    lineHeight: ScaleSize(22),
   },
 });
