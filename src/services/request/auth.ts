@@ -73,12 +73,14 @@ export const verifyOTP = async (
   return response.data;
 };
 
-export const getUniversities = async (request: any): Promise<ListApiResponse<IResponseUniversity[]>> => {
-   const _request = CommonUtils.removeEmptyFieldObject(request, true);
-   const params = CommonUtils.objectToQueryParams(_request);
-   const response = await httpRequest.get<
-     SingleApiResponse<ListApiResponse<IResponseUniversity[]>>
-   >(EndPoints.AUTH.getUniversities(params), { loading: false });
+export const getUniversities = async (
+  request: any,
+): Promise<ListApiResponse<IResponseUniversity[]>> => {
+  const _request = CommonUtils.removeEmptyFieldObject(request, true);
+  const params = CommonUtils.objectToQueryParams(_request);
+  const response = await httpRequest.get<
+    SingleApiResponse<ListApiResponse<IResponseUniversity[]>>
+  >(EndPoints.AUTH.getUniversities(params), { loading: false });
   return response.data;
 };
 
@@ -146,5 +148,5 @@ export const submitForgotPass = async (
 };
 
 export const logout = async (request: LogoutRequest): Promise<void> => {
-  await httpRequest.post(EndPoints.AUTH.logout, request);
+  await httpRequest.post(EndPoints.AUTH.logout, request, { loading: false });
 };

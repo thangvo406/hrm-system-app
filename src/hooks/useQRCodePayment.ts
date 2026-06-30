@@ -1,4 +1,5 @@
-import { showQRCodeViewer } from '@screens/Dialog/components/QRCodeViewer';
+import QRCodeViewer, { QRCodeViewerMode } from '@dialogs/QRCodeViewer';
+import AppNavigator from '@navigation/AppNavigator';
 
 export type QRCodePaymentData = {
   readonly barcodeValue: string;
@@ -12,6 +13,16 @@ const MOCK_DATA: QRCodePaymentData = {
   payBalance: '100,000원',
   pointBalance: '1,000원',
   qrValue: 'https://coopuse.example.com/pay/qr/USER_12345_TOKEN',
+};
+
+const showQRCodeViewer = (mode: QRCodeViewerMode, value: string) => {
+  AppNavigator.showDialog({
+    screen: QRCodeViewer as never,
+    isFullScreen: true,
+    transparent: true,
+    mode,
+    value,
+  });
 };
 
 const onPressScan = () => {
