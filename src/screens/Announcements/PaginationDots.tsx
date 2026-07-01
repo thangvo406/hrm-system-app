@@ -7,7 +7,7 @@ import Animated, {
   interpolateColor,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import React from 'react';
 
 const DOT_SIZE = ScaleSize(6);
@@ -60,6 +60,7 @@ type PaginationDotsProperties = {
   readonly inactiveColor: string;
   readonly progress: SharedValue<number>;
   readonly size: number;
+  readonly style: ViewStyle | ViewStyle[];
 };
 
 function PaginationDots({
@@ -70,9 +71,10 @@ function PaginationDots({
   inactiveColor,
   progress,
   size,
+  style,
 }: PaginationDotsProperties) {
   return (
-    <View style={styles.paginationRow}>
+    <View style={[styles.paginationRow, style]}>
       {Array.from({ length: count }).map((_, index) => (
         <PaginationDot
           activeColor={activeColor}

@@ -101,9 +101,10 @@ export const useAnnouncements = () => {
 
   const onPressBannerItem = useCallback(item => {
     AppNavigator.showDialog({
-      imageUrl: item.fileUrl,
+      imageUrl: item.image?.fileUrl,
       screen: ImagePreview,
       isFullScreen: true,
+      transparent: true,
     });
   }, []);
 

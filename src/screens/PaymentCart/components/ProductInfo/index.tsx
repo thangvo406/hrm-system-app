@@ -149,7 +149,7 @@ function ProductInfo({ onChangeQuantity, items }: ProductInfoProperties) {
                 {item.selectedAttributes?.map((attribute: AttributeCart) => (
                   <Text
                     style={styles.itemDescription}
-                    key={attribute.attributeName}
+                    key={attribute.attributeId}
                   >
                     {attribute.attributeName}
                   </Text>

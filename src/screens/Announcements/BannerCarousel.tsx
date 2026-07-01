@@ -83,6 +83,9 @@ function BannerCarousel({
         inactiveColor={DOT_INACTIVE_COLOR}
         progress={progress}
         size={DOT_SIZE}
+        style={{
+          bottom: ScaleSize(-20),
+        }}
       />
     </View>
   );
@@ -94,6 +97,7 @@ const styles = StyleSheet.create({
   bannerContainer: {
     alignItems: 'center',
     position: 'relative',
+    marginBottom: ScaleSize(40),
   },
   bannerSlide: {
     borderRadius: ScaleSize(14),
