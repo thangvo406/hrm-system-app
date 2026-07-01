@@ -46,10 +46,14 @@ const FloatingCartButton = forwardRef<FloatingCartButtonRef>((_props, ref) => {
 
   const scale = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
+  const viewRef = useRef<Animated.LegacyRef<View>>(null);
 
   const isDragging = useRef(false);
+  const isVisible = useRef(false);
 
   const show = () => {
+    isVisible.current = true;
+    (viewRef.current as any)?.setNativeProps?.({ pointerEvents: 'auto' });
     Animated.parallel([
       Animated.spring(scale, {
         toValue: 1,
@@ -76,7 +80,10 @@ const FloatingCartButton = forwardRef<FloatingCartButtonRef>((_props, ref) => {
         duration: HIDE_DURATION,
         useNativeDriver: true,
       }),
-    ]).start();
+    ]).start(() => {
+      isVisible.current = false;
+      (viewRef.current as any)?.setNativeProps?.({ pointerEvents: 'none' });
+    });
   };
 
   const resetPosition = () => {
@@ -104,6 +111,7 @@ const FloatingCartButton = forwardRef<FloatingCartButtonRef>((_props, ref) => {
         Math.abs(gs.dx) > DRAG_THRESHOLD || Math.abs(gs.dy) > DRAG_THRESHOLD,
       onPanResponderGrant: () => {
         isDragging.current = false;
+        pan.stopAnimation();
         pan.extractOffset();
       },
       onPanResponderMove: (_, gs) => {
@@ -150,6 +158,8 @@ const FloatingCartButton = forwardRef<FloatingCartButtonRef>((_props, ref) => {
 
   return (
     <Animated.View
+      ref={viewRef as any}
+      pointerEvents="none"
       style={[
         styles.button,
         {

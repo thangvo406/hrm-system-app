@@ -79,7 +79,7 @@ export function AppStack() {
           />
         ))}
       </AppNavigator.Navigator>
-      <FloatingCartButton ref={ref => (Globals.cartBtnRef = ref)} />
+      <FloatingCartButton ref={ref => { Globals.cartBtnRef = ref; }} />
     </>
   );
 }

@@ -10,8 +10,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import AppNavigator from '@navigation/AppNavigator';
 import { Dimensions, PanResponder, Platform, View } from 'react-native';
 import { Globals } from '@utils';
-import { store } from '@services/common/store';
-import { setShowFloatingCart } from '@services/slices/app/appSlice';
 import { AppStack, AuthStack } from './Stacks';
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -32,7 +30,6 @@ const handleNavigationStateChange = () => {
   } else {
     Globals.cartBtnRef?.show?.();
   }
-  // store.dispatch(setShowFloatingCart(!HIDDEN_CART_PATHS.has(currentName)));
 };
 
 function ApplicationNavigator() {
