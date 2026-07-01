@@ -347,6 +347,10 @@
             "search_placeholder": "도/시 및 동/면 검색",
             "selected_area": "선택된 지역",
             "reset": "초기화"
+        },
+        "payment_cart": {
+            "remove_cart_success": "장바구니가 삭제되었습니다",
+            "select_pickup_time": "픽업 시간 선택"
         }
     }
 }

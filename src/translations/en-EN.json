@@ -347,6 +347,10 @@
             "search_placeholder": "Search Province/City and Ward/Commune",
             "selected_area": "Selected area",
             "reset": "Reset"
+        },
+        "payment_cart": {
+            "remove_cart_success": "Cart removed successfully",
+            "select_pickup_time": "Select Pickup Time"
         }
     }
 }
