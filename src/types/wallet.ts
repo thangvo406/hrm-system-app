@@ -1,7 +1,7 @@
 import type { AppCallback, ListApiResponse } from './common';
 
 export type IRequestGetTransactionHistories = {
-  transactionType?: string;
+  balanceAccountType: string;
   page: number;
   size: number;
 };
@@ -41,8 +41,9 @@ export type IRequestTopUpWallet = {
 
 export type GetCurrentWalletPayload = AppCallback<Wallet>;
 
-export type GetTransactionHistoriesPayload = AppCallback<ListApiResponse<TransactionHistory[]>> &
+export type GetTransactionHistoriesPayload = AppCallback<
+  ListApiResponse<TransactionHistory[]>
+> &
   IRequestGetTransactionHistories;
 
 export type TopUpWalletPayload = AppCallback & IRequestTopUpWallet;
-

@@ -35,6 +35,7 @@ export type UseAuthorization = ReturnType<typeof useAuthorization>;
 export type LoginErrors = {
   email?: string;
   password?: string;
+  errorApi?: string;
 };
 
 export type SocialLoginToken = {
@@ -150,6 +151,10 @@ export const useAuthorization = () => {
 
   const register = useRegister();
 
+  const clearLoginErrors = () => {
+    setTouchedFields(new Set());
+  };
+
   const onLoginChange =
     (field: keyof typeof initialLoginForm) => (value: string) => {
       loginFormRef.current[field] = value.trim();
@@ -161,7 +166,7 @@ export const useAuthorization = () => {
       const newErrors = validateLogin(loginFormRef.current, t);
       setLoginErrors(prev => {
         if (prev[field] === newErrors[field]) return prev;
-        return { ...prev, [field]: newErrors[field] };
+        return { ...prev, errorApi: undefined, [field]: newErrors[field] };
       });
     };
 
@@ -193,10 +198,10 @@ export const useAuthorization = () => {
       }
       return;
     }
-    AppNavigator.showSnackBar({
-      message: error?.message,
-      type: 'failed',
-    });
+    setLoginErrors(prev => ({
+      ...prev,
+      errorApi: error?.message,
+    }));
   };
 
   const onForgotPassword = () => {
@@ -250,9 +255,11 @@ export const useAuthorization = () => {
   const visibleErrors: LoginErrors = {
     email: touchedFields.has('email') ? loginErrors.email : undefined,
     password: touchedFields.has('password') ? loginErrors.password : undefined,
+    errorApi: loginErrors.errorApi,
   };
 
   return {
+    clearLoginErrors,
     isLoginValid: !loginErrors.email && !!loginFormRef.current?.password,
     loading,
     loginErrors: visibleErrors,

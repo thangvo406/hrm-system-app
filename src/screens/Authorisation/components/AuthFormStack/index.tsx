@@ -30,6 +30,7 @@ type AuthFormStackProps = {
   readonly loading: boolean;
   readonly loginErrors: LoginErrors;
   readonly loginWithSocial: (provider: SocialProvider) => void;
+  readonly onClearErrors: () => void;
   readonly onForgotPassword: () => void;
   readonly onGoRegisterForm: () => void;
   readonly onLoginChange: (field: keyof LoginValues) => (value: string) => void;
@@ -47,6 +48,7 @@ function AuthFormStack({
   loading,
   loginErrors,
   loginWithSocial,
+  onClearErrors,
   onForgotPassword,
   onGoRegisterForm,
   onLoginChange,
@@ -58,6 +60,11 @@ function AuthFormStack({
 }: AuthFormStackProps) {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<AuthTab>(initialTab);
+
+  const handleTabChange = (tab: AuthTab) => {
+    onClearErrors();
+    setActiveTab(tab);
+  };
 
   const isRegister = activeTab === 'registration';
   const formOpacity = useMemo(() => new Animated.Value(1), []);
@@ -125,7 +132,7 @@ function AuthFormStack({
 
         <SegmentedTab
           activeTab={activeTab}
-          onTabChange={setActiveTab}
+          onTabChange={handleTabChange}
           style={styles.tabs}
           tabs={authTabs}
         />

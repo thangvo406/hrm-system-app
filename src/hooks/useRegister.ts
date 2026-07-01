@@ -12,9 +12,6 @@ import {
   verifyOTPRequest,
 } from '@services/slices/auth/authSlice';
 import AppNavigator from '@navigation/AppNavigator';
-import { useNavigation } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
-import type { RootStackParamList } from '@navigation/types';
 import { AppStacks } from '@navigation/paths';
 import Selection from '@screens/Dialog/components/Selection';
 import { CommonUtils } from '@utils';
@@ -38,6 +35,7 @@ const {
 
 export type RegisterErrors = {
   email?: string;
+  errorApi?: string;
   name?: string;
   password?: string;
 };
@@ -102,6 +100,7 @@ export const useRegister = () => {
 
   const [errors, setErrors] = useState<{
     email?: boolean;
+    errorApi?: string;
     name?: boolean;
     password?: boolean;
   }>({});
@@ -142,6 +141,10 @@ export const useRegister = () => {
     formData.current[field] = value;
   };
 
+  const clearErrors = () => {
+    setErrors({});
+  };
+
   const goToStep = (nextStep: string) => {
     if (Object.values(STEP).includes(nextStep as AuthStep)) {
       setStep(nextStep as AuthStep);
@@ -161,7 +164,10 @@ export const useRegister = () => {
     );
     return {
       isRegisterValid: registerFormState.valid,
-      visibleRegisterErrors: registerFormState.visible,
+      visibleRegisterErrors: {
+        ...(registerFormState.visible || {}),
+        errorApi: errors.errorApi,
+      },
     };
   }, [errors, step, t]);
 
@@ -173,7 +179,7 @@ export const useRegister = () => {
         email: formData.current.email,
         name: formData.current.name,
         onFailure: (error: string) => {
-          AppNavigator.showSnackBar({ message: error, type: 'failed' });
+          setErrors(prev => ({ ...prev, errorApi: error }));
         },
         onSuccess: (response: any) => {
           setStep(STEP.REGISTER_INPUT);
@@ -312,6 +318,7 @@ export const useRegister = () => {
   };
 
   return {
+    clearErrors,
     agreed,
     carrier,
     chooseOptions: MEMBERSHIP_OPTIONS,

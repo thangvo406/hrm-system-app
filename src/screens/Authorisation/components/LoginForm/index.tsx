@@ -3,6 +3,7 @@ import type { LoginErrors } from '@hooks';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
 import React, { useRef } from 'react';
+import { ScaleSize } from '@kits/core';
 
 export type LoginValues = {
   readonly email: string;
@@ -65,6 +66,10 @@ function LoginForm({
         testID="auth-password-input"
       />
 
+      {!!errors?.errorApi && (
+        <Text style={styles.errorApi}>{errors.errorApi}</Text>
+      )}
+
       <TouchableOpacity
         onPress={onForgotPassword}
         style={styles.forgot}
@@ -90,12 +95,17 @@ function LoginForm({
 const styles = StyleSheet.create({
   forgot: {
     alignSelf: 'flex-end',
-    marginBottom: 16,
-    marginTop: 8,
+    marginBottom: ScaleSize(16),
+    marginTop: ScaleSize(8),
+  },
+  errorApi: {
+    color: 'red',
+    fontSize: ScaleSize(14),
+    marginTop: ScaleSize(8),
   },
   forgotText: {
     color: '#2F6BFF',
-    fontSize: 13,
+    fontSize: ScaleSize(13),
   },
 });
 

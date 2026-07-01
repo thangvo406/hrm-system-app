@@ -6,15 +6,14 @@ import {
 } from '@services/slices/auth/authSlice';
 import { store } from '@services/common/store';
 import axios from 'axios';
-import Config from 'react-native-config';
-import { EndPoints } from '@constants';
+import { EndPoints, Environment } from '@constants';
 import { ResponseRefreshToken, SingleApiResponse } from '@type';
 import AppNavigator from '@navigation/AppNavigator';
 import { AppStacks, Paths } from '@navigation/paths';
 
-// const baseURL = `${Config.API_URL}/`;
+// const baseURL = `${Environment.BASE_URL}/`;
 const baseURL = `http://52.79.38.251/`;
-
+const urlsIgnore = new Set([EndPoints.AUTH.login]);
 const HTTP_UNAUTHORIZED = 401;
 const REQUEST_TIMEOUT_MS = 15_000;
 
@@ -81,8 +80,8 @@ instance.interceptors.response.use(
     const originalRequest = error.config as
       | ({ _retry?: boolean } & InternalAxiosRequestConfig)
       | undefined;
-
     if (
+      urlsIgnore.has(originalRequest?.url ?? '') ||
       error.response?.status !== HTTP_UNAUTHORIZED ||
       originalRequest === undefined ||
       originalRequest._retry === true

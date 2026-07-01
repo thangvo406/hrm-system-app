@@ -83,13 +83,16 @@ export const usePayCard = () => {
 
   useFocusEffect(
     useCallback(() => {
+      const balanceAccountType = historyTab === 'pay' ? 'PAY_MONEY' : 'POINT';
       dispatch(
         getTransactionHistoriesRequest({
           page: currentPage,
           size: 20,
-          // transactionType: 'CREDIT',
+          balanceAccountType,
           onSuccess: handleGetTranSuccess,
-          // onFailure: (message) => { ... },
+          onFailure: () => {
+            setLoading(false);
+          },
         }),
       );
     }, [currentPage]),

@@ -23,6 +23,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
   const insets = useSafeAreaInsets();
 
   const {
+    clearLoginErrors,
     isLoginValid,
     loading,
     loginErrors,
@@ -41,6 +42,10 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     loading,
     loginErrors,
     loginWithSocial,
+    onClearErrors: () => {
+      clearLoginErrors();
+      register.clearErrors();
+    },
     onForgotPassword,
     onGoRegisterForm: register.onGoRegisterForm,
     onInfoChange: register.onInfoChange,

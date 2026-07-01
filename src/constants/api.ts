@@ -57,9 +57,8 @@ export const EndPoints = {
     orderHistoryDetail: (orderId: string) => `order/${orderId}`,
   },
   WALLET: {
-    currentWallet: 'wallet',
-    getTransactionHistories: (request: string) =>
-      `wallet/transaction?${request}`,
+    currentWallet: 'balance',
+    getTransactionHistories: (request: string) => `balance/ledger?${request}`,
     topUpWallet: 'wallet/charge',
   },
 };

@@ -2,7 +2,8 @@ import { Button, TextField } from '@components';
 import type { RegisterErrors } from '@hooks';
 import { useTranslation } from 'react-i18next';
 import React, { useRef } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, Text, TextInput } from 'react-native';
+import { ScaleSize } from '@kits/core';
 
 export type RegisterValues = {
   readonly email: string;
@@ -16,7 +17,6 @@ type RegisterFormProps = {
   readonly onChange: (field: keyof RegisterValues) => (value: string) => void;
   readonly onSubmit: () => void;
   readonly valid: boolean;
-  readonly values?: RegisterValues;
 };
 
 function RegisterForm({
@@ -25,7 +25,6 @@ function RegisterForm({
   onChange,
   onSubmit,
   valid,
-  values = undefined,
 }: RegisterFormProps) {
   const { t } = useTranslation();
   const emailReference = useRef<TextInput>(null);
@@ -81,6 +80,10 @@ function RegisterForm({
         // value={values?.password ?? ''}
       />
 
+      {!!errors?.errorApi && (
+        <Text style={styles.errorApi}>{errors.errorApi}</Text>
+      )}
+
       <Button
         disabled={!valid}
         title={t('authorisation.register')}
@@ -96,7 +99,12 @@ function RegisterForm({
 
 const styles = StyleSheet.create({
   submit: {
-    marginTop: 16,
+    marginTop: ScaleSize(16),
+  },
+  errorApi: {
+    color: 'red',
+    fontSize: ScaleSize(14),
+    marginTop: ScaleSize(8),
   },
 });
 
