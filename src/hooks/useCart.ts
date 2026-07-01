@@ -11,6 +11,7 @@ import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect } from '@react-navigation/native';
+import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
 
 const PAGE_SIZE = 20;
 
@@ -75,9 +76,13 @@ export const useCart = () => {
       removeCartItemRequest({
         cartItemId,
         onSuccess: () => {
-          setItems(prev => prev.filter(item => item.id !== cartItemId));
+          setItems(prev => {
+            const newData = prev.filter(item => item.id !== cartItemId);
+            dispatch(getTotalItemCartRequest());
+            setItems(newData);
+          });
           AppNavigator.showSnackBar({
-            message: 'Đã xóa sản phẩm',
+            message: t('carts.remove_success'),
             type: 'success',
           });
         },

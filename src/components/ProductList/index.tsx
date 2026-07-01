@@ -13,6 +13,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import React from 'react';
+import isNumber from 'lodash/isNumber';
 
 const PRODUCT_THUMB = ScaleSize(112);
 
@@ -49,6 +50,9 @@ function ProductList({
     >
       {(products || []).map((product: Product) => {
         const thumbUri = product.thumbnail?.fileUrl;
+        const originalPrice = isNumber(product.discountPrice)
+          ? product.discountPrice
+          : product.sellingPrice || 0;
         return (
           <TouchableOpacity
             activeOpacity={0.85}
@@ -87,7 +91,7 @@ function ProductList({
                 {product.name}
               </Text>
               <Text style={styles.productPrice}>
-                {ProductUtils.formatCurrency(product.sellingPrice)}
+                {ProductUtils.formatCurrency(originalPrice)}
               </Text>
             </View>
           </TouchableOpacity>

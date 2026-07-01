@@ -1,5 +1,7 @@
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 
 const PRIMARY_COLOR = '#5BB85C';
 const PRIMARY_DISABLED_COLOR = '#DCEEDD';
@@ -14,47 +16,64 @@ type ProductQuantityProps = {
   readonly onChange: (delta: number) => void;
   readonly quantity: number;
   readonly minChooseQuantity: number;
+  readonly maxQuantity: number;
 };
 
 function ProductQuantity({
   onChange,
   minChooseQuantity,
   quantity,
+  maxQuantity,
 }: ProductQuantityProps) {
+  const { t } = useTranslation();
   const canDecrease = quantity > minChooseQuantity;
-
+  const [error, setError] = useState('');
+  const _onChangeQuantity = (delta: number) => {
+    if (quantity + delta > maxQuantity) {
+      setError(t('product_detail.max_quantity_error', { count: maxQuantity }));
+      return;
+    }
+    onChange(delta);
+    setError('');
+  };
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        activeOpacity={0.8}
-        disabled={!canDecrease}
-        onPress={() => onChange(-1)}
-        style={[
-          styles.button,
-          {
-            backgroundColor: canDecrease
-              ? PRIMARY_COLOR
-              : PRIMARY_DISABLED_COLOR,
-          },
-        ]}
-        testID="product-quantity-decrease"
-      >
-        <View style={styles.minus} />
-      </TouchableOpacity>
+    <View>
+      <View style={styles.container}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          disabled={!canDecrease}
+          onPress={() => _onChangeQuantity(-1)}
+          style={[
+            styles.button,
+            {
+              backgroundColor: canDecrease
+                ? PRIMARY_COLOR
+                : PRIMARY_DISABLED_COLOR,
+            },
+          ]}
+          testID="product-quantity-decrease"
+        >
+          <View style={styles.minus} />
+        </TouchableOpacity>
 
-      <Text style={styles.value} testID="product-quantity-value">
-        {quantity}
+        <Text style={styles.value} testID="product-quantity-value">
+          {quantity}
+        </Text>
+
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => _onChangeQuantity(1)}
+          style={[styles.button, { backgroundColor: PRIMARY_COLOR }]}
+          testID="product-quantity-increase"
+        >
+          <View style={styles.minus} />
+          <View style={[styles.minus, styles.vertical]} />
+        </TouchableOpacity>
+      </View>
+      {!!error && <Text style={styles.error}>{error}</Text>}
+      <Text style={styles.maxQuantity}>
+        {t('product_detail.max_quantity', { count: maxQuantity })}
       </Text>
-
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() => onChange(1)}
-        style={[styles.button, { backgroundColor: PRIMARY_COLOR }]}
-        testID="product-quantity-increase"
-      >
-        <View style={styles.minus} />
-        <View style={[styles.minus, styles.vertical]} />
-      </TouchableOpacity>
     </View>
   );
 }
@@ -67,6 +86,20 @@ const styles = StyleSheet.create({
     height: BUTTON_SIZE,
     justifyContent: 'center',
     width: BUTTON_SIZE,
+  },
+  error: {
+    color: 'red',
+    fontSize: ScaleSize(14),
+    fontWeight: '400',
+    marginTop: ScaleSize(8),
+    textAlign: 'center',
+  },
+  maxQuantity: {
+    color: TEXT_COLOR,
+    fontSize: ScaleSize(14),
+    fontWeight: '400',
+    marginTop: ScaleSize(8),
+    textAlign: 'center',
   },
   container: {
     alignItems: 'center',

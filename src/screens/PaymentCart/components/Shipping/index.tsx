@@ -19,6 +19,7 @@ const TAB_WIDTH = 180;
 
 type ShippingProperties = {
   readonly onPressPickupTime: () => void;
+  readonly onPressSelectAddress: () => void;
   readonly onTabChange: (tab: string) => void;
   readonly pickupTime: string;
   readonly tab: string;
@@ -53,14 +54,14 @@ function PickupTime({ onPressPickupTime, value }: PickupTimeProperties) {
   );
 }
 
-function DeliveryAddress() {
+function DeliveryAddress({ onPressSelectAddress }: any) {
   return (
     <>
       <Text style={styles.sectionTitle}>{DELIVERY_SECTION_TITLE}</Text>
       <Text style={styles.addressText}>{MOCK_ADDRESS}</Text>
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => undefined}
+        onPress={onPressSelectAddress}
         style={styles.newAddressRow}
         testID="payment-new-address"
       >
@@ -73,6 +74,7 @@ function DeliveryAddress() {
 function Shipping({
   onPressPickupTime,
   onTabChange,
+  onPressSelectAddress,
   pickupTime,
   tab,
   tabs,
@@ -88,7 +90,7 @@ function Shipping({
       {tab === 'PICKUP' ? (
         <PickupTime onPressPickupTime={onPressPickupTime} value={pickupTime} />
       ) : (
-        <DeliveryAddress />
+        <DeliveryAddress onPressSelectAddress={onPressSelectAddress} />
       )}
     </View>
   );

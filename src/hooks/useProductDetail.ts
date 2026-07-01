@@ -16,6 +16,7 @@ import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
 import { CheckoutInfo } from '@type';
 import { groupAttributeItemsByAttributeId } from '@utils/product';
 import { useFocusEffect } from '@react-navigation/native';
+import isNumber from 'lodash/isNumber';
 
 export type { Product } from '@type/products';
 
@@ -73,7 +74,9 @@ export const useProductDetail = (props: any) => {
   }, [checkoutInfo, quantity]);
 
   const totalAmount = useMemo(() => {
-    const basePrice = data?.sellingPrice ?? 0;
+    const basePrice = isNumber(data?.discountPrice)
+      ? data?.discountPrice
+      : data?.sellingPrice || 0;
     let attributesPrice = 0;
     for (const attribute of data?.attributes ?? []) {
       const selectedIds = selectedAttributes[attribute.id] ?? [];

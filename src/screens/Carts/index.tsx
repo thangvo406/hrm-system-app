@@ -52,7 +52,7 @@ function CartRow({ isManaging, item, onRemove, onPressItem }: CartRowProps) {
         <ProgressiveImage
           containerStyle={styles.thumbnail}
           height={THUMBNAIL_SIZE}
-          url={item.thumbnail?.fileUrl ?? ''}
+          url={item.storeLogo?.fileUrl ?? ''}
           width={THUMBNAIL_SIZE}
           name={imageNames.img_store_recent_default}
         />
@@ -60,7 +60,9 @@ function CartRow({ isManaging, item, onRemove, onPressItem }: CartRowProps) {
           <Text numberOfLines={2} style={styles.productName}>
             {item.storeName}
           </Text>
-          <Text style={styles.metaText}>{item.totalQuantity} món</Text>
+          <Text style={styles.metaText}>
+            {t('carts.item_count', { count: item.totalQuantity })}
+          </Text>
           <Text style={styles.totalPrice}>
             {ProductUtils.formatCurrency(item.subtotal)}
           </Text>

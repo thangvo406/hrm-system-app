@@ -26,7 +26,7 @@ export type StoreCartItem = {
   subtotal: number;
   totalQuantity: number;
   items: ProductCart[];
-  thumbnail: IImage;
+  storeLogo: IImage;
   storeReceiveMethod: string[];
 };
 

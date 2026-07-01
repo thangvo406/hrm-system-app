@@ -74,16 +74,19 @@ function SegmentedTab<T extends string>({
       ? (tabsWidth - TABS_PADDING * 2) / tabCount
       : 0;
 
-  const indicatorStyle = {
-    transform: [
-      {
-        translateX: progress.interpolate({
-          inputRange: tabs.map((_, index) => index),
-          outputRange: tabs.map((_, index) => index * indicatorWidth),
-        }),
-      },
-    ],
-  };
+  const indicatorStyle =
+    tabCount > 1
+      ? {
+          transform: [
+            {
+              translateX: progress.interpolate({
+                inputRange: tabs.map((_, index) => index),
+                outputRange: tabs.map((_, index) => index * indicatorWidth),
+              }),
+            },
+          ],
+        }
+      : undefined;
 
   const onTabsLayout = (event: LayoutChangeEvent) => {
     setTabsWidth(event.nativeEvent?.layout?.width);

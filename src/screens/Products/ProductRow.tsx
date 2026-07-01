@@ -6,6 +6,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import imageNames from '@assets/images/names';
 import { ProductUtils } from '@utils';
+import isNumber from 'lodash/isNumber';
 
 const PRODUCT_THUMB_SIZE = ScaleSize(96);
 
@@ -20,7 +21,9 @@ type Properties = {
 
 function ProductRow({ item, isFirst, onPress }: Properties) {
   const thumbUri = item.thumbnail?.fileUrl;
-
+  const originalPrice = isNumber(item.discountPrice)
+    ? item.discountPrice
+    : item.sellingPrice || 0;
   const handlePress = () => {
     onPress(item);
   };
@@ -35,7 +38,7 @@ function ProductRow({ item, isFirst, onPress }: Properties) {
         <Text style={styles.productName}>{item.name}</Text>
         <Text style={styles.productDescription}>{item.description}</Text>
         <Text style={styles.productPrice}>
-          {ProductUtils.formatCurrency(item.sellingPrice)}
+          {ProductUtils.formatCurrency(originalPrice)}
         </Text>
       </View>
       {thumbUri ? (

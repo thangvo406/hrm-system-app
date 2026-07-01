@@ -25,12 +25,11 @@ import Carousel from 'react-native-reanimated-carousel';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import imageNames from '@assets/images/names';
-import { DeviceUtils } from '@kits/core/utils';
 import ProductAttributes from './ProductAttributes';
 import ProductQuantity from './ProductQuanlity';
+import isNumber from 'lodash/isNumber';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const { ifIOS } = DeviceUtils;
 const HERO_HEIGHT = ScaleSize(300);
 const BACK_BUTTON_SIZE = ScaleSize(40);
 const BACK_ICON_SIZE = ScaleSize(20);
@@ -190,13 +189,15 @@ function ProductHero({ images }: { readonly images: ProductImage[] }) {
 }
 
 function ProductInfo({
+  discountPrice = 0,
+  originalPrice = 0,
   description = '',
   name = '',
-  price = 0,
 }: {
+  readonly discountPrice?: number;
+  readonly originalPrice?: number;
   readonly description?: string;
   readonly name?: string;
-  readonly price?: number;
 }) {
   const { t } = useTranslation();
   return (
@@ -205,9 +206,25 @@ function ProductInfo({
       <Text style={styles.productDescription}>{description}</Text>
       <View style={styles.priceRow}>
         <Text style={styles.priceLabel}>{t('product_detail.price_label')}</Text>
-        <Text style={styles.priceValue}>
-          {ProductUtils.formatCurrency(price)}
-        </Text>
+        <View>
+          {isNumber(originalPrice) && (
+            <Text
+              style={[
+                styles.originalPrice,
+                isNumber(discountPrice) && {
+                  textDecorationLine: 'line-through',
+                },
+              ]}
+            >
+              {ProductUtils.formatCurrency(originalPrice)}
+            </Text>
+          )}
+          {isNumber(discountPrice) && (
+            <Text style={styles.priceValue}>
+              {ProductUtils.formatCurrency(discountPrice)}
+            </Text>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -290,7 +307,8 @@ function ProductDetail(props: any) {
               <ProductInfo
                 description={data?.description}
                 name={data?.name}
-                price={data?.sellingPrice}
+                originalPrice={data?.sellingPrice}
+                discountPrice={data?.discountPrice}
               />
               <ProductAttributes
                 data={data?.attributes ?? []}
@@ -302,6 +320,7 @@ function ProductDetail(props: any) {
                   onChange={onChangeQuantity}
                   quantity={quantity}
                   minChooseQuantity={minChooseQuantity}
+                  maxQuantity={data?.stockQuantity}
                 />
               </View>
             </View>
@@ -405,10 +424,15 @@ const styles = StyleSheet.create({
     marginTop: ScaleSize(20),
     paddingBottom: ScaleSize(24),
   },
+  originalPrice: {
+    color: TEXT_DARK,
+    fontSize: ScaleSize(16),
+    fontWeight: 'bold',
+  },
   priceValue: {
     color: TEXT_DARK,
     fontSize: ScaleSize(16),
-    fontWeight: '700',
+    fontWeight: 'bold',
   },
   productDescription: {
     color: TEXT_MUTED,

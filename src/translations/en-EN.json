@@ -1,343 +1,352 @@
 {
-  "myapp": {
-    "common": {
-      "confirm": "Confirm",
-      "cancel": "Cancel",
-      "no_data": "No data"
-    },
-    "notifications": {
-      "title": "Notifications",
-      "mark_read_success": "Updated successfully",
-      "mark_read_failed": "Update failed. Please try again."
-    },
-    "pay_card": {
-      "title": "Coop Pay",
-      "pay_title": "Coop Pay",
-      "recharge": "Recharge Pay Money",
-      "pay_balance": "Balance: {{amount}} KRW",
-      "point_title": "Point",
-      "point_balance": "Remaining point: {{amount}} point",
-      "history_title": "History",
-      "tab_pay": "Pay Money",
-      "tab_point": "Point",
-      "balance_after": "Balance: {{amount}} KRW",
-      "empty": "No history to display.",
-      "transaction_failed": "Transaction failed",
-      "transaction_detail": {
-        "title": "Transaction history",
-        "date_label": "Date",
-        "amount_label": "Amount",
-        "type_label": "Transaction Type"
-      }
-    },
-    "welcome": {
-      "login": "Login",
-      "register": "New Registration"
-    },
-    "forgot_password": {
-      "desc_success": "Password change completed. Please log in with your new password.",
-      "title_register_info": "Please proceed with verification to reset your password."
-    },
-    "product_detail": {
-      "price_label": "Price",
-      "cart_button": "Add to Cart",
-      "min_order_label": "Minimum delivery order",
-      "add_cart_success": "Add to cart Successfully"
-    },
-    "products": {
-      "empty": "No products to display."
-    },
-    "authorisation": {
-      "tab_login": "Login",
-      "tab_registration": "Registration",
-      "name_label": "Name",
-      "name_placeholder": "Hong Gildong",
-      "email_label": "Email",
-      "email_placeholder": "example@email.com",
-      "password_label": "Password",
-      "password_placeholder": "password",
-      "forgot_password": "Forgot your password?",
-      "login": "Login",
-      "register": "Sign Up",
-      "or": "Or",
-      "continue_kakao": "Continue with Kakao",
-      "continue_naver": "Continue with Naver",
-      "continue_google": "Continue with Google",
-      "error_name_required": "Please enter your name",
-      "error_email_required": "Please enter your email",
-      "error_email_invalid": "Please enter a valid email",
-      "error_password_required": "Please enter your password",
-      "error_password_min": "Password must be at least 6 characters",
-      "error_phone_invalid": "Please enter a valid phone number"
-    },
-    "register_flow": {
-      "identity_title": "Please proceed with verification\nto reset your password.",
-      "agree_label": "Agree to all terms for identity\nverification service",
-      "terms_of_use": "Agree to the Terms of Use for Mobile Phone Identity Verification Service (Required)",
-      "carrier_terms": "Agree to the Mobile Carrier Terms of Use (Required)",
-      "name_label": "Name",
-      "name_placeholder": "Name",
-      "dob_label": "First 6 digits of ID",
-      "identify_label": "Last 7 digits of ID",
-      "phone_placeholder": "Phone Number",
-      "request_verification": "Request Verification",
-      "warning": "*If you register using someone else's personal information, your service access may be restricted and you may be subject to legal penalties.",
-      "next": "Verify",
-      "otp_label": "Verification Code",
-      "otp_placeholder": "Verification Code",
-      "verify": "Verify",
-      "choose_carrier": "Select Carrier",
-      "contribution_dialog": {
-        "desc": "Joining as a member requires an initial contribution payment. Would you like to continue?"
-      }
-    },
-    "choose_school": {
-      "title": "School Verification",
-      "search_label": "School Lookup",
-      "search_placeholder": "School name",
-      "empty": "No results found.",
-      "next": "Next"
-    },
-    "choose_membership": {
-      "title": "Select Membership Type",
-      "join_as_student": "Join as a student member",
-      "join_as_employee": "Join as a faculty member",
-      "join_as_staff": "Join as a staff member",
-      "join_as_non_member": "Join as a non-member",
-      "next": "Next"
-    },
-    "register_completed": {
-      "desc": "Desc",
-      "next": "Next"
-    },
-    "new_password": {
-      "title": "Please enter your\nnew password.",
-      "password_label": "New password",
-      "password_placeholder": "Enter your password",
-      "confirm_label": "Confirm password",
-      "confirm_placeholder": "Re-enter your password",
-      "verification_success": "Verification successful.",
-      "error_confirm_required": "Please confirm your password",
-      "error_password_mismatch": "Passwords do not match",
-      "next": "Next"
-    },
-    "bank_information": {
-      "intro": "When joining as a member for the first time,\na contribution payment is required.",
-      "instruction": "Pay the initial {{amount}} KRW\nto the account below to complete your application.",
-      "next": "Next"
-    },
-    "home": {
-      "greeting": "Nice to meet you!",
-      "greeting_prefix": "",
-      "member_label": "Member",
-      "pay_label": "Coop Pay :",
-      "pay_amount": "{{amount}} KRW",
-      "point_label": "Point : {{point}}",
-      "pay_action": "Tap to pay",
-      "dividend_title": "Contribution",
-      "dividend_desc": "Curious about your expected dividend?",
-      "order_title": "Smart Order",
-      "order_desc": "Fast order for on-campus delivery / pickup",
-      "frequent_store": "Frequently Ordered Store",
-      "store_eta": "About 15 min",
-      "empty_store_title": "No recent stores yet.",
-      "empty_store_desc": "Check nearby store info and try Smart Order!",
-      "notice_title": "Notice / Community",
-      "notice_desc": "Event",
-      "survey_title": "Survey",
-      "survey_desc": "Survey",
-      "menu": {
-        "logout": "Logout",
-        "section_life": "Coop Life",
-        "section_pay": "Coop Pay",
-        "section_order": "Mobile Order",
-        "section_community": "Community",
-        "section_mypage": "My Page",
-        "deposit_inquiry": "Deposit Inquiry",
-        "deposit_pay": "Pay Deposit",
-        "dividend_inquiry": "Dividend Inquiry",
-        "payment_method": "Register Payment Method",
-        "pay": "Payment",
-        "pay_balance": "Coop Pay Balance",
-        "order": "Order",
-        "store_search": "Store Search",
-        "notice": "Notices",
-        "community": "Community",
-        "survey": "Survey",
-        "profile": "My Information",
-        "security": "Security/Authentication",
-        "notification": "Notification Settings"
-      },
-      "logout": {
-        "title": "Confirmation",
-        "desc": "Do you want to logout?",
-        "button_submit": "Yes",
-        "button_cancel": "No"
-      },
-      "non_member_dialog": {
-        "title": "This feature is only available to members. Would you like to join the cooperative?",
-        "confirm": "Yes",
-        "cancel": "No"
-      },
-      "pending_dialog": {
-        "title": "Your registration is pending. Registration takes up to 1–2 days.",
-        "confirm": "Close"
-      }
-    },
-    "announcements": {
-      "title": "Notice",
-      "tab_all": "All",
-      "tab_notice": "Notices",
-      "tab_event": "Events",
-      "loading": "Loading announcements...",
-      "empty": "No announcements to display."
-    },
-    "announcement_detail": {
-      "title": "Notice / Event",
-      "loading": "Loading...",
-      "error": "Failed to load content."
-    },
-    "survey": {
-      "title": "Survey",
-      "action_answer": "Check Answer",
-      "action_start": "Start Survey",
-      "closed_label": "Closed"
-    },
-    "stores": {
-      "title": "Smart Order",
-      "search_placeholder": "Store name",
-      "section_label": "Frequently Ordered Store",
-      "delivery_label": {
-        "pickup": "Pickup",
-        "delivery": "Delivery"
-      },
-      "filter": {
-        "title": "Storting",
-        "sort_by": "Sort by",
-        "sort_direction": "Sort direction",
-        "sort_by_order": "Default",
-        "sort_by_name": "Store name",
-        "sort_by_opening": "Opening hours",
-        "direction_asc": "Ascending",
-        "direction_desc": "Descending",
-        "submit": "Apply"
-      }
-    },
-    "carts": {
-      "title": "My Cart",
-      "manage": "Manage",
-      "done": "Done",
-      "remove": "Remove"
-    },
-    "survey_detail": {
-      "short_answer_placeholder": "Your answer",
-      "submit": "Submit",
-      "title": "Survey"
-    },
-    "contribution": {
-      "title": "Contribution",
-      "edit": "Edit Profile",
-      "logout": "Log Out",
-      "edit_unavailable": "Edit profile is not available yet.",
-      "field": {
-        "email": "Email Address",
-        "full_name": "Full Name",
-        "gender": "Gender",
-        "nickname": "Nickname",
-        "phone": "Mobile Phone Number",
-        "year_of_birth": "Year of Birth"
-      },
-      "school_label": "School : Saenghyup University",
-      "status_label": "Status : Enrolled (20141111)",
-      "group_label": "Group : Cooperative Member (Student)",
-      "contribution_title": "Contribution Details",
-      "contribution_total_label": "Total Contribution Amount",
-      "capital_contribution": "Additional Contribution (Increase)",
-      "withdrawal_capital": "Withdraw Contribution (Decrease)",
-      "contribution_amount": "{{amount}} won",
-      "contribution_history": "Contribution History / Check Expected Dividend",
-      "contribution_add": "Proceed with Additional Contribution",
-      "pay_title": "Co-op Pay :",
-      "pay_link": "Co-op Pay",
-      "deposit_label": "Deposit Amount",
-      "deposit_amount": "{{amount}} won",
-      "point_label": "Point",
-      "point_amount": "{{amount}} won",
-      "pay_history": "History",
-      "pay_recharge": "Recharge Pay Balance",
-      "menu_transaction": "Transaction History Management"
-    },
-    "edit_profile": {
-      "title": "Edit Profile",
-      "change_avatar": "Change Avatar",
-      "update": "Update",
-      "update_info_below": "Update your profile information below.",
-      "save": "Save Changes",
-      "cancel": "Cancel",
-      "save_unavailable": "Save changes is not available yet.",
-      "avatar_unavailable": "Change avatar is not available yet."
-    },
-    "top_up": {
-      "title": "Pay money Top-up",
-      "description": "Please enter the amount you would like\nto recharge to Coop Pay.",
-      "amount_label": "Enter Amount",
-      "amount_placeholder": "Please enter the amount",
-      "currency": "KRW",
-      "min_amount_hint": "Minimum recharge amount is 1 KRW.",
-      "payment_method_label": "Payment Method",
-      "method_credit_card": "Credit Card",
-      "method_credit_card_desc": "Pay easily with registered card",
-      "method_virtual_account": "Virtual Account",
-      "method_virtual_account_desc": "Recharge after deposit to virtual account",
-      "security_note": "For safe payment, all information is encrypted and protected.",
-      "next": "Next"
-    },
-    "order_completed": {
-      "title": "Order Placed Successfully!",
-      "subtitle": "Thank you for your purchase.\nYour order is being processed.",
-      "order_code": "Order Code",
-      "copy": "Copy",
-      "order_date": "Order Date",
-      "delivery_address": "Delivery Address",
-      "shipping_method": "Shipping Method",
-      "payment_method": "Payment Method",
-      "notify_title": "We will notify you",
-      "notify_subtitle": "when your order is confirmed and shipped.",
-      "view_detail": "View Order Detail",
-      "continue_shopping": "Continue Shopping",
-      "go_home": "Go to Home"
-    },
-    "order_histories": {
-      "title": "Order History",
-      "reorder": "Reorder"
-    },
-    "qr_code_payment": {
-      "title": "QR Code Payment",
-      "card_title": "COOPPay",
-      "pay_balance_label": "Pay money balance",
-      "point_label": "Point",
-      "scan_button": "QR Scan"
-    },
-    "order_history_detail": {
-      "order_code_label": "Order Code",
-      "recipient_label": "Recipient",
-      "delivery_address_label": "Delivery Address",
-      "shipping_method_label": "Shipping Method",
-      "payment_method_label": "Payment Method",
-      "subtotal_label": "Subtotal",
-      "shipping_fee_label": "Shipping Fee",
-      "shipping_fee_free": "Free shipping",
-      "total_label": "Total",
-      "products_label": "Ordered Products",
-      "delivery_section_title": "Delivery Info",
-      "payment_section_title": "Payment Info",
-      "show_more": "View all products",
-      "show_less": "Show less",
-      "reorder": "Reorder",
-      "contact_support": "Contact Support",
-      "status_pending": "Pending",
-      "status_completed": "Completed",
-      "copy_order_number_success": "Order code copied successfully"
+    "myapp": {
+        "common": {
+            "confirm": "Confirm",
+            "cancel": "Cancel",
+            "no_data": "No data"
+        },
+        "notifications": {
+            "title": "Notifications",
+            "mark_read_success": "Updated successfully",
+            "mark_read_failed": "Update failed. Please try again."
+        },
+        "pay_card": {
+            "title": "Coop Pay",
+            "pay_title": "Coop Pay",
+            "recharge": "Recharge Pay Money",
+            "pay_balance": "Balance: {{amount}} KRW",
+            "point_title": "Point",
+            "point_balance": "Remaining point: {{amount}} point",
+            "history_title": "History",
+            "tab_pay": "Pay Money",
+            "tab_point": "Point",
+            "balance_after": "Balance: {{amount}} KRW",
+            "empty": "No history to display.",
+            "transaction_failed": "Transaction failed",
+            "transaction_detail": {
+                "title": "Transaction history",
+                "date_label": "Date",
+                "amount_label": "Amount",
+                "type_label": "Transaction Type"
+            }
+        },
+        "welcome": {
+            "login": "Login",
+            "register": "New Registration"
+        },
+        "forgot_password": {
+            "desc_success": "Password change completed. Please log in with your new password.",
+            "title_register_info": "Please proceed with verification to reset your password."
+        },
+        "product_detail": {
+            "price_label": "Price",
+            "cart_button": "Add to Cart",
+            "min_order_label": "Minimum delivery order",
+            "add_cart_success": "Add to cart Successfully",
+            "max_quantity": "Max quantity: {{count}}",
+            "max_quantity_error": "Maximum quantity is {{count}}"
+        },
+        "products": {
+            "empty": "No products to display."
+        },
+        "authorisation": {
+            "tab_login": "Login",
+            "tab_registration": "Registration",
+            "name_label": "Name",
+            "name_placeholder": "Hong Gildong",
+            "email_label": "Email",
+            "email_placeholder": "example@email.com",
+            "password_label": "Password",
+            "password_placeholder": "password",
+            "forgot_password": "Forgot your password?",
+            "login": "Login",
+            "register": "Sign Up",
+            "or": "Or",
+            "continue_kakao": "Continue with Kakao",
+            "continue_naver": "Continue with Naver",
+            "continue_google": "Continue with Google",
+            "error_name_required": "Please enter your name",
+            "error_email_required": "Please enter your email",
+            "error_email_invalid": "Please enter a valid email",
+            "error_password_required": "Please enter your password",
+            "error_password_min": "Password must be at least 6 characters",
+            "error_phone_invalid": "Please enter a valid phone number"
+        },
+        "register_flow": {
+            "identity_title": "Please proceed with verification\nto reset your password.",
+            "agree_label": "Agree to all terms for identity\nverification service",
+            "terms_of_use": "Agree to the Terms of Use for Mobile Phone Identity Verification Service (Required)",
+            "carrier_terms": "Agree to the Mobile Carrier Terms of Use (Required)",
+            "name_label": "Name",
+            "name_placeholder": "Name",
+            "dob_label": "First 6 digits of ID",
+            "identify_label": "Last 7 digits of ID",
+            "phone_placeholder": "Phone Number",
+            "request_verification": "Request Verification",
+            "warning": "*If you register using someone else's personal information, your service access may be restricted and you may be subject to legal penalties.",
+            "next": "Verify",
+            "otp_label": "Verification Code",
+            "otp_placeholder": "Verification Code",
+            "verify": "Verify",
+            "choose_carrier": "Select Carrier",
+            "contribution_dialog": {
+                "desc": "Joining as a member requires an initial contribution payment. Would you like to continue?"
+            }
+        },
+        "choose_school": {
+            "title": "School Verification",
+            "search_label": "School Lookup",
+            "search_placeholder": "School name",
+            "empty": "No results found.",
+            "next": "Next"
+        },
+        "choose_membership": {
+            "title": "Select Membership Type",
+            "join_as_student": "Join as a student member",
+            "join_as_employee": "Join as a faculty member",
+            "join_as_staff": "Join as a staff member",
+            "join_as_non_member": "Join as a non-member",
+            "next": "Next"
+        },
+        "register_completed": {
+            "desc": "Desc",
+            "next": "Next"
+        },
+        "new_password": {
+            "title": "Please enter your\nnew password.",
+            "password_label": "New password",
+            "password_placeholder": "Enter your password",
+            "confirm_label": "Confirm password",
+            "confirm_placeholder": "Re-enter your password",
+            "verification_success": "Verification successful.",
+            "error_confirm_required": "Please confirm your password",
+            "error_password_mismatch": "Passwords do not match",
+            "next": "Next"
+        },
+        "bank_information": {
+            "intro": "When joining as a member for the first time,\na contribution payment is required.",
+            "instruction": "Pay the initial {{amount}} KRW\nto the account below to complete your application.",
+            "next": "Next"
+        },
+        "home": {
+            "greeting": "Nice to meet you!",
+            "greeting_prefix": "",
+            "member_label": "Member",
+            "pay_label": "Coop Pay :",
+            "pay_amount": "{{amount}} KRW",
+            "point_label": "Point : {{point}}",
+            "pay_action": "Tap to pay",
+            "dividend_title": "Contribution",
+            "dividend_desc": "Curious about your expected dividend?",
+            "order_title": "Smart Order",
+            "order_desc": "Fast order for on-campus delivery / pickup",
+            "frequent_store": "Frequently Ordered Store",
+            "store_eta": "About 15 min",
+            "empty_store_title": "No recent stores yet.",
+            "empty_store_desc": "Check nearby store info and try Smart Order!",
+            "notice_title": "Notice / Community",
+            "notice_desc": "Event",
+            "survey_title": "Survey",
+            "survey_desc": "Survey",
+            "menu": {
+                "logout": "Logout",
+                "section_life": "Coop Life",
+                "section_pay": "Coop Pay",
+                "section_order": "Mobile Order",
+                "section_community": "Community",
+                "section_mypage": "My Page",
+                "deposit_inquiry": "Deposit Inquiry",
+                "deposit_pay": "Pay Deposit",
+                "dividend_inquiry": "Dividend Inquiry",
+                "payment_method": "Register Payment Method",
+                "pay": "Payment",
+                "pay_balance": "Coop Pay Balance",
+                "order": "Order",
+                "store_search": "Store Search",
+                "notice": "Notices",
+                "community": "Community",
+                "survey": "Survey",
+                "profile": "My Information",
+                "security": "Security/Authentication",
+                "notification": "Notification Settings"
+            },
+            "logout": {
+                "title": "Confirmation",
+                "desc": "Do you want to logout?",
+                "button_submit": "Yes",
+                "button_cancel": "No"
+            },
+            "non_member_dialog": {
+                "title": "This feature is only available to members. Would you like to join the cooperative?",
+                "confirm": "Yes",
+                "cancel": "No"
+            },
+            "pending_dialog": {
+                "title": "Your registration is pending. Registration takes up to 1–2 days.",
+                "confirm": "Close"
+            }
+        },
+        "announcements": {
+            "title": "Notice",
+            "tab_all": "All",
+            "tab_notice": "Notices",
+            "tab_event": "Events",
+            "loading": "Loading announcements...",
+            "empty": "No announcements to display."
+        },
+        "announcement_detail": {
+            "title": "Notice / Event",
+            "loading": "Loading...",
+            "error": "Failed to load content."
+        },
+        "survey": {
+            "title": "Survey",
+            "action_answer": "Check Answer",
+            "action_start": "Start Survey",
+            "closed_label": "Closed"
+        },
+        "stores": {
+            "title": "Smart Order",
+            "search_placeholder": "Store name",
+            "section_label": "Frequently Ordered Store",
+            "delivery_label": {
+                "pickup": "Pickup",
+                "delivery": "Delivery"
+            },
+            "filter": {
+                "title": "Storting",
+                "sort_by": "Sort by",
+                "sort_direction": "Sort direction",
+                "sort_by_order": "Default",
+                "sort_by_name": "Store name",
+                "sort_by_opening": "Opening hours",
+                "direction_asc": "Ascending",
+                "direction_desc": "Descending",
+                "submit": "Apply"
+            }
+        },
+        "carts": {
+            "title": "My Cart",
+            "manage": "Manage",
+            "done": "Done",
+            "remove": "Remove",
+            "remove_success": "Product removed",
+            "item_count": "{{count}} items"
+        },
+        "survey_detail": {
+            "short_answer_placeholder": "Your answer",
+            "submit": "Submit",
+            "title": "Survey"
+        },
+        "contribution": {
+            "title": "Contribution",
+            "edit": "Edit Profile",
+            "logout": "Log Out",
+            "edit_unavailable": "Edit profile is not available yet.",
+            "field": {
+                "email": "Email Address",
+                "full_name": "Full Name",
+                "gender": "Gender",
+                "nickname": "Nickname",
+                "phone": "Mobile Phone Number",
+                "year_of_birth": "Year of Birth"
+            },
+            "school_label": "School : Saenghyup University",
+            "status_label": "Status : Enrolled (20141111)",
+            "group_label": "Group : Cooperative Member (Student)",
+            "contribution_title": "Contribution Details",
+            "contribution_total_label": "Total Contribution Amount",
+            "capital_contribution": "Additional Contribution (Increase)",
+            "withdrawal_capital": "Withdraw Contribution (Decrease)",
+            "contribution_amount": "{{amount}} won",
+            "contribution_history": "Contribution History / Check Expected Dividend",
+            "contribution_add": "Proceed with Additional Contribution",
+            "pay_title": "Co-op Pay :",
+            "pay_link": "Co-op Pay",
+            "deposit_label": "Deposit Amount",
+            "deposit_amount": "{{amount}} won",
+            "point_label": "Point",
+            "point_amount": "{{amount}} won",
+            "pay_history": "History",
+            "pay_recharge": "Recharge Pay Balance",
+            "menu_transaction": "Transaction History Management"
+        },
+        "edit_profile": {
+            "title": "Edit Profile",
+            "change_avatar": "Change Avatar",
+            "update": "Update",
+            "update_info_below": "Update your profile information below.",
+            "save": "Save Changes",
+            "cancel": "Cancel",
+            "save_unavailable": "Save changes is not available yet.",
+            "avatar_unavailable": "Change avatar is not available yet."
+        },
+        "top_up": {
+            "title": "Pay money Top-up",
+            "description": "Please enter the amount you would like\nto recharge to Coop Pay.",
+            "amount_label": "Enter Amount",
+            "amount_placeholder": "Please enter the amount",
+            "currency": "KRW",
+            "min_amount_hint": "Minimum recharge amount is 1 KRW.",
+            "payment_method_label": "Payment Method",
+            "method_credit_card": "Credit Card",
+            "method_credit_card_desc": "Pay easily with registered card",
+            "method_virtual_account": "Virtual Account",
+            "method_virtual_account_desc": "Recharge after deposit to virtual account",
+            "security_note": "For safe payment, all information is encrypted and protected.",
+            "next": "Next"
+        },
+        "order_completed": {
+            "title": "Order Placed Successfully!",
+            "subtitle": "Thank you for your purchase.\nYour order is being processed.",
+            "order_code": "Order Code",
+            "copy": "Copy",
+            "order_date": "Order Date",
+            "delivery_address": "Delivery Address",
+            "shipping_method": "Shipping Method",
+            "payment_method": "Payment Method",
+            "notify_title": "We will notify you",
+            "notify_subtitle": "when your order is confirmed and shipped.",
+            "view_detail": "View Order Detail",
+            "continue_shopping": "Continue Shopping",
+            "go_home": "Go to Home"
+        },
+        "order_histories": {
+            "title": "Order History",
+            "reorder": "Reorder"
+        },
+        "qr_code_payment": {
+            "title": "QR Code Payment",
+            "card_title": "COOPPay",
+            "pay_balance_label": "Pay money balance",
+            "point_label": "Point",
+            "scan_button": "QR Scan"
+        },
+        "order_history_detail": {
+            "order_code_label": "Order Code",
+            "recipient_label": "Recipient",
+            "delivery_address_label": "Delivery Address",
+            "shipping_method_label": "Shipping Method",
+            "payment_method_label": "Payment Method",
+            "subtotal_label": "Subtotal",
+            "shipping_fee_label": "Shipping Fee",
+            "shipping_fee_free": "Free shipping",
+            "total_label": "Total",
+            "products_label": "Ordered Products",
+            "delivery_section_title": "Delivery Info",
+            "payment_section_title": "Payment Info",
+            "show_more": "View all products",
+            "show_less": "Show less",
+            "reorder": "Reorder",
+            "contact_support": "Contact Support",
+            "status_pending": "Pending",
+            "status_completed": "Completed",
+            "copy_order_number_success": "Order code copied successfully"
+        },
+        "input_address": {
+            "search_placeholder": "Search Province/City and Ward/Commune",
+            "selected_area": "Selected area",
+            "reset": "Reset"
+        }
     }
-  }
 }
