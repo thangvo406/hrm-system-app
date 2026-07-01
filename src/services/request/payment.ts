@@ -18,6 +18,7 @@ import { httpRequest } from '@services/common/httpRequest';
 import { EndPoints } from '@constants';
 import { CommonUtils } from '@utils';
 import { ListApiResponse, SingleApiResponse } from '@type/common';
+import { StoreItem } from '@hooks';
 
 type GetInfoProductCheckoutRequest = Omit<
   GetInfoProductCheckoutPayload,
@@ -56,12 +57,13 @@ type UpdateCartItemRequest = Omit<
 
 export const updateCartItem = async (
   request: UpdateCartItemRequest,
-): Promise<void> => {
+): Promise<StoreItem> => {
   const { cartItemId, ...body } = request;
-  await httpRequest.patch(
+  const response = await httpRequest.patch<SingleApiResponse<StoreItem>>(
     EndPoints.PAYMENT.updateProductCart(cartItemId),
     body,
   );
+  return response.data;
 };
 
 type GetListCartRequest = Omit<GetListCartPayload, 'onFailure' | 'onSuccess'>;

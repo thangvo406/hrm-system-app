@@ -12,7 +12,7 @@ export type Product = {
   code: string;
   name: string;
   description: string;
-  price: number;
+  sellingPrice: number;
   discountPrice: any;
   stockQuantity: number;
   status: string;

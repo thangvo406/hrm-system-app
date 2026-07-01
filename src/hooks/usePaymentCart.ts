@@ -72,14 +72,8 @@ export const usePaymentCart = (props: any) => {
           quantity: product?.quantity,
           selectedAttributes: product?.selectedAttributes,
           cartItemId: product?.id,
-          onSuccess: () => {
-            if (product?.quantity == 0) {
-              const newData = { ...data };
-              newData.items = newData.items?.filter?.(
-                it => it.id != product?.id,
-              );
-              setData(newData);
-            }
+          onSuccess: (response: any) => {
+            setData(response);
           },
         }),
       );

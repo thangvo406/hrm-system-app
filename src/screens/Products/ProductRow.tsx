@@ -35,7 +35,7 @@ function ProductRow({ item, isFirst, onPress }: Properties) {
         <Text style={styles.productName}>{item.name}</Text>
         <Text style={styles.productDescription}>{item.description}</Text>
         <Text style={styles.productPrice}>
-          {ProductUtils.formatCurrency(item.price)}
+          {ProductUtils.formatCurrency(item.sellingPrice)}
         </Text>
       </View>
       {thumbUri ? (

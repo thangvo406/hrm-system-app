@@ -85,8 +85,8 @@ function* updateCartItemWorker(
 ): Generator<unknown, void, void> {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
-    yield call(updateCartItem, request);
-    onSuccess?.();
+    const response = yield call(updateCartItem, request);
+    onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
     onFailure?.(message);
@@ -127,10 +127,9 @@ function* getOrderHistoryDetailWorker(
 ): Generator<unknown, void, OrderHistoryDetailItem> {
   const { onFailure, onSuccess, orderId } = action.payload;
   try {
-    const response: OrderHistoryDetailItem = yield call(
-      getOrderHistoryDetail,
-      { orderId },
-    );
+    const response: OrderHistoryDetailItem = yield call(getOrderHistoryDetail, {
+      orderId,
+    });
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -146,7 +145,10 @@ export function* paymentSaga() {
   );
   yield takeLatest(getListCartRequest.type, getListCartWorker);
   yield takeLatest(getOrderHistoriesRequest.type, getOrderHistoriesWorker);
-  yield takeLatest(getOrderHistoryDetailRequest.type, getOrderHistoryDetailWorker);
+  yield takeLatest(
+    getOrderHistoryDetailRequest.type,
+    getOrderHistoryDetailWorker,
+  );
   yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
   yield takeLatest(updateCartItemRequest.type, updateCartItemWorker);
 }
