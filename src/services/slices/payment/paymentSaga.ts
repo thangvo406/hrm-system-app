@@ -11,6 +11,8 @@ import type {
   GetListCartPayload,
   GetOrderHistoriesPayload,
   GetOrderHistoryDetailPayload,
+  InitChargePayload,
+  InitChargeResponse,
   OrderHistoryDetailItem,
   OrderHistoryItem,
   RemoveCartItemPayload,
@@ -28,6 +30,7 @@ import {
   getListCart,
   getOrderHistories,
   getOrderHistoryDetail,
+  initCharge,
   removeCartItem,
   updateCartItem,
 } from '@services/request/payment';
@@ -41,6 +44,7 @@ import {
   getListCartRequest,
   getOrderHistoriesRequest,
   getOrderHistoryDetailRequest,
+  initChargeRequest,
   removeCartItemRequest,
   updateCartItemRequest,
 } from './paymentSlice';
@@ -162,7 +166,23 @@ function* generateQRCodeWorker(
 ): Generator<unknown, void, GenerateQRCodeResponse> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: GenerateQRCodeResponse = yield call(generateQRCode, request);
+    const response: GenerateQRCodeResponse = yield call(
+      generateQRCode,
+      request,
+    );
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* initChargeWorker(
+  action: PayloadAction<InitChargePayload>,
+): Generator<unknown, void, InitChargeResponse> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: InitChargeResponse = yield call(initCharge, request);
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -173,7 +193,10 @@ function* generateQRCodeWorker(
 export function* paymentSaga() {
   yield takeLatest(createOrderRequest.type, createOrderWorker);
   yield takeLatest(generateQRCodeRequest.type, generateQRCodeWorker);
-  yield takeLatest(getAddressOrderRecentRequest.type, getAddressOrderRecentWorker);
+  yield takeLatest(
+    getAddressOrderRecentRequest.type,
+    getAddressOrderRecentWorker,
+  );
   yield takeLatest(
     getInfoProductCheckoutRequest.type,
     getInfoProductCheckoutWorker,
@@ -184,6 +207,7 @@ export function* paymentSaga() {
     getOrderHistoryDetailRequest.type,
     getOrderHistoryDetailWorker,
   );
+  yield takeLatest(initChargeRequest.type, initChargeWorker);
   yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
   yield takeLatest(updateCartItemRequest.type, updateCartItemWorker);
 }

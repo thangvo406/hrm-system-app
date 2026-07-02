@@ -8,6 +8,7 @@ import { Paths } from '@navigation/paths';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppButton from './AppButton';
 import { DeviceUtils } from '@kits/core/utils';
+import { NOOP } from '@utils/common';
 const { ifIphoneX } = DeviceUtils;
 const ICON_SIZE = ScaleSize(24);
 const ACCENT_COLOR = '#5BB85C';
@@ -18,8 +19,10 @@ type Properties = {
   readonly onPressCartManage?: () => void;
   readonly onPressReadAll?: () => void;
   readonly title: string;
+  readonly titleManage?: string;
   readonly hideNotify?: boolean;
   readonly transparent?: boolean;
+  readonly usePaddingTop?: boolean;
   readonly disabledBtnReadAll?: boolean;
   readonly showIconReadAll?: boolean;
   readonly showCartManage?: boolean;
@@ -44,8 +47,9 @@ function HeaderDetail({
   title,
   showIconReadAll = false,
   showCartManage = false,
-  onPressCartManage,
-  titleManage,
+  onPressCartManage = NOOP,
+  titleManage = '',
+  usePaddingTop = true,
 }: Properties) {
   const inssets = useSafeAreaInsets();
   const _onPressBack = () => {
@@ -66,7 +70,7 @@ function HeaderDetail({
         styles.header,
         {
           backgroundColor: transparent ? 'transparent' : '#FFFFFF',
-          paddingTop: inssets.top + ifIphoneX(0, 10),
+          paddingTop: usePaddingTop ? inssets.top + ifIphoneX(0, 10) : 0,
         },
         style,
       ]}

@@ -15,7 +15,8 @@ import AppButton from '@components/AppButton';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
-
+import { DeviceUtils } from '@kits/core/utils';
+const { ifIOS } = DeviceUtils;
 const BUTTON_SIZE = ScaleSize(60);
 const ICON_SIZE = ScaleSize(32);
 const BADGE_SIZE = ScaleSize(22);
@@ -38,7 +39,8 @@ const FloatingCartButton = forwardRef<FloatingCartButtonRef>((_props, ref) => {
   const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
   const initialX = SCREEN_W - BUTTON_SIZE - EDGE_PADDING;
-  const initialY = SCREEN_H - BUTTON_SIZE - insets.bottom - ScaleSize(24);
+  const initialY =
+    SCREEN_H - BUTTON_SIZE - insets.bottom - ScaleSize(ifIOS(24, -4));
 
   const pan = useRef(
     new Animated.ValueXY({ x: initialX, y: initialY }),

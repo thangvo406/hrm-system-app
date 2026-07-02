@@ -1,0 +1,22 @@
+diff --git a/node_modules/react-native-webview/src/RNCWebViewNativeComponent.ts b/node_modules/react-native-webview/src/RNCWebViewNativeComponent.ts
+index ca3af15..d1f2b3a 100644
+--- a/node_modules/react-native-webview/src/RNCWebViewNativeComponent.ts
++++ b/node_modules/react-native-webview/src/RNCWebViewNativeComponent.ts
+@@ -73,7 +73,7 @@
+   canGoBack: boolean;
+   canGoForward: boolean;
+   lockIdentifier: Double;
+-  navigationType: 'click' | 'formsubmit' | 'backforward' | 'reload' | 'formresubmit' | 'other';
++  navigationType: string;
+   mainDocumentURL?: string;
+ }>;
+
+@@ -84,7 +84,7 @@
+   canGoBack: boolean;
+   canGoForward: boolean;
+   lockIdentifier: Double;
+-  navigationType: 'click' | 'formsubmit' | 'backforward' | 'reload' | 'formresubmit' | 'other';
++  navigationType: string;
+   mainDocumentURL?: string;
+   isTopFrame: boolean;
+ }>;

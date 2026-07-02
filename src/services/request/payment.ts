@@ -8,6 +8,8 @@ import type {
   GetListCartPayload,
   GetOrderHistoriesRequest,
   GetOrderHistoryDetailRequest,
+  InitChargeRequest,
+  InitChargeResponse,
   OrderHistoryDetailItem,
   OrderHistoryItem,
   RemoveCartItemPayload,
@@ -137,6 +139,16 @@ export const generateQRCode = async (
 ): Promise<GenerateQRCodeResponse> => {
   const response = await httpRequest.post<SingleApiResponse<GenerateQRCodeResponse>>(
     EndPoints.PAYMENT.generateQRCode,
+    request,
+  );
+  return response.data;
+};
+
+export const initCharge = async (
+  request: InitChargeRequest,
+): Promise<InitChargeResponse> => {
+  const response = await httpRequest.post<SingleApiResponse<InitChargeResponse>>(
+    EndPoints.PAYMENT.initCharge,
     request,
   );
   return response.data;

@@ -47,11 +47,11 @@ function ButtonScan({ onPressScan, title }: ButtonScanProps) {
 function QRCodePayment() {
   const { t } = useTranslation();
   const {
-    onPressBarcode,
     onPressQR,
     onPressScan,
     isExpired,
     onRefreshQrCode,
+    onPressBarcode,
     data,
     currentWallet,
   } = useQRCodePayment();
@@ -96,6 +96,8 @@ function QRCodePayment() {
             testID="qr-code-payment-barcode"
           >
             <BarcodeCreatorView
+              background={Colors.white}
+              foregroundColor="#000000"
               format={BarcodeFormat.CODE128}
               value={data?.qrData}
               style={{ height: BARCODE_HEIGHT, width: BARCODE_WIDTH }}

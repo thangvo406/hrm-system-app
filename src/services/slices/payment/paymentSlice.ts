@@ -7,6 +7,7 @@ import type {
   GetListCartPayload,
   GetOrderHistoriesPayload,
   GetOrderHistoryDetailPayload,
+  InitChargePayload,
   RemoveCartItemPayload,
   UpdateCartItemPayload,
 } from '@type/payment';
@@ -31,6 +32,10 @@ const paymentSlice = createSlice({
     },
     generateQRCodeRequest: {
       prepare: (payload: GenerateQRCodePayload) => ({ payload }),
+      reducer: () => {},
+    },
+    initChargeRequest: {
+      prepare: (payload: InitChargePayload) => ({ payload }),
       reducer: () => {},
     },
     getAddressOrderRecentRequest: {
@@ -72,6 +77,7 @@ export const {
   getListCartRequest,
   getOrderHistoriesRequest,
   getOrderHistoryDetailRequest,
+  initChargeRequest,
   removeCartItemRequest,
   updateCartItemRequest,
 } = paymentSlice.actions;

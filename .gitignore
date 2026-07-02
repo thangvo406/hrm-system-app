@@ -81,3 +81,4 @@ yarn-error.log
 env/.*
 !env/.example
 android/coop-dev-firebase.json
+.claude

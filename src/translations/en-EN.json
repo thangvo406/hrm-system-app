@@ -3,7 +3,8 @@
     "common": {
       "confirm": "Confirm",
       "cancel": "Cancel",
-      "no_data": "No data"
+      "no_data": "No data",
+      "payment": "Payment"
     },
     "notifications": {
       "title": "Notifications",
@@ -321,7 +322,8 @@
       "pay_balance_label": "Pay money balance",
       "point_label": "Point",
       "scan_button": "QR Scan",
-      "refresh_button": "Refresh QR Code"
+      "refresh_button": "Refresh QR Code",
+      "expires_in": "Expires in {{seconds}}s"
     },
     "order_history_detail": {
       "order_code_label": "Order Code",

@@ -7,6 +7,7 @@ import {
   BarcodeFormat,
 } from 'react-native-barcode-creator';
 import AppButton from '@components/AppButton';
+import icLauncherRound from '@assets/images/ic_launcher_round.webp';
 
 const QR_SIZE = ScaleSize(300);
 const BARCODE_HEIGHT = ScaleSize(120);
@@ -31,13 +32,11 @@ function QRCodeViewer({ mode, value, onRequestClose }: Properties) {
       <AppButton activeOpacity={1} style={styles.card}>
         <View style={styles.content}>
           {mode === 'qr' ? (
-            <QRCode
-              size={QR_SIZE}
-              value={value}
-              logo={require('@assets/images/ic_launcher_round.webp')}
-            />
+            <QRCode size={QR_SIZE} value={value} logo={icLauncherRound} />
           ) : (
             <BarcodeCreatorView
+              background="#FFFFFF"
+              foregroundColor="#000000"
               format={BarcodeFormat.CODE128}
               value={value}
               style={{ height: BARCODE_HEIGHT, width: BARCODE_WIDTH }}

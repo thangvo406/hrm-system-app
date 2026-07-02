@@ -58,6 +58,7 @@ export const EndPoints = {
     orderHistoryDetail: (orderId: string) => `order/${orderId}`,
     addressOrderRecent: 'order/recent-address',
     generateQRCode: 'api/v1/pay/qr/generate',
+    initCharge: 'balance/kcp/charge/init',
   },
   WALLET: {
     currentWallet: 'balance',

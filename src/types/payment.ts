@@ -206,9 +206,24 @@ export type GenerateQRCodeRequest = {
 };
 
 export type GenerateQRCodeResponse = {
-  readonly expiredIn: number;
+  readonly expiresIn: number;
   readonly qrData: string;
 };
+
+export type InitChargeRequest = {
+  amount: number;
+  couponCode?: string;
+  easyPayMethod?: string;
+  paymentMethodId?: number;
+  paymentType: string;
+};
+
+export type InitChargeResponse = {
+  readonly paymentUrl: string;
+};
+
+export type InitChargePayload = AppCallback<InitChargeResponse> &
+  InitChargeRequest;
 
 export type GenerateQRCodePayload = AppCallback<GenerateQRCodeResponse> &
   GenerateQRCodeRequest;

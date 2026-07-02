@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import QRCodeViewer, { QRCodeViewerMode } from '@dialogs/QRCodeViewer';
 import AppNavigator from '@navigation/AppNavigator';
@@ -7,6 +7,11 @@ import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { generateQRCodeRequest } from '@services/slices/payment/paymentSlice';
 import type { GenerateQRCodeResponse } from '@type/payment';
+import {
+  setBrightnessLevel,
+  resetBrightness,
+} from '@reeq/react-native-device-brightness';
+import { useFocusEffect } from '@react-navigation/native';
 
 export type QRCodePaymentData = {
   readonly barcodeValue: string;
@@ -38,6 +43,15 @@ export const useQRCodePayment = () => {
   const [isExpired, setIsExpired] = useState(false);
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
 
+  useFocusEffect(
+    useCallback(() => {
+      setBrightnessLevel(1);
+      return () => {
+        resetBrightness();
+      };
+    }, []),
+  );
+
   useEffect(() => {
     if (!data) {
       return;
@@ -47,8 +61,9 @@ export const useQRCodePayment = () => {
       () => {
         setIsExpired(true);
       },
-      (data.expiredIn || 1) * 1000,
+      (data.expiresIn || 1) * 1000,
     );
+
     return () => {
       clearTimeout(timeOutExpired.current);
     };

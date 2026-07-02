@@ -3,7 +3,8 @@
     "common": {
       "confirm": "확인",
       "cancel": "취소",
-      "no_data": "데이터 없음"
+      "no_data": "데이터 없음",
+      "payment": "지불"
     },
     "welcome": {
       "login": "로그인",
@@ -321,7 +322,8 @@
       "pay_balance_label": "페이 머니 잔액",
       "point_label": "포인트",
       "scan_button": "QR 스캔",
-      "refresh_button": "결제하기"
+      "refresh_button": "결제하기",
+      "expires_in": "만료까지 {{seconds}}초"
     },
     "order_history_detail": {
       "order_code_label": "주문 코드",
