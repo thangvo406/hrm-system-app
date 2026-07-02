@@ -18,11 +18,13 @@ function PaymentCart(props: any) {
     data,
     pickupTime,
     shippingTabs,
+    addressDelivery,
     setDeliveryTab,
     setPaymentMethod,
     onPressPickupTime,
     onPressOrder,
     onChangeQuantity,
+    onPressSelectAddress,
   } = usePaymentCart(props);
 
   return (
@@ -42,6 +44,8 @@ function PaymentCart(props: any) {
           pickupTime={pickupTime}
           tab={deliveryTab}
           tabs={shippingTabs}
+          addressDelivery={addressDelivery}
+          onPressSelectAddress={onPressSelectAddress}
         />
 
         <View style={styles.spacer} />

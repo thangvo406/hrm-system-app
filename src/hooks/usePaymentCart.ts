@@ -1,3 +1,4 @@
+import { AppConstants } from '@constants';
 import Selection from '@dialogs/Selection';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
@@ -5,20 +6,21 @@ import { useAppDispatch } from '@services/common/storeHooks';
 import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
 import {
   createOrderRequest,
+  getAddressOrderRecentRequest,
   removeCartItemRequest,
   updateCartItemRequest,
 } from '@services/slices/payment/paymentSlice';
-import type { CreateOrderResponse } from '@type';
+import type { CreateOrderResponse, SearchAddressItem } from '@type';
 import { upperCaseFirstChar } from '@utils/common';
-import { debounce } from 'lodash';
-import { useMemo, useRef, useState } from 'react';
+import debounce from 'lodash/debounce';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DeviceEventEmitter } from 'react-native';
 
 export type DeliveryTab = 'DELIVERY' | 'PICKUP';
 export type PaymentCartMethod = 'coop_pay' | 'credit_card' | 'easy_payment';
 
 export type UsePaymentCart = ReturnType<typeof usePaymentCart>;
-const MOCK_ADDRESS = 'Room 301, 4th Floor, Engineering Building';
 
 const DATA_PICKUP_TIME = [
   {
@@ -40,6 +42,11 @@ const DATA_PICKUP_TIME = [
 ];
 
 const PICKUP_DEFAULT = DATA_PICKUP_TIME[0];
+interface AddressDelivery {
+  address: SearchAddressItem;
+  detail: string;
+  address_name: string;
+}
 
 export const usePaymentCart = (props: any) => {
   const { data: dataCart } = AppNavigator.getParams(props);
@@ -50,12 +57,14 @@ export const usePaymentCart = (props: any) => {
       ? data.storeReceiveMethod[0]
       : undefined,
   );
+  const [addressOrderRecent, setAddressOrderRecent] = useState();
   const dispatch = useAppDispatch();
   const debounceIdChangeQuanlity = useRef(undefined);
 
   const [paymentMethod, setPaymentMethod] =
     useState<PaymentCartMethod>('coop_pay');
   const [pickupTime, setPickupTime] = useState(PICKUP_DEFAULT);
+  const [addressDelivery, setAddressDelivery] = useState<AddressDelivery>();
 
   const shippingTabs = useMemo(() => {
     return (
@@ -68,8 +77,30 @@ export const usePaymentCart = (props: any) => {
     );
   }, [data]);
 
+  useEffect(() => {
+    dispatch(
+      getAddressOrderRecentRequest({
+        onSuccess(data) {
+          setAddressDelivery(data);
+          setAddressOrderRecent(data);
+        },
+      }),
+    );
+  }, []);
+
+  useEffect(() => {
+    DeviceEventEmitter.addListener(
+      AppConstants.UPDATE_ADDRESS_CART_KEY,
+      address => {
+        setAddressDelivery(address);
+      },
+    );
+  }, []);
+
   const onPressSelectAddress = () => {
-    AppNavigator.navigate(Paths.InputAddress);
+    AppNavigator.navigate(Paths.InputAddress, {
+      addressRecent: addressOrderRecent,
+    });
   };
 
   const onChangeQuantity = (product: any) => {
@@ -144,8 +175,9 @@ export const usePaymentCart = (props: any) => {
     dispatch(
       createOrderRequest({
         storeId: data?.storeId,
-        address: MOCK_ADDRESS,
-        note: '',
+        address: JSON.stringify(addressDelivery?.address?.detail),
+        addressDetail: addressDelivery?.detail,
+        receiveMethod: deliveryTab,
         products,
         vouchers: [],
         onSuccess: (data: CreateOrderResponse) => {
@@ -167,12 +199,21 @@ export const usePaymentCart = (props: any) => {
     );
   };
 
+  const getAddressDisplay = () => {
+    return (
+      addressDelivery?.address?.roadAddress ||
+      addressDelivery?.address?.landAddress ||
+      addressDelivery?.address_name
+    );
+  };
+
   return {
     deliveryTab,
     paymentMethod,
     data,
     onRemoveProduct,
     pickupTime,
+    addressDelivery: getAddressDisplay(),
     onPressOrder,
     onPressPickupTime,
     setDeliveryTab,

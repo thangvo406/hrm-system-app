@@ -26,8 +26,11 @@ export const useCart = () => {
   const { t } = useTranslation();
 
   const titleManageCart = useMemo(() => {
+    if (!(items?.length > 0)) {
+      return '';
+    }
     return isManaging ? t('carts.done') : t('carts.manage');
-  }, [isManaging]);
+  }, [isManaging, items]);
 
   const handleSuccess = (data: ListApiResponse<StoreCartItem[]>) => {
     isLast.current = data.last;

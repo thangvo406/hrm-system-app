@@ -3,7 +3,7 @@ import type { Ref } from 'react';
 import type { KeyboardTypeOptions, TextInputProps } from 'react-native';
 
 import Image from '@components/Image';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,6 +11,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import imageNames from '@assets/images/names';
+import { ScaleSize } from '@kits/core';
 
 const ICON_SIZE = 20;
 const ICON_COLOR = '#9E9E9E';
@@ -29,6 +31,7 @@ type TextFieldProps = {
   readonly ref?: Ref<TextInput>;
   readonly returnKeyType?: TextInputProps['returnKeyType'];
   readonly secureTextEntry?: boolean;
+  readonly showClear?: boolean;
   readonly submitBehavior?: TextInputProps['submitBehavior'];
   readonly testID?: string;
   readonly value?: string;
@@ -47,36 +50,46 @@ function TextField({
   ref: reference = undefined,
   returnKeyType = undefined,
   secureTextEntry = false,
+  showClear = false,
   submitBehavior = undefined,
   testID = undefined,
   value,
 }: TextFieldProps) {
   const [secure, setSecure] = useState(secureTextEntry);
   const hasError = error !== undefined;
+  const textInputRef = useRef(null);
+  const fakeValue = useRef('');
+
+  const _onChangeText = (text: string) => {
+    fakeValue.current = text;
+    onChangeText?.(text);
+  };
+  const getRef = () => {
+    return reference || textInputRef.current;
+  };
 
   return (
     <View>
       {!!label && <Text style={styles.label}>{label}</Text>}
       <View style={[styles.inputWrapper, hasError && styles.inputWrapperError]}>
-        {
-          !!iconName &&
+        {!!iconName && (
           <Image
-          color={ICON_COLOR}
-          height={ICON_SIZE}
-          name={iconName}
-          type="svg"
-          width={ICON_SIZE}
-        />
-        }
+            color={ICON_COLOR}
+            height={ICON_SIZE}
+            name={iconName}
+            type="svg"
+            width={ICON_SIZE}
+          />
+        )}
         <TextInput
           autoCapitalize={autoCapitalize}
           defaultValue={defaultValue}
           keyboardType={keyboardType}
-          onChangeText={onChangeText}
+          onChangeText={_onChangeText}
           onSubmitEditing={onSubmitEditing}
           placeholder={placeholder}
           placeholderTextColor={PLACEHOLDER_COLOR}
-          ref={reference}
+          ref={reference || textInputRef}
           returnKeyType={returnKeyType}
           secureTextEntry={secure}
           style={styles.input}
@@ -84,6 +97,22 @@ function TextField({
           testID={testID}
           value={value}
         />
+        {showClear && !!fakeValue.current ? (
+          <TouchableOpacity
+            hitSlop={{ bottom: 8, left: 8, right: 8, top: 8 }}
+            onPress={() => {
+              _onChangeText('');
+              getRef()?.clear();
+            }}
+            testID={testID ? `${testID}-clear` : undefined}
+          >
+            <Image
+              name={imageNames.ic_close_gray}
+              width={ScaleSize(16)}
+              height={ScaleSize(16)}
+            />
+          </TouchableOpacity>
+        ) : undefined}
         {secureTextEntry ? (
           <TouchableOpacity
             onPress={() => {
@@ -116,36 +145,41 @@ function TextField({
 const styles = StyleSheet.create({
   error: {
     color: '#D32F2F',
-    fontSize: 12,
-    marginBottom: 8,
-    marginTop: -2,
+    fontSize: ScaleSize(12),
+    marginBottom: ScaleSize(8),
+    marginTop: ScaleSize(-2),
   },
   input: {
     color: '#303030',
     flex: 1,
-    fontSize: 15,
-    paddingVertical: 11,
+    fontSize: ScaleSize(15),
+    paddingVertical: ScaleSize(11),
   },
   inputWrapper: {
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderColor: '#E0E0E0',
-    borderRadius: 12,
+    borderRadius: ScaleSize(12),
     borderWidth: 1,
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 6,
-    paddingHorizontal: 14,
+    marginBottom: ScaleSize(6),
+    paddingHorizontal: ScaleSize(14),
   },
   inputWrapperError: {
     borderColor: '#D32F2F',
   },
+  clearButton: {
+    color: '#9E9E9E',
+    fontSize: ScaleSize(18),
+    lineHeight: ScaleSize(20),
+  },
   label: {
     color: '#303030',
-    fontSize: 14,
+    fontSize: ScaleSize(14),
     fontWeight: '600',
-    marginBottom: 6,
-    marginTop: 10,
+    marginBottom: ScaleSize(6),
+    marginTop: ScaleSize(10),
   },
 });
 

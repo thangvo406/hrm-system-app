@@ -20,6 +20,7 @@ const HIDDEN_CART_PATHS = new Set<string>([
   Paths.Carts,
   Paths.PaymentCart,
   Paths.OrderCompleted,
+  Paths.InputAddress,
 ]);
 
 const handleNavigationStateChange = () => {

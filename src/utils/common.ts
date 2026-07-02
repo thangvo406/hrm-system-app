@@ -1,3 +1,4 @@
+import { KakaoDocument, SearchAddressItem } from '@type';
 import isNumber from 'lodash/isNumber';
 
 export const computeFormAuthErrors = <
@@ -86,3 +87,21 @@ export const upperCaseFirstChar = (value: string | undefined): string => {
   }
   return value.charAt(0).toUpperCase() + value.slice(1);
 };
+
+export function mapKakaoAddress(doc: KakaoDocument): SearchAddressItem {
+  return {
+    id: `${doc.x}-${doc.y}`,
+    roadAddress: doc.road_address?.address_name,
+    landAddress: doc.address?.address_name,
+    postalCode: doc.road_address?.zone_no,
+    province:
+      doc.road_address?.region_1depth_name ?? doc.address?.region_1depth_name,
+    district:
+      doc.road_address?.region_2depth_name ?? doc.address?.region_2depth_name,
+    town:
+      doc.road_address?.region_3depth_name ?? doc.address?.region_3depth_name,
+    longitude: doc.x,
+    latitude: doc.y,
+    detail: doc,
+  };
+}

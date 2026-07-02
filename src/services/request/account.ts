@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { EndPoints } from '@constants';
 import { UpdatePushIdPayload } from '@services/slices/account/accountSlice';
 import { SingleApiResponse } from '@type/common';
+import { addressInstance } from '@services/common/instance';
+import { CommonUtils } from '@utils';
 
 export const profileSchema = z.object({
   avatar: z.string().optional(),
@@ -23,11 +25,31 @@ export const profileSchema = z.object({
 
 export type Profile = z.infer<typeof profileSchema>;
 
+export const addressSuggestionSchema = z.object({
+  address: z.string(),
+  placeId: z.string().optional(),
+});
+
+export type AddressSuggestion = z.infer<typeof addressSuggestionSchema>;
+
 export const getProfile = async (): Promise<Profile> => {
   const response = await httpRequest.get<SingleApiResponse<Profile>>(
     EndPoints.ACCOUNT.getProfile,
     { loading: false },
   );
+  return response.data;
+};
+
+export const autoCompleteAddress = async (
+  request: any,
+): Promise<AddressSuggestion[]> => {
+  // const response = await httpRequest.get<SingleApiResponse<AddressSuggestion[]>>(
+  //   EndPoints.ACCOUNT.autoCompleteAddress(query),
+  //   { loading: false },
+  // );
+  const _request = CommonUtils.removeEmptyFieldObject(request, true);
+  const params = CommonUtils.objectToQueryParams(_request);
+  const response = await addressInstance.get(`?${params}`);
   return response.data;
 };
 

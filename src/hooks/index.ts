@@ -42,3 +42,4 @@ export { useOrderHistoryDetail } from './useOrderHistoryDetail';
 export { PAYMENT_METHODS, useTopUp } from './useTopUp';
 export { useQRCodePayment } from './useQRCodePayment';
 export type { QRCodePaymentData } from './useQRCodePayment';
+export { useInputAddress } from './useInputAddress';

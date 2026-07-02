@@ -169,7 +169,10 @@ const FloatingCartButton = forwardRef<FloatingCartButtonRef>((_props, ref) => {
       ]}
       // {...panResponder.panHandlers}
     >
-      <AppButton onPress={() => AppNavigator.navigate(Paths.Carts)}>
+      <AppButton
+        onPress={() => AppNavigator.navigate(Paths.Carts)}
+        hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+      >
         <Image
           color="#FFFFFF"
           height={ICON_SIZE}

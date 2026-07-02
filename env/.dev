@@ -1,4 +1,4 @@
-API_URL=https://api.example.com
+BASE_URL=http://52.79.38.251/
 APP_NAME=Coop Test
 APP_ID=com.coop_use
 APP_IOS_ID=com.coopuse.dev
@@ -12,3 +12,5 @@ NAVER_CONSUMER_KEY=GbSp0z47zko3inGIeper
 NAVER_CONSUMER_SECRET=uwporBG1Gv
 NAVER_URL_SCHEME=coopuse
 GOOGLE_MAPS_API_KEY=AIzaSyAc0ybo-kEviDiIiy8z8kOSh_WyoCjAkts
+URL_GET_ADDRESS=https://dapi.kakao.com/v2/local/search/address.json
+GET_ADDRESS_KEY=KakaoAK bea5d2654a8b2952032d74128f9a0033

@@ -14,11 +14,12 @@ export const EndPoints = {
     logout: 'auth/logout',
   },
   ACCOUNT: {
-    getProfile: 'user/profile',
-    updatePushId: 'notification/push-subscription',
+    autoCompleteAddress: (request: string) => `?${request}`,
     deletePushId: (pushId: string) =>
       `notification/push-subscription/${pushId}`,
+    getProfile: 'user/profile',
     updateMembership: 'user/membership/request',
+    updatePushId: 'notification/push-subscription',
   },
   NOTIFICATIONS: {
     list: (request: string) => `notification?${request}`,
@@ -55,6 +56,7 @@ export const EndPoints = {
     createOrder: 'order/create',
     orderHistories: (request: string) => `order?${request}`,
     orderHistoryDetail: (orderId: string) => `order/${orderId}`,
+    addressOrderRecent: 'order/recent-address',
   },
   WALLET: {
     currentWallet: 'balance',

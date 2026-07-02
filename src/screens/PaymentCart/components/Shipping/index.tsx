@@ -4,12 +4,8 @@ import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-const MOCK_ADDRESS = 'Room 301, 4th Floor, Engineering Building';
-
-const DELIVERY_SECTION_TITLE = 'Delivery/Pickup';
-const PICKUP_SECTION_TITLE = 'Select Pickup Time';
-const NEW_ADDRESS_LABEL = 'Deliver to a new address';
 const TEXT_DARK = '#1A1A1A';
 const CARD_BG = '#FFFFFF';
 const BORDER_COLOR = Colors.gray2;
@@ -23,6 +19,7 @@ type ShippingProperties = {
   readonly onTabChange: (tab: string) => void;
   readonly pickupTime: string;
   readonly tab: string;
+  readonly addressDelivery: string;
   readonly tabs: any[];
 };
 
@@ -32,11 +29,13 @@ type PickupTimeProperties = {
 };
 
 function PickupTime({ onPressPickupTime, value }: PickupTimeProperties) {
+  const { t } = useTranslation();
   return (
     <View style={styles.pickupContainer}>
-      <Text style={styles.pickupTitle}>{PICKUP_SECTION_TITLE}</Text>
+      <Text style={styles.pickupTitle}>
+        {t('payment_cart.select_pickup_time')}
+      </Text>
       <AppButton
-        activeOpacity={0.7}
         onPress={onPressPickupTime}
         style={styles.pickupDropdown}
         testID="payment-pickup-time"
@@ -54,18 +53,23 @@ function PickupTime({ onPressPickupTime, value }: PickupTimeProperties) {
   );
 }
 
-function DeliveryAddress({ onPressSelectAddress }: any) {
+function DeliveryAddress({ address, onPressSelectAddress }: any) {
+  const { t } = useTranslation();
   return (
     <>
-      <Text style={styles.sectionTitle}>{DELIVERY_SECTION_TITLE}</Text>
-      <Text style={styles.addressText}>{MOCK_ADDRESS}</Text>
+      <Text style={styles.sectionTitle}>
+        {t('payment_cart.delivery_pickup_title')}
+      </Text>
+      <Text style={styles.addressText}>{address}</Text>
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={onPressSelectAddress}
         style={styles.newAddressRow}
         testID="payment-new-address"
       >
-        <Text style={styles.newAddressText}>{NEW_ADDRESS_LABEL}</Text>
+        <Text style={styles.newAddressText}>
+          {t('payment_cart.new_address_label')}
+        </Text>
       </TouchableOpacity>
     </>
   );
@@ -78,6 +82,7 @@ function Shipping({
   pickupTime,
   tab,
   tabs,
+  addressDelivery,
 }: ShippingProperties) {
   return (
     <View style={styles.card}>
@@ -90,7 +95,10 @@ function Shipping({
       {tab === 'PICKUP' ? (
         <PickupTime onPressPickupTime={onPressPickupTime} value={pickupTime} />
       ) : (
-        <DeliveryAddress onPressSelectAddress={onPressSelectAddress} />
+        <DeliveryAddress
+          address={addressDelivery}
+          onPressSelectAddress={onPressSelectAddress}
+        />
       )}
     </View>
   );

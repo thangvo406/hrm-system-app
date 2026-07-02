@@ -95,7 +95,7 @@ export const usePayCard = () => {
           },
         }),
       );
-    }, [currentPage]),
+    }, [currentPage, historyTab]),
   );
 
   const onLoadMore = useCallback(() => {

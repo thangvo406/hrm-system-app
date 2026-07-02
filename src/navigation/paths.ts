@@ -7,6 +7,7 @@ export enum Paths {
   Example = 'example',
   ForgotPass = 'forgot_pass',
   Home = 'home',
+  InputAddress = 'input_address',
   Notifications = 'notifications',
   OrderCompleted = 'order_completed',
   OrderHistories = 'order_histories',

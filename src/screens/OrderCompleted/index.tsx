@@ -258,13 +258,13 @@ function OrderCompleted(props: any) {
           <InfoRow
             icon="ic_map_pin"
             label={t('order_completed.delivery_address')}
-            showChevron
+            // showChevron
             value={data?.address?.addressText ?? data?.address?.address_name}
           />
           <InfoRow
             icon="ic_truck"
             label={t('order_completed.shipping_method')}
-            showChevron
+            // showChevron
             value={data?.deliveryMethod ?? dataOrder?.deliveryMethod ?? ''}
           />
           <InfoRow

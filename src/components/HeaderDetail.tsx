@@ -134,7 +134,7 @@ function HeaderDetail({
             />
           </AppButton>
         )}
-        {!!showCartManage && (
+        {!!showCartManage && !!titleManage && (
           <AppButton
             onPress={onPressCartManage}
             style={[styles.iconButton, { width: ScaleSize(50) }]}

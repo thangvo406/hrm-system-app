@@ -121,3 +121,11 @@ export const getOrderHistories = async (
   >(EndPoints.PAYMENT.orderHistories(params), { loading: false });
   return response.data;
 };
+
+export const getAddressOrderRecent = async (): Promise<string[]> => {
+  const response = await httpRequest.get<SingleApiResponse<string[]>>(
+    EndPoints.PAYMENT.addressOrderRecent,
+    { loading: false },
+  );
+  return response.data;
+};

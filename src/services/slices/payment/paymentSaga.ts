@@ -4,6 +4,7 @@ import type {
   CheckoutInfo,
   CreateOrderPayload,
   CreateOrderResponse,
+  GetAddressOrderRecentPayload,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
   GetOrderHistoriesPayload,
@@ -19,6 +20,7 @@ import { call, takeLatest } from 'redux-saga/effects';
 
 import {
   createOrder,
+  getAddressOrderRecent,
   getInfoProductCheckout,
   getListCart,
   getOrderHistories,
@@ -30,6 +32,7 @@ import { getErrorMessageApi } from '@utils/common';
 
 import {
   createOrderRequest,
+  getAddressOrderRecentRequest,
   getInfoProductCheckoutRequest,
   getListCartRequest,
   getOrderHistoriesRequest,
@@ -137,8 +140,22 @@ function* getOrderHistoryDetailWorker(
   }
 }
 
+function* getAddressOrderRecentWorker(
+  action: PayloadAction<GetAddressOrderRecentPayload>,
+): Generator<unknown, void, string[]> {
+  const { onFailure, onSuccess } = action.payload;
+  try {
+    const data: string[] = yield call(getAddressOrderRecent);
+    onSuccess?.(data);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 export function* paymentSaga() {
   yield takeLatest(createOrderRequest.type, createOrderWorker);
+  yield takeLatest(getAddressOrderRecentRequest.type, getAddressOrderRecentWorker);
   yield takeLatest(
     getInfoProductCheckoutRequest.type,
     getInfoProductCheckoutWorker,

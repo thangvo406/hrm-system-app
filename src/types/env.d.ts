@@ -13,6 +13,8 @@ declare module 'react-native-config' {
     NAVER_CONSUMER_KEY?: string;
     NAVER_CONSUMER_SECRET?: string;
     NAVER_URL_SCHEME?: string;
+    URL_GET_ADDRESS?: string;
+    GET_ADDRESS_KEY?: string;
     ONE_SIGNAL_ID?: string;
   };
 

@@ -1,356 +1,362 @@
 {
-    "myapp": {
-        "common": {
-            "confirm": "확인",
-            "cancel": "취소",
-            "no_data": "데이터 없음"
-        },
-        "welcome": {
-            "login": "로그인",
-            "register": "신규 가입"
-        },
-        "authorisation": {
-            "tab_login": "로그인",
-            "tab_registration": "회원가입",
-            "name_label": "이름",
-            "name_placeholder": "홍길동",
-            "email_label": "이메일",
-            "email_placeholder": "example@email.com",
-            "password_label": "비밀번호",
-            "password_placeholder": "비밀번호",
-            "forgot_password": "비밀번호를 잊으셨나요?",
-            "login": "로그인",
-            "register": "회원가입",
-            "or": "또는",
-            "continue_kakao": "카카오로 계속하기",
-            "continue_naver": "네이버로 계속하기",
-            "continue_google": "구글로 계속하기",
-            "error_name_required": "이름을 입력해 주세요",
-            "error_email_required": "이메일을 입력해 주세요",
-            "error_email_invalid": "올바른 이메일을 입력해 주세요",
-            "error_password_required": "비밀번호를 입력해 주세요",
-            "error_password_min": "비밀번호는 최소 6자 이상이어야 합니다",
-            "error_phone_invalid": "올바른 휴대폰 번호를 입력해 주세요"
-        },
-        "register_flow": {
-            "identity_title": "본인확인을 위해 인증을 진행해 주세요",
-            "agree_label": "본인 인증 서비스 약관 전체 동의",
-            "terms_of_use": "휴대폰 본인 인증 서비스 이용약관 동의(필수)",
-            "carrier_terms": "휴대폰 통신사 이용약관 동의(필수)",
-            "name_label": "이름",
-            "name_placeholder": "이름",
-            "dob_label": "주민번호 앞 6자리",
-            "identify_label": "주민번호 뒤 7자리",
-            "phone_placeholder": "휴대폰 번호",
-            "request_verification": "인증요청",
-            "warning": "*타인의 개인정보를 도용하여 가입한 경우, 서비스 이용 제한 및 법적 제재를 받으실 수 있습니다.",
-            "next": "인증",
-            "otp_label": "인증 번호",
-            "otp_placeholder": "인증 번호",
-            "verify": "인증",
-            "choose_carrier": "통신사 선택",
-            "contribution_dialog": {
-                "desc": "조합원 가입을 위해 최초 1회 출자금 납부가 필요합니다. 계속 진행할까요?"
-            }
-        },
-        "choose_school": {
-            "title": "학적 인증",
-            "search_label": "학교 조회",
-            "search_placeholder": "학교 이름",
-            "empty": "검색 결과가 없습니다.",
-            "next": "다음"
-        },
-        "choose_membership": {
-            "title": "회원 유형 선택",
-            "join_as_student": "학생 조합원으로 가입하기",
-            "join_as_employee": "교원 조합원으로 가입하기",
-            "join_as_staff": "직원 조합원으로 가입하기",
-            "join_as_non_member": "비조합원으로 가입하기",
-            "next": "다음"
-        },
-        "register_completed": {
-            "desc": "가입이 완료되었습니다!",
-            "next": "다음"
-        },
-        "new_password": {
-            "title": "새로운 비밀번호를\n입력해 주세요.",
-            "password_label": "변경 비밀번호",
-            "password_placeholder": "비밀번호를 입력해 주세요",
-            "confirm_label": "비밀번호 확인",
-            "confirm_placeholder": "비밀번호를 다시 입력해 주세요",
-            "verification_success": "인증에 성공했습니다.",
-            "error_confirm_required": "비밀번호를 확인해 주세요",
-            "error_password_mismatch": "비밀번호가 일치하지 않습니다",
-            "next": "다음"
-        },
-        "bank_information": {
-            "intro": "조합원 최초 가입시,\n출자금 납부가 필요합니다.",
-            "instruction": "아래 계좌로 최초 {{amount}}원을\n납부하여 신청을 완료하세요.",
-            "next": "다음"
-        },
-        "home": {
-            "greeting": "반가워요!",
-            "greeting_prefix": "님",
-            "member_label": "조합원",
-            "pay_label": "생협Pay :",
-            "pay_amount": "{{amount}} 원",
-            "point_label": "Point : {{point}}",
-            "pay_action": "터치로 결재 이동",
-            "dividend_title": "출자금",
-            "dividend_desc": "조합원만 사용가능한 기능이에요.",
-            "order_title": "스마트 오더",
-            "order_desc": "스마트 오더로 학내 배달 / 픽업",
-            "frequent_store": "최근 주문 매장",
-            "store_eta": "약 15분 소요 예상",
-            "empty_store_title": "최근 주문 매장이 없습니다.",
-            "empty_store_desc": "근처 매장 정보를 조회하고,\n스마트오더를 사용해보세요!",
-            "notice_title": "공지 / 커뮤니티",
-            "notice_desc": "이벤트",
-            "survey_title": "설문조사",
-            "survey_desc": "설문조사",
-            "menu": {
-                "logout": "로그아웃",
-                "section_life": "생협라이프",
-                "section_pay": "생협페이",
-                "section_order": "모바일 오더",
-                "section_community": "커뮤니티",
-                "section_mypage": "마이페이지",
-                "deposit_inquiry": "출자금 조회",
-                "deposit_pay": "출자금 납부하기",
-                "dividend_inquiry": "배당금 조회",
-                "payment_method": "결제수단 등록",
-                "pay": "결제하기",
-                "pay_balance": "생협Pay 잔액 조회",
-                "order": "주문하기",
-                "store_search": "매장검색",
-                "notice": "공지사항",
-                "community": "커뮤니티",
-                "survey": "설문조사",
-                "profile": "내 정보 관리",
-                "security": "보안/인증",
-                "notification": "알림 설정"
-            },
-            "logout": {
-                "title": "이런! 문제가 발생했습니다.",
-                "desc": "로그아웃 하시겠습니까?",
-                "button_submit": "예",
-                "button_cancel": "아니오"
-            },
-            "non_member_dialog": {
-                "title": "조합원만 사용 가능한 기능입니다. 조합에 가입하시겠습니까?",
-                "confirm": "예",
-                "cancel": "아니오"
-            },
-            "pending_dialog": {
-                "title": "가입 대기중입니다. 가입에는 최대 1~2일이 소요됩니다.",
-                "confirm": "닫기"
-            }
-        },
-        "notifications": {
-            "title": "알림",
-            "mark_read_success": "업데이트 되었습니다.",
-            "mark_read_failed": "업데이트에 실패했습니다. 다시 시도해 주세요."
-        },
-        "pay_card": {
-            "title": "생협페이",
-            "pay_title": "생협 Pay",
-            "recharge": "페이머니 충전",
-            "pay_balance": "잔액 : {{amount}}원",
-            "point_title": "Point",
-            "point_balance": "잔여 point : {{amount}} point",
-            "history_title": "이력정보",
-            "tab_pay": "페이머니",
-            "tab_point": "포인트",
-            "balance_after": "잔액 : {{amount}}원",
-            "empty": "이력이 없습니다.",
-            "transaction_failed": "거래 실패",
-            "transaction_detail": {
-                "title": "출자 내역",
-                "date_label": "출자일시",
-                "amount_label": "출자금",
-                "type_label": "출자 유형"
-            }
-        },
-        "announcements": {
-            "title": "생협페이",
-            "tab_all": "전체",
-            "tab_notice": "공지사항",
-            "tab_event": "이벤트",
-            "loading": "공지사항을 불러오는 중...",
-            "empty": "표시할 공지사항이 없습니다."
-        },
-        "announcement_detail": {
-            "title": "공지/이벤트",
-            "loading": "불러오는 중...",
-            "error": "내용을 불러오지 못했습니다."
-        },
-        "survey": {
-            "title": "설문조사",
-            "action_answer": "답변확인",
-            "action_start": "설문 진행",
-            "closed_label": "마감"
-        },
-        "stores": {
-            "title": "스마트오더",
-            "search_placeholder": "매장 이름",
-            "delivery_label": {
-                "pickup": "픽업",
-                "delivery": "배달"
-            },
-            "section_label": "자주 주문한 매장",
-            "filter": {
-                "title": "저장",
-                "sort_by": "정렬 기준",
-                "sort_direction": "정렬 방향",
-                "sort_by_order": "기본순",
-                "sort_by_name": "매장명",
-                "sort_by_opening": "영업 시간",
-                "direction_asc": "오름차순",
-                "direction_desc": "내림차순",
-                "submit": "적용"
-            }
-        },
-        "carts": {
-            "title": "장바구니",
-            "manage": "관리",
-            "done": "완료",
-            "remove": "삭제",
-            "remove_success": "상품이 삭제되었습니다",
-            "item_count": "{{count}}개"
-        },
-        "survey_detail": {
-            "short_answer_placeholder": "답변을 입력해 주세요",
-            "submit": "제출하기",
-            "title": "설문조사"
-        },
-        "forgot_password": {
-            "desc_success": "비밀번호 변경이 완료되었습니다. 새 비밀번호로 로그인해 주세요.",
-            "title_register_info": "비밀번호 재설정을 위해 인증을 진행해 주세요"
-        },
-        "product_detail": {
-            "price_label": "가격",
-            "cart_button": "장바구니",
-            "min_order_label": "배달 최소 주문 금액",
-            "add_cart_success": "장바구니에 성공적으로 추가되었습니다.",
-            "max_quantity": "최대 수량: {{count}}개",
-            "max_quantity_error": "최대 수량은 {{count}}개입니다"
-        },
-        "products": {
-            "empty": "표시할 상품이 없습니다."
-        },
-        "contribution": {
-            "title": "마이페이지",
-            "edit": "프로필 수정",
-            "logout": "로그아웃",
-            "edit_unavailable": "아직 프로필 수정을 사용할 수 없습니다.",
-            "field": {
-                "email": "이메일 주소",
-                "full_name": "이름",
-                "gender": "성별",
-                "nickname": "닉네임",
-                "phone": "휴대폰 번호",
-                "year_of_birth": "출생 연도"
-            },
-            "school_label": "학교명 : 생협대학교",
-            "status_label": "학적 : 재학생 (20141111)",
-            "group_label": "그룹 : 조합원(학생)",
-            "contribution_title": "출자금 정보",
-            "contribution_total_label": "누적 출자 금액",
-            "contribution_amount": "{{amount}} 원",
-            "capital_contribution": "추가 출자(증좌)",
-            "withdrawal_capital": "출자금 출금(감좌)",
-            "contribution_history": "출자 이력 / 예상 배당액 확인",
-            "contribution_add": "추가 출자 진행",
-            "pay_title": "생협Pay :",
-            "pay_link": "생협 pay",
-            "deposit_label": "충전 금액",
-            "deposit_amount": "{{amount}} 원",
-            "point_label": "Point",
-            "point_amount": "{{amount}} 원",
-            "pay_history": "이력 확인",
-            "pay_recharge": "Pay 금액 충전",
-            "menu_transaction": "거래 이력 관리"
-        },
-        "edit_profile": {
-            "title": "프로필 수정",
-            "change_avatar": "아바타 변경",
-            "update": "업데이트",
-            "update_info_below": "아래에서 프로필 정보를 수정하세요.",
-            "save": "변경 사항 저장",
-            "cancel": "취소",
-            "save_unavailable": "아직 변경 사항 저장을 사용할 수 없습니다.",
-            "avatar_unavailable": "아직 아바타 변경을 사용할 수 없습니다."
-        },
-        "top_up": {
-            "title": "페이머니 충전",
-            "description": "Coop Pay에 충전할\n금액을 입력해주세요.",
-            "amount_label": "금액 입력",
-            "amount_placeholder": "금액을 입력해주세요",
-            "currency": "원",
-            "min_amount_hint": "최소 충전 금액은 1원입니다.",
-            "payment_method_label": "결제 수단",
-            "method_credit_card": "신용카드",
-            "method_credit_card_desc": "등록된 카드로 간편하게 결제",
-            "method_virtual_account": "가상계좌",
-            "method_virtual_account_desc": "가상계좌로 입금 후 충전",
-            "security_note": "안전한 결제를 위해 모든 정보는 암호화되어 보호됩니다.",
-            "next": "다음"
-        },
-        "order_completed": {
-            "title": "주문이 완료되었습니다!",
-            "subtitle": "구매해 주셔서 감사합니다.\n주문이 처리 중입니다.",
-            "order_code": "주문 코드",
-            "copy": "복사",
-            "order_date": "주문 일시",
-            "delivery_address": "배송 주소",
-            "shipping_method": "배송 방법",
-            "payment_method": "결제 수단",
-            "notify_title": "알림을 보내드립니다",
-            "notify_subtitle": "주문이 확인되고 배송될 때 알려드립니다.",
-            "view_detail": "주문 상세 보기",
-            "continue_shopping": "쇼핑 계속하기",
-            "go_home": "홈으로 이동"
-        },
-        "order_histories": {
-            "title": "주문 내역",
-            "reorder": "재주문"
-        },
-        "qr_code_payment": {
-            "title": "QR 코드 결제",
-            "card_title": "COOPPay",
-            "pay_balance_label": "페이 머니 잔액",
-            "point_label": "포인트",
-            "scan_button": "QR 스캔"
-        },
-        "order_history_detail": {
-            "order_code_label": "주문 코드",
-            "recipient_label": "수령인",
-            "delivery_address_label": "배송 주소",
-            "shipping_method_label": "배송 방법",
-            "payment_method_label": "결제 수단",
-            "subtotal_label": "소계",
-            "shipping_fee_label": "배송비",
-            "shipping_fee_free": "무료 배송",
-            "total_label": "합계",
-            "products_label": "주문 상품",
-            "delivery_section_title": "배송 정보",
-            "payment_section_title": "결제 정보",
-            "show_more": "상품 전체 보기",
-            "show_less": "접기",
-            "reorder": "재주문",
-            "contact_support": "고객 지원 문의",
-            "status_pending": "대기 중",
-            "status_completed": "완료",
-            "copy_order_number_success": "주문 코드가 복사되었습니다"
-        },
-        "input_address": {
-            "search_placeholder": "도/시 및 동/면 검색",
-            "selected_area": "선택된 지역",
-            "reset": "초기화"
-        },
-        "payment_cart": {
-            "remove_cart_success": "장바구니가 삭제되었습니다",
-            "select_pickup_time": "픽업 시간 선택"
-        }
+  "myapp": {
+    "common": {
+      "confirm": "확인",
+      "cancel": "취소",
+      "no_data": "데이터 없음"
+    },
+    "welcome": {
+      "login": "로그인",
+      "register": "신규 가입"
+    },
+    "authorisation": {
+      "tab_login": "로그인",
+      "tab_registration": "회원가입",
+      "name_label": "이름",
+      "name_placeholder": "홍길동",
+      "email_label": "이메일",
+      "email_placeholder": "example@email.com",
+      "password_label": "비밀번호",
+      "password_placeholder": "비밀번호",
+      "forgot_password": "비밀번호를 잊으셨나요?",
+      "login": "로그인",
+      "register": "회원가입",
+      "or": "또는",
+      "continue_kakao": "카카오로 계속하기",
+      "continue_naver": "네이버로 계속하기",
+      "continue_google": "구글로 계속하기",
+      "error_name_required": "이름을 입력해 주세요",
+      "error_email_required": "이메일을 입력해 주세요",
+      "error_email_invalid": "올바른 이메일을 입력해 주세요",
+      "error_password_required": "비밀번호를 입력해 주세요",
+      "error_password_min": "비밀번호는 최소 6자 이상이어야 합니다",
+      "error_phone_invalid": "올바른 휴대폰 번호를 입력해 주세요"
+    },
+    "register_flow": {
+      "identity_title": "본인확인을 위해 인증을 진행해 주세요",
+      "agree_label": "본인 인증 서비스 약관 전체 동의",
+      "terms_of_use": "휴대폰 본인 인증 서비스 이용약관 동의(필수)",
+      "carrier_terms": "휴대폰 통신사 이용약관 동의(필수)",
+      "name_label": "이름",
+      "name_placeholder": "이름",
+      "dob_label": "주민번호 앞 6자리",
+      "identify_label": "주민번호 뒤 7자리",
+      "phone_placeholder": "휴대폰 번호",
+      "request_verification": "인증요청",
+      "warning": "*타인의 개인정보를 도용하여 가입한 경우, 서비스 이용 제한 및 법적 제재를 받으실 수 있습니다.",
+      "next": "인증",
+      "otp_label": "인증 번호",
+      "otp_placeholder": "인증 번호",
+      "verify": "인증",
+      "choose_carrier": "통신사 선택",
+      "contribution_dialog": {
+        "desc": "조합원 가입을 위해 최초 1회 출자금 납부가 필요합니다. 계속 진행할까요?"
+      }
+    },
+    "choose_school": {
+      "title": "학적 인증",
+      "search_label": "학교 조회",
+      "search_placeholder": "학교 이름",
+      "empty": "검색 결과가 없습니다.",
+      "next": "다음"
+    },
+    "choose_membership": {
+      "title": "회원 유형 선택",
+      "join_as_student": "학생 조합원으로 가입하기",
+      "join_as_employee": "교원 조합원으로 가입하기",
+      "join_as_staff": "직원 조합원으로 가입하기",
+      "join_as_non_member": "비조합원으로 가입하기",
+      "next": "다음"
+    },
+    "register_completed": {
+      "desc": "가입이 완료되었습니다!",
+      "next": "다음"
+    },
+    "new_password": {
+      "title": "새로운 비밀번호를\n입력해 주세요.",
+      "password_label": "변경 비밀번호",
+      "password_placeholder": "비밀번호를 입력해 주세요",
+      "confirm_label": "비밀번호 확인",
+      "confirm_placeholder": "비밀번호를 다시 입력해 주세요",
+      "verification_success": "인증에 성공했습니다.",
+      "error_confirm_required": "비밀번호를 확인해 주세요",
+      "error_password_mismatch": "비밀번호가 일치하지 않습니다",
+      "next": "다음"
+    },
+    "bank_information": {
+      "intro": "조합원 최초 가입시,\n출자금 납부가 필요합니다.",
+      "instruction": "아래 계좌로 최초 {{amount}}원을\n납부하여 신청을 완료하세요.",
+      "next": "다음"
+    },
+    "home": {
+      "greeting": "반가워요!",
+      "greeting_prefix": "님",
+      "member_label": "조합원",
+      "pay_label": "생협Pay :",
+      "pay_amount": "{{amount}} 원",
+      "point_label": "Point : {{point}}",
+      "pay_action": "터치로 결재 이동",
+      "dividend_title": "출자금",
+      "dividend_desc": "조합원만 사용가능한 기능이에요.",
+      "order_title": "스마트 오더",
+      "order_desc": "스마트 오더로 학내 배달 / 픽업",
+      "frequent_store": "최근 주문 매장",
+      "store_eta": "약 15분 소요 예상",
+      "empty_store_title": "최근 주문 매장이 없습니다.",
+      "empty_store_desc": "근처 매장 정보를 조회하고,\n스마트오더를 사용해보세요!",
+      "notice_title": "공지 / 커뮤니티",
+      "notice_desc": "이벤트",
+      "survey_title": "설문조사",
+      "survey_desc": "설문조사",
+      "menu": {
+        "logout": "로그아웃",
+        "section_life": "생협라이프",
+        "section_pay": "생협페이",
+        "section_order": "모바일 오더",
+        "section_community": "커뮤니티",
+        "section_mypage": "마이페이지",
+        "deposit_inquiry": "출자금 조회",
+        "deposit_pay": "출자금 납부하기",
+        "dividend_inquiry": "배당금 조회",
+        "payment_method": "결제수단 등록",
+        "pay": "결제하기",
+        "pay_balance": "생협Pay 잔액 조회",
+        "order": "주문하기",
+        "store_search": "매장검색",
+        "notice": "공지사항",
+        "community": "커뮤니티",
+        "survey": "설문조사",
+        "profile": "내 정보 관리",
+        "security": "보안/인증",
+        "notification": "알림 설정"
+      },
+      "logout": {
+        "title": "이런! 문제가 발생했습니다.",
+        "desc": "로그아웃 하시겠습니까?",
+        "button_submit": "예",
+        "button_cancel": "아니오"
+      },
+      "non_member_dialog": {
+        "title": "조합원만 사용 가능한 기능입니다. 조합에 가입하시겠습니까?",
+        "confirm": "예",
+        "cancel": "아니오"
+      },
+      "pending_dialog": {
+        "title": "가입 대기중입니다. 가입에는 최대 1~2일이 소요됩니다.",
+        "confirm": "닫기"
+      }
+    },
+    "notifications": {
+      "title": "알림",
+      "mark_read_success": "업데이트 되었습니다.",
+      "mark_read_failed": "업데이트에 실패했습니다. 다시 시도해 주세요."
+    },
+    "pay_card": {
+      "title": "생협페이",
+      "pay_title": "생협 Pay",
+      "recharge": "페이머니 충전",
+      "pay_balance": "잔액 : {{amount}}원",
+      "point_title": "Point",
+      "point_balance": "잔여 point : {{amount}} point",
+      "history_title": "이력정보",
+      "tab_pay": "페이머니",
+      "tab_point": "포인트",
+      "balance_after": "잔액 : {{amount}}원",
+      "empty": "이력이 없습니다.",
+      "transaction_failed": "거래 실패",
+      "transaction_detail": {
+        "title": "출자 내역",
+        "date_label": "출자일시",
+        "amount_label": "출자금",
+        "type_label": "출자 유형"
+      }
+    },
+    "announcements": {
+      "title": "생협페이",
+      "tab_all": "전체",
+      "tab_notice": "공지사항",
+      "tab_event": "이벤트",
+      "loading": "공지사항을 불러오는 중...",
+      "empty": "표시할 공지사항이 없습니다."
+    },
+    "announcement_detail": {
+      "title": "공지/이벤트",
+      "loading": "불러오는 중...",
+      "error": "내용을 불러오지 못했습니다."
+    },
+    "survey": {
+      "title": "설문조사",
+      "action_answer": "답변확인",
+      "action_start": "설문 진행",
+      "closed_label": "마감"
+    },
+    "stores": {
+      "title": "스마트오더",
+      "search_placeholder": "매장 이름",
+      "delivery_label": {
+        "pickup": "픽업",
+        "delivery": "배달"
+      },
+      "section_label": "자주 주문한 매장",
+      "filter": {
+        "title": "저장",
+        "sort_by": "정렬 기준",
+        "sort_direction": "정렬 방향",
+        "sort_by_order": "기본순",
+        "sort_by_name": "매장명",
+        "sort_by_opening": "영업 시간",
+        "direction_asc": "오름차순",
+        "direction_desc": "내림차순",
+        "submit": "적용"
+      }
+    },
+    "carts": {
+      "title": "장바구니",
+      "manage": "관리",
+      "done": "완료",
+      "remove": "삭제",
+      "remove_success": "상품이 삭제되었습니다",
+      "item_count": "{{count}}개"
+    },
+    "survey_detail": {
+      "short_answer_placeholder": "답변을 입력해 주세요",
+      "submit": "제출하기",
+      "title": "설문조사"
+    },
+    "forgot_password": {
+      "desc_success": "비밀번호 변경이 완료되었습니다. 새 비밀번호로 로그인해 주세요.",
+      "title_register_info": "비밀번호 재설정을 위해 인증을 진행해 주세요"
+    },
+    "product_detail": {
+      "price_label": "가격",
+      "cart_button": "장바구니",
+      "min_order_label": "배달 최소 주문 금액",
+      "add_cart_success": "장바구니에 성공적으로 추가되었습니다.",
+      "max_quantity": "최대 수량: {{count}}개",
+      "max_quantity_error": "최대 수량은 {{count}}개입니다"
+    },
+    "products": {
+      "empty": "표시할 상품이 없습니다."
+    },
+    "contribution": {
+      "title": "마이페이지",
+      "edit": "프로필 수정",
+      "logout": "로그아웃",
+      "edit_unavailable": "아직 프로필 수정을 사용할 수 없습니다.",
+      "field": {
+        "email": "이메일 주소",
+        "full_name": "이름",
+        "gender": "성별",
+        "nickname": "닉네임",
+        "phone": "휴대폰 번호",
+        "year_of_birth": "출생 연도"
+      },
+      "school_label": "학교명 : 생협대학교",
+      "status_label": "학적 : 재학생 (20141111)",
+      "group_label": "그룹 : 조합원(학생)",
+      "contribution_title": "출자금 정보",
+      "contribution_total_label": "누적 출자 금액",
+      "contribution_amount": "{{amount}} 원",
+      "capital_contribution": "추가 출자(증좌)",
+      "withdrawal_capital": "출자금 출금(감좌)",
+      "contribution_history": "출자 이력 / 예상 배당액 확인",
+      "contribution_add": "추가 출자 진행",
+      "pay_title": "생협Pay :",
+      "pay_link": "생협 pay",
+      "deposit_label": "충전 금액",
+      "deposit_amount": "{{amount}} 원",
+      "point_label": "Point",
+      "point_amount": "{{amount}} 원",
+      "pay_history": "이력 확인",
+      "pay_recharge": "Pay 금액 충전",
+      "menu_transaction": "거래 이력 관리"
+    },
+    "edit_profile": {
+      "title": "프로필 수정",
+      "change_avatar": "아바타 변경",
+      "update": "업데이트",
+      "update_info_below": "아래에서 프로필 정보를 수정하세요.",
+      "save": "변경 사항 저장",
+      "cancel": "취소",
+      "save_unavailable": "아직 변경 사항 저장을 사용할 수 없습니다.",
+      "avatar_unavailable": "아직 아바타 변경을 사용할 수 없습니다."
+    },
+    "top_up": {
+      "title": "페이머니 충전",
+      "description": "Coop Pay에 충전할\n금액을 입력해주세요.",
+      "amount_label": "금액 입력",
+      "amount_placeholder": "금액을 입력해주세요",
+      "currency": "원",
+      "min_amount_hint": "최소 충전 금액은 1원입니다.",
+      "payment_method_label": "결제 수단",
+      "method_credit_card": "신용카드",
+      "method_credit_card_desc": "등록된 카드로 간편하게 결제",
+      "method_virtual_account": "가상계좌",
+      "method_virtual_account_desc": "가상계좌로 입금 후 충전",
+      "security_note": "안전한 결제를 위해 모든 정보는 암호화되어 보호됩니다.",
+      "next": "다음"
+    },
+    "order_completed": {
+      "title": "주문이 완료되었습니다!",
+      "subtitle": "구매해 주셔서 감사합니다.\n주문이 처리 중입니다.",
+      "order_code": "주문 코드",
+      "copy": "복사",
+      "order_date": "주문 일시",
+      "delivery_address": "배송 주소",
+      "shipping_method": "배송 방법",
+      "payment_method": "결제 수단",
+      "notify_title": "알림을 보내드립니다",
+      "notify_subtitle": "주문이 확인되고 배송될 때 알려드립니다.",
+      "view_detail": "주문 상세 보기",
+      "continue_shopping": "쇼핑 계속하기",
+      "go_home": "홈으로 이동"
+    },
+    "order_histories": {
+      "title": "주문 내역",
+      "reorder": "재주문"
+    },
+    "qr_code_payment": {
+      "title": "QR 코드 결제",
+      "card_title": "COOPPay",
+      "pay_balance_label": "페이 머니 잔액",
+      "point_label": "포인트",
+      "scan_button": "QR 스캔"
+    },
+    "order_history_detail": {
+      "order_code_label": "주문 코드",
+      "recipient_label": "수령인",
+      "delivery_address_label": "배송 주소",
+      "shipping_method_label": "배송 방법",
+      "payment_method_label": "결제 수단",
+      "subtotal_label": "소계",
+      "shipping_fee_label": "배송비",
+      "shipping_fee_free": "무료 배송",
+      "total_label": "합계",
+      "products_label": "주문 상품",
+      "delivery_section_title": "배송 정보",
+      "payment_section_title": "결제 정보",
+      "show_more": "상품 전체 보기",
+      "show_less": "접기",
+      "reorder": "재주문",
+      "contact_support": "고객 지원 문의",
+      "status_pending": "대기 중",
+      "status_completed": "완료",
+      "copy_order_number_success": "주문 코드가 복사되었습니다"
+    },
+    "input_address": {
+      "search_placeholder": "도/시 및 동/면 검색",
+      "title": "배달/결제",
+      "previous_address_title": "이전 배달 주소",
+      "new_address_title": "새 배달 주소 입력",
+      "address_placeholder": "자연과학관",
+      "detail_placeholder": "상세 주소를 입력해주세요",
+      "confirm_button": "선택 확인"
+    },
+    "payment_cart": {
+      "remove_cart_success": "장바구니가 삭제되었습니다",
+      "select_pickup_time": "픽업 시간 선택",
+      "delivery_pickup_title": "배달/픽업",
+      "new_address_label": "새 주소로 배달"
     }
+  }
 }

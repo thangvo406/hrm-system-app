@@ -1,6 +1,8 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Profile } from '@services/request/account';
+import type { AddressSuggestion } from '@services/request/account';
 import type {
+  AutoCompleteAddressPayload,
   GetProfilePayload,
   UpdateMembershipPayload,
   UpdatePushIdPayload,
@@ -16,6 +18,7 @@ import type { TransactionHistory } from '@type/wallet';
 import type { GetTotalItemCartPayload, TotalItemCart } from '@type/payment';
 
 import {
+  autoCompleteAddress,
   getProfile,
   updateMembership,
   updatePushId,
@@ -30,6 +33,7 @@ import { call, put, select, takeLatest } from 'redux-saga/effects';
 import { getErrorMessageApi } from '@utils/common';
 
 import {
+  autoCompleteAddressRequest,
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
   getProfileRequest,
@@ -143,7 +147,21 @@ function* topUpWalletWorker(
   }
 }
 
+function* autoCompleteAddressWorker(
+  action: PayloadAction<AutoCompleteAddressPayload>,
+): Generator<unknown, void, AddressSuggestion[]> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const data: AddressSuggestion[] = yield call(autoCompleteAddress, request);
+    onSuccess?.(data);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 export function* accountSaga() {
+  yield takeLatest(autoCompleteAddressRequest.type, autoCompleteAddressWorker);
   yield takeLatest(getTotalItemCartRequest.type, getTotalItemCartWorker);
   yield takeLatest(getProfileRequest.type, getProfileWorker);
   yield takeLatest(updateMembershipRequest.type, updateMembershipWorker);

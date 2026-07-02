@@ -11,8 +11,8 @@ import { ResponseRefreshToken, SingleApiResponse } from '@type';
 import AppNavigator from '@navigation/AppNavigator';
 import { AppStacks, Paths } from '@navigation/paths';
 
-// const baseURL = `${Environment.BASE_URL}/`;
-const baseURL = `http://52.79.38.251/`;
+const baseURL = Environment.BASE_URL;
+// const baseURL = `http://52.79.38.251/`;
 const urlsIgnore = new Set([EndPoints.AUTH.login]);
 const HTTP_UNAUTHORIZED = 401;
 const REQUEST_TIMEOUT_MS = 15_000;
@@ -102,3 +102,12 @@ instance.interceptors.response.use(
     return instance(originalRequest);
   },
 );
+
+export const addressInstance = axios.create({
+  baseURL: Environment.URL_GET_ADDRESS,
+  headers: {
+    Accept: 'application/json',
+    Authorization: Environment.GET_ADDRESS_KEY,
+  },
+  timeout: REQUEST_TIMEOUT_MS,
+});

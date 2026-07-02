@@ -1,6 +1,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AppCallback } from '@type/common';
 import type { Profile } from '@services/request/account';
+import type { AddressSuggestion } from '@services/request/account';
 import type {
   GetCurrentWalletPayload,
   GetTransactionHistoriesPayload,
@@ -14,6 +15,10 @@ import { createSlice } from '@reduxjs/toolkit';
 import { logoutSuccess } from '@services/slices/auth/authSlice';
 
 export type GetProfilePayload = AppCallback<Profile>;
+
+export type AutoCompleteAddressPayload = {
+  readonly query: string;
+} & AppCallback<AddressSuggestion[]>;
 
 export type UpdatePushIdPayload = {
   optedIn: boolean;
@@ -46,6 +51,10 @@ const accountSlice = createSlice({
   initialState,
   name: 'account',
   reducers: {
+    autoCompleteAddressRequest: {
+      prepare: (payload: AutoCompleteAddressPayload) => ({ payload }),
+      reducer: () => {},
+    },
     clearProfile: () => initialState,
     getTotalItemCartRequest: {
       prepare: (payload: GetTotalItemCartPayload = {}) => ({ payload }),
@@ -89,6 +98,7 @@ const accountSlice = createSlice({
 });
 
 export const {
+  autoCompleteAddressRequest,
   clearProfile,
   getCurrentWalletRequest,
   getCurrentWalletSuccess,

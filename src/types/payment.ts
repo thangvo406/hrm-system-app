@@ -197,3 +197,5 @@ export type GetOrderHistoryDetailRequest = {
 
 export type GetOrderHistoryDetailPayload = GetOrderHistoryDetailRequest &
   AppCallback<OrderHistoryDetailItem>;
+
+export type GetAddressOrderRecentPayload = AppCallback<string[]>;
