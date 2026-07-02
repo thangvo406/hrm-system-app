@@ -1,97 +1,180 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# COOP University App
 
-# Getting Started
+![COOP](https://i.ibb.co/tP8F4Pvf/Chat-GPT-Image-Jun-10-2026-at-09-56-45-AM.png)
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Technical Stack
 
-## Step 1: Start Metro
+**Mobile App:**
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- Platform: **iOS** & **Android**
+- Mobile development platform: React Native (0.81.5)
+- IDE: **Visual Studio Code**, **Cursor**
+- State management: **Redux**
+- App Id Android: com.coop_use
+- App Id iOS: com.coopuse.dev
+- API server...
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Prettier and ESLint configuration
 
-```sh
-# Using npm
-npm start
+- **Eslint:** [(here)](#) Follow [AirBnb](https://github.com/airbnb/javascript) guideline. Configure inside **.eslintrc.js** file.
+- **Prettier:** [(here)](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) Follow some of the ESLint config. Please setting up **format on save** on Prettier on your IDE for easier code formatting.
 
-# OR using Yarn
-yarn start
+## Source control guideline
+
+Check out our presentation: [Git-flow](https://docs.google.com/presentation/d/1vfF1usCdk2NmQUSA82unPnUNGNf1nsOibAVp3btHSow/edit#slide=id.g4d4aa58873_0_292)
+
+We're using Git here. Also, to utilize the branches structure for clearer and easier to understand, we've inherited the Git-flow structure. Here are the basic:
+
+- **master**: production-ready branch.
+- **dev**: develop-ready branch.
+- **feat(/ or -)**: feature branches. Can be deleted after finish the feature.
+- **release(/ or -)**: release branches. Usually for demo or releases (add tags or milestones if needed)
+- **hotfix(/ or -)**: hotfix branches (for release branches). Usually if release branches has issues, hotfix can be used for fixing those.
+- **fixes(/ or -)**: bugfix branches (for development). Named after feature branches. Closed or deleted after finished fixing issues.
+
+### Some ground rules for adding, committing, pushing, pulling,...
+
+- **Add only changes files**. Some forbidden files: **.lock** files, **node_modules** folder, **build** folder (inside `ios` or `android`),...
+
+```
+git add app/index.js
+git add app/models/stores.js
 ```
 
-## Step 2: Build and run your app
+- **Commit messages:**
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+1. Should be **clear** & **straight to the point**.
+2. In **title** case.
+3. No longer than **50 characters**.
+4. **Recommend** using [commit message emoji](https://gist.github.com/minhnguyen0712/17885cf3d397fc3712596478a8431ef9) for clear understanding. <-- Check
 
-### Android
+Example:
 
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+```bash
+git commit -m "🎉 Initial commit"
+git commit -m "🐛 Fixed a bug on LoginScreen"
+git commit -m "✨ Added Header component"
+git commit -m "✨ Added title cards for HomeScreen"
+git commit -m "- ✨ Added Footer for HomeScreen
+> - 🐛 Fixed a crash error on Login
+> - 🐛 Fixed layout on CardScreen"
 ```
 
-### iOS
+- **Checkout branch:** create new branches follow the Git-flow rules. Keep the branch updated to develop. If not needed, then delete the branch.
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+```bash
+git checkout -b feat/Login
+git checkout dev
+git checkout -d fixes/Login
 ```
 
-Then, and every time you update your native dependencies, run:
+- **Merge requests:** create a merge request with changed file only. Please specify if you want to delete the branch or not, assignee, labels, tags, ...
 
-```sh
-bundle exec pod install
+## Libraries
+
+Beside basics, these are the essentials libraries for development:
+
+- [reduxsauce](https://github.com/jkeam/reduxsauce)
+- [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated)
+-
+
+## Installation
+
+Some applications,packages and clis needs to be installed:
+
+- [Homebrew](https://brew.sh/) (**Recommended**: install Homebrew first for easier installing Node and Watchman)
+- **Xcode** (required for running apps on iOS)
+- **Android Studio** (required for running apps on Android)
+- [Cocoapods](https://cocoapods.org/)
+- [Yarn](https://yarnpkg.com/getting-started/install)
+- [Node.js](https://nodejs.org/en/download/) (12 LTS or greater)
+- [Watchman](https://facebook.github.io/watchman/docs/install.html)
+
+Run the following commands in a Terminal after installing Homebrew:
+
+```
+brew install node
+brew install watchman
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## Usage
 
-```sh
-# Using npm
-npm run ios
+```bash
+cd <project-root>/
+yarn install
+cd ios && pod install && cd ../
+touch .env #create file env .env
 
-# OR using Yarn
-yarn ios
+# Final, to run the project
+#iOS
+npx react-native run-ios
+#Android
+npx react-native run-android
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## Project folder organization
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+- android # Android native project
+- ios # Ios native project
+- src # Source code for both platform
+  - assets # Contain all assets like fonts, icons, images
+  - components # Precision components
+  - navigations # Contains files for screen define, config router.
+  - screens # Contain all our screens
+  - services # Contain all services files
+  - utils # Contain all Utilities
+  - App.ts # Register model, router, plugins
+- babelrc.js
+- tslint.js
+- package.json
+- index.js
 
-## Step 3: Modify your app
+## Alias
 
-Now that you have successfully run the app, let's make changes!
+- @assets: './src/assets/',
+- @components: './src/components/',
+- @navigation: './src/navigation/',
+- @services: './src/services/',
+- @utils: './src/utils/',
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+```bash
+Using:
+   import {Root} from '@containers';
+   import {Indicator} from '@components';
+```
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+## Lib extends Default
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+- @react-native-community/async-storage
+- @react-navigation/bottom-tabs
+- @react-navigation/native
+- @react-navigation/stack
+- axios
+- lodash
+- moment
+- prop-types
+- react-native-screens
+- react-native-webview
+- react-redux
+- reactotron-react-native
+- reactotron-redux
+- redux
+- redux-persist
+- redux-saga
 
-## Congratulations! :tada:
+## Debug tool
 
-You've successfully run and modified your React Native App. :partying_face:
+- [Reactotron](https://github.com/infinitered/reactotron/)
+- See config at `src/config/ReactotronConfig.js`
 
-### Now what?
+## Coding convention
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+- React component: https://github.com/airbnb/javascript/tree/master/react
 
-# Troubleshooting
+## Contributing rules
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+- Please do not make changes in **master** and **develop** branches.
 
-# Learn More
+## License
 
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+[No license](#)
