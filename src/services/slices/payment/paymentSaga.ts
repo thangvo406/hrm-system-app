@@ -4,6 +4,8 @@ import type {
   CheckoutInfo,
   CreateOrderPayload,
   CreateOrderResponse,
+  GenerateQRCodePayload,
+  GenerateQRCodeResponse,
   GetAddressOrderRecentPayload,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
@@ -20,6 +22,7 @@ import { call, takeLatest } from 'redux-saga/effects';
 
 import {
   createOrder,
+  generateQRCode,
   getAddressOrderRecent,
   getInfoProductCheckout,
   getListCart,
@@ -32,6 +35,7 @@ import { getErrorMessageApi } from '@utils/common';
 
 import {
   createOrderRequest,
+  generateQRCodeRequest,
   getAddressOrderRecentRequest,
   getInfoProductCheckoutRequest,
   getListCartRequest,
@@ -153,8 +157,22 @@ function* getAddressOrderRecentWorker(
   }
 }
 
+function* generateQRCodeWorker(
+  action: PayloadAction<GenerateQRCodePayload>,
+): Generator<unknown, void, GenerateQRCodeResponse> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: GenerateQRCodeResponse = yield call(generateQRCode, request);
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 export function* paymentSaga() {
   yield takeLatest(createOrderRequest.type, createOrderWorker);
+  yield takeLatest(generateQRCodeRequest.type, generateQRCodeWorker);
   yield takeLatest(getAddressOrderRecentRequest.type, getAddressOrderRecentWorker);
   yield takeLatest(
     getInfoProductCheckoutRequest.type,

@@ -320,7 +320,8 @@
       "card_title": "COOPPay",
       "pay_balance_label": "Pay money balance",
       "point_label": "Point",
-      "scan_button": "QR Scan"
+      "scan_button": "QR Scan",
+      "refresh_button": "Refresh QR Code"
     },
     "order_history_detail": {
       "order_code_label": "Order Code",

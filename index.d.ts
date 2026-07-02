@@ -14,6 +14,11 @@ declare module '*.png' {
   export default content;
 }
 
+declare module '*.webp' {
+  const content: number;
+  export default content;
+}
+
 declare module '*.svg' {
   import type React from 'react';
   import type { SvgProps } from 'react-native-svg';

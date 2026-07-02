@@ -22,27 +22,6 @@ export type PayCardTransaction = {
   readonly type: PayCardHistoryTab;
 };
 
-const MOCK_POINT_BALANCE = '11,000';
-
-const MOCK_POINT_TRANSACTIONS: readonly PayCardTransaction[] = [
-  {
-    amount: '-500 point',
-    balanceAfter: '11,000',
-    date: '2026-04-12 09:30AM',
-    description: '포인트 사용',
-    id: 'point-1',
-    type: 'point',
-  },
-  {
-    amount: '+1,000 point',
-    balanceAfter: '11,500',
-    date: '2026-04-11 03:15PM',
-    description: '포인트 적립',
-    id: 'point-2',
-    type: 'point',
-  },
-];
-
 const onRecharge = () => {
   AppNavigator.navigate(Paths.TopUp);
 };
@@ -52,7 +31,8 @@ export const usePayCard = () => {
   const dispatch = useAppDispatch();
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
 
-  const pointBalance = MOCK_POINT_BALANCE;
+  const [pointTransactions, setPointTransactions] =
+    useState<TransactionHistory[]>();
   const [currentPage, setCurrentPage] = useState(0);
   const [tranHistories, setTranHistories] = useState<TransactionHistory[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -64,7 +44,9 @@ export const usePayCard = () => {
   ) => {
     isLast.current = data.last;
     setLoading(false);
-    setTranHistories(prev => {
+    const executor =
+      historyTab === 'pay' ? setTranHistories : setPointTransactions;
+    executor((prev: any) => {
       let results = [];
       results =
         currentPage != 0
@@ -114,6 +96,11 @@ export const usePayCard = () => {
     });
   }, []);
 
+  const onChangeTab = (tab: any) => {
+    setHistoryTab(tab);
+    setCurrentPage(0);
+  };
+
   return {
     currentWallet,
     historyTab,
@@ -122,8 +109,7 @@ export const usePayCard = () => {
     onPressTranItem,
     onRecharge,
     tranHistories,
-    pointBalance,
-    pointTransactions: MOCK_POINT_TRANSACTIONS,
-    setHistoryTab,
+    pointTransactions,
+    onChangeTab,
   };
 };

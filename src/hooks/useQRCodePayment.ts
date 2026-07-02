@@ -1,5 +1,12 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useEffect, useRef, useState } from 'react';
+
 import QRCodeViewer, { QRCodeViewerMode } from '@dialogs/QRCodeViewer';
 import AppNavigator from '@navigation/AppNavigator';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { AccountSelector } from '@services/selectors';
+import { generateQRCodeRequest } from '@services/slices/payment/paymentSlice';
+import type { GenerateQRCodeResponse } from '@type/payment';
 
 export type QRCodePaymentData = {
   readonly barcodeValue: string;
@@ -8,19 +15,12 @@ export type QRCodePaymentData = {
   readonly qrValue: string;
 };
 
-const MOCK_DATA: QRCodePaymentData = {
-  barcodeValue: '1234567890123456789012',
-  payBalance: '100,000원',
-  pointBalance: '1,000원',
-  qrValue: 'https://coopuse.example.com/pay/qr/USER_12345_TOKEN',
-};
-
-const showQRCodeViewer = (mode: QRCodeViewerMode, value: string) => {
+const showQRCodeViewer = (mode: QRCodeViewerMode, value?: string) => {
   AppNavigator.showDialog({
     screen: QRCodeViewer as never,
     isFullScreen: true,
-    transparent: true,
     mode,
+    transparent: true,
     value,
   });
 };
@@ -29,19 +29,61 @@ const onPressScan = () => {
   // TODO: navigate to QR scanner screen
 };
 
-const onPressBarcode = () => {
-  showQRCodeViewer('barcode', MOCK_DATA.barcodeValue);
-};
-
-const onPressQR = () => {
-  showQRCodeViewer('qr', MOCK_DATA.qrValue);
-};
-
 export const useQRCodePayment = () => {
+  const dispatch = useAppDispatch();
+  const [data, setData] = useState<GenerateQRCodeResponse | undefined>();
+  const timeOutExpired = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+  const [isExpired, setIsExpired] = useState(false);
+  const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+    setIsExpired(false);
+    timeOutExpired.current = setTimeout(
+      () => {
+        setIsExpired(true);
+      },
+      (data.expiredIn || 1) * 1000,
+    );
+    return () => {
+      clearTimeout(timeOutExpired.current);
+    };
+  }, [data]);
+
+  const onRefreshQrCode = () => {
+    dispatch(
+      generateQRCodeRequest({
+        onSuccess: response => {
+          setIsExpired(false);
+          setData(response);
+        },
+      }),
+    );
+  };
+
+  useEffect(() => {
+    onRefreshQrCode();
+  }, [dispatch]);
+
+  const onPressBarcode = () => {
+    showQRCodeViewer('barcode', data?.qrData);
+  };
+
+  const onPressQR = () => {
+    showQRCodeViewer('qr', data?.qrData);
+  };
+
   return {
-    ...MOCK_DATA,
+    currentWallet,
+    data,
+    isExpired,
     onPressBarcode,
     onPressQR,
     onPressScan,
+    onRefreshQrCode,
   };
 };

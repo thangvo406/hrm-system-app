@@ -64,7 +64,7 @@ function TransactionRow({
   );
 }
 
-const MemoTransactionRow = React.memo(TransactionRow);
+export const MemoTransactionRow = React.memo(TransactionRow);
 
 const keyExtractor = (item: TransactionHistory) => String(item.id);
 

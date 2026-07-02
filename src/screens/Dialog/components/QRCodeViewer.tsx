@@ -31,7 +31,11 @@ function QRCodeViewer({ mode, value, onRequestClose }: Properties) {
       <AppButton activeOpacity={1} style={styles.card}>
         <View style={styles.content}>
           {mode === 'qr' ? (
-            <QRCode size={QR_SIZE} value={value} />
+            <QRCode
+              size={QR_SIZE}
+              value={value}
+              logo={require('@assets/images/ic_launcher_round.webp')}
+            />
           ) : (
             <BarcodeCreatorView
               format={BarcodeFormat.CODE128}

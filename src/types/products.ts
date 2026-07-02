@@ -1,4 +1,4 @@
-import type { AppCallback, ListApiResponse } from './common';
+import type { AppCallback, IImage, ListApiResponse } from './common';
 import { AttributeCart } from './payment';
 
 export type ProductImage = {
@@ -21,6 +21,7 @@ export type Product = {
   images: ProductImage[];
   selectedAttributes?: AttributeCart[];
   quantity?: number;
+  productThumbnail: IImage;
 };
 
 export type IResponseProductDetail = {

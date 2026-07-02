@@ -2,6 +2,8 @@ import type {
   StoreCartItem,
   CheckoutInfo,
   CreateOrderPayload,
+  GenerateQRCodeRequest,
+  GenerateQRCodeResponse,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
   GetOrderHistoriesRequest,
@@ -126,6 +128,16 @@ export const getAddressOrderRecent = async (): Promise<string[]> => {
   const response = await httpRequest.get<SingleApiResponse<string[]>>(
     EndPoints.PAYMENT.addressOrderRecent,
     { loading: false },
+  );
+  return response.data;
+};
+
+export const generateQRCode = async (
+  request: GenerateQRCodeRequest,
+): Promise<GenerateQRCodeResponse> => {
+  const response = await httpRequest.post<SingleApiResponse<GenerateQRCodeResponse>>(
+    EndPoints.PAYMENT.generateQRCode,
+    request,
   );
   return response.data;
 };

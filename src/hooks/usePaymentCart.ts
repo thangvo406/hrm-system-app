@@ -155,7 +155,7 @@ export const usePaymentCart = (props: any) => {
   const onPressPickupTime = () => {
     AppNavigator.showDialog({
       screen: Selection,
-      title: t('myapp.payment_cart.select_pickup_time'),
+      title: t('payment_cart.select_pickup_time'),
       popupType: 'bottomSheet',
       items: DATA_PICKUP_TIME,
       selectedId: pickupTime.id,

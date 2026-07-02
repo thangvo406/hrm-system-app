@@ -12,14 +12,14 @@ const DEFAULT_HIGHLIGHT_COLOR = '#F2F2F2';
 
 type Properties = {
   readonly containerStyle?: StyleProp<ViewStyle>;
-  readonly height: number;
+  readonly height: number | string;
   readonly imageStyle?: ImageStyle;
   readonly resizeMode?: ResizeMode;
   readonly skeletonBoneColor?: string;
   readonly skeletonDuration?: number;
   readonly skeletonHighlightColor?: string;
   readonly url: string;
-  readonly width: number;
+  readonly width: number | string;
   readonly name?: string;
 };
 

@@ -1,6 +1,7 @@
 import type {
   CheckoutInfo,
   CreateOrderPayload,
+  GenerateQRCodePayload,
   GetAddressOrderRecentPayload,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
@@ -26,6 +27,10 @@ const paymentSlice = createSlice({
   reducers: {
     createOrderRequest: {
       prepare: (payload: CreateOrderPayload) => ({ payload }),
+      reducer: () => {},
+    },
+    generateQRCodeRequest: {
+      prepare: (payload: GenerateQRCodePayload) => ({ payload }),
       reducer: () => {},
     },
     getAddressOrderRecentRequest: {
@@ -61,6 +66,7 @@ const paymentSlice = createSlice({
 
 export const {
   createOrderRequest,
+  generateQRCodeRequest,
   getAddressOrderRecentRequest,
   getInfoProductCheckoutRequest,
   getListCartRequest,

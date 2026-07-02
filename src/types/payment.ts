@@ -157,6 +157,7 @@ export type OrderHistoryDetailItem = {
   orderReceiveMethod: string;
   userId: number;
   userName: string;
+  userPhone: string;
   storeId: number;
   storeName: string;
   storeAddress: StoreAddress;
@@ -199,3 +200,15 @@ export type GetOrderHistoryDetailPayload = GetOrderHistoryDetailRequest &
   AppCallback<OrderHistoryDetailItem>;
 
 export type GetAddressOrderRecentPayload = AppCallback<string[]>;
+
+export type GenerateQRCodeRequest = {
+  readonly orderId?: string;
+};
+
+export type GenerateQRCodeResponse = {
+  readonly expiredIn: number;
+  readonly qrData: string;
+};
+
+export type GenerateQRCodePayload = AppCallback<GenerateQRCodeResponse> &
+  GenerateQRCodeRequest;

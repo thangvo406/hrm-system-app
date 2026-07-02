@@ -21,10 +21,9 @@ function PayCard() {
     onLoadMore,
     onRecharge,
     tranHistories,
-    pointBalance,
     pointTransactions,
     loading,
-    setHistoryTab,
+    onChangeTab,
     onPressTranItem,
   } = usePayCard();
 
@@ -47,7 +46,12 @@ function PayCard() {
         id: 'point' as const,
         label: t('pay_card.tab_point'),
         render: () => (
-          <PointHistoryList loading={loading} data={pointTransactions} />
+          <PointHistoryList
+            loading={loading}
+            data={pointTransactions}
+            // onPressItem={onPressTranItem}
+            onLoadMore={onLoadMore}
+          />
         ),
         testID: 'pay-card-tab-point',
       },
@@ -87,7 +91,9 @@ function PayCard() {
           <View style={styles.pointHeaderRow}>
             <Text style={styles.sectionTitle}>{t('pay_card.point_title')}</Text>
             <Text style={styles.pointBalanceText}>
-              {t('pay_card.point_balance', { amount: pointBalance })}
+              {t('pay_card.point_balance', {
+                amount: currentWallet?.pointBalance,
+              })}
             </Text>
           </View>
         </View>
@@ -98,7 +104,7 @@ function PayCard() {
           <Text style={styles.historyTitle}>{t('pay_card.history_title')}</Text>
           <SegmentedTab
             activeTab={historyTab}
-            onTabChange={setHistoryTab}
+            onTabChange={onChangeTab}
             style={styles.historyTabs}
             tabs={historyTabs}
           />

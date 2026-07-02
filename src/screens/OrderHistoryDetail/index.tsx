@@ -2,7 +2,13 @@ import type { IconName } from '@assets/icons';
 import type { Product } from '@type/products';
 // IconName is used via SectionCardProps below
 
-import { AppButton, Button, HeaderDetail, Image } from '@components';
+import {
+  AppButton,
+  Button,
+  HeaderDetail,
+  Image,
+  ProgressiveImage,
+} from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -87,8 +93,12 @@ function ProductRow({ product }: ProductRowProps) {
   return (
     <View style={styles.productRow}>
       <View style={styles.productThumb}>
-        {product.imageUrl ? (
-          <Image url={product.imageUrl} width="100%" height="100%" />
+        {product.productThumbnail?.fileUrl ? (
+          <ProgressiveImage
+            url={product?.productThumbnail?.fileUrl}
+            width="100%"
+            height="100%"
+          />
         ) : (
           <View style={styles.productThumbPlaceholder} />
         )}
@@ -110,8 +120,13 @@ function ProductRow({ product }: ProductRowProps) {
 function OrderHistoryDetail(props: any) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { data, showAllProducts, toggleShowAllProducts, visibleProducts, onPressCopyOrderNumber } =
-    useOrderHistoryDetail(props);
+  const {
+    data,
+    showAllProducts,
+    toggleShowAllProducts,
+    visibleProducts,
+    onPressCopyOrderNumber,
+  } = useOrderHistoryDetail(props);
 
   return (
     <View style={styles.root}>
@@ -231,7 +246,9 @@ function OrderHistoryDetail(props: any) {
               {t('order_history_detail.delivery_address_label')}
             </Text>
             <Text style={styles.deliveryValue}>
-              {data?.address?.address_name}
+              {data?.orderReceiveMethod?.toLowerCase() == 'delivery'
+                ? data?.address?.address_name
+                : data?.storeAddress?.address?.address_name}
             </Text>
           </View>
           <View style={styles.divider} />
