@@ -86,3 +86,4 @@ export const DEFAULT_CARRIER = 'SKT';
 export const APP_LANGUAGE_KEY = 'APP_LANGUAGE_KEY' as const;
 export const UPDATE_ADDRESS_CART_KEY = 'UPDATE_ADDRESS_CART_KEY' as const;
 export const NEED_CONTRIBUTION_KEY = 'NEED_CONTRIBUTION_KEY' as const;
+export const INIT_SCREEN_START_UP_KEY = 'INIT_SCREEN_START_UP_KEY' as const;

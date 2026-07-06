@@ -1,11 +1,12 @@
 import { Button } from '@components';
 import RegisterHeader from '@screens/Authorisation/components/RegisterFlow/Header';
 import { ScaleSize } from '@kits/core';
-import { StyleSheet, Text, View } from 'react-native';
+import { DeviceEventEmitter, StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import AppNavigator from '@navigation/AppNavigator';
+import { AppConstants } from '@constants';
 
 const RED = '#D9534F';
 const CIRCLE_BG = '#F0F0F0';
@@ -60,7 +61,10 @@ function AcademicVerifyFailed({
       <View style={styles.footer}>
         <View style={styles.footerSeparator} />
         <Button
-          onPress={() => AppNavigator.goBack()}
+          onPress={() => {
+            AppNavigator.goBack();
+            DeviceEventEmitter.emit(AppConstants.INIT_SCREEN_START_UP_KEY, '');
+          }}
           style={styles.nextButton}
           testID="academic-verify-failed-try-again"
           title={t('academic_verify_finish.failed.try_again')}
