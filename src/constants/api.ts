@@ -13,6 +13,7 @@ export const EndPoints = {
     logout: 'auth/logout',
     memberShipVerify: 'auth/register/membership-verification',
     resendVerifyAcademicMail: 'auth/register/university-email/resend',
+    selectSchool: 'user/session/university',
   },
   ACCOUNT: {
     autoCompleteAddress: (request: string) => `?${request}`,

@@ -46,7 +46,6 @@ export type AuthStep =
   | 'academic_verification'
   | 'academic_verification_completed'
   | 'choose_role'
-  | 'choose_school'
   | 'form'
   | 'bank_information'
   | 'register_input';
@@ -211,22 +210,15 @@ export const useRegister = () => {
   const onSubmitFormRegister = () => {
     if (formData.current?.membershipId !== MEMBERSHIP_TYPE.NON_MEMBER) {
       setStep(STEP.INPUT_ACADEMIC_EMAIL);
-      //   AppNavigator.showDialog({
-      //     cancelTitle: t('common.cancel'),
-      //     confirmTitle: t('common.confirm'),
-      //     desc: t('register_flow.contribution_dialog.desc'),
-      //     onConfirm: () => {
-      //       setStep(STEP.CHOOSE_SCHOOL);
-      //     },
-      //     screen: Information,
-      //   });
     } else {
       dispatch(
         memberShipVerifyRequest({
           signupToken: formData.current?.signupToken,
           membershipType: formData.current?.membershipId,
           onSuccess: () => {
-            AppNavigator.navigate(Paths.RegisterCompleted);
+            AppNavigator.navigate(Paths.RegisterCompleted, {
+              isHideContribution: true,
+            });
           },
           onFailure(error) {
             AppNavigator.showSnackBar({
@@ -241,10 +233,6 @@ export const useRegister = () => {
 
   const onSelectRole = (id: string) => {
     formData.current = { ...formData.current, roleId: id };
-  };
-
-  const onSelectSchool = (school: IResponseUniversity) => {
-    formData.current = { ...formData.current, school };
   };
 
   const handleSubmit = (data?: any) => {
@@ -376,7 +364,6 @@ export const useRegister = () => {
     onRegisterChange,
     onSelectMembership,
     onSelectRole,
-    onSelectSchool,
     onToggleAgreement,
     onPressVerify,
     onReEnterEmailAcademic,

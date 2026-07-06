@@ -1,11 +1,14 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { StartupAppPayload } from './appSlice';
 
-import { AuthSelector } from '@services/selectors';
+import { AccountSelector, AuthSelector } from '@services/selectors';
 import { delay, put, select, takeLatest } from 'redux-saga/effects';
 
 import { incrementAsync, incrementAsyncSuccess, startupApp } from './appSlice';
 import { getTotalItemCartRequest } from '../account/accountSlice';
+import { Profile } from '@services/request/account';
+import { MEMBERSHIP_TYPE } from '@constants/config';
+import { logout as logoutRequest } from '../auth/authSlice';
 
 const ASYNC_DELAY = 1000;
 const STARTUP_DELAY = 1000;
@@ -28,7 +31,17 @@ function* startupAppWorker(action: PayloadAction<StartupAppPayload>) {
     const accessToken: string | undefined = yield select(
       AuthSelector.getAccessToken,
     );
-    const isAuthenticated = Boolean(accessToken);
+    const universityId: number | undefined = yield select(
+      AuthSelector.getUniversityId,
+    );
+    const profile: Profile = yield select(
+      AccountSelector.getProfile,
+    );
+    let isAuthenticated = Boolean(accessToken);
+    if(profile?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER && !universityId) {
+      yield put(logoutRequest())
+      isAuthenticated = false;
+    }
     if (isAuthenticated) {
       yield put(getTotalItemCartRequest());
     }

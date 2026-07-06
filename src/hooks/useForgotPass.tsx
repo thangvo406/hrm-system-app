@@ -109,6 +109,7 @@ export const useForgotPass = () => {
         onSuccess: () => {
           AppNavigator.navigate(Paths.RegisterCompleted, {
             goFrom: 'forgot_pass',
+            isHideContribution: true,
           });
         },
         onFailure: msg => setErrorMessage(msg),

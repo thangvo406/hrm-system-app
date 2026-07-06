@@ -1,6 +1,6 @@
 import { AppButton, Button } from '@components';
 import Image from '@components/Image';
-import RegisterHeader from './Header';
+import RegisterHeader from '@screens/Authorisation/components/RegisterFlow/Header';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -12,17 +12,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useDeferredValue, useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { ScaleSize } from '@kits/core';
 import type { IResponseUniversity } from '@type/auth';
-import type { ListApiResponse } from '@type/common';
-import { useAppDispatch } from '@services/common/storeHooks';
-import { getUniversitiesRequest } from '@services/slices/auth/authSlice';
+import { useSchoolSelection } from '@hooks';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AppNavigator from '@navigation/AppNavigator';
 
 const BACK_ICON_SIZE = 24;
 const ICON_CLEAR_SIZE = 16;
 const ICON_SEARCH_SIZE = 22;
-const PAGE_SIZE = 20;
 const PRIMARY_COLOR = '#5BB85C';
 const ICON_COLOR = '#1A1A1A';
 const BORDER_COLOR = '#D9D9D9';
@@ -30,16 +29,7 @@ const TEXT_COLOR = '#1A1A1A';
 const SUBTITLE_COLOR = '#666666';
 const PLACEHOLDER_COLOR = '#9E9E9E';
 
-type ChooseSchoolValues = {
-  readonly school: IResponseUniversity;
-};
-
-type ChooseSchoolProps = {
-  readonly disabled?: boolean;
-  readonly onSelectSchool: (school: IResponseUniversity) => void;
-  readonly onSubmit: (values: ChooseSchoolValues) => void;
-  readonly selectedSchoolId?: string;
-};
+const handleDismissKeyboard = () => Keyboard.dismiss();
 
 const UniversityItem = React.memo(function UniversityItem({
   item,
@@ -55,7 +45,7 @@ const UniversityItem = React.memo(function UniversityItem({
       activeOpacity={0.8}
       onPress={() => onPress(item)}
       style={[styles.schoolItem, isSelected && styles.schoolItemActive]}
-      testID={`choose-school-item-${item.id}`}
+      testID={`school-selection-item-${item.id}`}
     >
       <Text style={[styles.schoolName, isSelected && styles.schoolTextActive]}>
         {item.name}
@@ -69,95 +59,45 @@ const UniversityItem = React.memo(function UniversityItem({
   );
 });
 
-function ChooseSchool({
-  disabled = false,
-  onSelectSchool,
-  onSubmit,
-  selectedSchoolId = undefined,
-}: ChooseSchoolProps) {
+function SchoolSelection() {
   const { t } = useTranslation();
-  const dispatch = useAppDispatch();
-
-  const [universities, setUniversities] = useState<IResponseUniversity[]>([]);
-  const [keyword, setKeyword] = useState('');
-  const [selectedSchool, setSelectedSchool] = useState<
-    IResponseUniversity | undefined
-  >();
-
-  const deferredKeyword = useDeferredValue(keyword);
-  const currentPage = useRef(0);
-  const isLast = useRef(false);
-  const isLoadingMore = useRef(false);
+  const insets = useSafeAreaInsets();
   const inputRef = useRef<TextInput>(null);
+  const {
+    handleClearKeyword,
+    handleSelectSchool,
+    handleSubmit,
+    isStale,
+    keyword,
+    onLoadMore,
+    selectedSchool,
+    setKeyword,
+    universities,
+  } = useSchoolSelection();
 
-  const fetchUniversities = (reset: boolean) => {
-    const page = reset ? 0 : currentPage.current;
-    dispatch(
-      getUniversitiesRequest({
-        keyword: deferredKeyword || undefined,
-        page,
-        size: PAGE_SIZE,
-        onSuccess: (data: ListApiResponse<IResponseUniversity[]>) => {
-          isLast.current = data.last;
-          isLoadingMore.current = false;
-          setUniversities(prev =>
-            reset ? data.content : [...prev, ...data.content],
-          );
-        },
-        onFailure: () => {
-          isLoadingMore.current = false;
-        },
-      }),
-    );
-  };
-
-  useEffect(() => {
-    currentPage.current = 0;
-    isLast.current = false;
-    fetchUniversities(true);
-  }, [deferredKeyword]);
-
-  const onLoadMore = () => {
-    if (isLast.current || isLoadingMore.current) return;
-    isLoadingMore.current = true;
-    currentPage.current += 1;
-    fetchUniversities(false);
-  };
-
-  const handleSelectSchool = (school: IResponseUniversity) => {
-    setSelectedSchool(school);
-    onSelectSchool(school);
-  };
-
-  const handleClearKeyword = () => setKeyword('');
-
-  const handleSubmit = () => {
-    if (selectedSchool) onSubmit({ school: selectedSchool });
-  };
+  const handleFocusSearch = () => inputRef.current?.focus();
 
   const renderItem = ({ item }: { item: IResponseUniversity }) => (
     <UniversityItem
-      isSelected={item.id === (selectedSchool?.id ?? selectedSchoolId)}
+      isSelected={item.id === selectedSchool?.id}
       item={item}
       onPress={handleSelectSchool}
     />
   );
 
-  const isStale = keyword !== deferredKeyword;
-
   return (
-    <AppButton style={styles.container} onPress={Keyboard.dismiss}>
-      <RegisterHeader />
+    <AppButton style={[styles.container, { paddingTop: insets.top }]} onPress={handleDismissKeyboard}>
+      <RegisterHeader showBtnBack onBack={() => AppNavigator.goBack()} />
 
       <View style={styles.searchBlock}>
-        <Text style={styles.title}>{t('choose_school.title')}</Text>
+        <Text style={styles.title}>{t('school_selection.title')}</Text>
         <Text style={styles.searchLabel}>
-          {t('choose_school.search_label')}
+          {t('school_selection.search_label')}
         </Text>
         <View style={styles.searchRow}>
           <AppButton
             activeOpacity={1}
-            onPress={() => inputRef.current?.focus()}
+            onPress={handleFocusSearch}
             style={styles.searchField}
           >
             <TextInput
@@ -165,17 +105,17 @@ function ChooseSchool({
               defaultValue=""
               onChangeText={setKeyword}
               value={keyword}
-              placeholder={t('choose_school.search_placeholder')}
+              placeholder={t('school_selection.search_placeholder')}
               placeholderTextColor={PLACEHOLDER_COLOR}
               style={styles.searchInput}
-              testID="choose-school-search"
+              testID="school-selection-search"
             />
             {keyword.length > 0 && (
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={handleClearKeyword}
                 style={styles.clearButton}
-                testID="choose-school-clear"
+                testID="school-selection-clear"
               >
                 <Image
                   color={PLACEHOLDER_COLOR}
@@ -190,7 +130,7 @@ function ChooseSchool({
           <AppButton
             activeOpacity={0.8}
             style={styles.searchButton}
-            testID="choose-school-search-button"
+            testID="school-selection-search-button"
           >
             {isStale ? (
               <ActivityIndicator color={ICON_COLOR} size="small" />
@@ -211,7 +151,9 @@ function ChooseSchool({
         ListEmptyComponent={
           keyword.length > 0 ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>{t('choose_school.empty')}</Text>
+              <Text style={styles.emptyText}>
+                {t('school_selection.empty')}
+              </Text>
             </View>
           ) : undefined
         }
@@ -231,11 +173,11 @@ function ChooseSchool({
       <View style={styles.footer}>
         <View style={styles.footerDivider} />
         <Button
-          disabled={disabled || selectedSchool === undefined}
+          disabled={selectedSchool === undefined}
           onPress={handleSubmit}
           style={styles.submitButton}
-          testID="choose-school-next"
-          title={t('choose_school.next')}
+          testID="school-selection-next"
+          title={t('school_selection.next')}
           type="primary"
         />
       </View>
@@ -353,5 +295,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(ChooseSchool);
-export type { ChooseSchoolValues };
+export default React.memo(SchoolSelection);

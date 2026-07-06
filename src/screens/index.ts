@@ -2,6 +2,7 @@ export { default as AnnouncementDetail } from './AnnouncementDetail';
 export { default as Announcements } from './Announcements';
 export { default as Authorization } from './Authorisation';
 export { default as Carts } from './Carts';
+export { default as SchoolSelection } from './SchoolSelection';
 export { default as Example } from './Example/Example';
 export { default as Home } from './Home';
 export { default as InputAddress } from './InputAddress';

@@ -19,7 +19,6 @@ export const STEP = {
   INPUT_ACADEMIC_EMAIL: 'input_academic_email' as AuthStep,
   ACADEMIC_VERIFICATION: 'academic_verification' as AuthStep,
   CHOOSE_ROLE: 'choose_role' as AuthStep,
-  CHOOSE_SCHOOL: 'choose_school' as AuthStep,
   FORM: 'form' as AuthStep,
   REGISTER_INPUT: 'register_input' as AuthStep,
   BANK_INFORMATION: 'bank_information' as AuthStep,

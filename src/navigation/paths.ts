@@ -2,6 +2,7 @@ export enum Paths {
   AnnouncementDetail = 'announcement_detail',
   Announcements = 'announcements',
   Authorization = 'authorization',
+  SchoolSelection = 'school_selection',
   Carts = 'carts',
   Contribution = 'contribution',
   Example = 'example',

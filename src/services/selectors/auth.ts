@@ -9,8 +9,12 @@ const getIsAuthenticated = (state: RootState): boolean =>
 const getRefreshToken = (state: RootState): string | undefined =>
   state.auth.refreshToken;
 
+const getUniversityId = (state: RootState): number | undefined =>
+  state.auth.universityId;
+
 export const AuthSelector = {
   getAccessToken,
   getIsAuthenticated,
   getRefreshToken,
+  getUniversityId,
 };

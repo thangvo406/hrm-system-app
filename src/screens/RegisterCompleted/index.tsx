@@ -10,6 +10,7 @@ import AppNavigator from '@navigation/AppNavigator';
 import { AppStorage } from '@services/common/storage';
 import { AppConstants } from '@constants';
 import { useRoute } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TEXT_COLOR = '#1A1A1A';
 const MASCOT_SIZE = ScaleSize(300);
@@ -27,13 +28,14 @@ const onContribution = () => {
 function RegisterCompleted() {
   const { t } = useTranslation();
   const { params } = useRoute();
-  const { goFrom } = params || {};
+  const insets = useSafeAreaInsets()
+  const { goFrom, isHideContribution } = params as { goFrom: string; isHideContribution: boolean };
   const desc =
     goFrom == 'forgot_pass'
       ? 'forgot_pass.update_success_desc'
       : 'register_completed.desc';
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <RegisterHeader />
 
       <View style={styles.content}>
@@ -55,13 +57,15 @@ function RegisterCompleted() {
           title={t('register_completed.complete')}
           type="primary"
         />
-        <Button
-          onPress={onContribution}
-          style={styles.nextButton}
-          testID="register-completed-contribution"
-          title={t('register_completed.contribution')}
-          type="outline-bordered-rounded"
-        />
+        {!isHideContribution && (
+          <Button
+            onPress={onContribution}
+            style={styles.nextButton}
+            testID="register-completed-contribution"
+            title={t('register_completed.contribution')}
+            type="outline-bordered-rounded"
+            />
+        )}
       </View>
     </View>
   );

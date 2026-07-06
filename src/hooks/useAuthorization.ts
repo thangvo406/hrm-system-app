@@ -24,6 +24,8 @@ import {
 import { loginWithKakaoAccount } from '@react-native-seoul/kakao-login';
 import NaverLogin from '@react-native-seoul/naver-login';
 import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
+import { AuthResponse } from '@services/request/auth';
+import { MEMBERSHIP_TYPE } from '@constants/config';
 
 const { STEP, NEED_INFO_LOGIN_CODE, initialLoginForm } = AppConstants;
 export type { AuthStep, RegisterErrors } from './useRegister';
@@ -170,8 +172,12 @@ export const useAuthorization = () => {
       });
     };
 
-  const onLoginSuccess = () => {
+  const onLoginSuccess = (response: AuthResponse) => {
     setLoading(false);
+    if(response?.roleCode == MEMBERSHIP_TYPE.NON_MEMBER) {
+      AppNavigator.navigate(Paths.SchoolSelection);
+      return;
+    }
     AppNavigator.replace(AppStacks.App);
     dispatch(getTotalItemCartRequest());
   };

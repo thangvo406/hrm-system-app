@@ -1,10 +1,12 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 import { createSlice } from '@reduxjs/toolkit';
+import type { SelectSchoolRequest } from '@type/auth';
 
 export type AuthState = {
   accessToken: string | undefined;
   refreshToken: string | undefined;
+  universityId: number | undefined;
 };
 
 export type Credentials = {
@@ -86,9 +88,14 @@ export type ResendVerifyAcademicMailPayload = {
   signupToken: string;
 } & AuthCallback;
 
+export type SelectSchoolSuccessPayload = {
+  universityId: number;
+};
+
 const initialState: AuthState = {
   accessToken: undefined,
   refreshToken: undefined,
+  universityId: undefined,
 };
 
 const authSlice = createSlice({
@@ -167,6 +174,20 @@ const authSlice = createSlice({
       prepare: (payload: ResendVerifyAcademicMailPayload) => ({ payload }),
       reducer: () => {},
     },
+    // Persist the user's selected university on the session.
+    selectSchoolRequest: {
+      prepare: (payload: SelectSchoolRequest) => ({ payload }),
+      reducer: () => {},
+    },
+    // Triggered by the saga after the select-school API succeeds. Stores
+    // the chosen `universityId` in the auth slice so downstream features
+    // (e.g. account, payments) can read it from the store.
+    selectSchoolSuccess: (
+      state,
+      action: PayloadAction<SelectSchoolSuccessPayload>,
+    ) => {
+      state.universityId = action.payload.universityId;
+    },
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
     },
@@ -192,6 +213,8 @@ export const {
   refreshTokenRequest,
   registerUserRequest,
   resendVerifyAcademicMailRequest,
+  selectSchoolRequest,
+  selectSchoolSuccess,
   sendOTPRequest,
   sendOtpForgotPassRequest,
   setAccessToken,

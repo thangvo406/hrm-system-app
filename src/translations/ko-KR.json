@@ -56,7 +56,7 @@
         "desc": "조합원 가입을 위해 최초 1회 출자금 납부가 필요합니다. 계속 진행할까요?"
       }
     },
-    "choose_school": {
+    "school_selection": {
       "title": "학적 인증",
       "search_label": "학교 조회",
       "search_placeholder": "학교 이름",
@@ -104,7 +104,8 @@
     },
     "register_completed": {
       "desc": "가입이 완료되었습니다!",
-      "next": "다음"
+      "complete": "완료",
+      "contribution": "출자금 납부"
     },
     "new_password": {
       "title": "새로운 비밀번호를\n입력해 주세요.",

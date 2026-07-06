@@ -1,7 +1,7 @@
 import { AppCallback } from './common';
 
 export type IResponseUniversity = {
-  id: string;
+  id: number;
   name: string;
   address: string;
   logoUrl: string;
@@ -13,6 +13,10 @@ export type IResponseRegisterVerifyOtp = {
 
 export type resendVerifyAcademicMailRequest = {
   signupToken: string;
+} & AppCallback;
+
+export type SelectSchoolRequest = {
+  universityId: number;
 } & AppCallback;
 
 export type MemberShipVerifyRequest = {

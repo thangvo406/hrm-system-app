@@ -21,6 +21,7 @@ import {
   memberShipVerify,
   registerUser,
   resendVerifyAcademicMail,
+  selectSchool,
   sendOTP,
   sendOtpForgotPass,
   submitForgotPass,
@@ -45,6 +46,8 @@ import {
   refreshTokenRequest,
   registerUserRequest,
   resendVerifyAcademicMailRequest,
+  selectSchoolRequest,
+  selectSchoolSuccess,
   sendOTPRequest,
   sendOtpForgotPassRequest,
   setCredentials,
@@ -61,6 +64,7 @@ import {
   IResponseUniversity,
   IResponseVerifyOtpForgotPass,
   ResponseRefreshToken,
+  SelectSchoolRequest,
 } from '@type/auth';
 import { Globals } from '@utils';
 import { AccountSelector, AuthSelector } from '@services/selectors';
@@ -71,7 +75,7 @@ function* loginWorker(action: PayloadAction<LoginPayload>) {
   try {
     const response: AuthResponse = yield call(login, action.payload);
     yield put(authSuccess(response));
-    action.payload.onSuccess?.();
+    action.payload.onSuccess?.(response);
   } catch (error: any) {
     action.payload.onFailure?.(error?.response?.data);
     // yield put(authFailure(toErrorMessage(error)));
@@ -226,6 +230,18 @@ function* resendVerifyAcademicMailWorker(
   }
 }
 
+function* selectSchoolWorker(action: PayloadAction<SelectSchoolRequest>) {
+  try {
+    yield call(selectSchool, action.payload);
+    yield put(
+      selectSchoolSuccess({ universityId: action.payload?.universityId }),
+    );
+    action.payload.onSuccess?.();
+  } catch (error) {
+    action.payload.onFailure?.(getErrorMessageApi(error));
+  }
+}
+
 // Reducers reset in-memory state synchronously when `logout` is dispatched.
 // This worker additionally wipes the persisted MMKV storage so tokens and
 // profile data do not survive an app restart.
@@ -263,6 +279,7 @@ export function* authSaga() {
     resendVerifyAcademicMailRequest.type,
     resendVerifyAcademicMailWorker,
   );
+  yield takeLatest(selectSchoolRequest.type, selectSchoolWorker);
   yield takeLatest(logout.type, logoutWorker);
   yield takeLatest(refreshTokenRequest.type, refreshTokenWorker);
 }

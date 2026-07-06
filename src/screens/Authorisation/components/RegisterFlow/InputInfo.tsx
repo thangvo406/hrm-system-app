@@ -197,8 +197,8 @@ function InputInfo({
   };
 
   const handleSubmitField = (field: keyof InputInfoValues) => (): void => {
-    if (field === FIELD_INPUT_INFO.otp && !(disabled || !isFormValid)) {
-      onSubmit();
+    if (field === FIELD_INPUT_INFO.otp && isFormValid) {
+      _onPressVerify();
       return;
     }
     const currentIndex = FIELD_FLOW_ORDER.indexOf(field);

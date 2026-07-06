@@ -2,7 +2,6 @@ import type { RootScreenProps } from '@navigation/types';
 import type { AuthStep } from '@hooks';
 import type { ComponentType } from 'react';
 import ChooseMemberShipType from './components/RegisterFlow/ChooseMemberShipType';
-import ChooseSchool from './components/RegisterFlow/ChooseSchool';
 import { Paths } from '@navigation/paths';
 import { useAuthorization } from '@hooks';
 import { StyleSheet } from 'react-native';
@@ -56,7 +55,6 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     onPressRequestOtp: register.onPressRequestOtp,
     onRegisterChange: register.onRegisterChange,
     onSelectMembership: register.onSelectMembership,
-    onSelectSchool: register.onSelectSchool,
     onSubmit: register.handleSubmit,
     onToggleAgreement: register.onToggleAgreement,
     onPressVerify: register.onPressVerify,
@@ -76,7 +74,6 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     const screens: Record<AuthStep, ComponentType<any>> = {
       choose_membership: ChooseMemberShipType,
       choose_role: ChooseMemberShipType,
-      choose_school: ChooseSchool,
       form: AuthFormStack,
       academic_verification_completed: AcademicVerifyCompleted,
       input_academic_email: InputAcademicEmail,

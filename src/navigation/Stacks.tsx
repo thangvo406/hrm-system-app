@@ -22,6 +22,10 @@ const AUTH_SCREENS: ScreenDef[] = [
     name: Paths.Authorization,
   },
   {
+    component: Screens.SchoolSelection as ComponentType<unknown>,
+    name: Paths.SchoolSelection,
+  },
+  {
     component: Screens.ForgotPass as ComponentType<unknown>,
     name: Paths.ForgotPass,
   },
@@ -61,6 +65,7 @@ const AppNavigator = createStackNavigator();
 const AUTH_PATHS = new Set<string>([
   Paths.Welcome,
   Paths.Authorization,
+  Paths.SchoolSelection,
   Paths.ForgotPass,
   Paths.AcademicVerificationFinish,
 ]);

@@ -22,6 +22,7 @@ import type {
   LogoutRequest,
   ResponseRefreshToken,
   IResponseRegisterUser,
+  SelectSchoolRequest,
 } from '@type/auth';
 import omit from 'lodash/omit';
 import { httpRequest } from '@services/common/httpRequest';
@@ -152,4 +153,10 @@ export const resendVerifyAcademicMail = async (
   request: ResendVerifyAcademicMailPayload,
 ): Promise<void> => {
   await httpRequest.post(EndPoints.AUTH.resendVerifyAcademicMail, request);
+};
+
+export const selectSchool = async (
+  request: SelectSchoolRequest,
+): Promise<void> => {
+  await httpRequest.put(EndPoints.AUTH.selectSchool, request);
 };

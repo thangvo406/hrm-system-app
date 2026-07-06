@@ -18,6 +18,7 @@ export type RootStackParamList = {
     | undefined;
   [Paths.Announcements]: undefined;
   [Paths.Authorization]: { isLogin: boolean } | undefined;
+  [Paths.SchoolSelection]: undefined;
   [Paths.Carts]: undefined;
   [Paths.Contribution]: undefined;
   [Paths.Example]: undefined;
