@@ -1,7 +1,8 @@
 import type {
-  CompleteRegisterPayload,
   LoginPayload,
+  MemberShipVerifyPayload,
   RegisterUserPayload,
+  ResendVerifyAcademicMailPayload,
   SendOTPPayload,
   SendOtpForgotPassPayload,
   SubmitForgotPassPayload,
@@ -14,7 +15,6 @@ import type {
   IResponseRegisterVerifyOtp,
   IResponseRegisterSendOtp,
   IResponseUniversity,
-  IResponseCompletedRegister,
   IResponseSendOtpForgotPass,
   IResponseSubmitForgotPass,
   IResponseVerifyOtpForgotPass,
@@ -94,15 +94,6 @@ export const loginSocial = async (
   return response.data;
 };
 
-export const completeRegister = async (
-  request: CompleteRegisterPayload,
-): Promise<IResponseCompletedRegister> => {
-  const response = await httpRequest.post<
-    SingleApiResponse<IResponseCompletedRegister>
-  >(EndPoints.AUTH.completeRegister, request);
-  return response.data;
-};
-
 export const sendOtpForgotPass = async (
   request: SendOtpForgotPassPayload,
 ): Promise<IResponseSendOtpForgotPass> => {
@@ -149,4 +140,16 @@ export const submitForgotPass = async (
 
 export const logout = async (request: LogoutRequest): Promise<void> => {
   await httpRequest.post(EndPoints.AUTH.logout, request, { loading: false });
+};
+
+export const memberShipVerify = async (
+  request: MemberShipVerifyPayload,
+): Promise<void> => {
+  await httpRequest.post(EndPoints.AUTH.memberShipVerify, request);
+};
+
+export const resendVerifyAcademicMail = async (
+  request: ResendVerifyAcademicMailPayload,
+): Promise<void> => {
+  await httpRequest.post(EndPoints.AUTH.resendVerifyAcademicMail, request);
 };

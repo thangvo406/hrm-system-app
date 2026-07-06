@@ -101,11 +101,27 @@ export const queryParamsToObject = (query: string): Record<string, unknown> => {
   );
 };
 
+const PASSWORD_MIN_LENGTH = 8;
+const PASSWORD_MAX_LENGTH = 10;
+const RE_HAS_LETTER = /[A-Za-z]/;
+const RE_HAS_NUMBER = /\d/;
+const RE_HAS_SPECIAL = /[!"#$%&'()*+,./:;<=>?@[\\\]^_`{|}~-]/;
+
+export const validatePassword = (password: string): boolean =>
+  password.length >= PASSWORD_MIN_LENGTH &&
+  password.length <= PASSWORD_MAX_LENGTH &&
+  RE_HAS_LETTER.test(password) &&
+  RE_HAS_NUMBER.test(password) &&
+  RE_HAS_SPECIAL.test(password);
+
 export function getErrorMessageApi(error: any) {
   return error?.response?.data?.message || error?.message || 'unknown error';
 }
 
 export const NOOP = () => undefined;
+
+export const decodeUrlText = (text: string): string =>
+  decodeURIComponent(text.replaceAll('+', ' '));
 
 export const upperCaseFirstChar = (value: string | undefined): string => {
   if (!value) {

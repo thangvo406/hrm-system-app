@@ -1,4 +1,4 @@
-import { Button, Image, RadioButton } from '@components';
+import { AppButton, Button, Image, RadioButton } from '@components';
 import RegisterHeader from './Header';
 import TextInputRegister from './TextInputRegister';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ import { ScaleSize } from '@kits/core';
 import { ValidateUtils } from '@kits/core/utils';
 import AppNavigator from '@navigation/AppNavigator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Colors } from '@constants';
 
 const BACK_ICON_SIZE = ScaleSize(24);
 const ICON_CHEVRON_SIZE = ScaleSize(18);
@@ -60,6 +61,7 @@ type InputInfoProps = {
   readonly onPressRequestOtp: (onSuccess: (isSuccess: boolean) => void) => void;
   readonly onSubmit: () => void;
   readonly onToggleAgreement: () => void;
+  readonly onPressVerify: () => void;
 };
 
 /**
@@ -120,6 +122,7 @@ function InputInfo({
   onPressRequestOtp,
   onSubmit,
   onToggleAgreement,
+  onPressVerify,
   titleRegisterInfoKey = 'register_flow.identity_title',
 }: InputInfoProps) {
   const { t } = useTranslation();
@@ -131,6 +134,7 @@ function InputInfo({
   const indentifyReference = useRef<TextInput>(null);
   const phoneReference = useRef<TextInput>(null);
   const otpReference = useRef<TextInput>(null);
+  const [enableBtnSubmit, setEnableBtnSubmit] = useState(false);
   const insset = useSafeAreaInsets();
   const fieldReferences: Record<
     keyof InputInfoValues,
@@ -182,6 +186,14 @@ function InputInfo({
       field === FIELD_INPUT_INFO.phone ? value.replaceAll('-', '') : value;
     setValues(previous => ({ ...previous, [field]: _value }));
     onInfoChange(field, _value);
+  };
+
+  const _onPressVerify = () => {
+    onPressVerify((isSuccess: boolean) => {
+      if (isSuccess) {
+        setEnableBtnSubmit(true);
+      }
+    });
   };
 
   const handleSubmitField = (field: keyof InputInfoValues) => (): void => {
@@ -391,6 +403,31 @@ function InputInfo({
                 }}
               />
             </View>
+            <AppButton
+              style={styles.btnVerification}
+              onPress={_onPressVerify}
+              disabled={!isFormValid || enableBtnSubmit}
+            >
+              {enableBtnSubmit ? (
+                <Image
+                  name="ic_check"
+                  type="svg"
+                  color={Colors.primary}
+                  width={ScaleSize(32)}
+                  height={ScaleSize(32)}
+                />
+              ) : (
+                <Text
+                  style={
+                    !isFormValid
+                      ? [styles.requestText, { width: undefined }]
+                      : styles.requestTextActive
+                  }
+                >
+                  {t('register_flow.verification')}
+                </Text>
+              )}
+            </AppButton>
           </View>
         ) : undefined}
 
@@ -399,7 +436,7 @@ function InputInfo({
       <View style={[styles.footer, { bottom: insset.bottom || ScaleSize(25) }]}>
         <View style={styles.footerSeparator} />
         <Button
-          disabled={disabled || !isFormValid}
+          disabled={!enableBtnSubmit}
           style={{
             width: '90%',
             alignSelf: 'center',
@@ -435,6 +472,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: ScaleSize(10),
     width: BACK_ICON_SIZE,
+  },
+  btnVerification: {
+    height: '100%',
+    paddingTop: ScaleSize(12),
+    alignItems: 'center',
   },
   carrierPicker: {
     alignItems: 'center',

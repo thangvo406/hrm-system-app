@@ -9,11 +9,12 @@ import {
 import { createStackNavigator } from '@react-navigation/stack';
 import AppNavigator from '@navigation/AppNavigator';
 import {
+  AppState,
   Dimensions,
-  Linking,
   PanResponder,
   Platform,
   View,
+  Linking,
 } from 'react-native';
 import { Globals } from '@utils';
 import { AppStack, AuthStack } from './Stacks';
@@ -48,8 +49,43 @@ function ApplicationNavigator() {
     'NONE' | 'GO_BACK' | 'GO_TAB_GENERAL' | 'RESOURCE_DETAIL_SWIPE'
   >('NONE');
 
+  const handleAppStateChange = (nextAppState: string) => {
+    if (nextAppState === 'active') {
+      const url = deepLinkGate.consumePending();
+      if (url) {
+        const data = deepLinkGate.getPathFromUrl(url);
+        console.log('data', {
+          url,
+          data,
+        });
+        const { screen, ...params } = data || {};
+        let type;
+        if (screen == 'academicverifysuccess') {
+          type = 'success';
+        } else if (screen == 'academicverifyfail') {
+          type = 'failed';
+        }
+        AppNavigator.navigate(Paths.AcademicVerificationFinish, {
+          type,
+          ...(params || {}),
+        });
+        // AppNavigator.navigate(data?.stack, {
+        //   screen: data?.screen,
+        // });
+      }
+    }
+  };
+
   useEffect(() => {
     Globals.isScrollingRef = isScrolling;
+    const subscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange,
+    );
+
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   // PanResponder callbacks are invoked by the gesture system, not during render.
@@ -196,8 +232,6 @@ function ApplicationNavigator() {
       : {};
   return (
     <View
-      // panHandlers is built from the ref created above; the gesture system owns it.
-      // eslint-disable-next-line react-hooks/refs
       {...(IS_PAN_RESPONDER_ENABLED ? panResponder.panHandlers : {})}
       style={{
         flex: 1,

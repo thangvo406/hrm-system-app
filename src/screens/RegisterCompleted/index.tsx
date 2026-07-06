@@ -1,0 +1,104 @@
+import { Button, Image } from '@components';
+import RegisterHeader from '@screens/Authorisation/components/RegisterFlow/Header';
+import imageNames from '@assets/images/names';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { ScaleSize } from '@kits/core';
+import { Paths } from '@navigation/paths';
+import AppNavigator from '@navigation/AppNavigator';
+import { AppStorage } from '@services/common/storage';
+import { AppConstants } from '@constants';
+import { useRoute } from '@react-navigation/native';
+
+const TEXT_COLOR = '#1A1A1A';
+const MASCOT_SIZE = ScaleSize(300);
+const SEPARATOR_HEIGHT = ScaleSize(10);
+
+const onSubmit = () => {
+  AppNavigator.reset(Paths.Authorization);
+};
+
+const onContribution = () => {
+  AppStorage.set(AppConstants.NEED_CONTRIBUTION_KEY, true);
+  AppNavigator.reset(Paths.Authorization);
+};
+
+function RegisterCompleted() {
+  const { t } = useTranslation();
+  const { params } = useRoute();
+  const { goFrom } = params || {};
+  const desc =
+    goFrom == 'forgot_pass'
+      ? 'forgot_pass.update_success_desc'
+      : 'register_completed.desc';
+  return (
+    <View style={styles.container}>
+      <RegisterHeader />
+
+      <View style={styles.content}>
+        <Image
+          height={MASCOT_SIZE}
+          name={imageNames.img_register_success}
+          resizeMode="stretch"
+          width={MASCOT_SIZE}
+        />
+        <Text style={styles.desc}>{t(desc)}</Text>
+      </View>
+
+      <View style={styles.footer}>
+        <View style={styles.footerSeparator} />
+        <Button
+          onPress={onSubmit}
+          style={styles.nextButton}
+          testID="register-completed-next"
+          title={t('register_completed.complete')}
+          type="primary"
+        />
+        <Button
+          onPress={onContribution}
+          style={styles.nextButton}
+          testID="register-completed-contribution"
+          title={t('register_completed.contribution')}
+          type="outline-bordered-rounded"
+        />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#FFFFFF',
+    flex: 1,
+  },
+  content: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: ScaleSize(24),
+  },
+  desc: {
+    color: TEXT_COLOR,
+    fontSize: ScaleSize(24),
+    lineHeight: ScaleSize(26),
+    marginTop: ScaleSize(40),
+    textAlign: 'center',
+  },
+  footer: {
+    paddingBottom: ScaleSize(24),
+  },
+  footerSeparator: {
+    backgroundColor: '#F0F0F0',
+    height: SEPARATOR_HEIGHT,
+    marginBottom: ScaleSize(24),
+    width: '100%',
+  },
+  nextButton: {
+    alignSelf: 'center',
+    marginBottom: ScaleSize(12),
+    width: '90%',
+  },
+});
+
+export default RegisterCompleted;

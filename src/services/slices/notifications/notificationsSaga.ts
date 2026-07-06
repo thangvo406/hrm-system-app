@@ -9,6 +9,7 @@ import type {
   GetNotificationsPayload,
   MarkReadPayload,
   NotificationItem,
+  ResponseAnnouncementImage,
 } from '@type/notifications';
 
 import { call, put, takeLatest } from 'redux-saga/effects';
@@ -36,12 +37,15 @@ import { getErrorMessageApi } from '@utils/common';
 function* getNotificationsWorker(
   action: PayloadAction<GetNotificationsPayload>,
 ) {
-  const { onSuccess, onFailure, ...request} = action.payload || {}
+  const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
-    const response: ListApiResponse<NotificationItem[]> = yield call(getNotifications, request);
+    const response: ListApiResponse<NotificationItem[]> = yield call(
+      getNotifications,
+      request,
+    );
     onSuccess?.(response);
   } catch (error_) {
-    const message = getErrorMessageApi(error_)
+    const message = getErrorMessageApi(error_);
     onFailure?.(message);
   }
 }
@@ -57,7 +61,7 @@ function* getAnnouncementsWorker(
     );
     onSuccess?.(response);
   } catch (error_) {
-    const message = getErrorMessageApi(error_)
+    const message = getErrorMessageApi(error_);
     onFailure?.(message);
   }
 }
@@ -67,11 +71,13 @@ function* getAnnouncementImagesWorker(
 ): Generator<unknown, void, AnnouncementImage[]> {
   const { onSuccess, onFailure } = action.payload || {};
   try {
-    const response: AnnouncementImage[] = yield call(getAnnouncementImages);
-    yield put(getAnnouncementImagesSuccess(response));
-    onSuccess?.(response);
+    const response: ResponseAnnouncementImage = yield call(
+      getAnnouncementImages,
+    );
+    yield put(getAnnouncementImagesSuccess(response.items));
+    onSuccess?.(response?.items);
   } catch (error_) {
-    const message = getErrorMessageApi(error_)
+    const message = getErrorMessageApi(error_);
     onFailure?.(message);
   }
 }
@@ -87,7 +93,7 @@ function* getAnnouncementDetailWorker(
     );
     onSuccess?.(response);
   } catch (error) {
-    const message = getErrorMessageApi(error)
+    const message = getErrorMessageApi(error);
     onFailure?.(message);
   }
 }
@@ -100,7 +106,7 @@ function* markReadWorker(
     yield call(markRead, notifyId);
     onSuccess?.();
   } catch (error_) {
-    const message = getErrorMessageApi(error_)
+    const message = getErrorMessageApi(error_);
     onFailure?.(message);
   }
 }
@@ -113,7 +119,7 @@ function* markReadAllWorker(
     yield call(markReadAll);
     onSuccess?.();
   } catch (error_) {
-    const message = getErrorMessageApi(error_)
+    const message = getErrorMessageApi(error_);
     onFailure?.(message);
   }
 }

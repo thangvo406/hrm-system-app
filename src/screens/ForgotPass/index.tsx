@@ -7,7 +7,6 @@ import RegisterCompleted from '../Authorisation/components/RegisterFlow/Register
 import RegisterForm from '../Authorisation/components/RegisterFlow/InputInfo';
 import NewPasswordForm from './components/NewPasswordForm';
 import { ForgotStep } from '@hooks/useForgotPass';
-import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function ForgotPass() {
@@ -22,7 +21,6 @@ function ForgotPass() {
     step,
   } = useForgotPass();
 
-  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const detailProps = {
@@ -34,7 +32,6 @@ function ForgotPass() {
     onSubmit,
     onToggleAgreement,
     titleRegisterInfoKey: 'forgot_password.title_register_info',
-    desc: t('forgot_password.desc_success'),
   };
 
   const DetailComponent = useMemo(() => {

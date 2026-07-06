@@ -22,6 +22,9 @@ export type GetAnnouncementDetailPayload = {
   readonly announcementId: number | string;
 } & AppCallback<AnnouncementDetail>;
 
+export type ResponseAnnouncementImage = {
+  items: AnnouncementImage[];
+};
 export type AnnouncementImage = {
   id: number;
   image: IImage;

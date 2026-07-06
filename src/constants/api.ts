@@ -1,6 +1,5 @@
 export const EndPoints = {
   AUTH: {
-    completeRegister: 'auth/register/complete',
     login: 'auth/login',
     loginSocial: (provider: string) => `auth/social/${provider}/login`,
     register: 'auth/register',
@@ -12,6 +11,8 @@ export const EndPoints = {
     submitForgotPass: 'auth/forgot-password/reset',
     refreshToken: 'auth/refresh',
     logout: 'auth/logout',
+    memberShipVerify: 'auth/register/membership-verification',
+    resendVerifyAcademicMail: 'auth/register/university-email/resend',
   },
   ACCOUNT: {
     autoCompleteAddress: (request: string) => `?${request}`,

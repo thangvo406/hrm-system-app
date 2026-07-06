@@ -1,10 +1,10 @@
 import type {
   AnnouncementDetail,
-  AnnouncementImage,
   AnnouncementItem,
   GetAnnouncementsPayload,
   NotificationItem,
   IRequestGetNotifications,
+  ResponseAnnouncementImage,
 } from '@type/notifications';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -34,12 +34,13 @@ export const getAnnouncements = async (
   return response.data;
 };
 
-export const getAnnouncementImages = async (): Promise<AnnouncementImage[]> => {
-  const response = await httpRequest.get<
-    SingleApiResponse<AnnouncementImage[]>
-  >(EndPoints.ANNOUNCEMENTS.listImage, { loading: false });
-  return response.data;
-};
+export const getAnnouncementImages =
+  async (): Promise<ResponseAnnouncementImage> => {
+    const response = await httpRequest.get<
+      SingleApiResponse<ResponseAnnouncementImage>
+    >(EndPoints.ANNOUNCEMENTS.listImage, { loading: false });
+    return response.data;
+  };
 
 export const getAnnouncementById = async (
   announcementId: number | string,

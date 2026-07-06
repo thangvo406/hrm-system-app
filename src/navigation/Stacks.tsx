@@ -26,6 +26,14 @@ const AUTH_SCREENS: ScreenDef[] = [
     name: Paths.ForgotPass,
   },
   { component: Screens.Welcome as ComponentType<unknown>, name: Paths.Welcome },
+  {
+    component: Screens.RegisterCompleted as ComponentType<unknown>,
+    name: Paths.RegisterCompleted,
+  },
+  {
+    component: Screens.AcademicVerificationFinish as ComponentType<unknown>,
+    name: Paths.AcademicVerificationFinish,
+  },
 ];
 
 export function AuthStack() {
@@ -54,6 +62,7 @@ const AUTH_PATHS = new Set<string>([
   Paths.Welcome,
   Paths.Authorization,
   Paths.ForgotPass,
+  Paths.AcademicVerificationFinish,
 ]);
 
 const APP_SCREENS: ScreenDef[] = (Object.keys(Paths) as (keyof typeof Paths)[])
@@ -79,7 +88,11 @@ export function AppStack() {
           />
         ))}
       </AppNavigator.Navigator>
-      <FloatingCartButton ref={ref => { Globals.cartBtnRef = ref; }} />
+      <FloatingCartButton
+        ref={ref => {
+          Globals.cartBtnRef = ref;
+        }}
+      />
     </>
   );
 }

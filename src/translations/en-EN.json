@@ -36,7 +36,7 @@
       "register": "New Registration"
     },
     "forgot_password": {
-      "desc_success": "Password change completed. Please log in with your new password.",
+      "desc_success": "Your password has been changed successfully. Please log in with your new password.",
       "title_register_info": "Please proceed with verification to reset your password."
     },
     "product_detail": {
@@ -71,7 +71,8 @@
       "error_email_invalid": "Please enter a valid email",
       "error_password_required": "Please enter your password",
       "error_password_min": "Password must be at least 6 characters",
-      "error_phone_invalid": "Please enter a valid phone number"
+      "error_phone_invalid": "Please enter a valid phone number",
+      "pass_invalid": "Password must be between 8 and 10 and contain at least one letter, one number, and one special character"
     },
     "register_flow": {
       "identity_title": "Please proceed with verification\nto reset your password.",
@@ -85,9 +86,10 @@
       "phone_placeholder": "Phone Number",
       "request_verification": "Request Verification",
       "warning": "*If you register using someone else's personal information, your service access may be restricted and you may be subject to legal penalties.",
-      "next": "Verify",
+      "next": "Next",
       "otp_label": "Verification Code",
       "otp_placeholder": "Verification Code",
+      "verification": "Verification",
       "verify": "Verify",
       "choose_carrier": "Select Carrier",
       "contribution_dialog": {
@@ -103,15 +105,47 @@
     },
     "choose_membership": {
       "title": "Select Membership Type",
-      "join_as_student": "Join as a student member",
-      "join_as_employee": "Join as a faculty member",
-      "join_as_staff": "Join as a staff member",
-      "join_as_non_member": "Join as a non-member",
+      "desc": "Please select the membership type that matches your affiliation",
+      "join_student_title": "Student",
+      "join_student_desc": "University·College Student",
+      "join_teacher_title": "Teacher",
+      "join_teacher_desc": "Professor·Instructor",
+      "join_staff_title": "Staff",
+      "join_staff_desc": "University Administrative Staff",
+      "join_graduate_student_title": "Graduate Student",
+      "join_graduate_student_desc": "Master’s · Doctoral Programs",
+      "join_non_member_title": "General Member",
+      "join_non_member_desc": "Sign up without academic verification",
       "next": "Next"
     },
+    "input_academic_email": {
+      "title": "Academic Verification",
+      "desc": "Please verify using your school email",
+      "btn_submit": "Send verification",
+      "resend_email_success": "Re-send email successfully"
+    },
+    "academic_verify_finish": {
+      "success": {
+        "title": "Academic verification completed!",
+        "subtitle": "Your school has been successfully verified",
+        "section_label": "VERIFICATION DETAILS",
+        "label_school": "School",
+        "label_department": "Department",
+        "label_type": "Type",
+        "next": "NEXT"
+      },
+      "failed": {
+        "title": "Academic verification failed",
+        "subtitle": "We couldn't verify your academic information",
+        "reason_label": "REASON FOR FAILURE",
+        "reason_default": "The verification link has expired.",
+        "try_again": "Close"
+      }
+    },
     "register_completed": {
-      "desc": "Desc",
-      "next": "Next"
+      "desc": "Registration completed!",
+      "complete": "Complete",
+      "contribution": "Contribution"
     },
     "new_password": {
       "title": "Please enter your\nnew password.",
@@ -185,6 +219,9 @@
       "pending_dialog": {
         "title": "Your registration is pending. Registration takes up to 1–2 days.",
         "confirm": "Close"
+      },
+      "need_contribution_dialog": {
+        "title": "A one-time contribution payment is required for membership.\nDo you want to continue?"
       }
     },
     "announcements": {

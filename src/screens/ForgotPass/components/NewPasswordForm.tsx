@@ -13,11 +13,10 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import { ScaleSize } from '@kits/core';
 import { DeviceUtils } from '@kits/core/utils';
-import { AppConstants } from '@constants';
 import { CommonUtils } from '@utils';
+import { validatePassword } from '@utils/common';
 
 const { ifAndroid } = DeviceUtils;
-const { PASSWORD_MIN_LENGTH } = AppConstants;
 const TEXT_COLOR = '#1A1A1A';
 const SUCCESS_COLOR = '#5BB85C';
 const SEPARATOR_HEIGHT = ScaleSize(10);
@@ -34,8 +33,8 @@ const validateNewPassword = (
   const errors: PasswordErrors = {};
   if (values.password.length === 0) {
     errors.password = t('authorisation.error_password_required');
-  } else if (values.password.length < PASSWORD_MIN_LENGTH) {
-    errors.password = t('authorisation.error_password_min');
+  } else if (!validatePassword(values.password)) {
+    errors.password = t('authorisation.pass_invalid');
   }
   if (values.confirmPassword.length === 0) {
     errors.confirmPassword = t('new_password.error_confirm_required');

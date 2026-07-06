@@ -31,7 +31,8 @@
       "error_email_invalid": "올바른 이메일을 입력해 주세요",
       "error_password_required": "비밀번호를 입력해 주세요",
       "error_password_min": "비밀번호는 최소 6자 이상이어야 합니다",
-      "error_phone_invalid": "올바른 휴대폰 번호를 입력해 주세요"
+      "error_phone_invalid": "올바른 휴대폰 번호를 입력해 주세요",
+      "pass_invalid": "비밀번호는 8자 이상 10자 이하이며, 영문자, 숫자, 특수문자를 각각 최소 1개 이상 포함해야 합니다."
     },
     "register_flow": {
       "identity_title": "본인확인을 위해 인증을 진행해 주세요",
@@ -45,9 +46,10 @@
       "phone_placeholder": "휴대폰 번호",
       "request_verification": "인증요청",
       "warning": "*타인의 개인정보를 도용하여 가입한 경우, 서비스 이용 제한 및 법적 제재를 받으실 수 있습니다.",
-      "next": "인증",
+      "next": "다음",
       "otp_label": "인증 번호",
       "otp_placeholder": "인증 번호",
+      "verification": "인증",
       "verify": "인증",
       "choose_carrier": "통신사 선택",
       "contribution_dialog": {
@@ -63,11 +65,42 @@
     },
     "choose_membership": {
       "title": "회원 유형 선택",
-      "join_as_student": "학생 조합원으로 가입하기",
-      "join_as_employee": "교원 조합원으로 가입하기",
-      "join_as_staff": "직원 조합원으로 가입하기",
-      "join_as_non_member": "비조합원으로 가입하기",
+      "desc": "소속에 맞는 유형을 선택해주세요",
+      "join_student_title": "학생",
+      "join_student_desc": "대학교·전문대 재학생",
+      "join_teacher_title": "교원",
+      "join_teacher_desc": "교수·강사",
+      "join_staff_title": "직원",
+      "join_staff_desc": "대학교 행정직원",
+      "join_graduate_student_title": "대학원생",
+      "join_graduate_student_desc": "석사·박사 과정",
+      "join_non_member_title": "일반회원",
+      "join_non_member_desc": "학적 인증 없이 가입",
       "next": "다음"
+    },
+    "input_academic_email": {
+      "title": "학적인증",
+      "desc": "소속학교 이메일로 인증해주세요",
+      "btn_submit": "인증 메일 발송",
+      "resend_email_success": "이메일을 재전송했습니다"
+    },
+    "academic_verify_finish": {
+      "success": {
+        "title": "학적 인증이 완료되었습니다!",
+        "subtitle": "소속 학교가 성공적으로 인증되었습니다",
+        "section_label": "인증 상세 정보",
+        "label_school": "학교",
+        "label_department": "학과",
+        "label_type": "유형",
+        "next": "다음"
+      },
+      "failed": {
+        "title": "학적 인증 실패",
+        "subtitle": "학적 정보를 인증할 수 없습니다",
+        "reason_label": "실패 사유",
+        "reason_default": "인증 링크가 만료되었습니다.",
+        "try_again": "닫기"
+      }
     },
     "register_completed": {
       "desc": "가입이 완료되었습니다!",
@@ -145,6 +178,9 @@
       "pending_dialog": {
         "title": "가입 대기중입니다. 가입에는 최대 1~2일이 소요됩니다.",
         "confirm": "닫기"
+      },
+      "need_contribution_dialog": {
+        "title": "조합원 가입을 위해 최초 1회 출자금 납부가 필요합니다.\n계속 진행하시겠습니까?"
       }
     },
     "notifications": {

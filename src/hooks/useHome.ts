@@ -7,7 +7,7 @@ import {
   getProfileRequest,
   updateMembershipRequest,
 } from '@services/slices/account/accountSlice';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MEMBERSHIP_OPTIONS, MEMBERSHIP_TYPE } from '@constants/config';
 import Information from '@screens/Dialog/components/Information';
@@ -16,6 +16,8 @@ import BankInformation from '../screens/Authorisation/components/RegisterFlow/Ba
 import { useFocusEffect } from '@react-navigation/native';
 import { getCurrentWalletRequest } from '@services/slices/account/accountSlice';
 import { getStoreOrderRecentRequest } from '@services/slices/stores/storesSlice';
+import { AppStorage } from '@services/common/storage';
+import { AppConstants } from '@constants';
 // import Address from '@screens/Address';
 
 export type UseHome = ReturnType<typeof useHome>;
@@ -143,6 +145,24 @@ export const useHome = () => {
       AppNavigator.navigate(Paths.Contribution);
     }
   };
+
+  useEffect(() => {
+    const needContribute = AppStorage.getBoolean(
+      AppConstants.NEED_CONTRIBUTION_KEY,
+    );
+    if (needContribute) {
+      AppStorage.set(AppConstants.NEED_CONTRIBUTION_KEY, false);
+      AppNavigator.showDialog({
+        cancelTitle: t('common.cancel'),
+        confirmTitle: t('common.confirm'),
+        onConfirm: () => {
+          AppNavigator.navigate(Paths.Contribution);
+        },
+        screen: Information,
+        title: t('home.need_contribution_dialog.title'),
+      });
+    }
+  }, []);
 
   useFocusEffect(
     useCallback(() => {

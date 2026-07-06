@@ -8,12 +8,14 @@ import { useAuthorization } from '@hooks';
 import { StyleSheet } from 'react-native';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import RegisterCompleted from './components/RegisterFlow/RegisterCompleted';
 import RegisterForm from './components/RegisterFlow/InputInfo';
 import AuthFormStack from './components/AuthFormStack';
 import BankInformation from './components/RegisterFlow/BankInformation';
+import InputAcademicEmail from './components/RegisterFlow/InputAcademicEmail';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AcademicVerification from './components/RegisterFlow/AcademicVerification';
+import AcademicVerifyCompleted from './components/RegisterFlow/AcademicVerifyCompleted';
 type AuthTab = 'login' | 'registration';
 
 function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
@@ -57,6 +59,11 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     onSelectSchool: register.onSelectSchool,
     onSubmit: register.handleSubmit,
     onToggleAgreement: register.onToggleAgreement,
+    onPressVerify: register.onPressVerify,
+    onReEnterEmailAcademic: register.onReEnterEmailAcademic,
+    onResendEmailAcademic: register.onResendEmailAcademic,
+    onContribution: register.onContribution,
+    mailAcademic: register.mailAcademic,
     options: register.chooseOptions,
     registerErrors: register.registerErrors,
     selectedMembershipId: register.selectedMembershipId,
@@ -71,8 +78,10 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
       choose_role: ChooseMemberShipType,
       choose_school: ChooseSchool,
       form: AuthFormStack,
+      academic_verification_completed: AcademicVerifyCompleted,
+      input_academic_email: InputAcademicEmail,
+      academic_verification: AcademicVerification,
       register_input: RegisterForm,
-      register_completed: RegisterCompleted,
       bank_information: BankInformation,
     };
     return screens[register.step];

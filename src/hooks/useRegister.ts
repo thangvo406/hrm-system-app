@@ -6,30 +6,30 @@ import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch } from '@services/common/storeHooks';
 import {
-  completeRegisterRequest,
+  memberShipVerifyRequest,
   registerUserRequest,
+  resendVerifyAcademicMailRequest,
   sendOTPRequest,
   verifyOTPRequest,
 } from '@services/slices/auth/authSlice';
 import AppNavigator from '@navigation/AppNavigator';
-import { AppStacks } from '@navigation/paths';
+import { Paths } from '@navigation/paths';
 import Selection from '@screens/Dialog/components/Selection';
 import { CommonUtils } from '@utils';
 import { AppConstants } from '@constants';
-import Information from '@screens/Dialog/components/Information';
+// import Information from '@screens/Dialog/components/Information';
 import type { IResponseUniversity } from '@type/auth';
 import {
   IResponseRegisterSendOtp,
   IResponseRegisterVerifyOtp,
 } from '@type/auth';
-import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
+import { validatePassword } from '@utils/common';
 
 const {
   CARRIER_ITEMS,
   DEFAULT_CARRIER,
   MEMBERSHIP_OPTIONS,
   MEMBERSHIP_TYPE,
-  PASSWORD_MIN_LENGTH,
   STEP,
 } = AppConstants;
 
@@ -42,15 +42,18 @@ export type RegisterErrors = {
 
 export type AuthStep =
   | 'choose_membership'
+  | 'input_academic_email'
+  | 'academic_verification'
+  | 'academic_verification_completed'
   | 'choose_role'
   | 'choose_school'
   | 'form'
   | 'bank_information'
-  | 'register_completed'
   | 'register_input';
 
 export type FormData = {
   birthday?: string;
+  mailAcademic?: string;
   carrier?: string;
   email: string;
   indentify?: string;
@@ -83,8 +86,8 @@ const validateRegister = (
   }
   if (values.password.length === 0) {
     errors.password = t('authorisation.error_password_required');
-  } else if (values.password.length < PASSWORD_MIN_LENGTH) {
-    errors.password = t('authorisation.error_password_min');
+  } else if (!validatePassword(values.password)) {
+    errors.password = t('authorisation.pass_invalid');
   }
   return errors;
 };
@@ -156,7 +159,6 @@ export const useRegister = () => {
       return {};
     }
     const registerFormState = CommonUtils.computeFormAuthErrors(
-      // eslint-disable-next-line react-hooks/refs
       formData.current,
       { email: errors.email, name: errors.name, password: errors.password },
       validateRegister,
@@ -198,47 +200,7 @@ export const useRegister = () => {
   };
 
   const onSubmitRegisterInfo = () => {
-    dispatch(
-      verifyOTPRequest({
-        identityNumber: `${formData.current.birthday ?? ''}-${
-          formData.current.indentify ?? ''
-        }`,
-        onFailure: (error: string) => {
-          AppNavigator.showSnackBar({ message: error, type: 'failed' });
-        },
-        onSuccess: (response: IResponseRegisterVerifyOtp) => {
-          formData.current.signupToken = response.signupToken;
-          setStep(STEP.CHOOSE_MEMBERSHIP);
-        },
-        otp: formData.current.otp ?? '',
-        phone: formData.current.phone ?? '',
-        phoneVerificationToken: formData.current.phoneVerificationToken,
-        termsAgreed: String(true),
-      }),
-    );
-  };
-
-  const onCompletedRegister = () => {
-    dispatch(
-      completeRegisterRequest({
-        membershipType: formData.current?.membershipId,
-        onFailure: (error: string) => {
-          AppNavigator.showSnackBar({
-            message: error || '',
-            type: 'failed',
-          });
-        },
-        onSuccess: () => {
-          if (formData.current?.membershipId !== MEMBERSHIP_TYPE.NON_MEMBER) {
-            setStep(STEP.BANK_INFORMATION);
-          } else {
-            setStep(STEP.REGISTER_COMPLETED);
-          }
-        },
-        signupToken: formData.current?.signupToken,
-        universityId: formData.current?.school?.id,
-      }),
-    );
+    setStep(STEP.CHOOSE_MEMBERSHIP);
   };
 
   const onSelectMembership = (id: string) => {
@@ -248,17 +210,32 @@ export const useRegister = () => {
 
   const onSubmitFormRegister = () => {
     if (formData.current?.membershipId !== MEMBERSHIP_TYPE.NON_MEMBER) {
-      AppNavigator.showDialog({
-        cancelTitle: t('common.cancel'),
-        confirmTitle: t('common.confirm'),
-        desc: t('register_flow.contribution_dialog.desc'),
-        onConfirm: () => {
-          setStep(STEP.CHOOSE_SCHOOL);
-        },
-        screen: Information,
-      });
+      setStep(STEP.INPUT_ACADEMIC_EMAIL);
+      //   AppNavigator.showDialog({
+      //     cancelTitle: t('common.cancel'),
+      //     confirmTitle: t('common.confirm'),
+      //     desc: t('register_flow.contribution_dialog.desc'),
+      //     onConfirm: () => {
+      //       setStep(STEP.CHOOSE_SCHOOL);
+      //     },
+      //     screen: Information,
+      //   });
     } else {
-      setStep(STEP.CHOOSE_SCHOOL);
+      dispatch(
+        memberShipVerifyRequest({
+          signupToken: formData.current?.signupToken,
+          membershipType: formData.current?.membershipId,
+          onSuccess: () => {
+            AppNavigator.navigate(Paths.RegisterCompleted);
+          },
+          onFailure(error) {
+            AppNavigator.showSnackBar({
+              message: error,
+              type: 'failed',
+            });
+          },
+        }),
+      );
     }
   };
 
@@ -270,27 +247,26 @@ export const useRegister = () => {
     formData.current = { ...formData.current, school };
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (data?: any) => {
     switch (step) {
       case STEP.CHOOSE_MEMBERSHIP: {
         onSubmitFormRegister();
         break;
       }
-      case STEP.CHOOSE_SCHOOL: {
-        onCompletedRegister();
+      case STEP.ACADEMIC_VERIFICATION_COMPLETED: {
+        AppNavigator.navigate(Paths.RegisterCompleted);
         break;
       }
       case STEP.REGISTER_INPUT: {
         onSubmitRegisterInfo();
         break;
       }
-      case STEP.BANK_INFORMATION: {
-        setStep(STEP.REGISTER_COMPLETED);
+      case STEP.INPUT_ACADEMIC_EMAIL: {
+        onSubmitAcademicEmail(data);
         break;
       }
-      case STEP.REGISTER_COMPLETED: {
-        AppNavigator.replace(AppStacks.App);
-        dispatch(getTotalItemCartRequest());
+      case STEP.BANK_INFORMATION: {
+        AppNavigator.navigate(Paths.RegisterCompleted);
         break;
       }
       default: {
@@ -317,6 +293,73 @@ export const useRegister = () => {
     );
   };
 
+  const onReEnterEmailAcademic = () => {
+    setStep(STEP.INPUT_ACADEMIC_EMAIL);
+  };
+
+  const onSubmitAcademicEmail = (email: string) => {
+    formData.current.mailAcademic = email;
+    // setStep(STEP.ACADEMIC_VERIFICATION);
+    dispatch(
+      memberShipVerifyRequest({
+        signupToken: formData.current?.signupToken,
+        membershipType: formData.current?.membershipId,
+        universityEmail: formData.current?.mailAcademic,
+        onSuccess: () => {
+          setStep(STEP.ACADEMIC_VERIFICATION);
+        },
+        onFailure(error) {
+          AppNavigator.showSnackBar({
+            message: error,
+            type: 'failed',
+          });
+        },
+      }),
+    );
+  };
+
+  const onResendEmailAcademic = () => {
+    dispatch(
+      resendVerifyAcademicMailRequest({
+        signupToken: formData.current?.signupToken ?? '',
+        onSuccess: () => {
+          AppNavigator.showSnackBar({
+            message: t('input_academic_email.resend_email_success'),
+            type: 'success',
+          });
+        },
+        onFailure: (error: string) => {
+          AppNavigator.showSnackBar({
+            message: error,
+            type: 'failed',
+          });
+        },
+      }),
+    );
+  };
+
+  const onPressVerify = (callback: any) => {
+    dispatch(
+      verifyOTPRequest({
+        identityNumber: `${formData.current.birthday ?? ''}-${
+          formData.current.indentify ?? ''
+        }`,
+        onFailure: (error: string) => {
+          AppNavigator.showSnackBar({ message: error, type: 'failed' });
+        },
+        onSuccess: (response: IResponseRegisterVerifyOtp) => {
+          formData.current.signupToken = response.signupToken;
+          // setStep(STEP.CHOOSE_MEMBERSHIP);
+          callback?.(true);
+        },
+        otp: formData.current.otp ?? '',
+        phone: formData.current.phone ?? '',
+        phoneVerificationToken: formData.current.phoneVerificationToken,
+        termsAgreed: true,
+      }),
+    );
+  };
+
   return {
     clearErrors,
     agreed,
@@ -335,6 +378,10 @@ export const useRegister = () => {
     onSelectRole,
     onSelectSchool,
     onToggleAgreement,
+    onPressVerify,
+    onReEnterEmailAcademic,
+    onResendEmailAcademic,
+    mailAcademic: formData.current.mailAcademic,
     setSignupToken,
     registerErrors: visibleRegisterErrors,
     selectedMembershipId,

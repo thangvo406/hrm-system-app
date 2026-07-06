@@ -107,7 +107,9 @@ export const useForgotPass = () => {
         newPassword: _data?.password,
         confirmPassword: _data?.confirmPassword,
         onSuccess: () => {
-          setStep(FORGOT_STEP.REGISTER_COMPLETED);
+          AppNavigator.navigate(Paths.RegisterCompleted, {
+            goFrom: 'forgot_pass',
+          });
         },
         onFailure: msg => setErrorMessage(msg),
       }),

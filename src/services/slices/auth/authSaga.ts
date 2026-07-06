@@ -1,11 +1,12 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AuthResponse } from '@services/request/auth';
 import type {
-  CompleteRegisterPayload,
   GetUniversitiesPayload,
   LoginPayload,
   LoginSocialPayload,
+  MemberShipVerifyPayload,
   RegisterUserPayload,
+  ResendVerifyAcademicMailPayload,
   SendOTPPayload,
   SendOtpForgotPassPayload,
   SubmitForgotPassPayload,
@@ -14,11 +15,12 @@ import type {
 } from './authSlice';
 
 import {
-  completeRegister,
   getUniversities,
   login,
   loginSocial,
+  memberShipVerify,
   registerUser,
+  resendVerifyAcademicMail,
   sendOTP,
   sendOtpForgotPass,
   submitForgotPass,
@@ -34,14 +36,15 @@ import { persistor } from '@services/common/store';
 import {
   authFailure,
   authSuccess,
-  completeRegisterRequest,
   getUniversitiesRequest,
   loginRequest,
   loginSocialRequest,
   logout,
   logoutSuccess,
+  memberShipVerifyRequest,
   refreshTokenRequest,
   registerUserRequest,
+  resendVerifyAcademicMailRequest,
   sendOTPRequest,
   sendOtpForgotPassRequest,
   setCredentials,
@@ -143,19 +146,6 @@ function* refreshTokenWorker() {
   }
 }
 
-function* completeRegisterWorker(
-  action: PayloadAction<CompleteRegisterPayload>,
-) {
-  try {
-    const response: AuthResponse = yield call(completeRegister, action.payload);
-    yield put(authSuccess(response));
-    action.payload.onSuccess?.();
-  } catch (error) {
-    // yield put(authFailure(toErrorMessage(error)));
-    action.payload.onFailure?.(getErrorMessageApi(error));
-  }
-}
-
 function* getUniversitiesWorker(action: PayloadAction<GetUniversitiesPayload>) {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
@@ -214,6 +204,28 @@ function* submitForgotPassWorker(
   }
 }
 
+function* memberShipVerifyWorker(
+  action: PayloadAction<MemberShipVerifyPayload>,
+) {
+  try {
+    yield call(memberShipVerify, action.payload);
+    action.payload.onSuccess?.();
+  } catch (error) {
+    action.payload.onFailure?.(getErrorMessageApi(error));
+  }
+}
+
+function* resendVerifyAcademicMailWorker(
+  action: PayloadAction<ResendVerifyAcademicMailPayload>,
+) {
+  try {
+    yield call(resendVerifyAcademicMail, action.payload);
+    action.payload.onSuccess?.();
+  } catch (error) {
+    action.payload.onFailure?.(getErrorMessageApi(error));
+  }
+}
+
 // Reducers reset in-memory state synchronously when `logout` is dispatched.
 // This worker additionally wipes the persisted MMKV storage so tokens and
 // profile data do not survive an app restart.
@@ -242,11 +254,15 @@ export function* authSaga() {
   yield takeLatest(registerUserRequest.type, registerUserWorker);
   yield takeLatest(sendOTPRequest.type, sendOTPWorker);
   yield takeLatest(verifyOTPRequest.type, verifyOTPWorker);
-  yield takeLatest(completeRegisterRequest.type, completeRegisterWorker);
   yield takeLatest(getUniversitiesRequest.type, getUniversitiesWorker);
   yield takeLatest(sendOtpForgotPassRequest.type, sendOtpForgotPassWorker);
   yield takeLatest(verifyOtpForgotPassRequest.type, verifyOtpForgotPassWorker);
   yield takeLatest(submitForgotPassRequest.type, submitForgotPassWorker);
+  yield takeLatest(memberShipVerifyRequest.type, memberShipVerifyWorker);
+  yield takeLatest(
+    resendVerifyAcademicMailRequest.type,
+    resendVerifyAcademicMailWorker,
+  );
   yield takeLatest(logout.type, logoutWorker);
   yield takeLatest(refreshTokenRequest.type, refreshTokenWorker);
 }

@@ -10,7 +10,12 @@ export type RootScreenProps<
 export type RootStackParamList = {
   [AppStacks.Auth]: undefined;
   [AppStacks.App]: undefined;
-  [Paths.AnnouncementDetail]: { id: number, notification?: NotificationItem, hideBtnNotify?: boolean } | undefined;
+  [Paths.AcademicVerificationFinish]:
+    | { type: 'success' | 'failed' }
+    | undefined;
+  [Paths.AnnouncementDetail]:
+    | { id: number; notification?: NotificationItem; hideBtnNotify?: boolean }
+    | undefined;
   [Paths.Announcements]: undefined;
   [Paths.Authorization]: { isLogin: boolean } | undefined;
   [Paths.Carts]: undefined;
@@ -25,7 +30,8 @@ export type RootStackParamList = {
   [Paths.PayCard]: undefined;
   [Paths.PaymentCart]: undefined;
   [Paths.QRCodePayment]: undefined;
-  [Paths.ProductDetail]: { id: number, storeId: number } | undefined;
+  [Paths.RegisterCompleted]: { goFrom: 'forgot_pass' } | undefined;
+  [Paths.ProductDetail]: { id: number; storeId: number } | undefined;
   [Paths.Products]: { data: StoreItem } | undefined;
   [Paths.Startup]: undefined;
   [Paths.Stores]: undefined;

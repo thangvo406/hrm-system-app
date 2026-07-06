@@ -5,12 +5,15 @@ import { startupApp } from '@services/slices/app/appSlice';
 import { useEffect } from 'react';
 import SplashScreen from 'react-native-splash-screen';
 import AppNavigator from '@navigation/AppNavigator';
+import { AppStorage } from '@services/common/storage';
+import { AppConstants } from '@constants';
 
-// coop://AcademicVerifySuccess?stack=Auth&screen=AcademicVerifySuccess
+// coop://AcademicVerifySuccess?screen=AcademicVerifySuccess&school=KUPI University&department=Computer Engineering&type=Student
 // npx uri-scheme add coop --ios
 
 function navigateToPendingDeepLink(isAuthenticated: boolean) {
   const url = deepLinkGate.consumePending();
+  AppStorage.set(AppConstants.NEED_CONTRIBUTION_KEY, false);
   if (!url) {
     if (isAuthenticated) {
       AppNavigator.replace(AppStacks.App);

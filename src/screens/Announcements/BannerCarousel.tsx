@@ -64,7 +64,7 @@ function BannerCarousel({
     <View style={styles.bannerContainer}>
       <Carousel
         ref={carouselReference}
-        autoPlay
+        autoPlay={banners?.length > 1}
         data={banners as AnnouncementImage[]}
         height={BANNER_HEIGHT}
         loop

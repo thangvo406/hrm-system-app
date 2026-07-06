@@ -47,13 +47,7 @@ export type VerifyOTPPayload = {
   phone: string;
   identityNumber: string;
   otp: string;
-  termsAgreed: string;
-} & AuthCallback;
-
-export type CompleteRegisterPayload = {
-  membershipType?: string;
-  universityId?: string;
-  signupToken?: string;
+  termsAgreed: boolean;
 } & AuthCallback;
 
 export type GetUniversitiesPayload = {
@@ -80,6 +74,16 @@ export type SubmitForgotPassPayload = {
   confirmPassword: string;
   newPassword: string;
   resetToken: string;
+} & AuthCallback;
+
+export type MemberShipVerifyPayload = {
+  membershipType: string;
+  signupToken: string;
+  universityEmail: string;
+} & AuthCallback;
+
+export type ResendVerifyAcademicMailPayload = {
+  signupToken: string;
 } & AuthCallback;
 
 const initialState: AuthState = {
@@ -135,11 +139,6 @@ const authSlice = createSlice({
       prepare: (payload: VerifyOTPPayload) => ({ payload }),
       reducer: () => {},
     },
-    // Step 4: complete registration with university/membership info.
-    completeRegisterRequest: {
-      prepare: (payload: CompleteRegisterPayload) => ({ payload }),
-      reducer: () => {},
-    },
     // Fetch the list of universities for the school picker.
     getUniversitiesRequest: {
       prepare: (payload: GetUniversitiesPayload = {}) => ({ payload }),
@@ -160,6 +159,14 @@ const authSlice = createSlice({
       prepare: (payload: SubmitForgotPassPayload) => ({ payload }),
       reducer: () => {},
     },
+    memberShipVerifyRequest: {
+      prepare: (payload: MemberShipVerifyPayload) => ({ payload }),
+      reducer: () => {},
+    },
+    resendVerifyAcademicMailRequest: {
+      prepare: (payload: ResendVerifyAcademicMailPayload) => ({ payload }),
+      reducer: () => {},
+    },
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
     },
@@ -176,15 +183,16 @@ export const {
   authFailure,
   authSuccess,
   clearCredentials,
-  completeRegisterRequest,
   getUniversitiesRequest,
   loginRequest,
   loginSocialRequest,
   logout,
   logoutSuccess,
-  registerUserRequest,
-  sendOTPRequest,
+  memberShipVerifyRequest,
   refreshTokenRequest,
+  registerUserRequest,
+  resendVerifyAcademicMailRequest,
+  sendOTPRequest,
   sendOtpForgotPassRequest,
   setAccessToken,
   setCredentials,

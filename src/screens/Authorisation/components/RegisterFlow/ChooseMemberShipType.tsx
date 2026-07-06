@@ -1,9 +1,16 @@
 import { Button } from '@components';
 import RegisterHeader from './Header';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React, { useState } from 'react';
 import { ScaleSize } from '@kits/core';
+import { Colors } from '@constants';
 
 const PRIMARY_COLOR = '#5BB85C';
 const BORDER_COLOR_SELECTED = '#5BB85C';
@@ -16,6 +23,7 @@ const TEXT_COLOR = '#1A1A1A';
 export type MembershipOption = {
   readonly id: string;
   readonly label: string;
+  readonly desc: string;
 };
 
 type ChooseMemberShipTypeProps = {
@@ -48,36 +56,48 @@ function ChooseMemberShipType({
 
       <View style={styles.content}>
         <Text style={styles.title}>{t('choose_membership.title')}</Text>
+        <Text style={[styles.desc, { marginLeft: 0 }]}>
+          {t('choose_membership.desc')}
+        </Text>
 
-        {options.map((option, index) => {
-          const isSelected = option.id === itemSelected;
-          return (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              key={option.id}
-              onPress={() => {
-                onSelectMembership?.(option.id);
-                setItemSelected(option.id);
-              }}
-              style={[
-                styles.option,
-                index === 0 && styles.optionFirst,
-                isSelected && styles.optionSelected,
-              ]}
-              testID={`choose-membership-option-${option.id}`}
-            >
-              <View
+        <ScrollView
+          style={{
+            marginTop: ScaleSize(10),
+          }}
+        >
+          {options.map((option, index) => {
+            const isSelected = option.id === itemSelected;
+            return (
+              <TouchableOpacity
+                activeOpacity={0.8}
+                key={option.id}
+                onPress={() => {
+                  onSelectMembership?.(option.id);
+                  setItemSelected(option.id);
+                }}
                 style={[
-                  styles.radioOuter,
-                  isSelected && styles.radioOuterSelected,
+                  styles.option,
+                  index === 0 && styles.optionFirst,
+                  isSelected && styles.optionSelected,
                 ]}
+                testID={`choose-membership-option-${option.id}`}
               >
-                {isSelected ? <View style={styles.radioInner} /> : undefined}
-              </View>
-              <Text style={styles.optionLabel}>{t(option.label)}</Text>
-            </TouchableOpacity>
-          );
-        })}
+                <View
+                  style={[
+                    styles.radioOuter,
+                    isSelected && styles.radioOuterSelected,
+                  ]}
+                >
+                  {isSelected ? <View style={styles.radioInner} /> : undefined}
+                </View>
+                <View>
+                  <Text style={styles.optionLabel}>{t(option.label)}</Text>
+                  <Text style={styles.desc}>{t(option.desc)}</Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
 
       <View style={styles.footer}>
@@ -130,11 +150,18 @@ const styles = StyleSheet.create({
     paddingVertical: ScaleSize(30),
   },
   optionFirst: {
-    marginTop: ScaleSize(60),
+    marginTop: ScaleSize(40),
   },
   optionLabel: {
     color: TEXT_COLOR,
     fontSize: ScaleSize(16),
+    marginLeft: ScaleSize(14),
+    marginBottom: ScaleSize(4),
+    fontWeight: 'bold',
+  },
+  desc: {
+    color: Colors.gray5,
+    fontSize: ScaleSize(15),
     marginLeft: ScaleSize(14),
   },
   optionSelected: {
