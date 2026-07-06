@@ -8,9 +8,16 @@ import {
 } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AppNavigator from '@navigation/AppNavigator';
-import { Dimensions, PanResponder, Platform, View } from 'react-native';
+import {
+  Dimensions,
+  Linking,
+  PanResponder,
+  Platform,
+  View,
+} from 'react-native';
 import { Globals } from '@utils';
 import { AppStack, AuthStack } from './Stacks';
+import { deepLinkGate } from './deepLinkGate';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -150,6 +157,34 @@ function ApplicationNavigator() {
       },
     }),
   ).current;
+  // coop://Authorization
+  const linking = {
+    prefixes: ['coop://', 'https://app.coop.com'],
+    config: {
+      screens: {
+        [AppStacks.Auth]: {
+          path: '',
+          screens: {
+            [Paths.Authorization]: Paths.Authorization,
+            [Paths.Welcome]: Paths.Welcome,
+          },
+        },
+      },
+    },
+    getInitialURL: async () => {
+      const url = await Linking.getInitialURL();
+      if (url) {
+        deepLinkGate.setPending(url.toLowerCase());
+      }
+      return undefined;
+    },
+    subscribe: (_listener: (_url: string) => void) => {
+      const subscription = Linking.addEventListener('url', ({ url }) => {
+        deepLinkGate.setPending(url.toLowerCase());
+      });
+      return () => subscription.remove();
+    },
+  };
 
   const configTranslate =
     Platform.OS == 'android'
@@ -170,6 +205,7 @@ function ApplicationNavigator() {
       }}
     >
       <NavigationContainer
+        linking={linking}
         onReady={() => {
           AppNavigator.setRootNavigator(navigationReference);
         }}

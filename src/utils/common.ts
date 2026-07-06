@@ -38,6 +38,7 @@ export const removeEmptyFieldObject = (
   );
 };
 
+// Auth?page=0&id=2&filter=desc
 export const objectToQueryParams = (o: Record<string, any> = {}) =>
   Object.entries(o)
     .map(([k, v]) => {
@@ -74,6 +75,31 @@ export const objectToQueryParams = (o: Record<string, any> = {}) =>
       return `${encodeURIComponent(k)}=${encodeURIComponent(serialized)}`;
     })
     .join('&');
+
+export const queryParamsToObject = (query: string): Record<string, unknown> => {
+  if (!query) return {};
+  const qIdx = query.indexOf('?');
+  const slashIdx = query.indexOf('//');
+  const str =
+    qIdx !== -1
+      ? query.slice(qIdx + 1)
+      : slashIdx === -1
+        ? query
+        : query.slice(slashIdx + 2);
+  return Object.fromEntries(
+    str.split('&').flatMap(pair => {
+      const eqIdx = pair.indexOf('=');
+      if (eqIdx === -1) return [];
+      const key = pair.slice(0, eqIdx);
+      const raw = pair.slice(eqIdx + 1);
+      try {
+        return [[key, JSON.parse(raw)]];
+      } catch {
+        return [[key, raw]];
+      }
+    }),
+  );
+};
 
 export function getErrorMessageApi(error: any) {
   return error?.response?.data?.message || error?.message || 'unknown error';
