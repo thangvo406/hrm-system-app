@@ -28,11 +28,14 @@ const onContribution = () => {
 function RegisterCompleted() {
   const { t } = useTranslation();
   const { params } = useRoute();
-  const insets = useSafeAreaInsets()
-  const { goFrom, isHideContribution } = params as { goFrom: string; isHideContribution: boolean };
+  const insets = useSafeAreaInsets();
+  const { goFrom, isHideContribution } = params as {
+    goFrom: string;
+    isHideContribution: boolean;
+  };
   const desc =
     goFrom == 'forgot_pass'
-      ? 'forgot_pass.update_success_desc'
+      ? 'forgot_password.desc_success'
       : 'register_completed.desc';
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -64,7 +67,7 @@ function RegisterCompleted() {
             testID="register-completed-contribution"
             title={t('register_completed.contribution')}
             type="outline-bordered-rounded"
-            />
+          />
         )}
       </View>
     </View>

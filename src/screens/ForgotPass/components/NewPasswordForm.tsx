@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     marginVertical: ScaleSize(24),
   },
   footer: {
-    bottom: ifAndroid(ScaleSize(25), 0),
+    bottom: ScaleSize(25),
     left: 0,
     position: 'absolute',
     right: 0,

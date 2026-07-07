@@ -78,6 +78,7 @@ const onLoginGoogle = async (): Promise<SocialLoginToken | undefined> => {
     await GoogleSignin.hasPlayServices({
       showPlayServicesUpdateDialog: true,
     });
+    await GoogleSignin.signOut();
     const response = await GoogleSignin.signIn();
     if (isSuccessResponse(response)) {
       return {
@@ -174,7 +175,7 @@ export const useAuthorization = () => {
 
   const onLoginSuccess = (response: AuthResponse) => {
     setLoading(false);
-    if(response?.roleCode == MEMBERSHIP_TYPE.NON_MEMBER) {
+    if (response?.roleCode == MEMBERSHIP_TYPE.NON_MEMBER) {
       AppNavigator.navigate(Paths.SchoolSelection);
       return;
     }
@@ -188,11 +189,13 @@ export const useAuthorization = () => {
       [
         NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED,
         NEED_INFO_LOGIN_CODE.MEMBERSHIP_INCOMPLETE,
+        NEED_INFO_LOGIN_CODE.VERIFY_UNIVERSITY_EMAIL,
       ].includes(error?.code)
     ) {
       const stepMapping = {
         [NEED_INFO_LOGIN_CODE.MEMBERSHIP_INCOMPLETE]: STEP.CHOOSE_MEMBERSHIP,
         [NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED]: STEP.REGISTER_INPUT,
+        [NEED_INFO_LOGIN_CODE.VERIFY_UNIVERSITY_EMAIL]: STEP.CHOOSE_MEMBERSHIP,
       };
       const step = stepMapping[error?.code];
       register.goToStep(step);

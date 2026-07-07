@@ -117,6 +117,9 @@ export const useForgotPass = () => {
     );
   };
   const onSubmitRegisterInput = () => {
+    setStep(FORGOT_STEP.NEW_PASS_FORM);
+  };
+  const onPressVerify = (callback: any) => {
     dispatch(
       verifyOtpForgotPassRequest({
         email: formData.current.email,
@@ -128,10 +131,10 @@ export const useForgotPass = () => {
         termsAgreed: true,
         onSuccess: (response: any) => {
           formData.current.resetToken = response?.resetToken;
-          setStep(FORGOT_STEP.NEW_PASS_FORM);
+          callback?.(true);
         },
         onFailure: msg => {
-          setErrorMessage(msg);
+          AppNavigator.showSnackBar({ message: msg, type: 'failed' });
         },
       }),
     );
@@ -157,6 +160,7 @@ export const useForgotPass = () => {
     // disabled = false,
     errorMessage,
     onInfoChange,
+    onPressVerify,
     onPressCarrier,
     onPressRequestOtp,
     onSubmit,

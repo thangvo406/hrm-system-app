@@ -19,6 +19,7 @@ function ForgotPass() {
     onSubmit,
     onToggleAgreement,
     step,
+    onPressVerify,
   } = useForgotPass();
 
   const insets = useSafeAreaInsets();
@@ -26,11 +27,13 @@ function ForgotPass() {
   const detailProps = {
     agreed,
     carrier,
+    isShowFieldName: true,
     onInfoChange,
     onPressCarrier,
     onPressRequestOtp,
     onSubmit,
     onToggleAgreement,
+    onPressVerify,
     titleRegisterInfoKey: 'forgot_password.title_register_info',
   };
 

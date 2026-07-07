@@ -36,6 +36,7 @@ const OTP_COOLDOWN_SECONDS = 300;
 const OTP_TICK_MS = 1000;
 const SECONDS_PER_MINUTE = 60;
 const SECONDS_PAD_LENGTH = 2;
+const NAME_MAX_LENGTH = 255;
 
 const formatCountdown = (totalSeconds: number): string => {
   const minutes = Math.floor(totalSeconds / SECONDS_PER_MINUTE);
@@ -46,7 +47,7 @@ const formatCountdown = (totalSeconds: number): string => {
 export type InputInfoValues = {
   birthday: string;
   indentify: string;
-  // name: string;
+  name: string;
   otp: string;
   phone: string;
 };
@@ -54,6 +55,7 @@ export type InputInfoValues = {
 type InputInfoProps = {
   readonly agreed: boolean;
   readonly carrier: string;
+  readonly isShowFieldName: boolean;
   readonly titleRegisterInfoKey: string;
   readonly disabled?: boolean;
   readonly onInfoChange: (field: keyof InputInfoValues, value: string) => void;
@@ -100,13 +102,13 @@ const DEFAULT_INFO: InputInfoValues = {
 const FIELD_INPUT_INFO = {
   birthday: 'birthday',
   indentify: 'indentify',
-  // name: 'name',
+  name: 'name',
   otp: 'otp',
   phone: 'phone',
 } as const satisfies Record<keyof InputInfoValues, keyof InputInfoValues>;
 
 const FIELD_FLOW_ORDER: readonly (keyof InputInfoValues)[] = [
-  // FIELD_INPUT_INFO.name,
+  FIELD_INPUT_INFO.name,
   FIELD_INPUT_INFO.birthday,
   FIELD_INPUT_INFO.indentify,
   FIELD_INPUT_INFO.phone,
@@ -123,6 +125,7 @@ function InputInfo({
   onSubmit,
   onToggleAgreement,
   onPressVerify,
+  isShowFieldName,
   titleRegisterInfoKey = 'register_flow.identity_title',
 }: InputInfoProps) {
   const { t } = useTranslation();
@@ -132,8 +135,10 @@ function InputInfo({
   // const nameReference = useRef<TextInput>(null);
   const birthdayReference = useRef<TextInput>(null);
   const indentifyReference = useRef<TextInput>(null);
+  const nameReference = useRef<TextInput>(null);
   const phoneReference = useRef<TextInput>(null);
   const otpReference = useRef<TextInput>(null);
+  const verifiedOtp = useRef(false);
   const [enableBtnSubmit, setEnableBtnSubmit] = useState(false);
   const insset = useSafeAreaInsets();
   const fieldReferences: Record<
@@ -151,6 +156,10 @@ function InputInfo({
       otpReference.current?.focus();
     }
   }, [otpSent]);
+
+  useEffect(() => {
+    setEnableBtnSubmit(verifiedOtp.current ? agreed : false);
+  }, [agreed]);
 
   useEffect(() => {
     if (countDownTime <= 0) return;
@@ -191,6 +200,7 @@ function InputInfo({
   const _onPressVerify = () => {
     onPressVerify((isSuccess: boolean) => {
       if (isSuccess) {
+        verifiedOtp.current = true;
         setEnableBtnSubmit(true);
       }
     });
@@ -213,7 +223,7 @@ function InputInfo({
       Keyboard.dismiss();
       return;
     }
-    fieldReferences[nextField].current?.focus();
+    fieldReferences[nextField].current?.focus?.();
   };
 
   const isFormValid =
@@ -281,17 +291,19 @@ function InputInfo({
       <View style={styles.divider} />
 
       <View style={styles.formBlock}>
-        {/* <TextInputRegister
-          maxLength={NAME_MAX_LENGTH}
-          onChangeText={handleChange(FIELD_INPUT_INFO.name)}
-          onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.name)}
-          placeholder={t('register_flow.name_placeholder')}
-          ref={nameReference}
-          returnKeyType="next"
-          submitBehavior="submit"
-          testID="register-flow-name"
-          value={values.name}
-        /> */}
+        {!!isShowFieldName && (
+          <TextInputRegister
+            maxLength={NAME_MAX_LENGTH}
+            onChangeText={handleChange(FIELD_INPUT_INFO.name)}
+            onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.name)}
+            placeholder={t('register_flow.name_placeholder')}
+            ref={nameReference}
+            returnKeyType="next"
+            submitBehavior="submit"
+            testID="register-flow-name"
+            value={values.name}
+          />
+        )}
 
         <View style={styles.dobRow}>
           <View style={[styles.dobDateField]}>
@@ -408,7 +420,7 @@ function InputInfo({
               onPress={_onPressVerify}
               disabled={!isFormValid || enableBtnSubmit}
             >
-              {enableBtnSubmit ? (
+              {verifiedOtp.current ? (
                 <Image
                   name="ic_check"
                   type="svg"
