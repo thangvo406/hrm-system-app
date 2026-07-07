@@ -118,6 +118,7 @@ function Home() {
     isShowCtaContribute,
     profile,
     storeOrderRecent,
+    isHideContribute,
     onPressEmptyStore,
     onGoToProduct,
     onPressPayNow,
@@ -142,15 +143,18 @@ function Home() {
           onPressPayNow={onPressPayNow}
         />
         <View style={styles.row}>
-          <FeatureCard
-            desc={t('home.dividend_desc')}
-            image={imageNames.img_discount}
-            isShowCtaRight={isShowCtaContribute}
-            testID="home-dividend"
-            ctaRight="조합 가입하기"
-            onPress={onPressContribution}
-            title={t('home.dividend_title')}
-          />
+          {!isHideContribute && (
+            <FeatureCard
+              desc={t('home.dividend_desc')}
+              image={imageNames.img_discount}
+              isShowCtaRight={isShowCtaContribute}
+              testID="home-dividend"
+              ctaRight="조합 가입하기"
+              onPress={onPressContribution}
+              title={t('home.dividend_title')}
+            />
+          )}
+
           <FeatureCard
             desc={t('home.order_desc')}
             image={imageNames.img_place_map}

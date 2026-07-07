@@ -101,6 +101,12 @@ export type RemoveCartItemPayload = {
 export type CreateOrderPayload = AppCallback<CreateOrderResponse> &
   CreateOrderRequest;
 
+export interface IncreaseContributeRequest {
+  amount: number;
+  paymentMethod: string;
+  kcpPaymentType: string;
+  vaBankCode: string;
+}
 export interface CreateOrderResponse {
   id: number;
   userId: number;
@@ -227,3 +233,6 @@ export type InitChargePayload = AppCallback<InitChargeResponse> &
 
 export type GenerateQRCodePayload = AppCallback<GenerateQRCodeResponse> &
   GenerateQRCodeRequest;
+
+export type IncreaseContributePayload = AppCallback &
+  IncreaseContributeRequest;

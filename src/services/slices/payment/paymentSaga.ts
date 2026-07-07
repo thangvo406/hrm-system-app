@@ -30,6 +30,7 @@ import {
   getListCart,
   getOrderHistories,
   getOrderHistoryDetail,
+  increaseContribution,
   initCharge,
   removeCartItem,
   updateCartItem,
@@ -44,6 +45,7 @@ import {
   getListCartRequest,
   getOrderHistoriesRequest,
   getOrderHistoryDetailRequest,
+  increaseContributionRequest,
   initChargeRequest,
   removeCartItemRequest,
   updateCartItemRequest,
@@ -190,6 +192,19 @@ function* initChargeWorker(
   }
 }
 
+function* increaseContributionWorker(
+  action: PayloadAction<import('@type/payment').IncreaseContributePayload>,
+): Generator<unknown, void, void> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    yield call(increaseContribution, request);
+    onSuccess?.();
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 export function* paymentSaga() {
   yield takeLatest(createOrderRequest.type, createOrderWorker);
   yield takeLatest(generateQRCodeRequest.type, generateQRCodeWorker);
@@ -207,6 +222,7 @@ export function* paymentSaga() {
     getOrderHistoryDetailRequest.type,
     getOrderHistoryDetailWorker,
   );
+  yield takeLatest(increaseContributionRequest.type, increaseContributionWorker);
   yield takeLatest(initChargeRequest.type, initChargeWorker);
   yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
   yield takeLatest(updateCartItemRequest.type, updateCartItemWorker);

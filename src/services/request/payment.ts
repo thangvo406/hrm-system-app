@@ -8,6 +8,7 @@ import type {
   GetListCartPayload,
   GetOrderHistoriesRequest,
   GetOrderHistoryDetailRequest,
+  IncreaseContributeRequest,
   InitChargeRequest,
   InitChargeResponse,
   OrderHistoryDetailItem,
@@ -152,4 +153,10 @@ export const initCharge = async (
     request,
   );
   return response.data;
+};
+
+export const increaseContribution = async (
+  request: IncreaseContributeRequest,
+): Promise<void> => {
+  await httpRequest.post(EndPoints.CONTRIBUTION.increase, request);
 };

@@ -15,6 +15,11 @@ export const EndPoints = {
     resendVerifyAcademicMail: 'auth/register/university-email/resend',
     selectSchool: 'user/session/university',
   },
+  CONTRIBUTION: {
+    increase: 'contribution/increase-request',
+    summary: 'contribution/summary',
+    histories: 'contribution/history',
+  },
   ACCOUNT: {
     autoCompleteAddress: (request: string) => `?${request}`,
     deletePushId: (pushId: string) =>

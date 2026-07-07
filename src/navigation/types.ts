@@ -21,6 +21,13 @@ export type RootStackParamList = {
   [Paths.SchoolSelection]: undefined;
   [Paths.Carts]: undefined;
   [Paths.Contribution]: undefined;
+  [Paths.ContributionInput]: undefined;
+  [Paths.ConfirmPaymentContribution]: { amount: number } | undefined;
+  [Paths.PaymentConfirmContributeFinish]: {
+    amount: number;
+    paymentMethod: string;
+    paymentTime: string;
+  } | undefined;
   [Paths.Example]: undefined;
   [Paths.ForgotPass]: undefined;
   [Paths.Home]: undefined;

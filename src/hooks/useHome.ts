@@ -65,6 +65,9 @@ export const useHome = () => {
   useNotification();
   const dispatch = useAppDispatch();
 
+  const isHideContribute =
+    profile?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER;
+
   const isShowCtaContribute = useMemo(() => {
     return !(
       profile?.membershipType != MEMBERSHIP_TYPE.NON_MEMBER &&
@@ -142,7 +145,7 @@ export const useHome = () => {
         confirmTitle: t('home.pending_dialog.confirm'),
       });
     } else {
-      AppNavigator.navigate(Paths.Contribution);
+      AppNavigator.navigate(Paths.ContributionInput);
     }
   };
 
@@ -156,7 +159,7 @@ export const useHome = () => {
         cancelTitle: t('common.cancel'),
         confirmTitle: t('common.confirm'),
         onConfirm: () => {
-          AppNavigator.navigate(Paths.Contribution);
+          AppNavigator.navigate(Paths.ContributionInput);
         },
         screen: Information,
         title: t('home.need_contribution_dialog.title'),
@@ -179,6 +182,7 @@ export const useHome = () => {
     currentWallet,
     isShowCtaContribute,
     storeOrderRecent,
+    isHideContribute,
     onGoToProduct,
     onPressPayNow,
     onPressEmptyStore: onPressStore,

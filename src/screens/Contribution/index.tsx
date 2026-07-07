@@ -31,6 +31,10 @@ const onOpenPayCard = () => {
   AppNavigator.navigate(Paths.PayCard);
 };
 
+const onOpenContributionInput = () => {
+  AppNavigator.navigate(Paths.ContributionInput);
+};
+
 type ContributionRowProps = {
   readonly label: string;
 };
@@ -93,8 +97,9 @@ function ContributionCard() {
         <View style={styles.contributionActions}>
           <TouchableOpacity
             activeOpacity={0.85}
+            onPress={onOpenContributionInput}
             style={styles.whitePill}
-            testID="contribution-history"
+            testID="contribution-capital-input"
           >
             <Text style={styles.whitePillText}>
               {t('contribution.capital_contribution')}
