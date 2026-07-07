@@ -30,7 +30,7 @@ const openMenu = () => {
 };
 
 const goToPayCard = () => {
-  AppNavigator.navigate(Paths.PayCard);
+  AppNavigator.navigate(Paths.ContributionHistory);
 };
 
 const onPressStore = () => {

@@ -1,5 +1,5 @@
 import type { ListRenderItem } from 'react-native';
-import type { PayCardTransaction } from '@hooks';
+import type { TransactionHistory } from '@type';
 
 import { EmptyView, TransactionHistoriesLoading } from '@components';
 import { FlatList } from 'react-native';
@@ -8,18 +8,19 @@ import { useTranslation } from 'react-i18next';
 import imageNames from '@assets/images/names';
 import { MemoTransactionRow } from './TransactionList';
 
-const keyExtractor = (item: PayCardTransaction) => item.id;
+const keyExtractor = (item: TransactionHistory) => String(item.id);
 
-const renderItem: ListRenderItem<PayCardTransaction> = ({ item }) => (
+const renderItem: ListRenderItem<TransactionHistory> = ({ item }) => (
   <MemoTransactionRow item={item} />
 );
 
 type PointHistoryListProps = {
-  readonly data: readonly PayCardTransaction[];
+  readonly data: readonly TransactionHistory[];
   readonly loading: boolean;
+  readonly onLoadMore?: () => void;
 };
 
-function PointHistoryList({ loading, data }: PointHistoryListProps) {
+function PointHistoryList({ loading, data, onLoadMore = undefined }: PointHistoryListProps) {
   const { t } = useTranslation();
 
   return (
@@ -28,8 +29,10 @@ function PointHistoryList({ loading, data }: PointHistoryListProps) {
         <TransactionHistoriesLoading />
       ) : data?.length > 0 ? (
         <FlatList
-          data={data}
+          data={data as TransactionHistory[]}
           keyExtractor={keyExtractor}
+          onEndReached={onLoadMore}
+          onEndReachedThreshold={0.4}
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
         />

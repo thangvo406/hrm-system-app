@@ -1,5 +1,5 @@
 import type { ListRenderItem } from 'react-native';
-import type { TransactionHistory } from '@type';
+import type { ContributeHistory, TransactionHistory } from '@type';
 
 import { AppButton, EmptyView } from '@components';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
@@ -16,22 +16,27 @@ const TEXT_MUTED = '#7A7A7A';
 const AMOUNT_CREDIT_COLOR = '#3eb44a';
 const AMOUNT_DEBIT_COLOR = 'rgba(211, 47, 47, 0.5)';
 const AMOUNT_TRAN_FAILED = '#D32F2F';
+const AMOUNT_TRAN_PENDING = '#c9c42e';
 
 function TransactionRow({
   item,
   onPress,
 }: {
-  readonly item: TransactionHistory;
-  readonly onPress: (data: any) => void;
+  readonly item: ContributeHistory;
+  readonly onPress?: (data: any) => void;
 }) {
   const { t } = useTranslation();
-  const isSuccess = item.status === 'SUCCESS';
-  const isCredit = item.transactionDirection === 'CREDIT';
-  const amountColor = !isSuccess
-    ? AMOUNT_TRAN_FAILED
-    : isCredit
-      ? AMOUNT_CREDIT_COLOR
-      : AMOUNT_DEBIT_COLOR;
+  const isSuccess = item.status === 'APPROVED';
+  const isPending = item.status === 'PENDING';
+  const isCredit = item.type == 'INCREASE';
+
+  const amountColor = isPending
+    ? AMOUNT_TRAN_PENDING
+    : !isSuccess
+      ? AMOUNT_TRAN_FAILED
+      : isCredit
+        ? AMOUNT_CREDIT_COLOR
+        : AMOUNT_DEBIT_COLOR;
 
   return (
     <AppButton
@@ -44,18 +49,18 @@ function TransactionRow({
           {`${isCredit ? '+' : '-'} ${formatCurrency(item.amount)}`}
         </Text>
         <Text style={styles.date}>
-          {dayjs(item.createdDate).format('YYYY-MM-DD hh:mmA')}
+          {dayjs(item.occurredAt).format('YYYY-MM-DD hh:mmA')}
         </Text>
       </View>
       <View style={styles.bottomRow}>
-        <Text style={styles.description}>{item.description}</Text>
+        <Text style={styles.description}>{item.displayType}</Text>
         <Text style={styles.balance}>
           {t('pay_card.balance_after', {
             amount: formatCurrency(item.balanceAfter),
           })}
         </Text>
       </View>
-      {isSuccess ? undefined : (
+      {isPending || isSuccess ? undefined : (
         <Text style={styles.failedText}>
           {t('pay_card.transaction_failed')}
         </Text>

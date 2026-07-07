@@ -35,7 +35,7 @@ export type RootStackParamList = {
   [Paths.Notifications]: undefined;
   [Paths.OrderCompleted]: undefined;
   [Paths.OrderHistories]: undefined;
-  [Paths.PayCard]: undefined;
+  [Paths.ContributionHistory]: undefined;
   [Paths.PaymentCart]: undefined;
   [Paths.QRCodePayment]: undefined;
   [Paths.RegisterCompleted]: { goFrom: 'forgot_pass' } | undefined;

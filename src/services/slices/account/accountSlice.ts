@@ -76,7 +76,7 @@ const accountSlice = createSlice({
     getProfileSuccess: (state, action: PayloadAction<Profile>) => {
       state.profile = action.payload;
     },
-    getTransactionHistoriesRequest: {
+    getContributeHistoriesRequest: {
       prepare: (payload: GetTransactionHistoriesPayload) => ({ payload }),
       reducer: () => {},
     },
@@ -106,7 +106,7 @@ export const {
   getProfileSuccess,
   getTotalItemCartRequest,
   getTotalItemCartSuccess,
-  getTransactionHistoriesRequest,
+  getContributeHistoriesRequest,
   topUpWalletRequest,
   updateMembershipRequest,
   updatePushIdRequest,

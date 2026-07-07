@@ -8,6 +8,7 @@ import type {
   UpdatePushIdPayload,
 } from './accountSlice';
 import type {
+  ContributeHistory,
   GetCurrentWalletPayload,
   GetTransactionHistoriesPayload,
   TopUpWalletPayload,
@@ -25,7 +26,7 @@ import {
 } from '@services/request/account';
 import {
   getCurrentWallet,
-  getTransactionHistories,
+  getContributeHistories,
   topUpWallet,
 } from '@services/request/wallet';
 import { getTotalItemCart } from '@services/request/payment';
@@ -40,7 +41,7 @@ import {
   getProfileSuccess,
   getTotalItemCartRequest,
   getTotalItemCartSuccess,
-  getTransactionHistoriesRequest,
+  getContributeHistoriesRequest,
   topUpWalletRequest,
   updateMembershipRequest,
   updatePushIdRequest,
@@ -115,13 +116,13 @@ function* getCurrentWalletWorker(
   }
 }
 
-function* getTransactionHistoriesWorker(
+function* getContributeHistoriesWorker(
   action: PayloadAction<GetTransactionHistoriesPayload>,
-): Generator<unknown, void, ListApiResponse<TransactionHistory[]>> {
+): Generator<unknown, void, ListApiResponse<ContributeHistory[]>> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const data: ListApiResponse<TransactionHistory[]> = yield call(
-      getTransactionHistories,
+    const data: ListApiResponse<ContributeHistory[]> = yield call(
+      getContributeHistories,
       request,
     );
     onSuccess?.(data);
@@ -168,8 +169,8 @@ export function* accountSaga() {
   yield takeLatest(updatePushIdRequest.type, updatePushIdWorker);
   yield takeLatest(getCurrentWalletRequest.type, getCurrentWalletWorker);
   yield takeLatest(
-    getTransactionHistoriesRequest.type,
-    getTransactionHistoriesWorker,
+    getContributeHistoriesRequest.type,
+    getContributeHistoriesWorker,
   );
   yield takeLatest(topUpWalletRequest.type, topUpWalletWorker);
 }

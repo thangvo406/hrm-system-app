@@ -2,11 +2,13 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   StoreCartItem,
   CheckoutInfo,
+  ContributeSummary,
   CreateOrderPayload,
   CreateOrderResponse,
   GenerateQRCodePayload,
   GenerateQRCodeResponse,
   GetAddressOrderRecentPayload,
+  GetContributeSummaryPayload,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
   GetOrderHistoriesPayload,
@@ -26,6 +28,7 @@ import {
   createOrder,
   generateQRCode,
   getAddressOrderRecent,
+  getContributeSummary,
   getInfoProductCheckout,
   getListCart,
   getOrderHistories,
@@ -41,6 +44,7 @@ import {
   createOrderRequest,
   generateQRCodeRequest,
   getAddressOrderRecentRequest,
+  getContributeSummaryRequest,
   getInfoProductCheckoutRequest,
   getListCartRequest,
   getOrderHistoriesRequest,
@@ -205,6 +209,19 @@ function* increaseContributionWorker(
   }
 }
 
+function* getContributeSummaryWorker(
+  action: PayloadAction<GetContributeSummaryPayload>,
+): Generator<unknown, void, ContributeSummary> {
+  const { onFailure, onSuccess } = action.payload;
+  try {
+    const response: ContributeSummary = yield call(getContributeSummary);
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 export function* paymentSaga() {
   yield takeLatest(createOrderRequest.type, createOrderWorker);
   yield takeLatest(generateQRCodeRequest.type, generateQRCodeWorker);
@@ -212,6 +229,7 @@ export function* paymentSaga() {
     getAddressOrderRecentRequest.type,
     getAddressOrderRecentWorker,
   );
+  yield takeLatest(getContributeSummaryRequest.type, getContributeSummaryWorker);
   yield takeLatest(
     getInfoProductCheckoutRequest.type,
     getInfoProductCheckoutWorker,

@@ -15,7 +15,7 @@ export { default as OrderCompleted } from './OrderCompleted';
 export { default as OrderHistories } from './OrderHistories';
 export { default as AcademicVerificationFinish } from './AcademicVerificationFinish';
 export { default as OrderHistoryDetail } from './OrderHistoryDetail';
-export { default as PayCard } from './PayCard';
+export { default as ContributionHistory } from './ContributionHistory';
 export { default as PaymentCart } from './PaymentCart';
 export { default as QRCodePayment } from './QRCodePayment/index';
 export { default as ProductDetail } from './ProductDetail';

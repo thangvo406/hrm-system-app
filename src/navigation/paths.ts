@@ -17,7 +17,7 @@ export enum Paths {
   AcademicVerificationFinish = 'academic_verify_finish',
   OrderHistories = 'order_histories',
   OrderHistoryDetail = 'order_history_detail',
-  PayCard = 'pay_card',
+  ContributionHistory = 'contribution_history',
   PaymentCart = 'payment_cart',
   QRCodePayment = 'qr_code_payment',
   RegisterCompleted = 'register_completed',

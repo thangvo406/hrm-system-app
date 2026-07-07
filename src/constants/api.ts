@@ -17,7 +17,7 @@ export const EndPoints = {
   CONTRIBUTION: {
     increase: 'contribution/increase-request',
     summary: 'contribution/summary',
-    histories: 'contribution/history',
+    histories: (request: string) => `contribution/history?${request}`,
   },
   ACCOUNT: {
     autoCompleteAddress: (request: string) => `?${request}`,

@@ -1,5 +1,16 @@
 import type { AppCallback, ListApiResponse } from './common';
 
+export type ContributeHistory = {
+  id: number;
+  type: string;
+  displayType: string;
+  amount: number;
+  balanceBefore: number;
+  balanceAfter: number;
+  paymentMethod: string;
+  status: string;
+  occurredAt: string;
+};
 export type IRequestGetTransactionHistories = {
   balanceAccountType: string;
   page: number;
@@ -42,7 +53,7 @@ export type IRequestTopUpWallet = {
 export type GetCurrentWalletPayload = AppCallback<Wallet>;
 
 export type GetTransactionHistoriesPayload = AppCallback<
-  ListApiResponse<TransactionHistory[]>
+  ListApiResponse<ContributeHistory[]>
 > &
   IRequestGetTransactionHistories;
 

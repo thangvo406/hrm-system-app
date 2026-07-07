@@ -236,3 +236,14 @@ export type GenerateQRCodePayload = AppCallback<GenerateQRCodeResponse> &
 
 export type IncreaseContributePayload = AppCallback &
   IncreaseContributeRequest;
+
+export type ContributeSummary = {
+  readonly amount: number;
+  readonly contributionStatus: string;
+  readonly createdDate: string;
+  readonly id: number;
+  readonly membershipType: string;
+  readonly paymentMethod: string;
+};
+
+export type GetContributeSummaryPayload = AppCallback<ContributeSummary>;

@@ -2,7 +2,7 @@ import { Button, HeaderDetail, SegmentedTab } from '@components';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useMemo } from 'react';
 import { ScaleSize } from '@kits/core';
-import { usePayCard } from '@hooks';
+import { useContributeHistory } from '@hooks';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
 import { formatCurrency } from '@utils/product';
@@ -25,7 +25,7 @@ function PayCard() {
     loading,
     onChangeTab,
     onPressTranItem,
-  } = usePayCard();
+  } = useContributeHistory();
 
   const historyTabs = useMemo(
     () => [
@@ -48,7 +48,7 @@ function PayCard() {
         render: () => (
           <PointHistoryList
             loading={loading}
-            data={pointTransactions}
+            data={pointTransactions ?? []}
             // onPressItem={onPressTranItem}
             onLoadMore={onLoadMore}
           />

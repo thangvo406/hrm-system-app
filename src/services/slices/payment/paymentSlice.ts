@@ -3,6 +3,7 @@ import type {
   CreateOrderPayload,
   GenerateQRCodePayload,
   GetAddressOrderRecentPayload,
+  GetContributeSummaryPayload,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
   GetOrderHistoriesPayload,
@@ -71,6 +72,10 @@ const paymentSlice = createSlice({
       prepare: (payload: IncreaseContributePayload) => ({ payload }),
       reducer: () => {},
     },
+    getContributeSummaryRequest: {
+      prepare: (payload: GetContributeSummaryPayload) => ({ payload }),
+      reducer: () => {},
+    },
   },
 });
 
@@ -78,6 +83,7 @@ export const {
   createOrderRequest,
   generateQRCodeRequest,
   getAddressOrderRecentRequest,
+  getContributeSummaryRequest,
   getInfoProductCheckoutRequest,
   getListCartRequest,
   getOrderHistoriesRequest,

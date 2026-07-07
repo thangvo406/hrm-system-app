@@ -27,8 +27,8 @@ const CONTRIBUTION_AMOUNT = '2,500,000';
 const DEPOSIT_AMOUNT = '100,000';
 const POINT_AMOUNT = '11,000';
 
-const onOpenPayCard = () => {
-  AppNavigator.navigate(Paths.PayCard);
+const onOpenContributionHistory = () => {
+  AppNavigator.navigate(Paths.ContributionHistory);
 };
 
 const onOpenContributionInput = () => {
@@ -129,7 +129,7 @@ function PaySection() {
         <Text style={styles.payTitle}>{t('contribution.pay_title')}</Text>
         <TouchableOpacity
           activeOpacity={0.7}
-          onPress={onOpenPayCard}
+          onPress={onOpenContributionHistory}
           style={styles.payLinkRow}
           testID="contribution-pay-link"
         >

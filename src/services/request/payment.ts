@@ -1,6 +1,7 @@
 import type {
   StoreCartItem,
   CheckoutInfo,
+  ContributeSummary,
   CreateOrderPayload,
   GenerateQRCodeRequest,
   GenerateQRCodeResponse,
@@ -159,4 +160,11 @@ export const increaseContribution = async (
   request: IncreaseContributeRequest,
 ): Promise<void> => {
   await httpRequest.post(EndPoints.CONTRIBUTION.increase, request);
+};
+
+export const getContributeSummary = async (): Promise<ContributeSummary> => {
+  const response = await httpRequest.get<SingleApiResponse<ContributeSummary>>(
+    EndPoints.CONTRIBUTION.summary,
+  );
+  return response.data;
 };

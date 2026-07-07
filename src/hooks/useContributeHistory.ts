@@ -6,9 +6,9 @@ import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import {
   getCurrentWalletRequest,
-  getTransactionHistoriesRequest,
+  getContributeHistoriesRequest,
 } from '@services/slices/account/accountSlice';
-import { ListApiResponse, TransactionHistory } from '@type';
+import { ContributeHistory, ListApiResponse, TransactionHistory } from '@type';
 import { useCallback, useRef, useState } from 'react';
 
 export type PayCardHistoryTab = 'pay' | 'point';
@@ -26,7 +26,7 @@ const onRecharge = () => {
   AppNavigator.navigate(Paths.TopUp);
 };
 
-export const usePayCard = () => {
+export const useContributeHistory = () => {
   const [historyTab, setHistoryTab] = useState<PayCardHistoryTab>('pay');
   const dispatch = useAppDispatch();
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
@@ -39,9 +39,7 @@ export const usePayCard = () => {
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
 
-  const handleGetTranSuccess = (
-    data: ListApiResponse<TransactionHistory[]>,
-  ) => {
+  const handleGetTranSuccess = (data: ListApiResponse<ContributeHistory[]>) => {
     isLast.current = data.last;
     setLoading(false);
     const executor =
@@ -67,7 +65,7 @@ export const usePayCard = () => {
     useCallback(() => {
       const balanceAccountType = historyTab === 'pay' ? 'PAY_MONEY' : 'POINT';
       dispatch(
-        getTransactionHistoriesRequest({
+        getContributeHistoriesRequest({
           page: currentPage,
           size: 20,
           balanceAccountType,
