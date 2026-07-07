@@ -12,7 +12,6 @@ export const EndPoints = {
     refreshToken: 'auth/refresh',
     logout: 'auth/logout',
     memberShipVerify: 'auth/register/membership-verification',
-    resendVerifyAcademicMail: 'auth/register/university-email/resend',
     selectSchool: 'user/session/university',
   },
   CONTRIBUTION: {

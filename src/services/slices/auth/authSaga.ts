@@ -6,7 +6,6 @@ import type {
   LoginSocialPayload,
   MemberShipVerifyPayload,
   RegisterUserPayload,
-  ResendVerifyAcademicMailPayload,
   SendOTPPayload,
   SendOtpForgotPassPayload,
   SubmitForgotPassPayload,
@@ -20,7 +19,6 @@ import {
   loginSocial,
   memberShipVerify,
   registerUser,
-  resendVerifyAcademicMail,
   selectSchool,
   sendOTP,
   sendOtpForgotPass,
@@ -45,7 +43,6 @@ import {
   memberShipVerifyRequest,
   refreshTokenRequest,
   registerUserRequest,
-  resendVerifyAcademicMailRequest,
   selectSchoolRequest,
   selectSchoolSuccess,
   sendOTPRequest,
@@ -219,17 +216,6 @@ function* memberShipVerifyWorker(
   }
 }
 
-function* resendVerifyAcademicMailWorker(
-  action: PayloadAction<ResendVerifyAcademicMailPayload>,
-) {
-  try {
-    yield call(resendVerifyAcademicMail, action.payload);
-    action.payload.onSuccess?.();
-  } catch (error) {
-    action.payload.onFailure?.(getErrorMessageApi(error));
-  }
-}
-
 function* selectSchoolWorker(action: PayloadAction<SelectSchoolRequest>) {
   try {
     yield call(selectSchool, action.payload);
@@ -275,10 +261,6 @@ export function* authSaga() {
   yield takeLatest(verifyOtpForgotPassRequest.type, verifyOtpForgotPassWorker);
   yield takeLatest(submitForgotPassRequest.type, submitForgotPassWorker);
   yield takeLatest(memberShipVerifyRequest.type, memberShipVerifyWorker);
-  yield takeLatest(
-    resendVerifyAcademicMailRequest.type,
-    resendVerifyAcademicMailWorker,
-  );
   yield takeLatest(selectSchoolRequest.type, selectSchoolWorker);
   yield takeLatest(logout.type, logoutWorker);
   yield takeLatest(refreshTokenRequest.type, refreshTokenWorker);

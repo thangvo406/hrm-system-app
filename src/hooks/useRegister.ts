@@ -8,7 +8,6 @@ import { useAppDispatch } from '@services/common/storeHooks';
 import {
   memberShipVerifyRequest,
   registerUserRequest,
-  resendVerifyAcademicMailRequest,
   sendOTPRequest,
   verifyOTPRequest,
 } from '@services/slices/auth/authSlice';
@@ -308,15 +307,17 @@ export const useRegister = () => {
 
   const onResendEmailAcademic = () => {
     dispatch(
-      resendVerifyAcademicMailRequest({
-        signupToken: formData.current?.signupToken ?? '',
+      memberShipVerifyRequest({
+        signupToken: formData.current?.signupToken,
+        membershipType: formData.current?.membershipId,
+        universityEmail: formData.current?.mailAcademic,
         onSuccess: () => {
           AppNavigator.showSnackBar({
             message: t('input_academic_email.resend_email_success'),
             type: 'success',
           });
         },
-        onFailure: (error: string) => {
+        onFailure(error) {
           AppNavigator.showSnackBar({
             message: error,
             type: 'failed',

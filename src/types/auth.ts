@@ -11,10 +11,6 @@ export type IResponseRegisterVerifyOtp = {
   signupToken: string;
 };
 
-export type resendVerifyAcademicMailRequest = {
-  signupToken: string;
-} & AppCallback;
-
 export type SelectSchoolRequest = {
   universityId: number;
 } & AppCallback;

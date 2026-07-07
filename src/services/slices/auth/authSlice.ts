@@ -79,13 +79,9 @@ export type SubmitForgotPassPayload = {
 } & AuthCallback;
 
 export type MemberShipVerifyPayload = {
-  membershipType: string;
-  signupToken: string;
-  universityEmail: string;
-} & AuthCallback;
-
-export type ResendVerifyAcademicMailPayload = {
-  signupToken: string;
+  membershipType?: string;
+  signupToken?: string;
+  universityEmail?: string;
 } & AuthCallback;
 
 export type SelectSchoolSuccessPayload = {
@@ -170,10 +166,6 @@ const authSlice = createSlice({
       prepare: (payload: MemberShipVerifyPayload) => ({ payload }),
       reducer: () => {},
     },
-    resendVerifyAcademicMailRequest: {
-      prepare: (payload: ResendVerifyAcademicMailPayload) => ({ payload }),
-      reducer: () => {},
-    },
     // Persist the user's selected university on the session.
     selectSchoolRequest: {
       prepare: (payload: SelectSchoolRequest) => ({ payload }),
@@ -212,7 +204,6 @@ export const {
   memberShipVerifyRequest,
   refreshTokenRequest,
   registerUserRequest,
-  resendVerifyAcademicMailRequest,
   selectSchoolRequest,
   selectSchoolSuccess,
   sendOTPRequest,
