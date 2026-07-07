@@ -29,7 +29,6 @@ const AUTH_SCREENS: ScreenDef[] = [
     component: Screens.ForgotPass as ComponentType<unknown>,
     name: Paths.ForgotPass,
   },
-  { component: Screens.Welcome as ComponentType<unknown>, name: Paths.Welcome },
   {
     component: Screens.RegisterCompleted as ComponentType<unknown>,
     name: Paths.RegisterCompleted,

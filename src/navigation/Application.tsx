@@ -202,7 +202,6 @@ function ApplicationNavigator() {
           path: '',
           screens: {
             [Paths.Authorization]: Paths.Authorization,
-            [Paths.Welcome]: Paths.Welcome,
           },
         },
       },

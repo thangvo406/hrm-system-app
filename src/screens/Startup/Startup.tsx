@@ -44,7 +44,7 @@ const handleNavigateScreen = () => {
   if (Globals.isAuthenticated) {
     AppNavigator.replace(AppStacks.App);
   } else {
-    AppNavigator.replace(Paths.Welcome);
+    AppNavigator.replace(Paths.Authorization);
   }
 };
 
