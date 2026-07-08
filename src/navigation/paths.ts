@@ -18,6 +18,7 @@ export enum Paths {
   OrderHistories = 'order_histories',
   OrderHistoryDetail = 'order_history_detail',
   ContributionHistory = 'contribution_history',
+  ContributeHistoryDetail = 'contribute_history_detail',
   PaymentCart = 'payment_cart',
   QRCodePayment = 'qr_code_payment',
   RegisterCompleted = 'register_completed',

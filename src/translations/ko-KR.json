@@ -52,6 +52,8 @@
       "verification": "인증",
       "verify": "인증",
       "choose_carrier": "통신사 선택",
+      "error_identify_min": "주민등록번호 뒤 {{min}}자리를 입력해 주세요.",
+      "error_birthday_min": "주민등록번호 앞 {{min}}자리(생년월일)를 입력해 주세요.",
       "contribution_dialog": {
         "desc": "조합원 가입을 위해 최초 1회 출자금 납부가 필요합니다. 계속 진행할까요?"
       }
@@ -197,16 +199,37 @@
       "point_title": "Point",
       "point_balance": "잔여 point : {{amount}} point",
       "history_title": "이력정보",
-      "tab_pay": "페이머니",
-      "tab_point": "포인트",
+      "tab_pay": "출자 이력",
+      "tab_point": "배당 이력",
       "balance_after": "잔액 : {{amount}}원",
       "empty": "이력이 없습니다.",
       "transaction_failed": "거래 실패",
       "transaction_detail": {
         "title": "출자 내역",
-        "date_label": "출자일시",
+        "date_label": "출자일시: {{date}}",
         "amount_label": "출자금",
         "type_label": "출자 유형"
+      }
+    },
+    "contribute_history": {
+      "title": "출자 내역",
+      "contribution_status_title": "출자금 현황",
+      "add_contribute": "추가 출자",
+      "cumulative_contribution": "누적 출자금 : {{amount}}원",
+      "dividend_info_title": "배당금 정보",
+      "dividend_detail": "상세 조회",
+      "cumulative_dividend": "누적 배당금 : {{amount}}원",
+      "expected_dividend": "예상 배당금 : {{amount}}원",
+      "expected_dividend_date": "예상 배당일 : {{date}}",
+      "detail": {
+        "title": "출자 내역",
+        "date_label": "납부일시",
+        "amount_label": "출자금",
+        "payment_method_label": "출자 유형",
+        "statuses": {
+          "completed": "납부 완료",
+          "pending": "납부 대기"
+        }
       }
     },
     "announcements": {

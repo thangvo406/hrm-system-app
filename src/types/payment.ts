@@ -103,9 +103,10 @@ export type CreateOrderPayload = AppCallback<CreateOrderResponse> &
 
 export interface IncreaseContributeRequest {
   amount: number;
-  paymentMethod: string;
-  kcpPaymentType: string;
-  vaBankCode: string;
+  payment: {
+    paymentType: string;
+    vaBankCode: string;
+  };
 }
 export interface CreateOrderResponse {
   id: number;
@@ -183,7 +184,7 @@ export type OrderHistoryDetailItem = {
 export interface OrderSummary {
   productPrice: number;
   attributePrice: number;
-  voucherPrice: any;
+  voucherPrice: number;
   totalPrice: number;
   discountPrice: number;
   finalPrice: number;
@@ -234,16 +235,36 @@ export type InitChargePayload = AppCallback<InitChargeResponse> &
 export type GenerateQRCodePayload = AppCallback<GenerateQRCodeResponse> &
   GenerateQRCodeRequest;
 
-export type IncreaseContributePayload = AppCallback &
-  IncreaseContributeRequest;
+export type IncreaseContributePayload = AppCallback & IncreaseContributeRequest;
 
 export type ContributeSummary = {
-  readonly amount: number;
-  readonly contributionStatus: string;
-  readonly createdDate: string;
-  readonly id: number;
-  readonly membershipType: string;
-  readonly paymentMethod: string;
+  readonly currentContribution: number;
+  readonly totalDividend: number;
+  readonly expectedDividend: number;
+  readonly expectedDividendDate: string;
 };
+
+export type ContributeHistoryDetail = {
+  id: number;
+  type: string;
+  displayType: string;
+  amount: number;
+  status: string;
+  paymentCompleted: boolean;
+  adminApproved: boolean;
+  paymentMethod: string;
+  requestedAt: string;
+  processedAt: string;
+  adminNote: string;
+  kcpSessionData: string;
+  virtualAccount: string;
+};
+
+export type GetContributeHistoryDetailRequest = {
+  readonly historyId: number | string;
+};
+
+export type GetContributeHistoryDetailPayload =
+  GetContributeHistoryDetailRequest & AppCallback<ContributeHistoryDetail>;
 
 export type GetContributeSummaryPayload = AppCallback<ContributeSummary>;

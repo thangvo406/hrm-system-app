@@ -1,10 +1,12 @@
 import type {
   StoreCartItem,
   CheckoutInfo,
+  ContributeHistoryDetail,
   ContributeSummary,
   CreateOrderPayload,
   GenerateQRCodeRequest,
   GenerateQRCodeResponse,
+  GetContributeHistoryDetailRequest,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
   GetOrderHistoriesRequest,
@@ -139,20 +141,18 @@ export const getAddressOrderRecent = async (): Promise<string[]> => {
 export const generateQRCode = async (
   request: GenerateQRCodeRequest,
 ): Promise<GenerateQRCodeResponse> => {
-  const response = await httpRequest.post<SingleApiResponse<GenerateQRCodeResponse>>(
-    EndPoints.PAYMENT.generateQRCode,
-    request,
-  );
+  const response = await httpRequest.post<
+    SingleApiResponse<GenerateQRCodeResponse>
+  >(EndPoints.PAYMENT.generateQRCode, request);
   return response.data;
 };
 
 export const initCharge = async (
   request: InitChargeRequest,
 ): Promise<InitChargeResponse> => {
-  const response = await httpRequest.post<SingleApiResponse<InitChargeResponse>>(
-    EndPoints.PAYMENT.initCharge,
-    request,
-  );
+  const response = await httpRequest.post<
+    SingleApiResponse<InitChargeResponse>
+  >(EndPoints.PAYMENT.initCharge, request);
   return response.data;
 };
 
@@ -165,6 +165,18 @@ export const increaseContribution = async (
 export const getContributeSummary = async (): Promise<ContributeSummary> => {
   const response = await httpRequest.get<SingleApiResponse<ContributeSummary>>(
     EndPoints.CONTRIBUTION.summary,
+    { loading: false },
   );
+  return response.data;
+};
+
+export const getContributeHistoryDetail = async (
+  request: GetContributeHistoryDetailRequest,
+): Promise<ContributeHistoryDetail> => {
+  const response = await httpRequest.get<
+    SingleApiResponse<ContributeHistoryDetail>
+  >(EndPoints.CONTRIBUTION.historyDetail(request.historyId), {
+    loading: false,
+  });
   return response.data;
 };

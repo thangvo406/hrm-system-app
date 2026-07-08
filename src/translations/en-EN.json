@@ -19,8 +19,8 @@
       "point_title": "Point",
       "point_balance": "Remaining point: {{amount}} point",
       "history_title": "History",
-      "tab_pay": "Pay Money",
-      "tab_point": "Point",
+      "tab_pay": "출자 이력",
+      "tab_point": "배당 이력",
       "balance_after": "Balance: {{amount}} KRW",
       "empty": "No history to display.",
       "transaction_failed": "Transaction failed",
@@ -29,6 +29,27 @@
         "date_label": "Date",
         "amount_label": "Amount",
         "type_label": "Transaction Type"
+      }
+    },
+    "contribute_history": {
+      "title": "Contribution History",
+      "contribution_status_title": "Contribution Status",
+      "add_contribute": "Add Contribution",
+      "cumulative_contribution": "Cumulative Contribution : {{amount}} KRW",
+      "dividend_info_title": "Dividend Information",
+      "dividend_detail": "View Details",
+      "cumulative_dividend": "Cumulative Dividend : {{amount}} KRW",
+      "expected_dividend": "Expected Dividend : {{amount}} KRW",
+      "expected_dividend_date": "Expected Dividend Date : {{date}}",
+      "detail": {
+        "title": "Contribution History",
+        "date_label": "Payment Date: {{date}}",
+        "amount_label": "Contribution Amount",
+        "payment_method_label": "Payment Method",
+        "statuses": {
+          "completed": "Completed",
+          "pending": "Pending"
+        }
       }
     },
     "welcome": {
@@ -92,6 +113,8 @@
       "verification": "Verification",
       "verify": "Verify",
       "choose_carrier": "Select Carrier",
+      "error_identify_min": "Please enter the last {{min}} digits of identify your ID",
+      "error_birthday_min": "Please enter the first {{min}} digits of birthday your ID",
       "contribution_dialog": {
         "desc": "Joining as a member requires an initial contribution payment. Would you like to continue?"
       }

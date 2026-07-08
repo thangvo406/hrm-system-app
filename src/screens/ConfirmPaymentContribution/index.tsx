@@ -1,8 +1,7 @@
 import type { Profile } from '@services/request/account';
 import type { RootScreenProps } from '@navigation/types';
 
-import { AppButton } from '@components';
-import HeaderDetail from './Header';
+import { AppButton, HeaderDetail } from '@components';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -35,16 +34,12 @@ function ConfirmPaymentContribution({
     useConfirmPaymentContribution(amount);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <HeaderDetail profile={profile} />
+    <View style={styles.container}>
+      <HeaderDetail title={t('confirm_payment_contribution.title')} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.pageTitle}>
-          {t('confirm_payment_contribution.title')}
-        </Text>
-
         <View style={styles.card}>
           <Text style={styles.cardMeta}>
             {t('confirm_payment_contribution.org_name')}

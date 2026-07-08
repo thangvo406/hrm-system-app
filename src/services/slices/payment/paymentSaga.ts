@@ -2,12 +2,14 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   StoreCartItem,
   CheckoutInfo,
+  ContributeHistoryDetail,
   ContributeSummary,
   CreateOrderPayload,
   CreateOrderResponse,
   GenerateQRCodePayload,
   GenerateQRCodeResponse,
   GetAddressOrderRecentPayload,
+  GetContributeHistoryDetailPayload,
   GetContributeSummaryPayload,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
@@ -28,6 +30,7 @@ import {
   createOrder,
   generateQRCode,
   getAddressOrderRecent,
+  getContributeHistoryDetail,
   getContributeSummary,
   getInfoProductCheckout,
   getListCart,
@@ -44,6 +47,7 @@ import {
   createOrderRequest,
   generateQRCodeRequest,
   getAddressOrderRecentRequest,
+  getContributeHistoryDetailRequest,
   getContributeSummaryRequest,
   getInfoProductCheckoutRequest,
   getListCartRequest,
@@ -222,6 +226,22 @@ function* getContributeSummaryWorker(
   }
 }
 
+function* getContributeHistoryDetailWorker(
+  action: PayloadAction<GetContributeHistoryDetailPayload>,
+): Generator<unknown, void, ContributeHistoryDetail> {
+  const { onFailure, onSuccess, historyId } = action.payload;
+  try {
+    const response: ContributeHistoryDetail = yield call(
+      getContributeHistoryDetail,
+      { historyId },
+    );
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 export function* paymentSaga() {
   yield takeLatest(createOrderRequest.type, createOrderWorker);
   yield takeLatest(generateQRCodeRequest.type, generateQRCodeWorker);
@@ -230,6 +250,10 @@ export function* paymentSaga() {
     getAddressOrderRecentWorker,
   );
   yield takeLatest(getContributeSummaryRequest.type, getContributeSummaryWorker);
+  yield takeLatest(
+    getContributeHistoryDetailRequest.type,
+    getContributeHistoryDetailWorker,
+  );
   yield takeLatest(
     getInfoProductCheckoutRequest.type,
     getInfoProductCheckoutWorker,

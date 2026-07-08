@@ -21,7 +21,7 @@ const CLOCK_ICON_SIZE = ScaleSize(120);
 const STATUS_ORANGE = '#F5A623';
 
 const onConfirm = () => {
-  AppNavigator.navigate(Paths.Contribution);
+  AppNavigator.navigate(Paths.Home);
 };
 
 type RowProps = {
@@ -49,9 +49,7 @@ function PaymentConfirmContributeFinish({
   const paymentTime = route.params?.paymentTime ?? '';
 
   return (
-    <View style={styles.container}>
-      <Header />
-
+    <View style={[styles.container, { marginTop: insets.top }]}>
       <ScrollView
         contentContainerStyle={styles.content}
         showsHorizontalScrollIndicator={false}

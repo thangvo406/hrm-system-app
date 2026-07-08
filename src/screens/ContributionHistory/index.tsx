@@ -8,6 +8,7 @@ import { Colors } from '@constants';
 import { formatCurrency } from '@utils/product';
 import PointHistoryList from './PointHistoryList';
 import TransactionList from './TransactionList';
+import dayjs from 'dayjs';
 
 const TEXT_DARK = '#1A1A1A';
 const SECTION_DIVIDER = Colors.gray3;
@@ -16,7 +17,7 @@ const SCREEN_BACKGROUND = '#F2F2F2';
 function PayCard() {
   const { t } = useTranslation();
   const {
-    currentWallet,
+    summary,
     historyTab,
     onLoadMore,
     onRecharge,
@@ -69,18 +70,20 @@ function PayCard() {
       >
         <View style={styles.section}>
           <View style={styles.payHeaderRow}>
-            <Text style={styles.sectionTitle}>{t('pay_card.pay_title')}</Text>
+            <Text style={styles.sectionTitle}>
+              {t('contribute_history.contribution_status_title')}
+            </Text>
             <Button
               onPress={onRecharge}
               style={styles.rechargeButton}
-              testID="pay-card-recharge"
-              title={t('pay_card.recharge')}
+              testID="contribute-history-add"
+              title={t('contribute_history.add_contribute')}
               type="primary"
             />
           </View>
           <Text style={styles.balanceText}>
-            {t('pay_card.pay_balance', {
-              amount: formatCurrency(currentWallet?.balance),
+            {t('contribute_history.cumulative_contribution', {
+              amount: formatCurrency(summary?.currentContribution),
             })}
           </Text>
         </View>
@@ -88,14 +91,35 @@ function PayCard() {
         <View style={styles.sectionDivider} />
 
         <View style={styles.section}>
-          <View style={styles.pointHeaderRow}>
-            <Text style={styles.sectionTitle}>{t('pay_card.point_title')}</Text>
-            <Text style={styles.pointBalanceText}>
-              {t('pay_card.point_balance', {
-                amount: currentWallet?.pointBalance,
-              })}
+          <View style={styles.payHeaderRow}>
+            <Text style={styles.sectionTitle}>
+              {t('contribute_history.dividend_info_title')}
             </Text>
+            <Button
+              onPress={() => {}}
+              style={styles.dividendDetailButton}
+              testID="contribute-history-dividend-detail"
+              title={t('contribute_history.dividend_detail')}
+              type="outline-bordered"
+            />
           </View>
+          <Text style={styles.balanceText}>
+            {t('contribute_history.cumulative_dividend', {
+              amount: formatCurrency(summary?.totalDividend),
+            })}
+          </Text>
+          <Text style={styles.balanceText}>
+            {t('contribute_history.expected_dividend', {
+              amount: formatCurrency(summary?.expectedDividend),
+            })}
+          </Text>
+          <Text style={styles.balanceText}>
+            {t('contribute_history.expected_dividend_date', {
+              date: summary?.expectedDividendDate
+                ? dayjs(summary?.expectedDividendDate).format('YYYY-MM-DD')
+                : '-',
+            })}
+          </Text>
         </View>
 
         <View style={styles.sectionDivider} />
@@ -124,6 +148,12 @@ const styles = StyleSheet.create({
     marginTop: ScaleSize(12),
     textAlign: 'right',
   },
+  dividendDetailButton: {
+    borderRadius: ScaleSize(20),
+    height: ScaleSize(36),
+    paddingHorizontal: ScaleSize(14),
+    width: undefined,
+  },
   historySection: {
     backgroundColor: '#FFFFFF',
     flex: 1,
@@ -141,16 +171,6 @@ const styles = StyleSheet.create({
     marginBottom: ScaleSize(14),
   },
   payHeaderRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  pointBalanceText: {
-    color: TEXT_DARK,
-    fontSize: ScaleSize(16),
-    fontWeight: '600',
-  },
-  pointHeaderRow: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -35,6 +35,9 @@ function Index(props: any) {
     }
   }, [emailValue]);
 
+  const onChangeEmail = (text: string) => {
+    setEmailValue(text?.trim());
+  };
   const _onSubmit = () => {
     if (isValid) {
       onSubmit(emailValue);
@@ -58,7 +61,7 @@ function Index(props: any) {
           keyboardType="email-address"
           label={t('authorisation.email_label')}
           defaultValue={mailAcademic}
-          onChangeText={debounce(setEmailValue, 350)}
+          onChangeText={debounce(onChangeEmail, 350)}
           //   onChangeText={onChange('academicEmail')}
           onSubmitEditing={_onSubmit}
           placeholder={t('authorisation.email_placeholder')}

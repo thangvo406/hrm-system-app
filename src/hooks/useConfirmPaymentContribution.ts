@@ -26,9 +26,10 @@ export const useConfirmPaymentContribution = (amount: number) => {
     dispatch(
       increaseContributionRequest({
         amount,
-        paymentMethod: selectedMethod,
-        kcpPaymentType: 'VIRTUAL_ACCOUNT',
-        vaBankCode: '088',
+        payment: {
+          paymentType: 'VIRTUAL_ACCOUNT',
+          vaBankCode: '088',
+        },
         onSuccess: () => {
           AppNavigator.navigate(Paths.PaymentConfirmContributeFinish, {
             amount,

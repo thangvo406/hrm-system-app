@@ -1,14 +1,18 @@
-import TransactionDetail from '@dialogs/TransactionDetail';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useFocusEffect } from '@react-navigation/native';
-import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
-import { AccountSelector } from '@services/selectors';
+import { useAppDispatch } from '@services/common/storeHooks';
 import {
   getCurrentWalletRequest,
   getContributeHistoriesRequest,
 } from '@services/slices/account/accountSlice';
-import { ContributeHistory, ListApiResponse, TransactionHistory } from '@type';
+import { getContributeSummaryRequest } from '@services/slices/payment/paymentSlice';
+import type { ContributeSummary } from '@type/payment';
+import type {
+  ContributeHistory,
+  ListApiResponse,
+  TransactionHistory,
+} from '@type';
 import { useCallback, useRef, useState } from 'react';
 
 export type PayCardHistoryTab = 'pay' | 'point';
@@ -23,13 +27,15 @@ export type PayCardTransaction = {
 };
 
 const onRecharge = () => {
-  AppNavigator.navigate(Paths.TopUp);
+  AppNavigator.navigate(Paths.ContributionInput);
 };
 
 export const useContributeHistory = () => {
   const [historyTab, setHistoryTab] = useState<PayCardHistoryTab>('pay');
   const dispatch = useAppDispatch();
-  const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
+  const [summary, setSummary] = useState<ContributeSummary | undefined>(
+    undefined,
+  );
 
   const [pointTransactions, setPointTransactions] =
     useState<TransactionHistory[]>();
@@ -58,6 +64,16 @@ export const useContributeHistory = () => {
   useFocusEffect(
     useCallback(() => {
       dispatch(getCurrentWalletRequest());
+      dispatch(
+        getContributeSummaryRequest({
+          onSuccess: data => {
+            setSummary(data);
+          },
+          onFailure: () => {
+            setSummary(undefined);
+          },
+        }),
+      );
     }, []),
   );
 
@@ -87,11 +103,7 @@ export const useContributeHistory = () => {
   }, []);
 
   const onPressTranItem = useCallback((item: any) => {
-    AppNavigator.showDialog({
-      screen: TransactionDetail,
-      popupType: 'bottomSheet',
-      data: item,
-    });
+    AppNavigator.navigate(Paths.ContributeHistoryDetail, { id: item.id });
   }, []);
 
   const onChangeTab = (tab: any) => {
@@ -100,9 +112,9 @@ export const useContributeHistory = () => {
   };
 
   return {
-    currentWallet,
     historyTab,
     loading,
+    summary,
     onLoadMore,
     onPressTranItem,
     onRecharge,
