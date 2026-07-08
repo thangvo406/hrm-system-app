@@ -1,6 +1,6 @@
 import type { ImageName } from '@assets/images';
 
-import { Image, HomeHeader, AppButton } from '@components';
+import { Image, HomeHeader, AppButton, Button } from '@components';
 import imageNames from '@assets/images/names';
 import {
   ScrollView,
@@ -17,21 +17,34 @@ import { Wallet } from '@type';
 import StoreOrderRecent from './StoreOrderRecent';
 import { formatCurrency } from '@utils/product';
 import { DeviceUtils } from '@kits/core/utils';
+import { Colors } from '@constants';
+import { CommonActions, useNavigation } from '@react-navigation/native';
+import { Paths } from '@navigation/paths';
+import AppNavigator from '@navigation/AppNavigator';
 
 const FEATURE_IMAGE_SIZE = ScaleSize(88);
 const { ifAndroid } = DeviceUtils;
 // PLACEHOLDER_MAIN_COMPONENT
 
+const onPressTopup = () => {
+  AppNavigator.navigate(Paths.TopUp);
+};
+
 function PayCard({
   onPress = undefined,
   data = undefined,
-  onPressPayNow,
 }: {
   readonly data?: Wallet;
   readonly onPress?: () => void;
-  readonly onPressPayNow: () => void;
 }) {
   const { t } = useTranslation();
+
+  const navigation = useNavigation();
+
+  const onPressPayment = () => {
+    navigation.dispatch(CommonActions.navigate(Paths.QRCodePayment));
+  };
+
   return (
     <TouchableOpacity
       activeOpacity={0.9}
@@ -45,12 +58,30 @@ function PayCard({
       </Text>
       <View style={styles.payDivider} />
       <View style={styles.payFooter}>
-        <Text style={styles.pointText}>
-          {t('home.point_label', { point: data?.pointBalance || 0 })}
-        </Text>
-        <AppButton onPress={onPressPayNow}>
-          <Text style={styles.payAction}>{t('home.pay_action')}</Text>
+        <AppButton
+          onPress={onPressTopup}
+          style={{
+            borderRadius: ScaleSize(10),
+            borderWidth: 1,
+            width: '48%',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: ScaleSize(40),
+            borderColor: Colors.primary,
+          }}
+        >
+          <Text style={styles.payAction}>{t('home.pay_top_up')}</Text>
         </AppButton>
+        <Button
+          title={t('home.pay_now')}
+          type="rounded"
+          onPress={onPressPayment}
+          style={{
+            width: '48%',
+            height: ScaleSize(40),
+            borderRadius: 10,
+          }}
+        />
       </View>
     </TouchableOpacity>
   );
@@ -121,10 +152,9 @@ function Home() {
     isHideContribute,
     onPressEmptyStore,
     onGoToProduct,
-    onPressPayNow,
   } = useHome();
   const insets = useSafeAreaInsets();
-  // alert(JSON.stringify(insets));
+
   return (
     <View style={[styles.safeArea, { paddingTop: ifAndroid(30, insets.top) }]}>
       <HomeHeader
@@ -137,11 +167,7 @@ function Home() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <PayCard
-          onPress={goToPayCard}
-          data={currentWallet}
-          onPressPayNow={onPressPayNow}
-        />
+        <PayCard onPress={goToPayCard} data={currentWallet} />
         <View style={styles.row}>
           {!isHideContribute && (
             <FeatureCard
@@ -149,7 +175,7 @@ function Home() {
               image={imageNames.img_discount}
               isShowCtaRight={isShowCtaContribute}
               testID="home-dividend"
-              ctaRight="조합 가입하기"
+              ctaRight={t('home.join_coop')}
               onPress={onPressContribution}
               title={t('home.dividend_title')}
             />
@@ -161,6 +187,22 @@ function Home() {
             testID="home-order"
             onPress={onPressStore}
             title={t('home.order_title')}
+          />
+        </View>
+        <View style={styles.row}>
+          <FeatureCard
+            desc={t('home.coupon_desc')}
+            image={imageNames.ic_tag_green}
+            testID="home-coupon"
+            // onPress={onPressNotice}
+            title={t('home.coupon_title')}
+          />
+          <FeatureCard
+            desc={t('home.meal_ticket_desc')}
+            image={imageNames.ic_utensils}
+            // onPress={onPressSurvey}
+            testID="home-meal-ticket"
+            title={t('home.meal_ticket_title')}
           />
         </View>
         <StoreOrderRecent
@@ -252,7 +294,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   payAction: {
-    color: '#1A1A1A',
+    color: Colors.primary,
     fontSize: ScaleSize(15),
   },
   featureCard: {
@@ -268,7 +310,7 @@ const styles = StyleSheet.create({
   },
   featureDesc: {
     color: '#9E9E9E',
-    fontSize: ScaleSize(9),
+    fontSize: ScaleSize(12),
     marginTop: ScaleSize(8),
   },
   featureImageWrap: {

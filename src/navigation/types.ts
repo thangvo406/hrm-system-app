@@ -7,9 +7,18 @@ export type RootScreenProps<
   S extends keyof RootStackParamList = keyof RootStackParamList,
 > = StackScreenProps<RootStackParamList, S>;
 
+export type TabParamList = {
+  [Paths.Vouchers]: undefined;
+  [Paths.Home]: undefined;
+  [Paths.QRCodePayment]: undefined;
+  [Paths.Carts]: undefined;
+  [Paths.Profile]: undefined;
+};
+
 export type RootStackParamList = {
   [AppStacks.Auth]: undefined;
   [AppStacks.App]: undefined;
+  [Paths.AppTabs]: undefined;
   [Paths.AcademicVerificationFinish]:
     | { type: 'success' | 'failed' }
     | undefined;
@@ -23,11 +32,13 @@ export type RootStackParamList = {
   [Paths.Contribution]: undefined;
   [Paths.ContributionInput]: undefined;
   [Paths.ConfirmPaymentContribution]: { amount: number } | undefined;
-  [Paths.PaymentConfirmContributeFinish]: {
-    amount: number;
-    paymentMethod: string;
-    paymentTime: string;
-  } | undefined;
+  [Paths.PaymentConfirmContributeFinish]:
+    | {
+        amount: number;
+        paymentMethod: string;
+        paymentTime: string;
+      }
+    | undefined;
   [Paths.Example]: undefined;
   [Paths.ForgotPass]: undefined;
   [Paths.Home]: undefined;
@@ -42,10 +53,12 @@ export type RootStackParamList = {
   [Paths.RegisterCompleted]: { goFrom: 'forgot_pass' } | undefined;
   [Paths.ProductDetail]: { id: number; storeId: number } | undefined;
   [Paths.Products]: { data: StoreItem } | undefined;
+  [Paths.Profile]: undefined;
   [Paths.Startup]: undefined;
   [Paths.Stores]: undefined;
   [Paths.Survey]: undefined;
   [Paths.SurveyDetail]: { id: number } | undefined;
   [Paths.TopUp]: undefined;
+  [Paths.Vouchers]: undefined;
   [Paths.Welcome]: undefined;
 };

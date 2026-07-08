@@ -35,7 +35,7 @@ type TextFieldProps = {
   readonly submitBehavior?: TextInputProps['submitBehavior'];
   readonly testID?: string;
   readonly value?: string;
-};
+} & TextInputProps;
 
 function TextField({
   autoCapitalize = 'sentences',
@@ -54,6 +54,7 @@ function TextField({
   submitBehavior = undefined,
   testID = undefined,
   value,
+  ...textInputProps
 }: TextFieldProps) {
   const [secure, setSecure] = useState(secureTextEntry);
   const hasError = error !== undefined;
@@ -82,6 +83,7 @@ function TextField({
           />
         )}
         <TextInput
+          {...textInputProps}
           autoCapitalize={autoCapitalize}
           defaultValue={defaultValue}
           keyboardType={keyboardType}

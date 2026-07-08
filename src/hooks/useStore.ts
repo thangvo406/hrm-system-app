@@ -24,7 +24,7 @@ const onBack = () => {
   if (canBack) {
     AppNavigator.goBack();
   } else {
-    AppNavigator.reset(Paths.Home);
+    AppNavigator.reset(Paths.AppTabs, { screen: Paths.Home });
   }
 };
 

@@ -1,5 +1,6 @@
 export enum Paths {
   AnnouncementDetail = 'announcement_detail',
+  AppTabs = 'app_tabs',
   Announcements = 'announcements',
   Authorization = 'authorization',
   SchoolSelection = 'school_selection',
@@ -24,11 +25,13 @@ export enum Paths {
   RegisterCompleted = 'register_completed',
   ProductDetail = 'product_detail',
   Products = 'products',
+  Profile = 'profile',
   Startup = 'startup',
   Stores = 'stores',
   Survey = 'survey',
   SurveyDetail = 'survey_detail',
   TopUp = 'top_up',
+  Vouchers = 'vouchers',
   Welcome = 'welcome',
 }
 

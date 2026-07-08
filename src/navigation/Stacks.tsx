@@ -3,8 +3,7 @@ import type { ComponentType } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Screens from '@screens';
 import { Paths } from './paths';
-import FloatingCartButton from './FloatingCartButton';
-import { Globals } from '@utils';
+import { AppTabNavigator } from './AppTabNavigator';
 
 // ─── Auth stack ───────────────────────────────────────────────────────────────
 
@@ -62,6 +61,7 @@ export function AuthStack() {
 const AppNavigator = createStackNavigator();
 
 const AUTH_PATHS = new Set<string>([
+  Paths.AppTabs,
   Paths.Welcome,
   Paths.Authorization,
   Paths.SchoolSelection,
@@ -80,9 +80,14 @@ export function AppStack() {
   return (
     <>
       <AppNavigator.Navigator
-        initialRouteName={Paths.Home}
+        initialRouteName={Paths.AppTabs}
         screenOptions={{ gestureEnabled: false, headerShown: false }}
       >
+        <AppNavigator.Screen
+          component={AppTabNavigator as ComponentType<unknown>}
+          name={Paths.AppTabs}
+          options={{ headerShown: false }}
+        />
         {APP_SCREENS.map(({ component, name }) => (
           <AppNavigator.Screen
             key={name}
@@ -92,11 +97,6 @@ export function AppStack() {
           />
         ))}
       </AppNavigator.Navigator>
-      <FloatingCartButton
-        ref={ref => {
-          Globals.cartBtnRef = ref;
-        }}
-      />
     </>
   );
 }

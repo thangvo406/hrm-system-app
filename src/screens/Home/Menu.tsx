@@ -76,6 +76,8 @@ const NAV_TARGETS: Readonly<Record<string, Paths>> = {
   order: Paths.OrderHistories,
   pay: Paths.QRCodePayment,
   deposit_inquiry: Paths.ContributionHistory,
+  deposit_pay: Paths.ContributionInput,
+  profile: Paths.Profile,
 };
 
 const sections: readonly MenuSection[] = [
@@ -172,7 +174,7 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
     const target = NAV_TARGETS[itemKey];
     close(() => {
       if (target !== undefined) {
-        AppNavigator.navigate(target);
+        AppNavigator.navigate(target, { menuKey: itemKey });
         return;
       }
       AppNavigator.showSnackBar({

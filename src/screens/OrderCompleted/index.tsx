@@ -165,7 +165,7 @@ function onGoToStores() {
   AppNavigator.reset(Paths.Stores);
 }
 function handleGoHome() {
-  AppNavigator.reset(Paths.Home);
+  AppNavigator.reset(Paths.AppTabs, { screen: Paths.Home });
 }
 
 function OrderCompleted(props: any) {

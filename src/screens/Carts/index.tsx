@@ -114,7 +114,7 @@ function Carts() {
     <View style={styles.safeArea}>
       <HeaderDetail
         showCartManage
-        hideNotify
+        hideBtnBack
         title={t('carts.title')}
         onPressCartManage={onToggleManage}
         titleManage={titleManageCart}

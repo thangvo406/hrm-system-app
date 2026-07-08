@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import AppNavigator from '@navigation/AppNavigator';
-import Header from './Header';
 import { Paths } from '@navigation/paths';
 import imageNames from '@assets/images/names';
 
@@ -21,7 +20,7 @@ const CLOCK_ICON_SIZE = ScaleSize(120);
 const STATUS_ORANGE = '#F5A623';
 
 const onConfirm = () => {
-  AppNavigator.navigate(Paths.Home);
+  AppNavigator.reset(Paths.AppTabs, { screen: Paths.Home });
 };
 
 type RowProps = {

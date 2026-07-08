@@ -6,6 +6,7 @@ import IcMapPinIcon from './ic_map_pin.svg';
 import IcOrderReceiptIcon from './ic_order_receipt.svg';
 import IcShieldCheckIcon from './ic_shield_check.svg';
 import IcShoppingBagIcon from './ic_shopping_bag.svg';
+import IcStarIcon from './ic_star.svg';
 import IcTruckIcon from './ic_truck.svg';
 import IcWalletIcon from './ic_wallet.svg';
 import EyeOffIcon from './eye-off.svg';
@@ -20,9 +21,11 @@ import IcChevronRightIcon from './ic_chevron_right.svg';
 import IcClockIcon from './ic_clock.svg';
 import IcFilterIcon from './ic_filter.svg';
 import IcHomeIcon from './ic_home.svg';
+import IcIdCardIcon from './ic_id_card.svg';
 import IcLogoUnappIcon from './ic_logo_unapp.svg';
 import IcLogoutIcon from './ic_logout.svg';
 import IcMenuIcon from './ic_menu.svg';
+import IcPhoneIcon from './ic_phone.svg';
 import IcRadioSelectedIcon from './ic_radio_selected.svg';
 import IcRadioUnselectedIcon from './ic_radio_unselected.svg';
 import IcSearchIcon from './ic_search.svg';
@@ -46,6 +49,7 @@ const icons = {
   ic_order_receipt: IcOrderReceiptIcon,
   ic_shield_check: IcShieldCheckIcon,
   ic_shopping_bag: IcShoppingBagIcon,
+  ic_star: IcStarIcon,
   ic_truck: IcTruckIcon,
   ic_wallet: IcWalletIcon,
   'eye-off': EyeOffIcon,
@@ -60,10 +64,12 @@ const icons = {
   ic_clock: IcClockIcon,
   ic_filter: IcFilterIcon,
   ic_home: IcHomeIcon,
+  ic_id_card: IcIdCardIcon,
   ic_notify_gray: IconNotifyGray,
   ic_logo_unapp: IcLogoUnappIcon,
   ic_logout: IcLogoutIcon,
   ic_menu: IcMenuIcon,
+  ic_phone: IcPhoneIcon,
   ic_radio_selected: IcRadioSelectedIcon,
   ic_radio_unselected: IcRadioUnselectedIcon,
   ic_search: IcSearchIcon,

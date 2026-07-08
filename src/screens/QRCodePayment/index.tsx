@@ -58,7 +58,7 @@ function QRCodePayment() {
 
   return (
     <View style={styles.safeArea}>
-      <HeaderDetail title={t('qr_code_payment.title')} />
+      <HeaderDetail hideBtnBack title={t('qr_code_payment.title')} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}

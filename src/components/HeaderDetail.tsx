@@ -26,6 +26,7 @@ type Properties = {
   readonly disabledBtnReadAll?: boolean;
   readonly showIconReadAll?: boolean;
   readonly showCartManage?: boolean;
+  readonly hideBtnBack?: boolean;
   readonly style?: ViewStyle;
 };
 
@@ -50,6 +51,7 @@ function HeaderDetail({
   onPressCartManage = NOOP,
   titleManage = '',
   usePaddingTop = true,
+  hideBtnBack = false,
 }: Properties) {
   const inssets = useSafeAreaInsets();
   const _onPressBack = () => {
@@ -75,19 +77,21 @@ function HeaderDetail({
         style,
       ]}
     >
-      <AppButton
-        onPress={_onPressBack}
-        style={styles.iconButton}
-        testID="header-detail-back"
-      >
-        <Image
-          color="#1A1A1A"
-          height={ICON_SIZE}
-          name="ic_arrow_left_gray"
-          type="svg"
-          width={ICON_SIZE}
-        />
-      </AppButton>
+      {!hideBtnBack && (
+        <AppButton
+          onPress={_onPressBack}
+          style={styles.iconButton}
+          testID="header-detail-back"
+        >
+          <Image
+            color="#1A1A1A"
+            height={ICON_SIZE}
+            name="ic_arrow_left_gray"
+            type="svg"
+            width={ICON_SIZE}
+          />
+        </AppButton>
+      )}
 
       <Text numberOfLines={1} style={styles.title}>
         {title}
