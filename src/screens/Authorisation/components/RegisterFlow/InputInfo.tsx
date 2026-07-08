@@ -16,6 +16,7 @@ import { ValidateUtils } from '@kits/core/utils';
 import AppNavigator from '@navigation/AppNavigator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '@constants';
+import { formatPhoneNumber } from '@utils/common';
 
 const BACK_ICON_SIZE = ScaleSize(24);
 const ICON_CHEVRON_SIZE = ScaleSize(18);
@@ -24,10 +25,7 @@ const TEXT_COLOR = '#1A1A1A';
 const PLACEHOLDER_COLOR = '#9E9E9E';
 const PRIMARY_COLOR = '#5BB85C';
 const PHONE_MAX_LENGTH = 13;
-const PHONE_AREA_CODE_LENGTH = 3;
-const PHONE_MIDDLE_LENGTH = 4;
-const PHONE_LAST_LENGTH = 4;
-const PHONE_MAX_DIGITS = 11;
+
 const OTP_MAX_LENGTH = 6;
 
 const IDENTIFY_MAX_LENGTH = 7;
@@ -71,25 +69,6 @@ type InputInfoProps = {
  * Strips non-digits, caps at 11 digits, then re-inserts dashes at the
  * correct positions so the user sees the separators as they type.
  */
-const formatPhoneNumber = (input: string): string => {
-  const digits = input.replaceAll(/\D/g, '').slice(0, PHONE_MAX_DIGITS);
-  const area = digits.slice(0, PHONE_AREA_CODE_LENGTH);
-  if (digits.length <= PHONE_AREA_CODE_LENGTH) {
-    return area;
-  }
-  const middle = digits.slice(
-    PHONE_AREA_CODE_LENGTH,
-    PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH,
-  );
-  if (digits.length <= PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH) {
-    return `${area}-${middle}`;
-  }
-  const last = digits.slice(
-    PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH,
-    PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH + PHONE_LAST_LENGTH,
-  );
-  return `${area}-${middle}-${last}`;
-};
 
 const DEFAULT_INFO: InputInfoValues = {
   birthday: '',

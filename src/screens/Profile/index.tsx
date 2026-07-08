@@ -12,6 +12,7 @@ import { ScaleSize } from '@kits/core';
 import { useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { Colors } from '@constants';
+import { formatPhoneNumber } from '@utils/common';
 
 const AVATAR_SIZE = ScaleSize(72 + 25);
 const AVATAR_ICON_SIZE = ScaleSize(48);
@@ -22,9 +23,15 @@ const TEXT_COLOR = '#1A1A1A';
 function Profile() {
   const { t } = useTranslation();
   const profile = useAppSelector(AccountSelector.getProfile);
-  const [name, setName] = useState(profile?.name ?? '');
+  const [fullName, setFullName] = useState(profile?.fullName ?? '');
   const [email, setEmail] = useState(profile?.email ?? '');
-  const [phone, setPhone] = useState(profile?.phone ?? '');
+  const [phone, setPhone] = useState(
+    (profile?.phone ?? '').replaceAll(/\D/g, ''),
+  );
+
+  const onChangePhone = useCallback((text: string) => {
+    setPhone(text.replaceAll(/\D/g, ''));
+  }, []);
 
   const onPressSave = useCallback(() => {
     // TODO: dispatch update profile action
@@ -59,9 +66,9 @@ function Profile() {
           <TextField
             iconName="user"
             label={t('profile.field_name')}
-            onChangeText={setName}
+            onChangeText={setFullName}
             placeholder={t('profile.placeholder_name')}
-            value={name}
+            value={fullName}
           />
           <TextField
             iconName="email"
@@ -75,9 +82,9 @@ function Profile() {
             iconName="ic_phone"
             keyboardType="phone-pad"
             label={t('profile.field_phone')}
-            onChangeText={setPhone}
+            onChangeText={onChangePhone}
             placeholder={t('profile.placeholder_phone')}
-            value={phone}
+            value={formatPhoneNumber(phone)}
           />
           <TextField
             iconName="ic_id_card"

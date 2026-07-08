@@ -1,6 +1,11 @@
 import { KakaoDocument, SearchAddressItem } from '@type';
 import isNumber from 'lodash/isNumber';
 
+const PHONE_AREA_CODE_LENGTH = 3;
+const PHONE_MIDDLE_LENGTH = 4;
+const PHONE_LAST_LENGTH = 4;
+const PHONE_MAX_DIGITS = 11;
+
 export const computeFormAuthErrors = <
   V extends Record<string, string>,
   E extends Record<string, string | undefined>,
@@ -36,6 +41,26 @@ export const removeEmptyFieldObject = (
         v === Object(v) ? removeEmptyFieldObject(v, isRemoveEmptyField) : v,
       ]),
   );
+};
+
+export const formatPhoneNumber = (input: string): string => {
+  const digits = input.replaceAll(/\D/g, '').slice(0, PHONE_MAX_DIGITS);
+  const area = digits.slice(0, PHONE_AREA_CODE_LENGTH);
+  if (digits.length <= PHONE_AREA_CODE_LENGTH) {
+    return area;
+  }
+  const middle = digits.slice(
+    PHONE_AREA_CODE_LENGTH,
+    PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH,
+  );
+  if (digits.length <= PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH) {
+    return `${area}-${middle}`;
+  }
+  const last = digits.slice(
+    PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH,
+    PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH + PHONE_LAST_LENGTH,
+  );
+  return `${area}-${middle}-${last}`;
 };
 
 // Auth?page=0&id=2&filter=desc
