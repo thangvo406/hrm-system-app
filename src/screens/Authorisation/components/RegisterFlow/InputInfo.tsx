@@ -182,13 +182,17 @@ function InputInfo({
     }
     if (
       values.indentify?.length < IDENTIFY_MAX_LENGTH ||
-      values.birthday?.length < PHONE_MAX_LENGTH
+      values.birthday?.length < BIRTHDAY_MAX_LENGTH
     ) {
       let msg = '';
       if (values.indentify?.length < IDENTIFY_MAX_LENGTH) {
-        msg = t('register_flow.error_identify_min', { min: IDENTIFY_MAX_LENGTH });
+        msg = t('register_flow.error_identify_min', {
+          min: IDENTIFY_MAX_LENGTH,
+        });
       } else if (values.birthday?.length < BIRTHDAY_MAX_LENGTH) {
-        msg = t('register_flow.error_birthday_min', { min: BIRTHDAY_MAX_LENGTH });
+        msg = t('register_flow.error_birthday_min', {
+          min: BIRTHDAY_MAX_LENGTH,
+        });
       }
       AppNavigator.showSnackBar({
         message: msg,
