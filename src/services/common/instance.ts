@@ -7,7 +7,7 @@ import {
 import { store } from '@services/common/store';
 import axios from 'axios';
 import { EndPoints, Environment } from '@constants';
-import { ResponseRefreshToken, SingleApiResponse } from '@type';
+import { IResponseRefreshToken, SingleApiResponse } from '@type';
 import AppNavigator from '@navigation/AppNavigator';
 import { AppStacks, Paths } from '@navigation/paths';
 
@@ -38,7 +38,7 @@ const refreshAccessToken = async (): Promise<string | undefined> => {
 
   try {
     const { data } = await refreshClient.post<
-      SingleApiResponse<ResponseRefreshToken>
+      SingleApiResponse<IResponseRefreshToken>
     >(EndPoints.AUTH.refreshToken, {
       refreshToken,
     });

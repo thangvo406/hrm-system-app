@@ -1,4 +1,4 @@
-import type { AnnouncementItem } from '@hooks';
+import type { TAnnouncementItem } from '@type/notifications';
 
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
@@ -9,8 +9,8 @@ const TEXT_DARK = '#1A1A1A';
 const TEXT_DATE = '#9E9E9E';
 
 type Properties = {
-  readonly item: AnnouncementItem;
-  readonly onPress: (item: AnnouncementItem) => void;
+  readonly item: TAnnouncementItem;
+  readonly onPress: (item: TAnnouncementItem) => void;
 };
 
 function AnnouncementRow({ item, onPress }: Properties) {

@@ -1,10 +1,9 @@
 import type {
-  AnnouncementDetail,
-  AnnouncementItem,
-  GetAnnouncementsPayload,
-  NotificationItem,
+  TAnnouncementItem,
+  TGetAnnouncementsPayload,
+  TNotificationItem,
   IRequestGetNotifications,
-  ResponseAnnouncementImage,
+  IResponseAnnouncementImage,
 } from '@type/notifications';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -14,38 +13,38 @@ import { CommonUtils } from '@utils';
 
 export const getNotifications = async (
   request: IRequestGetNotifications,
-): Promise<ListApiResponse<NotificationItem[]>> => {
+): Promise<ListApiResponse<TNotificationItem[]>> => {
   const _request = CommonUtils.removeEmptyFieldObject(request, true);
   const params = CommonUtils.objectToQueryParams(_request);
   const response = await httpRequest.get<
-    SingleApiResponse<ListApiResponse<NotificationItem[]>>
+    SingleApiResponse<ListApiResponse<TNotificationItem[]>>
   >(EndPoints.NOTIFICATIONS.list(params), { loading: false });
   return response.data;
 };
 
 export const getAnnouncements = async (
-  request: GetAnnouncementsPayload,
-): Promise<ListApiResponse<AnnouncementItem[]>> => {
+  request: TGetAnnouncementsPayload,
+): Promise<ListApiResponse<TAnnouncementItem[]>> => {
   const _request = CommonUtils.removeEmptyFieldObject(request, true);
   const params = CommonUtils.objectToQueryParams(_request);
   const response = await httpRequest.get<
-    SingleApiResponse<ListApiResponse<AnnouncementItem[]>>
+    SingleApiResponse<ListApiResponse<TAnnouncementItem[]>>
   >(EndPoints.ANNOUNCEMENTS.list(params), { loading: false });
   return response.data;
 };
 
 export const getAnnouncementImages =
-  async (): Promise<ResponseAnnouncementImage> => {
+  async (): Promise<IResponseAnnouncementImage> => {
     const response = await httpRequest.get<
-      SingleApiResponse<ResponseAnnouncementImage>
+      SingleApiResponse<IResponseAnnouncementImage>
     >(EndPoints.ANNOUNCEMENTS.listImage, { loading: false });
     return response.data;
   };
 
 export const getAnnouncementById = async (
   announcementId: number | string,
-): Promise<AnnouncementDetail> => {
-  const response = await httpRequest.get<SingleApiResponse<AnnouncementDetail>>(
+): Promise<TAnnouncementItem> => {
+  const response = await httpRequest.get<SingleApiResponse<TAnnouncementItem>>(
     EndPoints.ANNOUNCEMENTS.detail(announcementId),
     { loading: false },
   );

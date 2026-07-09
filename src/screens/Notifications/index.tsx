@@ -1,4 +1,4 @@
-import type { NotificationItem } from '@hooks';
+import type { TNotificationItem } from '@type/notifications';
 import type { ListRenderItem } from 'react-native';
 
 import {
@@ -27,11 +27,11 @@ const TEXT_MUTED = Colors.gray4;
 // (RN draws a white underlay for shadow, which shows through rgba).
 const UNREAD_BG = 'rgba(233, 232, 232, 0.8)';
 
-const keyExtractor = (item: NotificationItem) => item.id;
+const keyExtractor = (item: TNotificationItem) => item.id;
 
 type CardProps = {
-  readonly item: NotificationItem;
-  readonly onPressItem: (item: NotificationItem) => void;
+  readonly item: TNotificationItem;
+  readonly onPressItem: (item: TNotificationItem) => void;
 };
 
 function NotificationCard({ item, onPressItem }: CardProps) {
@@ -85,7 +85,7 @@ function Notifications() {
     onLoadMore,
   } = useNotifications();
 
-  const renderItem: ListRenderItem<NotificationItem> = ({ item }) => (
+  const renderItem: ListRenderItem<TNotificationItem> = ({ item }) => (
     <MemoCard onPressItem={onPressItem} item={item} />
   );
 

@@ -60,8 +60,8 @@ import {
   IResponseSubmitForgotPass,
   IResponseUniversity,
   IResponseVerifyOtpForgotPass,
-  ResponseRefreshToken,
-  SelectSchoolRequest,
+  IResponseRefreshToken,
+  ISelectSchoolRequest,
 } from '@type/auth';
 import { Globals } from '@utils';
 import { AccountSelector, AuthSelector } from '@services/selectors';
@@ -136,7 +136,7 @@ function* refreshTokenWorker() {
     const refreshTokenString: string = yield select(
       AuthSelector.getRefreshToken,
     );
-    const data: ResponseRefreshToken = yield call(
+    const data: IResponseRefreshToken = yield call(
       refreshToken,
       refreshTokenString,
     );
@@ -216,7 +216,7 @@ function* memberShipVerifyWorker(
   }
 }
 
-function* selectSchoolWorker(action: PayloadAction<SelectSchoolRequest>) {
+function* selectSchoolWorker(action: PayloadAction<ISelectSchoolRequest>) {
   try {
     yield call(selectSchool, action.payload);
     yield put(

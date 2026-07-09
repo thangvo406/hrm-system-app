@@ -1,8 +1,6 @@
 import type { AppCallback, IImage, ListApiResponse } from './common';
 
-export type AnnouncementKind = 'event' | 'announcement';
-
-export type AnnouncementItem = {
+export type TAnnouncementItem = {
   id: number;
   title: string;
   content: string;
@@ -10,34 +8,27 @@ export type AnnouncementItem = {
   createdDate: string;
 };
 
-export type AnnouncementDetail = AnnouncementItem;
-
-export type GetAnnouncementsPayload = {
+export type TGetAnnouncementsPayload = {
   type: string;
   page: number;
   size: number;
-} & AppCallback<ListApiResponse<AnnouncementItem[]>>;
+} & AppCallback<ListApiResponse<TAnnouncementItem[]>>;
 
-export type GetAnnouncementDetailPayload = {
+export type TGetAnnouncementDetailPayload = {
   readonly announcementId: number | string;
-} & AppCallback<AnnouncementDetail>;
+} & AppCallback<TAnnouncementItem>;
 
-export type ResponseAnnouncementImage = {
-  items: AnnouncementImage[];
+export type IResponseAnnouncementImage = {
+  items: TAnnouncementImage[];
 };
-export type AnnouncementImage = {
+export type TAnnouncementImage = {
   id: number;
   image: IImage;
 };
 
-export type GetAnnouncementImagesPayload = AppCallback<AnnouncementImage[]>;
+export type TGetAnnouncementImagesPayload = AppCallback<TAnnouncementImage[]>;
 
-export type NotificationKind =
-  | 'contribution_done'
-  | 'delivery_done'
-  | 'payment_done';
-
-export type NotificationItem = {
+export type TNotificationItem = {
   id: number;
   type: string;
   title: string;
@@ -55,11 +46,11 @@ export type IRequestGetNotifications = {
   size: number;
 };
 
-export type GetNotificationsPayload = AppCallback<
-  ListApiResponse<NotificationItem[]>
+export type TGetNotificationsPayload = AppCallback<
+  ListApiResponse<TNotificationItem[]>
 > &
   IRequestGetNotifications;
 
-export type MarkReadPayload = {
+export type TMarkReadPayload = {
   readonly notifyId: number;
 } & AppCallback;

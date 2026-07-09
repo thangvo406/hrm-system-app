@@ -1,5 +1,5 @@
 import type { ListRenderItem } from 'react-native';
-import type { AnnouncementItem } from '@hooks';
+import type { TAnnouncementItem } from '@type/notifications';
 
 import { EmptyView, AnnouncementLoading, HeaderDetail } from '@components';
 import { ScaleSize } from '@kits/core';
@@ -17,7 +17,7 @@ import imageNames from '@assets/images/names';
 
 const TEXT_MUTED = '#9E9E9E';
 
-const keyExtractor = (item: AnnouncementItem) => String(item.id);
+const keyExtractor = (item: TAnnouncementItem) => String(item.id);
 
 const TAB_TEST_IDS: readonly string[] = [
   'announcement-tab-all',
@@ -38,7 +38,7 @@ function Announcements() {
     onPressNoticeItem,
   } = useAnnouncements();
 
-  const renderItem: ListRenderItem<AnnouncementItem> = useCallback(
+  const renderItem: ListRenderItem<TAnnouncementItem> = useCallback(
     ({ item }) => <AnnouncementRow item={item} onPress={onPressNoticeItem} />,
     [],
   );

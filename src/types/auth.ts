@@ -11,20 +11,14 @@ export type IResponseRegisterVerifyOtp = {
   signupToken: string;
 };
 
-export type SelectSchoolRequest = {
+export type ISelectSchoolRequest = {
   universityId: number;
 } & AppCallback;
 
-export type MemberShipVerifyRequest = {
-  signupToken: string;
-  membershipType: string;
-  universityEmail: string;
-} & AppCallback;
-
-export type ResponseRefreshToken = {
+export interface IResponseRefreshToken {
   accessToken: string;
   refreshToken?: string;
-};
+}
 
 export type IResponseRegisterUser = {
   phoneVerificationToken: string;

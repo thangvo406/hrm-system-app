@@ -1,12 +1,10 @@
-import type { AnnouncementDetail } from '@type/notifications';
+import type { TAnnouncementItem } from '@type/notifications';
 
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getAnnouncementDetailRequest } from '@services/slices/notifications/notificationsSlice';
 import { useEffect, useMemo, useState } from 'react';
 import AppNavigator from '@navigation/AppNavigator';
 import { ScaleSize } from '@kits/core';
-
-export type { AnnouncementDetail } from '@type/notifications';
 
 export const useAnnouncementDetail = (props: any) => {
   const {
@@ -15,7 +13,7 @@ export const useAnnouncementDetail = (props: any) => {
     hideBtnNotify,
   } = AppNavigator.getParams(props);
   const dispatch = useAppDispatch();
-  const [data, setData] = useState<AnnouncementDetail | undefined>(undefined);
+  const [data, setData] = useState<TAnnouncementItem | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | undefined>(undefined);
 
@@ -30,7 +28,7 @@ export const useAnnouncementDetail = (props: any) => {
          `;
   }, [data]);
 
-  const handleSuccess = (detail: AnnouncementDetail) => {
+  const handleSuccess = (detail: TAnnouncementItem) => {
     setData(detail);
     setLoading(false);
   };
@@ -49,7 +47,7 @@ export const useAnnouncementDetail = (props: any) => {
           content: notification.contentHtml,
           type: notification.type,
           createdDate: notification.createdDate,
-        } as AnnouncementDetail);
+        } as TAnnouncementItem);
       } else {
         setError('Missing announcement id');
       }

@@ -1,15 +1,15 @@
 import type {
-  AnnouncementImage,
-  GetAnnouncementImagesPayload,
-  GetNotificationsPayload,
-  GetAnnouncementDetailPayload,
-  MarkReadPayload,
+  TAnnouncementImage,
+  TGetAnnouncementImagesPayload,
+  TGetNotificationsPayload,
+  TGetAnnouncementDetailPayload,
+  TMarkReadPayload,
 } from '@type/notifications';
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 type NotificationsState = {
-  banners: AnnouncementImage[];
+  banners: TAnnouncementImage[];
 };
 
 const initialState: NotificationsState = {
@@ -21,18 +21,18 @@ const notificationsSlice = createSlice({
   name: 'notifications',
   reducers: {
     getAnnouncementDetailRequest: {
-      prepare: (payload: GetAnnouncementDetailPayload) => ({ payload }),
+      prepare: (payload: TGetAnnouncementDetailPayload) => ({ payload }),
       reducer: () => {},
     },
     getAnnouncementImagesRequest: {
-      prepare: (payload: GetAnnouncementImagesPayload = {}) => ({ payload }),
+      prepare: (payload: TGetAnnouncementImagesPayload = {}) => ({ payload }),
       reducer: () => {},
     },
     getAnnouncementImagesSuccess: {
-      prepare: (images: AnnouncementImage[]) => ({
+      prepare: (images: TAnnouncementImage[]) => ({
         payload: images,
       }),
-      reducer: (state, action: PayloadAction<AnnouncementImage[]>) => {
+      reducer: (state, action: PayloadAction<TAnnouncementImage[]>) => {
         state.banners = action.payload;
       },
     },
@@ -41,7 +41,7 @@ const notificationsSlice = createSlice({
       reducer: () => {},
     },
     getNotificationsRequest: {
-      prepare: (payload: GetNotificationsPayload = {}) => ({ payload }),
+      prepare: (payload: TGetNotificationsPayload = {}) => ({ payload }),
       reducer: () => {},
     },
     markReadAllRequest: {
@@ -49,7 +49,7 @@ const notificationsSlice = createSlice({
       reducer: () => {},
     },
     markReadRequest: {
-      prepare: (payload: MarkReadPayload) => ({ payload }),
+      prepare: (payload: TMarkReadPayload) => ({ payload }),
       reducer: () => {},
     },
   },

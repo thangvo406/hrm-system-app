@@ -19,9 +19,9 @@ import type {
   IResponseVerifyOtpForgotPass,
   IResponseLoginSocial,
   LogoutRequest,
-  ResponseRefreshToken,
+  IResponseRefreshToken,
   IResponseRegisterUser,
-  SelectSchoolRequest,
+  ISelectSchoolRequest,
 } from '@type/auth';
 import omit from 'lodash/omit';
 import { httpRequest } from '@services/common/httpRequest';
@@ -105,9 +105,9 @@ export const sendOtpForgotPass = async (
 
 export const refreshToken = async (
   refreshTokenString: string,
-): Promise<ResponseRefreshToken> => {
+): Promise<IResponseRefreshToken> => {
   const response = await httpRequest.post<
-    SingleApiResponse<ResponseRefreshToken>
+    SingleApiResponse<IResponseRefreshToken>
   >(
     EndPoints.AUTH.refreshToken,
     {
@@ -149,7 +149,7 @@ export const memberShipVerify = async (
 };
 
 export const selectSchool = async (
-  request: SelectSchoolRequest,
+  request: ISelectSchoolRequest,
 ): Promise<void> => {
   await httpRequest.put(EndPoints.AUTH.selectSchool, request);
 };

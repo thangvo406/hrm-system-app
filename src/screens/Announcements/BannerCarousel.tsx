@@ -1,5 +1,5 @@
 import type { CarouselRenderItem } from 'react-native-reanimated-carousel';
-import type { AnnouncementImage } from '@hooks';
+import type { TAnnouncementImage } from '@type/notifications';
 
 import { ProgressiveImage } from '@components';
 import { ScaleSize } from '@kits/core';
@@ -26,8 +26,8 @@ const DOT_ACTIVE_COLOR = '#54C158';
 const DOT_GAP = ScaleSize(3);
 
 type Properties = {
-  readonly banners: readonly AnnouncementImage[];
-  readonly onPressItem?: (item: AnnouncementImage) => void;
+  readonly banners: readonly TAnnouncementImage[];
+  readonly onPressItem?: (item: TAnnouncementImage) => void;
   readonly tabIndex: number;
 };
 
@@ -43,7 +43,7 @@ function BannerCarousel({
     carouselReference.current?.scrollTo({ animated: true, index: 0 });
   }, [tabIndex]);
 
-  const renderBanner: CarouselRenderItem<AnnouncementImage> = ({ item }) => (
+  const renderBanner: CarouselRenderItem<TAnnouncementImage> = ({ item }) => (
     <View style={styles.bannerSlide} testID={`announcement-banner-${item.id}`}>
       <TouchableOpacity
         activeOpacity={0.85}
@@ -65,7 +65,7 @@ function BannerCarousel({
       <Carousel
         ref={carouselReference}
         autoPlay={banners?.length > 1}
-        data={banners as AnnouncementImage[]}
+        data={banners as TAnnouncementImage[]}
         height={BANNER_HEIGHT}
         loop
         pagingEnabled

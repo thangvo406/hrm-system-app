@@ -1,4 +1,4 @@
-import type { AnnouncementItem } from '@type/notifications';
+import type { TAnnouncementItem } from '@type/notifications';
 
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { NotificationsSelector } from '@services/selectors';
@@ -13,12 +13,6 @@ import AppNavigator from '@navigation/AppNavigator';
 import { useFocusEffect } from '@react-navigation/native';
 import ImagePreview from '@dialogs/ImagePreview';
 
-export type {
-  AnnouncementImage,
-  AnnouncementItem,
-  AnnouncementKind,
-} from '@type/notifications';
-
 export type AnnouncementTabKey = 'all' | 'event' | 'announcement';
 
 export const ANNOUNCEMENT_TABS: readonly AnnouncementTabKey[] = [
@@ -30,7 +24,7 @@ export const ANNOUNCEMENT_TABS: readonly AnnouncementTabKey[] = [
 export const useAnnouncements = () => {
   const dispatch = useAppDispatch();
   const banners = useAppSelector(NotificationsSelector.getBanners);
-  const [data, setData] = useState<AnnouncementItem[]>([]);
+  const [data, setData] = useState<TAnnouncementItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | undefined>(undefined);
   const [tabIndex, setTabIndex] = useState(0);
@@ -49,7 +43,7 @@ export const useAnnouncements = () => {
     }, [onRefreshBanners]),
   );
 
-  const handleSuccess = (data: ListApiResponse<AnnouncementItem[]>) => {
+  const handleSuccess = (data: ListApiResponse<TAnnouncementItem[]>) => {
     isLast.current = data.last;
     setLoading(false);
     setData(prev => {
@@ -108,7 +102,7 @@ export const useAnnouncements = () => {
     });
   }, []);
 
-  const onPressNoticeItem = useCallback((item: AnnouncementItem) => {
+  const onPressNoticeItem = useCallback((item: TAnnouncementItem) => {
     AppNavigator.navigate(Paths.AnnouncementDetail, { id: item?.id });
   }, []);
 

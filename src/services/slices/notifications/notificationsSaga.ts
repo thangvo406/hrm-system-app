@@ -1,15 +1,14 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
-  AnnouncementDetail,
-  AnnouncementImage,
-  AnnouncementItem,
-  GetAnnouncementDetailPayload,
-  GetAnnouncementImagesPayload,
-  GetAnnouncementsPayload,
-  GetNotificationsPayload,
-  MarkReadPayload,
-  NotificationItem,
-  ResponseAnnouncementImage,
+  TAnnouncementImage,
+  TAnnouncementItem,
+  TGetAnnouncementDetailPayload,
+  TGetAnnouncementImagesPayload,
+  TGetAnnouncementsPayload,
+  TGetNotificationsPayload,
+  TMarkReadPayload,
+  TNotificationItem,
+  IResponseAnnouncementImage,
 } from '@type/notifications';
 
 import { call, put, takeLatest } from 'redux-saga/effects';
@@ -35,11 +34,11 @@ import {
 import { getErrorMessageApi } from '@utils/common';
 
 function* getNotificationsWorker(
-  action: PayloadAction<GetNotificationsPayload>,
+  action: PayloadAction<TGetNotificationsPayload>,
 ) {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
-    const response: ListApiResponse<NotificationItem[]> = yield call(
+    const response: ListApiResponse<TNotificationItem[]> = yield call(
       getNotifications,
       request,
     );
@@ -51,11 +50,11 @@ function* getNotificationsWorker(
 }
 
 function* getAnnouncementsWorker(
-  action: PayloadAction<GetAnnouncementsPayload>,
-): Generator<unknown, void, ListApiResponse<AnnouncementItem[]>> {
+  action: PayloadAction<TGetAnnouncementsPayload>,
+): Generator<unknown, void, ListApiResponse<TAnnouncementItem[]>> {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
-    const response: ListApiResponse<AnnouncementItem[]> = yield call(
+    const response: ListApiResponse<TAnnouncementItem[]> = yield call(
       getAnnouncements,
       request,
     );
@@ -67,11 +66,11 @@ function* getAnnouncementsWorker(
 }
 
 function* getAnnouncementImagesWorker(
-  action: PayloadAction<GetAnnouncementImagesPayload>,
-): Generator<unknown, void, AnnouncementImage[]> {
+  action: PayloadAction<TGetAnnouncementImagesPayload>,
+): Generator<unknown, void, TAnnouncementImage[]> {
   const { onSuccess, onFailure } = action.payload || {};
   try {
-    const response: ResponseAnnouncementImage = yield call(
+    const response: IResponseAnnouncementImage = yield call(
       getAnnouncementImages,
     );
     yield put(getAnnouncementImagesSuccess(response.items));
@@ -83,11 +82,11 @@ function* getAnnouncementImagesWorker(
 }
 
 function* getAnnouncementDetailWorker(
-  action: PayloadAction<GetAnnouncementDetailPayload>,
-): Generator<unknown, void, AnnouncementDetail> {
+  action: PayloadAction<TGetAnnouncementDetailPayload>,
+): Generator<unknown, void, TAnnouncementItem> {
   const { announcementId, onSuccess, onFailure } = action.payload || {};
   try {
-    const response: AnnouncementDetail = yield call(
+    const response: TAnnouncementItem = yield call(
       getAnnouncementById,
       announcementId,
     );
@@ -99,7 +98,7 @@ function* getAnnouncementDetailWorker(
 }
 
 function* markReadWorker(
-  action: PayloadAction<MarkReadPayload>,
+  action: PayloadAction<TMarkReadPayload>,
 ): Generator<unknown, void, void> {
   const { notifyId, onSuccess, onFailure } = action.payload || {};
   try {
@@ -112,7 +111,7 @@ function* markReadWorker(
 }
 
 function* markReadAllWorker(
-  action: PayloadAction<MarkReadPayload>,
+  action: PayloadAction<TMarkReadPayload>,
 ): Generator<unknown, void, void> {
   const { onSuccess, onFailure } = action.payload || {};
   try {

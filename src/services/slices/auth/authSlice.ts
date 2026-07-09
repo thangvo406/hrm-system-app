@@ -1,7 +1,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 import { createSlice } from '@reduxjs/toolkit';
-import type { SelectSchoolRequest } from '@type/auth';
+import type { ISelectSchoolRequest } from '@type/auth';
 
 export type AuthState = {
   accessToken: string | undefined;
@@ -168,7 +168,7 @@ const authSlice = createSlice({
     },
     // Persist the user's selected university on the session.
     selectSchoolRequest: {
-      prepare: (payload: SelectSchoolRequest) => ({ payload }),
+      prepare: (payload: ISelectSchoolRequest) => ({ payload }),
       reducer: () => {},
     },
     // Triggered by the saga after the select-school API succeeds. Stores

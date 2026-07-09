@@ -1,4 +1,4 @@
-import type { NotificationItem } from '@type/notifications';
+import type { TNotificationItem } from '@type/notifications';
 
 import { useAppDispatch } from '@services/common/storeHooks';
 import {
@@ -12,12 +12,10 @@ import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useTranslation } from 'react-i18next';
 
-export type { NotificationItem, NotificationKind } from '@type/notifications';
-
 export const useNotifications = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
-  const [data, setData] = useState<NotificationItem[]>([]);
+  const [data, setData] = useState<TNotificationItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState(0);
@@ -27,7 +25,7 @@ export const useNotifications = () => {
   //   setData(items);
   //   setLoading(false);
   // };
-  const handleSuccess = (data: ListApiResponse<NotificationItem[]>) => {
+  const handleSuccess = (data: ListApiResponse<TNotificationItem[]>) => {
     isLast.current = data.last;
     setData(prev => {
       let results = [];
@@ -49,7 +47,7 @@ export const useNotifications = () => {
     setCurrentPage(prev => prev + 1);
   }, []);
 
-  const onRefreshReadData = (markAll = false, item?: NotificationItem) => {
+  const onRefreshReadData = (markAll = false, item?: TNotificationItem) => {
     const newData = data?.map(it => ({
       ...it,
       read: markAll ? true : it.id == item?.id ? true : it.read,
@@ -61,7 +59,7 @@ export const useNotifications = () => {
     return !(data?.length > 0);
   }, [data]);
 
-  const onMarkRead = (item: NotificationItem) => {
+  const onMarkRead = (item: TNotificationItem) => {
     dispatch(
       markReadRequest({
         notifyId: item.id,
@@ -99,7 +97,7 @@ export const useNotifications = () => {
   };
 
   const onPressItem = useCallback(
-    (item: NotificationItem) => {
+    (item: TNotificationItem) => {
       if (!item.read) {
         onMarkRead(item);
       }
