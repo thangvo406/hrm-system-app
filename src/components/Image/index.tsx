@@ -8,7 +8,7 @@ import type { SvgProps } from 'react-native-svg';
 import icons, { type IconName } from '@assets/icons';
 import images, { type ImageName } from '@assets/images';
 import FastImage from '@d11/react-native-fast-image';
-import React from 'react';
+import React, { useState } from 'react';
 
 type ImageSvgProps = {
   readonly height?: number;
@@ -52,15 +52,23 @@ function Image(props: Properties) {
     width,
     ...rest
   } = props || {};
+  const [urlPathImage, setUrlPathImage] = useState(url);
   if (type === 'svg') {
     const Icon = icons[name as IconName];
     return <Icon {...(props as SvgProps)} />;
   }
 
-  if (url) {
+  const imageName = images[name as ImageName];
+
+  if (urlPathImage) {
     return (
       <FastImage
         {...rest}
+        onError={() => {
+          if (imageName) {
+            setUrlPathImage('');
+          }
+        }}
         resizeMode={resizeMode}
         source={{ uri: url }}
         style={[style, { height: height ?? 0, width: width ?? 0 }]}
@@ -72,7 +80,7 @@ function Image(props: Properties) {
     <FastImage
       {...rest}
       resizeMode={resizeMode}
-      source={images[name as ImageName]}
+      source={imageName}
       style={[style, { height: height ?? 0, width: width ?? 0 }]}
     />
   );

@@ -77,6 +77,10 @@ export const usePaymentCart = (props: any) => {
     );
   }, [data]);
 
+  const products = useMemo(() => {
+    return dataCart?.items?.filter(it => !it.productDeleted);
+  }, [dataCart]);
+
   useEffect(() => {
     dispatch(
       getAddressOrderRecentRequest({
@@ -213,6 +217,7 @@ export const usePaymentCart = (props: any) => {
     data,
     onRemoveProduct,
     pickupTime,
+    products,
     addressDelivery: getAddressDisplay(),
     onPressOrder,
     onPressPickupTime,

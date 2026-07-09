@@ -5,18 +5,23 @@ import { useTranslation } from 'react-i18next';
 import type { TextInput } from 'react-native';
 import {
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { ScaleSize } from '@kits/core';
-import { ValidateUtils } from '@kits/core/utils';
+import { DeviceUtils, ValidateUtils } from '@kits/core/utils';
 import AppNavigator from '@navigation/AppNavigator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '@constants';
 import { formatPhoneNumber } from '@utils/common';
+const { ifIPadOrTablet, ifAndroid } = DeviceUtils;
 
 const BACK_ICON_SIZE = ScaleSize(24);
 const ICON_CHEVRON_SIZE = ScaleSize(18);
@@ -55,7 +60,7 @@ type InputInfoProps = {
   readonly carrier: string;
   readonly isShowFieldName: boolean;
   readonly titleRegisterInfoKey: string;
-  readonly disabled?: boolean;
+
   readonly onInfoChange: (field: keyof InputInfoValues, value: string) => void;
   readonly onPressCarrier: () => void;
   readonly onPressRequestOtp: (onSuccess: (isSuccess: boolean) => void) => void;
@@ -97,7 +102,6 @@ const FIELD_FLOW_ORDER: readonly (keyof InputInfoValues)[] = [
 function InputInfo({
   agreed,
   carrier,
-  disabled = false,
   onInfoChange,
   onPressCarrier,
   onPressRequestOtp,
@@ -233,232 +237,245 @@ function InputInfo({
     values.otp.trim().length === OTP_MAX_LENGTH;
 
   return (
-    <TouchableOpacity
-      accessible={false}
-      activeOpacity={1}
-      onPress={() => {
-        Keyboard.dismiss();
-      }}
-      style={styles.container}
-    >
-      <RegisterHeader />
-
-      <View style={styles.identityBlock}>
-        <Text style={styles.identityTitle}>{t(titleRegisterInfoKey)}</Text>
-
-        <RadioButton
-          label={t('register_flow.agree_label')}
-          onPress={onToggleAgreement}
-          selected={agreed}
-          style={styles.agreeRow}
-          testID="register-flow-agree"
-        />
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.linkRow}
-          testID="register-flow-terms"
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.flex}
+      >
+        <RegisterHeader />
+        <ScrollView
+          bounces={false}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.linkText}>{t('register_flow.terms_of_use')}</Text>
-          <Image
-            color={ICON_COLOR}
-            height={ICON_CHEVRON_SIZE}
-            name="ic_chevron_right"
-            type="svg"
-            width={ICON_CHEVRON_SIZE}
-          />
-        </TouchableOpacity>
+          <View style={styles.identityBlock}>
+            <Text style={styles.identityTitle}>{t(titleRegisterInfoKey)}</Text>
 
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.linkRow}
-          testID="register-flow-carrier-terms"
-        >
-          <Text style={styles.linkText}>
-            {t('register_flow.carrier_terms')}
-          </Text>
-          <Image
-            color={ICON_COLOR}
-            height={ICON_CHEVRON_SIZE}
-            name="ic_chevron_right"
-            type="svg"
-            width={ICON_CHEVRON_SIZE}
-          />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.divider} />
-
-      <View style={styles.formBlock}>
-        {!!isShowFieldName && (
-          <TextInputRegister
-            maxLength={NAME_MAX_LENGTH}
-            onChangeText={handleChange(FIELD_INPUT_INFO.name)}
-            onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.name)}
-            placeholder={t('register_flow.name_placeholder')}
-            ref={nameReference}
-            returnKeyType="next"
-            submitBehavior="submit"
-            testID="register-flow-name"
-            value={values.name}
-          />
-        )}
-
-        <View style={styles.dobRow}>
-          <View style={[styles.dobDateField]}>
-            <TextInputRegister
-              keyboardType="number-pad"
-              maxLength={BIRTHDAY_MAX_LENGTH}
-              onChangeText={handleChange(FIELD_INPUT_INFO.birthday)}
-              onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.birthday)}
-              placeholder={t('register_flow.dob_label')}
-              ref={birthdayReference}
-              returnKeyType="next"
-              submitBehavior="submit"
-              testID="register-flow-birthday1"
-              value={values.birthday}
+            <RadioButton
+              label={t('register_flow.agree_label')}
+              onPress={onToggleAgreement}
+              selected={agreed}
+              style={styles.agreeRow}
+              testID="register-flow-agree"
             />
-          </View>
 
-          <Text style={styles.dobSeparator}>—</Text>
-
-          <View style={[styles.dobDateField]}>
-            <TextInputRegister
-              keyboardType="number-pad"
-              maxLength={IDENTIFY_MAX_LENGTH}
-              onChangeText={handleChange(FIELD_INPUT_INFO.indentify)}
-              onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.indentify)}
-              placeholder={t('register_flow.identify_label')}
-              ref={indentifyReference}
-              returnKeyType="next"
-              secureTextEntry
-              submitBehavior="submit"
-              testID="register-flow-birthday2"
-              textAlign="right"
-              value={values.indentify}
-            />
-          </View>
-        </View>
-
-        <View style={styles.phoneRow}>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={onPressCarrier}
-            style={styles.carrierPicker}
-            testID="register-flow-carrier"
-          >
-            <Text style={styles.carrierText}>{carrier}</Text>
-            <Image
-              color={ICON_COLOR}
-              height={ICON_CHEVRON_SIZE}
-              name="ic_chevron_down"
-              type="svg"
-              width={ICON_CHEVRON_SIZE}
-            />
-          </TouchableOpacity>
-
-          <View style={styles.phoneField}>
-            <TextInputRegister
-              keyboardType="number-pad"
-              maxLength={PHONE_MAX_LENGTH}
-              onChangeText={handleChange(FIELD_INPUT_INFO.phone)}
-              onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.phone)}
-              placeholder={t('register_flow.phone_placeholder')}
-              ref={phoneReference}
-              returnKeyType="next"
-              submitBehavior="submit"
-              testID="register-flow-phone"
-              value={formatPhoneNumber(values.phone)}
-              style={{
-                borderBottomWidth: 0,
-              }}
-            />
-          </View>
-
-          <TouchableOpacity
-            activeOpacity={0.8}
-            disabled={countDownTime > 0}
-            onPress={onRequestOtp}
-            style={styles.requestButton}
-            testID="register-flow-request"
-          >
-            <Text
-              style={
-                countDownTime > 0
-                  ? styles.requestText
-                  : styles.requestTextActive
-              }
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.linkRow}
+              testID="register-flow-terms"
             >
-              {countDownTime > 0
-                ? formatCountdown(countDownTime)
-                : t('register_flow.request_verification')}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {otpSent ? (
-          <View style={styles.otpRow}>
-            <View style={styles.otpField}>
-              <TextInputRegister
-                keyboardType="number-pad"
-                maxLength={OTP_MAX_LENGTH}
-                onChangeText={handleChange(FIELD_INPUT_INFO.otp)}
-                onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.otp)}
-                placeholder={t('register_flow.otp_label')}
-                ref={otpReference}
-                returnKeyType="done"
-                testID="register-flow-otp"
-                value={values.otp}
-                style={{
-                  borderBottomWidth: 0,
-                }}
+              <Text style={styles.linkText}>
+                {t('register_flow.terms_of_use')}
+              </Text>
+              <Image
+                color={ICON_COLOR}
+                height={ICON_CHEVRON_SIZE}
+                name="ic_chevron_right"
+                type="svg"
+                width={ICON_CHEVRON_SIZE}
               />
-            </View>
-            <AppButton
-              style={styles.btnVerification}
-              onPress={_onPressVerify}
-              disabled={!isFormValid || enableBtnSubmit}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.linkRow}
+              testID="register-flow-carrier-terms"
             >
-              {verifiedOtp.current ? (
-                <Image
-                  name="ic_check"
-                  type="svg"
-                  color={Colors.primary}
-                  width={ScaleSize(32)}
-                  height={ScaleSize(32)}
+              <Text style={styles.linkText}>
+                {t('register_flow.carrier_terms')}
+              </Text>
+              <Image
+                color={ICON_COLOR}
+                height={ICON_CHEVRON_SIZE}
+                name="ic_chevron_right"
+                type="svg"
+                width={ICON_CHEVRON_SIZE}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.divider} />
+
+          <View style={styles.formBlock}>
+            {!!isShowFieldName && (
+              <TextInputRegister
+                maxLength={NAME_MAX_LENGTH}
+                onChangeText={handleChange(FIELD_INPUT_INFO.name)}
+                onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.name)}
+                placeholder={t('register_flow.name_placeholder')}
+                ref={nameReference}
+                returnKeyType="next"
+                submitBehavior="submit"
+                testID="register-flow-name"
+                value={values.name}
+              />
+            )}
+
+            <View style={styles.dobRow}>
+              <View style={[styles.dobDateField]}>
+                <TextInputRegister
+                  keyboardType="number-pad"
+                  maxLength={BIRTHDAY_MAX_LENGTH}
+                  onChangeText={handleChange(FIELD_INPUT_INFO.birthday)}
+                  onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.birthday)}
+                  placeholder={t('register_flow.dob_label')}
+                  ref={birthdayReference}
+                  returnKeyType="next"
+                  submitBehavior="submit"
+                  testID="register-flow-birthday1"
+                  value={values.birthday}
                 />
-              ) : (
+              </View>
+
+              <Text style={styles.dobSeparator}>—</Text>
+
+              <View style={[styles.dobDateField]}>
+                <TextInputRegister
+                  keyboardType="number-pad"
+                  maxLength={IDENTIFY_MAX_LENGTH}
+                  onChangeText={handleChange(FIELD_INPUT_INFO.indentify)}
+                  onSubmitEditing={handleSubmitField(
+                    FIELD_INPUT_INFO.indentify,
+                  )}
+                  placeholder={t('register_flow.identify_label')}
+                  ref={indentifyReference}
+                  returnKeyType="next"
+                  secureTextEntry
+                  submitBehavior="submit"
+                  testID="register-flow-birthday2"
+                  textAlign="right"
+                  value={values.indentify}
+                />
+              </View>
+            </View>
+
+            <View style={styles.phoneRow}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={onPressCarrier}
+                style={styles.carrierPicker}
+                testID="register-flow-carrier"
+              >
+                <Text style={styles.carrierText}>{carrier}</Text>
+                <Image
+                  color={ICON_COLOR}
+                  height={ICON_CHEVRON_SIZE}
+                  name="ic_chevron_down"
+                  type="svg"
+                  width={ICON_CHEVRON_SIZE}
+                />
+              </TouchableOpacity>
+
+              <View style={styles.phoneField}>
+                <TextInputRegister
+                  keyboardType="number-pad"
+                  maxLength={PHONE_MAX_LENGTH}
+                  onChangeText={handleChange(FIELD_INPUT_INFO.phone)}
+                  onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.phone)}
+                  placeholder={t('register_flow.phone_placeholder')}
+                  ref={phoneReference}
+                  returnKeyType="next"
+                  submitBehavior="submit"
+                  testID="register-flow-phone"
+                  value={formatPhoneNumber(values.phone)}
+                  style={{
+                    borderBottomWidth: 0,
+                  }}
+                />
+              </View>
+
+              <TouchableOpacity
+                activeOpacity={0.8}
+                disabled={countDownTime > 0}
+                onPress={onRequestOtp}
+                style={styles.requestButton}
+                testID="register-flow-request"
+              >
                 <Text
                   style={
-                    !isFormValid
-                      ? [styles.requestText, { width: undefined }]
+                    countDownTime > 0
+                      ? styles.requestText
                       : styles.requestTextActive
                   }
                 >
-                  {t('register_flow.verification')}
+                  {countDownTime > 0
+                    ? formatCountdown(countDownTime)
+                    : t('register_flow.request_verification')}
                 </Text>
-              )}
-            </AppButton>
-          </View>
-        ) : undefined}
+              </TouchableOpacity>
+            </View>
 
-        <Text style={styles.warning}>{t('register_flow.warning')}</Text>
-      </View>
-      <View style={[styles.footer, { bottom: insset.bottom || ScaleSize(25) }]}>
-        <View style={styles.footerSeparator} />
-        <Button
-          disabled={!enableBtnSubmit}
-          style={{
-            width: '90%',
-            alignSelf: 'center',
-          }}
-          onPress={onSubmit}
-          testID="register-flow-next"
-          title={t('register_flow.next')}
-          type="primary"
-        />
-      </View>
-    </TouchableOpacity>
+            {otpSent ? (
+              <View style={styles.otpRow}>
+                <View style={styles.otpField}>
+                  <TextInputRegister
+                    keyboardType="number-pad"
+                    maxLength={OTP_MAX_LENGTH}
+                    onChangeText={handleChange(FIELD_INPUT_INFO.otp)}
+                    onSubmitEditing={handleSubmitField(FIELD_INPUT_INFO.otp)}
+                    placeholder={t('register_flow.otp_label')}
+                    ref={otpReference}
+                    returnKeyType="done"
+                    testID="register-flow-otp"
+                    value={values.otp}
+                    style={{
+                      borderBottomWidth: 0,
+                    }}
+                  />
+                </View>
+                <AppButton
+                  style={styles.btnVerification}
+                  onPress={_onPressVerify}
+                  disabled={!isFormValid || enableBtnSubmit}
+                >
+                  {verifiedOtp.current ? (
+                    <Image
+                      name="ic_check"
+                      type="svg"
+                      color={Colors.primary}
+                      width={ScaleSize(32)}
+                      height={ScaleSize(32)}
+                    />
+                  ) : (
+                    <Text
+                      style={
+                        !isFormValid
+                          ? [styles.requestText, { width: undefined }]
+                          : styles.requestTextActive
+                      }
+                    >
+                      {t('register_flow.verification')}
+                    </Text>
+                  )}
+                </AppButton>
+              </View>
+            ) : undefined}
+
+            <Text style={styles.warning}>{t('register_flow.warning')}</Text>
+          </View>
+        </ScrollView>
+        <View
+          style={[
+            styles.footer,
+            { bottom: ifAndroid(16, insset.bottom || ScaleSize(25)) },
+          ]}
+        >
+          <View style={styles.footerSeparator} />
+          <Button
+            disabled={!enableBtnSubmit}
+            style={{
+              width: '90%',
+              alignSelf: 'center',
+            }}
+            onPress={onSubmit}
+            testID="register-flow-next"
+            title={t('register_flow.next')}
+            type="primary"
+          />
+        </View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -505,7 +522,15 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: '#FFFFFF',
+    flexGrow: 1,
+  },
+  flex: {
     flex: 1,
+    width: ifIPadOrTablet('70%', '100%'),
+    alignSelf: 'center',
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   divider: {
     backgroundColor: '#F0F0F0',

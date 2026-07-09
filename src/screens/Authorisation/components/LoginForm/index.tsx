@@ -63,6 +63,8 @@ function LoginForm({
         ref={passwordReference}
         returnKeyType="done"
         secureTextEntry
+        autoComplete="off"
+        textContentType="newPassword"
         testID="auth-password-input"
       />
 

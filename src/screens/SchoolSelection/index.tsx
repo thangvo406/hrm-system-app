@@ -18,7 +18,8 @@ import type { IResponseUniversity } from '@type/auth';
 import { useSchoolSelection } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppNavigator from '@navigation/AppNavigator';
-
+import { DeviceUtils } from '@kits/core/utils';
+const { ifIPadOrTablet } = DeviceUtils;
 const BACK_ICON_SIZE = 24;
 const ICON_CLEAR_SIZE = 16;
 const ICON_SEARCH_SIZE = 22;
@@ -86,7 +87,10 @@ function SchoolSelection() {
   );
 
   return (
-    <AppButton style={[styles.container, { paddingTop: insets.top }]} onPress={handleDismissKeyboard}>
+    <AppButton
+      style={[styles.container, { paddingTop: insets.top }]}
+      onPress={handleDismissKeyboard}
+    >
       <RegisterHeader showBtnBack onBack={() => AppNavigator.goBack()} />
 
       <View style={styles.searchBlock}>
@@ -215,6 +219,8 @@ const styles = StyleSheet.create({
   footer: {
     paddingBottom: 24,
     paddingTop: 12,
+    width: ifIPadOrTablet('70%', '100%'),
+    alignSelf: 'center',
   },
   footerDivider: {
     backgroundColor: '#F0F0F0',
@@ -224,6 +230,8 @@ const styles = StyleSheet.create({
   },
   list: {
     flex: 1,
+    width: ifIPadOrTablet('70%', '100%'),
+    alignSelf: 'center',
   },
   schoolAddress: {
     color: SUBTITLE_COLOR,
@@ -251,6 +259,8 @@ const styles = StyleSheet.create({
   searchBlock: {
     paddingHorizontal: 24,
     paddingTop: 24,
+    width: ifIPadOrTablet('70%', '100%'),
+    alignSelf: 'center',
   },
   searchButton: {
     alignItems: 'center',

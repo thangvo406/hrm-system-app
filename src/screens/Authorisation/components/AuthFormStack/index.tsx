@@ -2,14 +2,16 @@ import type { LoginErrors, RegisterErrors, SocialProvider } from '@hooks';
 import type { LoginValues } from '@screens/Authorisation/components/LoginForm';
 import type { RegisterValues } from '@screens/Authorisation/components/RegisterForm';
 
-import {SegmentedTab, Image} from '@components';
+import { SegmentedTab, Image } from '@components';
 import {
   Animated,
   Easing,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -18,7 +20,9 @@ import { useTranslation } from 'react-i18next';
 import LoginForm from '@screens/Authorisation/components/LoginForm';
 import RegisterForm from '@screens/Authorisation/components/RegisterForm';
 import SocialButtons from '@screens/Authorisation/components/SocialButtons';
-
+import { ScaleSize } from '@kits/core';
+import { DeviceUtils } from '@kits/core/utils';
+const { ifIPadOrTablet } = DeviceUtils;
 const BANNER_HEIGHT = 64 + 30;
 const BANNER_WIDTH = 150 + 30;
 const FORM_FADE_DURATION = 250;
@@ -98,6 +102,7 @@ function AuthFormStack({
   const formStyle = {
     opacity: formOpacity,
     transform: [{ translateX: formTranslateX }],
+    width: '100%' as `${number}%`,
   };
 
   const authTabs = useMemo(
@@ -117,59 +122,62 @@ function AuthFormStack({
   );
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={styles.flex}
-    >
-      <View style={styles.header}>
-        <View style={styles.bannerWrapper}>
-          <Image
-            height={BANNER_HEIGHT}
-            name="ic_logo_banner"
-            width={BANNER_WIDTH}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.flex}
+      >
+        <View style={styles.header}>
+          <View style={styles.bannerWrapper}>
+            <Image
+              height={BANNER_HEIGHT}
+              name="ic_logo_banner"
+              width={BANNER_WIDTH}
+            />
+          </View>
+
+          <SegmentedTab
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+            style={styles.tabs}
+            tabs={authTabs}
           />
         </View>
 
-        <SegmentedTab
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-          style={styles.tabs}
-          tabs={authTabs}
-        />
-      </View>
+        <ScrollView
+          bounces={false}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="always"
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+        >
+          {isRegister ? (
+            <Animated.View key="register" style={formStyle}>
+              <RegisterForm
+                errors={registerErrors}
+                loading={loading}
+                onChange={onRegisterChange}
+                onSubmit={onGoRegisterForm}
+                valid={validRegister}
+              />
+            </Animated.View>
+          ) : (
+            <Animated.View key="login" style={formStyle}>
+              <LoginForm
+                errors={loginErrors}
+                loading={loading}
+                onChange={onLoginChange}
+                onForgotPassword={onForgotPassword}
+                onSubmit={submitLogin}
+                valid={validLogin}
+              />
+            </Animated.View>
+          )}
 
-      <ScrollView
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
-        {isRegister ? (
-          <Animated.View key="register" style={formStyle}>
-            <RegisterForm
-              errors={registerErrors}
-              loading={loading}
-              onChange={onRegisterChange}
-              onSubmit={onGoRegisterForm}
-              valid={validRegister}
-              // values={register}
-            />
-          </Animated.View>
-        ) : (
-          <Animated.View key="login" style={formStyle}>
-            <LoginForm
-              errors={loginErrors}
-              loading={loading}
-              onChange={onLoginChange}
-              onForgotPassword={onForgotPassword}
-              onSubmit={submitLogin}
-              valid={validLogin}
-            />
-          </Animated.View>
-        )}
-
-        <SocialButtons onPress={loginWithSocial} />
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <SocialButtons onPress={loginWithSocial} />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -178,17 +186,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  content: {
-    flexGrow: 1,
-    paddingBottom: 12,
-    paddingHorizontal: 24,
-  },
   flex: {
     flex: 1,
+    width: ifIPadOrTablet('70%', '100%'),
+    alignSelf: 'center',
   },
   header: {
     paddingHorizontal: 24,
     paddingTop: 12,
+  },
+  scrollContent: {
+    // alignItems: 'center',
+    flexGrow: 1,
+    // justifyContent: 'center',
+    paddingBottom: 12,
+    paddingHorizontal: ScaleSize(30),
   },
   tabs: {
     marginBottom: 16,

@@ -19,6 +19,7 @@ function PaymentCart(props: any) {
     pickupTime,
     shippingTabs,
     addressDelivery,
+    products,
     setDeliveryTab,
     setPaymentMethod,
     onPressPickupTime,
@@ -34,7 +35,7 @@ function PaymentCart(props: any) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <ProductInfo items={data?.items} onChangeQuantity={onChangeQuantity} />
+        <ProductInfo items={products} onChangeQuantity={onChangeQuantity} />
 
         <View style={styles.spacer} />
 

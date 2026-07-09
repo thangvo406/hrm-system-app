@@ -4,6 +4,7 @@ import type {
   ReturnKeyType,
   StyleProp,
   SubmitBehavior,
+  TextInputProps,
   ViewStyle,
 } from 'react-native';
 
@@ -31,6 +32,7 @@ type TextInputRegisterProps = {
   readonly secureTextEntry?: boolean;
   readonly style?: StyleProp<ViewStyle>;
   readonly submitBehavior?: SubmitBehavior;
+  readonly textContentType?: TextInputProps['textContentType'];
   readonly testID: string;
   readonly textAlign?: 'left' | 'right';
   readonly value: string;
@@ -58,6 +60,7 @@ function TextInputRegister({
   submitBehavior = undefined,
   testID,
   textAlign = 'left',
+  textContentType = undefined,
   value,
 }: TextInputRegisterProps) {
   const hasError = error !== undefined;
@@ -86,6 +89,7 @@ function TextInputRegister({
           ]}
           submitBehavior={submitBehavior}
           testID={testID}
+          textContentType={textContentType}
           underlineColorAndroid="transparent"
           value={value}
         />

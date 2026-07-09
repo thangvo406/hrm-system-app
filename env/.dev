@@ -1,4 +1,4 @@
-BASE_URL=http://52.79.38.251/
+BASE_URL=https://coop-mobile-dev.specominc.com/
 APP_NAME=Coop Test
 APP_ID=com.coop_use
 APP_IOS_ID=com.coopuse.dev
