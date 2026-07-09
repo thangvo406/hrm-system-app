@@ -11,12 +11,14 @@ import AppNavigator from '@navigation/AppNavigator';
 import {
   AppState,
   Dimensions,
+  Keyboard,
   PanResponder,
   Platform,
   View,
   Linking,
 } from 'react-native';
 import { Globals } from '@utils';
+import AppNativeModules from '@services/native/AppNativeModules';
 import { AppStack, AuthStack } from './Stacks';
 import { deepLinkGate } from './deepLinkGate';
 
@@ -54,10 +56,6 @@ function ApplicationNavigator() {
       const url = deepLinkGate.consumePending();
       if (url) {
         const data = deepLinkGate.getPathFromUrl(url);
-        console.log('data', {
-          url,
-          data,
-        });
         const { screen, ...params } = data || {};
         let type;
         if (screen == 'academicverifysuccess') {
@@ -83,8 +81,18 @@ function ApplicationNavigator() {
       handleAppStateChange,
     );
 
+    // Android 9: khi keyboard ẩn, system navigation bar hiện lại và immersive
+    // mode bị mất. Ẩn lại thanh nav hệ thống để giữ layout ổn định.
+    const keyboardHideSubscription =
+      Platform.OS === 'android'
+        ? Keyboard.addListener('keyboardDidHide', () => {
+            void AppNativeModules.hideBottomNavigationBar();
+          })
+        : undefined;
+
     return () => {
       subscription.remove();
+      keyboardHideSubscription?.remove();
     };
   }, []);
 
