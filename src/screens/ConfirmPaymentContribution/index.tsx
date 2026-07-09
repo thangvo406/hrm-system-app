@@ -1,4 +1,3 @@
-import type { Profile } from '@services/request/account';
 import type { RootScreenProps } from '@navigation/types';
 
 import { AppButton, HeaderDetail } from '@components';
@@ -7,14 +6,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import { useAppSelector } from '@services/common/storeHooks';
-import { AccountSelector } from '@services/selectors';
 import { Paths } from '@navigation/paths';
 import { formatCurrency } from '@utils/product';
 import {
   CONTRIBUTION_PAYMENT_METHODS,
   useConfirmPaymentContribution,
 } from '@hooks/useConfirmPaymentContribution';
+import { DeviceUtils } from '@kits/core/utils';
+const { ifAndroid } = DeviceUtils;
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#9B9B9B';
@@ -26,9 +25,6 @@ function ConfirmPaymentContribution({
 }: RootScreenProps<Paths.ConfirmPaymentContribution>) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const profile: Profile | undefined = useAppSelector(
-    AccountSelector.getProfile,
-  );
   const amount = route.params?.amount ?? 0;
   const { onSubmit, selectedMethod, setSelectedMethod } =
     useConfirmPaymentContribution(amount);
@@ -90,7 +86,7 @@ function ConfirmPaymentContribution({
       <View
         style={[
           styles.footer,
-          { paddingBottom: insets.bottom + ScaleSize(12) },
+          { paddingBottom: ifAndroid(16, insets.bottom + ScaleSize(12)) },
         ]}
       >
         <AppButton

@@ -18,7 +18,8 @@ const INFO_BG = '#F0FAF0';
 const CLOCK_ICON_BG = '#E8F5E8';
 const CLOCK_ICON_SIZE = ScaleSize(120);
 const STATUS_ORANGE = '#F5A623';
-
+import { DeviceUtils } from '@kits/core/utils';
+const { ifAndroid } = DeviceUtils;
 const onConfirm = () => {
   AppNavigator.reset(Paths.AppTabs, { screen: Paths.Home });
 };
@@ -108,7 +109,7 @@ function PaymentConfirmContributeFinish({
       <View
         style={[
           styles.footer,
-          { paddingBottom: insets.bottom + ScaleSize(12) },
+          { paddingBottom: ifAndroid(16, insets.bottom + ScaleSize(12)) },
         ]}
       >
         <AppButton

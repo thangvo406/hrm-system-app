@@ -21,7 +21,8 @@ import ItemSeparator from './ItemSeparator';
 import QuestionItem from './QuestionItem';
 import TitleRow from './TitleRow';
 import AppNavigator from '@navigation/AppNavigator';
-
+import { DeviceUtils } from '@kits/core/utils';
+const { ifAndroid } = DeviceUtils;
 const BACKGROUND_COLOR = '#FFFFFF';
 const SUBMIT_BG = '#1A1A1A';
 const TEXT_MUTED = '#9E9E9E';
@@ -101,7 +102,12 @@ function SurveyDetail(props: RootScreenProps<Paths.SurveyDetail>) {
         <View
           style={[
             styles.submitBar,
-            { paddingBottom: insets.bottom + (insets.bottom == 0 ? 20 : 0) },
+            {
+              paddingBottom: ifAndroid(
+                16,
+                insets.bottom + (insets.bottom == 0 ? 20 : 0),
+              ),
+            },
           ]}
         >
           <Button

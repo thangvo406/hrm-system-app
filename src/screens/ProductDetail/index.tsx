@@ -28,7 +28,8 @@ import imageNames from '@assets/images/names';
 import ProductAttributes from './ProductAttributes';
 import ProductQuantity from './ProductQuanlity';
 import isNumber from 'lodash/isNumber';
-
+import { DeviceUtils } from '@kits/core/utils';
+const { ifAndroid } = DeviceUtils;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = ScaleSize(300);
 const BACK_BUTTON_SIZE = ScaleSize(40);
@@ -332,7 +333,7 @@ function ProductDetail(props: any) {
           />
           <BackButton onPress={onPressBack} scrollY={scrollY} />
           <BottomSheet
-            bottomInset={insets.bottom}
+            bottomInset={ifAndroid(16, insets.bottom)}
             onPressCart={onPressCart}
             title={buttonTextSubmit}
             totalLabel={t('product_detail.min_order_label')}

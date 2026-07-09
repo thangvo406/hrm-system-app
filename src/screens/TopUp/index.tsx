@@ -7,6 +7,8 @@ import imageNames from '@assets/images/names';
 import { PAYMENT_METHODS, useTopUp } from '@hooks';
 import { formatCurrency } from '@utils/product';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { DeviceUtils } from '@kits/core/utils';
+const { ifAndroid } = DeviceUtils;
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#9B9B9B';
@@ -158,7 +160,7 @@ function TopUp() {
         </View>
       </ScrollView>
 
-      <View style={[styles.footer, { bottom: insets.bottom }]}>
+      <View style={[styles.footer, { bottom: ifAndroid(16, insets.bottom) }]}>
         <AppButton
           style={[styles.nextBtn, !enabledBtnSubmit && styles.nextBtnDisabled]}
           testID="top-up-next"

@@ -18,6 +18,8 @@ import { useOrderHistoryDetail } from '@hooks';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import imageNames from '@assets/images/names';
+import { DeviceUtils } from '@kits/core/utils';
+const { ifAndroid } = DeviceUtils;
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_GRAY = '#9E9E9E';
@@ -325,7 +327,7 @@ function OrderHistoryDetail(props: any) {
       <View
         style={[
           styles.bottomBar,
-          { paddingBottom: insets.bottom + ScaleSize(8) },
+          { paddingBottom: ifAndroid(16, insets.bottom + ScaleSize(8)) },
         ]}
       >
         <Button

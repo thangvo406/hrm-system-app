@@ -8,6 +8,8 @@ import { ScaleSize } from '@kits/core';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { formatCurrency } from '@utils/product';
+import { DeviceUtils } from '@kits/core/utils';
+const { ifAndroid } = DeviceUtils;
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#9B9B9B';
@@ -52,7 +54,7 @@ function ContributionInput() {
       <View
         style={[
           styles.footer,
-          { paddingBottom: insets.bottom + ScaleSize(12) },
+          { paddingBottom: ifAndroid(16, insets.bottom + ScaleSize(12)) },
         ]}
       >
         <AppButton
