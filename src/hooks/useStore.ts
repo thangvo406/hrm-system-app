@@ -21,10 +21,10 @@ const DEFAULT_FILTER: StoreFilterValue = {
 
 const onBack = () => {
   const canBack = AppNavigator.canGoBack();
-  if (canBack) {
-    AppNavigator.goBack();
-  } else {
+  if (!canBack || AppNavigator.getPreviousRoute()?.name == Paths.Products) {
     AppNavigator.reset(Paths.AppTabs, { screen: Paths.Home });
+  } else {
+    AppNavigator.goBack();
   }
 };
 

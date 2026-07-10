@@ -30,7 +30,7 @@ export type StoreCartItem = {
   storeId: number;
   storeName: string;
   storeAddress: StoreAddress;
-  subtotal: number;
+  subTotal: number;
   totalQuantity: number;
   items: ProductCart[];
   storeLogo: IImage;
@@ -93,6 +93,12 @@ export type GetTotalItemCartPayload = AppCallback<TotalItemCart>;
 
 export type GetListCartPayload = AppCallback<ListApiResponse<StoreCartItem[]>> &
   IRequestGetListCart;
+
+export type GetCartDetailRequest = {
+  readonly cartId: number;
+};
+
+export type GetCartDetailPayload = AppCallback<StoreCartItem> & GetCartDetailRequest;
 
 export type GetInfoProductCheckoutPayload = {
   readonly productId: number;

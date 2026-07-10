@@ -9,6 +9,7 @@ import type {
   GenerateQRCodePayload,
   GenerateQRCodeResponse,
   GetAddressOrderRecentPayload,
+  GetCartDetailPayload,
   GetContributeHistoryDetailPayload,
   GetContributeSummaryPayload,
   GetInfoProductCheckoutPayload,
@@ -32,6 +33,7 @@ import {
   createOrder,
   generateQRCode,
   getAddressOrderRecent,
+  getCartDetail,
   getContributeHistoryDetail,
   getContributeSummary,
   getInfoProductCheckout,
@@ -49,6 +51,7 @@ import {
   createOrderRequest,
   generateQRCodeRequest,
   getAddressOrderRecentRequest,
+  getCartDetailRequest,
   getContributeHistoryDetailRequest,
   getContributeSummaryRequest,
   getInfoProductCheckoutRequest,
@@ -157,6 +160,19 @@ function* getOrderHistoriesWorker(
       getOrderHistories,
       { page, size },
     );
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* getCartDetailWorker(
+  action: PayloadAction<GetCartDetailPayload>,
+): Generator<unknown, void, StoreCartItem> {
+  const { onFailure, onSuccess, cartId } = action.payload;
+  try {
+    const response: StoreCartItem = yield call(getCartDetail, { cartId });
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -295,4 +311,5 @@ export function* paymentSaga() {
   yield takeLatest(balanceChargeRequest.type, balanceChargeWorker);
   yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
   yield takeLatest(updateCartItemRequest.type, updateCartItemWorker);
+  yield takeLatest(getCartDetailRequest.type, getCartDetailWorker);
 }

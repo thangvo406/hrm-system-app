@@ -69,6 +69,7 @@
       "max_quantity_error": "Maximum quantity is {{count}}"
     },
     "products": {
+      "cart_button": "Checkout {{amount}} KRW",
       "empty": "No products to display."
     },
     "authorisation": {

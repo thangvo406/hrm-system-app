@@ -323,6 +323,7 @@
       "max_quantity_error": "최대 수량은 {{count}}개입니다"
     },
     "products": {
+      "cart_button": "장바구니 {{amount}}원",
       "empty": "표시할 상품이 없습니다."
     },
     "contribution": {

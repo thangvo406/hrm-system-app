@@ -8,6 +8,7 @@ import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
 import {
   createOrderRequest,
   getAddressOrderRecentRequest,
+  getCartDetailRequest,
   removeCartItemRequest,
   updateCartItemRequest,
 } from '@services/slices/payment/paymentSlice';
@@ -48,14 +49,16 @@ interface AddressDelivery {
 }
 
 export const usePaymentCart = (props: any) => {
-  const { data: dataCart } = AppNavigator.getParams(props);
+  const { cartId, data: dataCart } = AppNavigator.getParams(props);
   const { t } = useTranslation();
   const [data, setData] = useState(dataCart);
-  const [deliveryTab, setDeliveryTab] = useState<DeliveryTab>(
-    data.storeReceiveMethod?.length > 0
+  const [deliveryTab, setDeliveryTab] = useState<string | undefined>(
+    data?.storeReceiveMethod?.length > 0
       ? data.storeReceiveMethod[0]
       : undefined,
   );
+  const [loading, setLoading] = useState(!dataCart);
+  const [error, setError] = useState('');
   const [addressOrderRecent, setAddressOrderRecent] = useState();
   const dispatch = useAppDispatch();
   const debounceIdChangeQuanlity = useRef(undefined);
@@ -68,7 +71,7 @@ export const usePaymentCart = (props: any) => {
 
   const shippingTabs = useMemo(() => {
     return (
-      data.storeReceiveMethod?.map(item => {
+      data?.storeReceiveMethod?.map(item => {
         return {
           id: item,
           label: upperCaseFirstChar(item.toLowerCase()),
@@ -78,10 +81,10 @@ export const usePaymentCart = (props: any) => {
   }, [data]);
 
   const products = useMemo(() => {
-    return dataCart?.items?.filter(
+    return data?.items?.filter(
       it => !it.productDeleted || it.productStatus == 'ACTIVE',
     );
-  }, [dataCart]);
+  }, [data]);
 
   useEffect(() => {
     dispatch(
@@ -92,6 +95,26 @@ export const usePaymentCart = (props: any) => {
         },
       }),
     );
+
+    if (!dataCart) {
+      dispatch(
+        getCartDetailRequest({
+          cartId,
+          onSuccess: _data => {
+            setData(_data);
+            setDeliveryTab(
+              _data.storeReceiveMethod?.length > 0
+                ? _data.storeReceiveMethod[0]
+                : undefined,
+            );
+            setLoading(false);
+          },
+          onFailure: error => {
+            setError(error);
+          },
+        }),
+      );
+    }
   }, []);
 
   useEffect(() => {
@@ -241,6 +264,8 @@ export const usePaymentCart = (props: any) => {
     paymentMethod,
     data,
     onRemoveProduct,
+    loading,
+    error,
     pickupTime,
     products,
     addressDelivery: getAddressDisplay(),

@@ -2,7 +2,7 @@ import type { RootScreenProps } from '@navigation/types';
 import type { ListRenderItem } from 'react-native';
 import type { Product } from '@hooks';
 
-import { EmptyView, ProductsLoading } from '@components';
+import { Button, EmptyView, ProductsLoading } from '@components';
 import { Paths } from '@navigation/paths';
 import { Animated, Dimensions, StyleSheet, View } from 'react-native';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -19,7 +19,9 @@ import ProductRow from './ProductRow';
 import StoreInfo from './StoreInfo';
 import imageNames from '@assets/images/names';
 import { useTranslation } from 'react-i18next';
-
+import { DeviceUtils } from '@kits/core/utils';
+import { formatCurrency } from '@utils/product';
+const { ifAndroid } = DeviceUtils;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = ScaleSize(220);
 const COLLAPSE_TITLE_START = 0.8;
@@ -27,12 +29,23 @@ const DIVIDER_COLOR = '#F0F0F0';
 
 const keyExtractor = (item: Product) => String(item.id);
 const onPressBack = () => {
-  AppNavigator.goBack();
+  if (AppNavigator.getPreviousRoute()?.name == Paths.ProductDetail) {
+    AppNavigator.navigate(Paths.Stores);
+  } else {
+    AppNavigator.goBack();
+  }
 };
 function Products(props: RootScreenProps<Paths.Products>) {
   const insets = useSafeAreaInsets();
-  const { data, storeInfo, loading, onLoadMore, onSearchChange } =
-    useProducts(props);
+  const {
+    data,
+    storeInfo,
+    isShowBtnCart,
+    loading,
+    goToCart,
+    onLoadMore,
+    onSearchChange,
+  } = useProducts(props);
   const { t } = useTranslation();
   const scrollY = React.useMemo(() => new Animated.Value(0), []);
   // While search is open, frozenScrollY drives the hero height
@@ -208,28 +221,45 @@ function Products(props: RootScreenProps<Paths.Products>) {
           }}
         />
       ) : data?.length > 0 ? (
-        <Animated.FlatList
-          ref={flatListRef}
-          ItemSeparatorComponent={ItemSeparator}
-          ListEmptyComponent={<ListEmpty loading={loading} />}
-          ListHeaderComponent={
-            <StoreInfo storeInfo={storeInfo} titleOpacity={titleStoreOpacity} />
-          }
-          automaticallyAdjustKeyboardInsets={false}
-          contentContainerStyle={styles.listContent}
-          contentInset={{ bottom: 0 }}
-          data={data}
-          keyExtractor={keyExtractor}
-          keyboardDismissMode="on-drag"
-          keyboardShouldPersistTaps="handled"
-          onEndReached={onLoadMore}
-          onEndReachedThreshold={1.5}
-          onScroll={onScroll}
-          renderItem={renderItem}
-          scrollEventThrottle={16}
-          showsVerticalScrollIndicator={false}
-          style={styles.list}
-        />
+        <>
+          <Animated.FlatList
+            ref={flatListRef}
+            ItemSeparatorComponent={ItemSeparator}
+            ListEmptyComponent={<ListEmpty loading={loading} />}
+            ListHeaderComponent={
+              <StoreInfo
+                storeInfo={storeInfo}
+                titleOpacity={titleStoreOpacity}
+              />
+            }
+            automaticallyAdjustKeyboardInsets={false}
+            contentContainerStyle={styles.listContent}
+            contentInset={{ bottom: 0 }}
+            data={data}
+            keyExtractor={keyExtractor}
+            keyboardDismissMode="on-drag"
+            keyboardShouldPersistTaps="handled"
+            onEndReached={onLoadMore}
+            onEndReachedThreshold={1.5}
+            onScroll={onScroll}
+            renderItem={renderItem}
+            scrollEventThrottle={16}
+            showsVerticalScrollIndicator={false}
+            style={styles.list}
+          />
+          {isShowBtnCart ? (
+            <Button
+              title={t('products.cart_button', { amount: formatCurrency(storeInfo?.totalAmountCart) })}
+              type="rounded"
+              onPress={goToCart}
+              style={{
+                marginBottom: ifAndroid(16, insets.bottom || 20),
+                width: '90%',
+                alignSelf: 'center',
+              }}
+            />
+          ) : undefined}
+        </>
       ) : (
         <EmptyView icon={imageNames.ic_store} desc={t('common.no_data')} />
       )}

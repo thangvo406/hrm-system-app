@@ -13,6 +13,7 @@ import type {
   GetOrderHistoryDetailRequest,
   IncreaseContributeRequest,
   InitChargeRequest,
+  GetCartDetailRequest,
   OrderHistoryDetailItem,
   OrderHistoryItem,
   RemoveCartItemPayload,
@@ -86,6 +87,16 @@ export const getListCart = async (
     SingleApiResponse<ListApiResponse<StoreCartItem[]>>
   >(EndPoints.PAYMENT.getListCart(params), { loading: false });
   return response?.data;
+};
+
+export const getCartDetail = async (
+  request: GetCartDetailRequest,
+): Promise<StoreCartItem> => {
+  const response = await httpRequest.get<SingleApiResponse<StoreCartItem>>(
+    EndPoints.PAYMENT.cartDetail(request.cartId),
+    { loading: false },
+  );
+  return response.data;
 };
 
 export const getTotalItemCart = async (): Promise<TotalItemCart> => {

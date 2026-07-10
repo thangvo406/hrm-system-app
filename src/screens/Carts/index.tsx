@@ -64,7 +64,7 @@ function CartRow({ isManaging, item, onRemove, onPressItem }: CartRowProps) {
             {t('carts.item_count', { count: item.totalQuantity })}
           </Text>
           <Text style={styles.totalPrice}>
-            {ProductUtils.formatCurrency(item.subtotal)}
+            {ProductUtils.formatCurrency(item.subTotal)}
           </Text>
         </View>
       </View>

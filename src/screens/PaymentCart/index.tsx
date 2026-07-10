@@ -1,7 +1,13 @@
 import { Button, HeaderDetail } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { formatCurrency } from '@utils/product';
 import { usePaymentCart } from '@hooks';
 import PaymentMethod from './components/PaymentMethod';
@@ -20,6 +26,8 @@ function PaymentCart(props: any) {
     shippingTabs,
     addressDelivery,
     products,
+    loading,
+    error,
     setDeliveryTab,
     setPaymentMethod,
     onPressPickupTime,
@@ -31,47 +39,63 @@ function PaymentCart(props: any) {
   return (
     <View style={styles.safeArea}>
       <HeaderDetail title="Payment" />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <ProductInfo items={products} onChangeQuantity={onChangeQuantity} />
-
-        <View style={styles.spacer} />
-
-        <Shipping
-          onPressPickupTime={onPressPickupTime}
-          onTabChange={setDeliveryTab}
-          pickupTime={pickupTime}
-          tab={deliveryTab}
-          tabs={shippingTabs}
-          addressDelivery={addressDelivery}
-          onPressSelectAddress={onPressSelectAddress}
-        />
-
-        <View style={styles.spacer} />
-
-        <PaymentMethod value={paymentMethod} onChange={setPaymentMethod} />
-      </ScrollView>
-
-      {/* Bottom bar */}
-      <View style={styles.bottomBar}>
-        <View style={styles.priceColumn}>
-          <Text style={styles.finalPrice}>
-            {formatCurrency(data?.subtotal)}
-          </Text>
-          <Text style={styles.originalPrice}>
-            {formatCurrency(data?.subtotal)}
-          </Text>
+      {loading ? (
+        <ActivityIndicator />
+      ) : error ? (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Text style={styles.error}>{error}</Text>
         </View>
-        <Button
-          onPress={onPressOrder}
-          style={styles.orderButton}
-          testID="payment-order-now"
-          title="Order Now"
-          type="primary"
-        />
-      </View>
+      ) : (
+        <>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            <ProductInfo items={products} onChangeQuantity={onChangeQuantity} />
+
+            <View style={styles.spacer} />
+
+            <Shipping
+              onPressPickupTime={onPressPickupTime}
+              onTabChange={setDeliveryTab}
+              pickupTime={pickupTime}
+              tab={deliveryTab}
+              tabs={shippingTabs}
+              addressDelivery={addressDelivery}
+              onPressSelectAddress={onPressSelectAddress}
+            />
+
+            <View style={styles.spacer} />
+
+            <PaymentMethod value={paymentMethod} onChange={setPaymentMethod} />
+          </ScrollView>
+
+          {/* Bottom bar */}
+          <View style={styles.bottomBar}>
+            <View style={styles.priceColumn}>
+              <Text style={styles.finalPrice}>
+                {formatCurrency(data?.subTotal)}
+              </Text>
+              <Text style={styles.originalPrice}>
+                {formatCurrency(data?.subTotal)}
+              </Text>
+            </View>
+            <Button
+              onPress={onPressOrder}
+              style={styles.orderButton}
+              testID="payment-order-now"
+              title="Order Now"
+              type="primary"
+            />
+          </View>
+        </>
+      )}
     </View>
   );
 }
@@ -94,6 +118,10 @@ const styles = StyleSheet.create({
     color: TEXT_DARK,
     fontSize: ScaleSize(16),
     fontWeight: '700',
+  },
+  error: {
+    color: 'red',
+    fontSize: ScaleSize(14),
   },
   orderButton: {
     borderRadius: ScaleSize(28),

@@ -17,6 +17,7 @@ import { CheckoutInfo } from '@type';
 import { groupAttributeItemsByAttributeId } from '@utils/product';
 import { useFocusEffect } from '@react-navigation/native';
 import isNumber from 'lodash/isNumber';
+import { Paths } from '@navigation/paths';
 
 export type { Product } from '@type/products';
 
@@ -35,7 +36,6 @@ export const useProductDetail = (props: any) => {
   const [selectedAttributes, setSelectedAttributes] =
     useState<SelectedAttributes>({});
   const [checkoutInfo, setCheckoutInfo] = useState<CheckoutInfo | null>();
-  const [refreshCheckoutInfo, setRefreshCheckoutInfo] = useState(false);
 
   useEffect(() => {
     setQuantity(checkoutInfo?.quantity || 1);
@@ -141,7 +141,7 @@ export const useProductDetail = (props: any) => {
           productId,
         }),
       );
-    }, [dispatch, productId, refreshCheckoutInfo]),
+    }, [dispatch, productId]),
   );
 
   const onSelectAttribute = (attribute: AttributeDetail, itemId: number) => {
@@ -213,8 +213,9 @@ export const useProductDetail = (props: any) => {
             message: t('product_detail.add_cart_success'),
             type: 'success',
           });
-          setRefreshCheckoutInfo(prev => !prev);
-          updateCountCart();
+          AppNavigator.replace(Paths.Products, {
+            storeId: data?.storeId,
+          });
         },
         onFailure: (message: string) => {
           AppNavigator.showSnackBar({

@@ -70,6 +70,7 @@ export const EndPoints = {
     addressOrderRecent: 'order/recent-address',
     generateQRCode: 'api/v1/pay/qr/generate',
     balanceCharge: 'balance/kcp/charge/init',
+    cartDetail: (cartId: number) => `app/cart/${cartId}`,
   },
   WALLET: {
     currentWallet: 'balance',

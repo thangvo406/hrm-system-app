@@ -67,7 +67,7 @@ export default React.memo(ProductRow);
 const styles = StyleSheet.create({
   productDescription: {
     color: 'black',
-    fontSize: ScaleSize(13),
+    fontSize: ScaleSize(12),
     marginTop: ScaleSize(6),
   },
   productInfo: {

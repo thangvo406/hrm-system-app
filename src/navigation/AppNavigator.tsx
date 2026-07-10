@@ -79,6 +79,21 @@ function getCurrentRoute() {
   return navigator?.getCurrentRoute?.();
 }
 
+function getInnermostActiveStackState(state: any): any {
+  if (!state?.routes?.length) return state;
+  const active = state.routes[state.index ?? state.routes.length - 1];
+  if (active?.state?.routes?.length) return getInnermostActiveStackState(active.state);
+  return state;
+}
+
+function getPreviousRoute() {
+  const rootState = navigator?.getRootState?.();
+  if (!rootState) return undefined;
+  const stackState = getInnermostActiveStackState(rootState);
+  const index = stackState.index ?? stackState.routes.length - 1;
+  return index > 0 ? stackState.routes[index - 1] : undefined;
+}
+
 function showDialog(params: any) {
   const { onDidAppear, popupType, timeOutDialog = 250 } = params || {};
   Keyboard.dismiss();
@@ -281,6 +296,7 @@ export default {
   showDialog,
   replace,
   getCurrentRoute,
+  getPreviousRoute,
   showSnackBar,
   showToast,
   setParams,

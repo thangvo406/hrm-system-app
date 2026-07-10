@@ -2,7 +2,7 @@ import type { Product } from '@type/products';
 
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getProductsRequest } from '@services/slices/products/productsSlice';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ListApiResponse } from '@type/common';
 import type { RootScreenProps } from '@navigation/types';
 import { Paths } from '@navigation/paths';
@@ -23,6 +23,11 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
 
+  const goToCart = () => {
+    AppNavigator.navigate(Paths.PaymentCart, {
+      cartId: storeInfo?.cartId,
+    });
+  };
   const handleSuccess = (data: ListApiResponse<Product[]>) => {
     // setData(items);
     setLoading(false);
@@ -41,6 +46,11 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   const onSearchChange = useCallback((text: string) => {
     setSearchKey(text);
     setCurrentPage(0);
+  }, []);
+
+  const isShowBtnCart = useMemo(() => {
+    // return storeInfo?.totalAmountItemCart > 0;
+    return true;
   }, []);
 
   const onLoadMore = useCallback(() => {
@@ -89,6 +99,8 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
     data,
     loading,
     onSearchChange,
+    goToCart,
+    isShowBtnCart,
     storeInfo,
     onLoadMore,
   };

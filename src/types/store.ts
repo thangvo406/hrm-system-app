@@ -16,6 +16,8 @@ export type StoreItem = {
   sortOrder: number;
   receiveMethod: string[];
   products: Product[];
+  totalAmountCart: number;
+  cartId: number;
 };
 
 export type Product = {
