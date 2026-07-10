@@ -444,7 +444,12 @@
       "remove_cart_success": "Cart removed successfully",
       "select_pickup_time": "Select Pickup Time",
       "delivery_pickup_title": "Delivery/Pickup",
-      "new_address_label": "Deliver to a new address"
+      "new_address_label": "Deliver to a new address",
+      "payment_methods": {
+        "coop_pay": "Coop Pay",
+        "credit_card": "Credit/Debit Card",
+        "easy_payment": "Easy Payment"
+      }
     },
     "contribution_input": {
       "title": "Capital Input",

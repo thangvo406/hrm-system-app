@@ -17,6 +17,13 @@ export type TotalItemCart = {
   readonly totalCart: number;
 };
 
+export interface PaymentRequest {
+  paymentType: string;
+  paymentMethodId?: number;
+  easyPayMethod?: string;
+  vaBankCode?: string;
+}
+
 export type StoreCartItem = {
   id: number;
   userId: number;
@@ -69,6 +76,8 @@ export interface ProductCart {
   totalAmount: number;
   selected: boolean;
   selectedAttributes: AttributeCart[];
+  productDeleted: boolean;
+  productStatus: string;
 }
 
 export interface AttributeCart {
@@ -98,15 +107,39 @@ export type RemoveCartItemPayload = {
   readonly cartItemId: number;
 } & AppCallback;
 
-export type CreateOrderPayload = AppCallback<CreateOrderResponse> &
+export interface ICallbackCreateOrder {
+  responseCreateOrder: CreateOrderResponse;
+  responsePayment: IResponseCreateLinkPaymentOrder;
+}
+
+export type CreateOrderPayload = {
+  createLinkRequest: CreateLinkPaymentOrderRequest;
+} & AppCallback<ICallbackCreateOrder> &
   CreateOrderRequest;
 
+export interface IResponseCreateLinkPaymentOrder {
+  requiresRedirect: boolean;
+  paymentType: string;
+  paymentResult: any;
+  kcpInitParams: IKcpInitParams;
+  virtualAccount: any;
+}
+
+export interface IKcpInitParams {
+  qtid: string;
+  orderNo: string;
+  siteCd: string;
+  reqType: string;
+  reqAmt: string;
+  kcpWebViewUrl: string;
+}
 export interface IncreaseContributeRequest {
   amount: number;
-  payment: {
-    paymentType: string;
-    vaBankCode: string;
-  };
+  payment: PaymentRequest;
+}
+
+export interface CreateLinkPaymentOrderRequest extends PaymentRequest {
+  orderId: number;
 }
 export interface CreateOrderResponse {
   id: number;

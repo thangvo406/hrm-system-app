@@ -62,6 +62,8 @@ export const EndPoints = {
     getListCart: (request: string) => `app/cart?${request}`,
     countTotalItemCart: 'app/cart/sum',
     createOrder: 'order/create',
+    createLinkPaymentOrder: (orderId: number) =>
+      `order/${orderId}/checkout/init`,
     orderHistories: (request: string) => `order?${request}`,
     orderHistoryDetail: (orderId: string) => `order/${orderId}`,
     addressOrderRecent: 'order/recent-address',

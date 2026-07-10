@@ -20,6 +20,7 @@ import type {
   TotalItemCart,
   UpdateCartItemPayload,
   CreateOrderResponse,
+  CreateLinkPaymentOrderRequest,
 } from '@type/payment';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -106,6 +107,17 @@ export const createOrder = async (
   const response = await httpRequest.post<
     SingleApiResponse<CreateOrderResponse>
   >(EndPoints.PAYMENT.createOrder, request);
+  return response.data;
+};
+
+export const createLinkPaymentOrder = async (
+  request: CreateLinkPaymentOrderRequest,
+): Promise<CreateOrderResponse> => {
+  const orderId = request.orderId;
+  delete request.orderId;
+  const response = await httpRequest.post<
+    SingleApiResponse<CreateOrderResponse>
+  >(EndPoints.PAYMENT.createLinkPaymentOrder(orderId), request);
   return response.data;
 };
 

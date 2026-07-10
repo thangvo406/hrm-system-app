@@ -21,12 +21,14 @@ import type {
   OrderHistoryItem,
   RemoveCartItemPayload,
   UpdateCartItemPayload,
+  IResponseCreateLinkPaymentOrder,
 } from '@type/payment';
 import type { ListApiResponse } from '@type/common';
 
 import { call, takeLatest } from 'redux-saga/effects';
 
 import {
+  createLinkPaymentOrder,
   createOrder,
   generateQRCode,
   getAddressOrderRecent,
@@ -119,11 +121,30 @@ function* createOrderWorker(
 ): Generator<unknown, void, CreateOrderResponse> {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
-    const response: CreateOrderResponse = yield call(createOrder, request);
-    onSuccess?.(response);
+    const createLinkRequest = request.createLinkRequest;
+    delete request.createLinkRequest;
+    const responseCreateOrder: CreateOrderResponse = yield call(
+      createOrder,
+      request,
+    );
+    try {
+      const responsePayment: IResponseCreateLinkPaymentOrder = yield call(
+        createLinkPaymentOrder,
+        {
+          orderId: responseCreateOrder.id,
+          payment: createLinkRequest,
+        },
+      );
+      onSuccess?.({
+        responseCreateOrder,
+        responsePayment,
+      });
+    } catch {
+      onFailure?.('payment', '');
+    }
   } catch (error_) {
     const message = getErrorMessageApi(error_);
-    onFailure?.(message);
+    onFailure?.('createOrder', message);
   }
 }
 
@@ -249,7 +270,10 @@ export function* paymentSaga() {
     getAddressOrderRecentRequest.type,
     getAddressOrderRecentWorker,
   );
-  yield takeLatest(getContributeSummaryRequest.type, getContributeSummaryWorker);
+  yield takeLatest(
+    getContributeSummaryRequest.type,
+    getContributeSummaryWorker,
+  );
   yield takeLatest(
     getContributeHistoryDetailRequest.type,
     getContributeHistoryDetailWorker,
@@ -264,7 +288,10 @@ export function* paymentSaga() {
     getOrderHistoryDetailRequest.type,
     getOrderHistoryDetailWorker,
   );
-  yield takeLatest(increaseContributionRequest.type, increaseContributionWorker);
+  yield takeLatest(
+    increaseContributionRequest.type,
+    increaseContributionWorker,
+  );
   yield takeLatest(initChargeRequest.type, initChargeWorker);
   yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
   yield takeLatest(updateCartItemRequest.type, updateCartItemWorker);

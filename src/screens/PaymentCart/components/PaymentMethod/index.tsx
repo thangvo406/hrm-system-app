@@ -1,17 +1,26 @@
 import { RadioButton } from '@components';
-import { Colors } from '@constants';
+import { AppConstants, Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
-import type { PaymentCartMethod } from '@hooks';
 import React from 'react';
-
+import { useTranslation } from 'react-i18next';
+const { PaymentTypes } = AppConstants;
 const PAYMENT_METHODS: readonly {
-  readonly id: PaymentCartMethod;
+  readonly id: string;
   readonly label: string;
 }[] = [
-  { id: 'coop_pay', label: '생협 Pay' },
-  { id: 'credit_card', label: '신용/체크카드' },
-  { id: 'easy_payment', label: '간편결제' },
+  {
+    id: PaymentTypes.BALANCE,
+    label: 'payment_cart.payment_methods.coop_pay',
+  },
+  {
+    id: PaymentTypes.CARD_SAVE,
+    label: 'payment_cart.payment_methods.credit_card',
+  },
+  {
+    id: PaymentTypes.EASY_PAY,
+    label: 'payment_cart.payment_methods.easy_payment',
+  },
 ];
 
 const SECTION_TITLE = '결제수단';
@@ -21,11 +30,12 @@ const TEXT_DARK = '#1A1A1A';
 const RADIO_WHITE = '#FFFFFF';
 
 type PaymentMethodProps = {
-  readonly onChange: (method: PaymentCartMethod) => void;
-  readonly value: PaymentCartMethod;
+  readonly onChange: (method: string) => void;
+  readonly value: string;
 };
 
 function PaymentMethod({ onChange, value }: PaymentMethodProps) {
+  const { t } = useTranslation();
   return (
     <View style={styles.card}>
       <Text style={styles.sectionTitle}>{SECTION_TITLE}</Text>
@@ -40,7 +50,7 @@ function PaymentMethod({ onChange, value }: PaymentMethodProps) {
             <View key={method.id} style={optionStyle}>
               <RadioButton
                 iconColor={isSelected ? RADIO_WHITE : undefined}
-                label={method.label}
+                label={t(method.label)}
                 labelStyle={[isSelected && styles.labelOnGreen]}
                 onPress={() => onChange(method.id)}
                 selected={isSelected}

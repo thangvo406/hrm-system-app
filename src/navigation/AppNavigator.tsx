@@ -84,6 +84,7 @@ function showDialog(params: any) {
   Keyboard.dismiss();
   // dialogReference?.setWillShow(true);
   const _params = { ...(params || {}) };
+  console.log('showDialog', params);
   setTimeout(() => {
     // Branch on the existing `popupType` discriminator — `'bottomSheet'`
     // routes to the bottom-sheet overlay, anything else (including the

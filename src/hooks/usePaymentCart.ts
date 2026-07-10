@@ -1,5 +1,6 @@
 import { AppConstants } from '@constants';
 import Selection from '@dialogs/Selection';
+import WebViewScreen from '@dialogs/Webview';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useAppDispatch } from '@services/common/storeHooks';
@@ -10,15 +11,13 @@ import {
   removeCartItemRequest,
   updateCartItemRequest,
 } from '@services/slices/payment/paymentSlice';
-import type { CreateOrderResponse, SearchAddressItem } from '@type';
+import type { SearchAddressItem } from '@type';
 import { upperCaseFirstChar } from '@utils/common';
 import debounce from 'lodash/debounce';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter } from 'react-native';
-
 export type DeliveryTab = 'DELIVERY' | 'PICKUP';
-export type PaymentCartMethod = 'coop_pay' | 'credit_card' | 'easy_payment';
 
 export type UsePaymentCart = ReturnType<typeof usePaymentCart>;
 
@@ -61,8 +60,9 @@ export const usePaymentCart = (props: any) => {
   const dispatch = useAppDispatch();
   const debounceIdChangeQuanlity = useRef(undefined);
 
-  const [paymentMethod, setPaymentMethod] =
-    useState<PaymentCartMethod>('coop_pay');
+  const [paymentMethod, setPaymentMethod] = useState<string>(
+    AppConstants.PaymentTypes.BALANCE,
+  );
   const [pickupTime, setPickupTime] = useState(PICKUP_DEFAULT);
   const [addressDelivery, setAddressDelivery] = useState<AddressDelivery>();
 
@@ -78,7 +78,9 @@ export const usePaymentCart = (props: any) => {
   }, [data]);
 
   const products = useMemo(() => {
-    return dataCart?.items?.filter(it => !it.productDeleted);
+    return dataCart?.items?.filter(
+      it => !it.productDeleted || it.productStatus == 'ACTIVE',
+    );
   }, [dataCart]);
 
   useEffect(() => {
@@ -170,8 +172,22 @@ export const usePaymentCart = (props: any) => {
     });
   };
 
+  const handleRedirectPayment = (data: any) => {
+    const { kcpInitParams } = data?.responsePayment || {};
+    AppNavigator.showDialog({
+      screen: WebViewScreen,
+      data: {
+        siteCd: kcpInitParams?.siteCd,
+        orderNo: kcpInitParams?.orderNo,
+        amount: kcpInitParams?.reqAmt,
+        qtid: kcpInitParams?.qtid,
+      },
+      url: kcpInitParams?.kcpWebViewUrl,
+      isFullScreen: true,
+    });
+  };
   const onPressOrder = () => {
-    const products = data?.items?.map(it => ({
+    const items = products?.map(it => ({
       id: it.productId,
       quantity: it.quantity,
       selectedAttributes: it.selectedAttributes,
@@ -181,17 +197,26 @@ export const usePaymentCart = (props: any) => {
         storeId: data?.storeId,
         address: JSON.stringify(addressDelivery?.address?.detail),
         addressDetail: addressDelivery?.detail,
+        createLinkRequest: {
+          paymentType: paymentMethod,
+          vaBankCode: '1234',
+        },
         receiveMethod: deliveryTab,
-        products,
+        products: items,
         vouchers: [],
-        onSuccess: (data: CreateOrderResponse) => {
-          AppNavigator.navigate(Paths.OrderCompleted, {
-            data,
-            dataOrder: {
-              deliveryMethod: deliveryTab,
-              paymentMethod,
-            },
-          });
+        onSuccess: (data: any) => {
+          const { responsePayment, responseCreateOrder } = data || {};
+          if (responsePayment?.requiresRedirect) {
+            handleRedirectPayment(data);
+          } else {
+            AppNavigator.navigate(Paths.OrderCompleted, {
+              data: responseCreateOrder,
+              dataOrder: {
+                deliveryMethod: deliveryTab,
+                paymentMethod,
+              },
+            });
+          }
         },
         onFailure: (error: string) => {
           AppNavigator.showSnackBar({

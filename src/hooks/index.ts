@@ -25,7 +25,7 @@ export { useForgotPass } from './useForgotPass';
 export { useI18n } from './language/useI18n';
 export { useNotifications } from './useNotifications';
 export { useContributeHistory } from './useContributeHistory';
-export type { DeliveryTab, PaymentCartMethod } from './usePaymentCart';
+export type { DeliveryTab } from './usePaymentCart';
 export { usePaymentCart } from './usePaymentCart';
 export { useProductDetail } from './useProductDetail';
 export { useProducts } from './useProducts';

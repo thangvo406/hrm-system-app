@@ -445,7 +445,12 @@
       "remove_cart_success": "장바구니가 삭제되었습니다",
       "select_pickup_time": "픽업 시간 선택",
       "delivery_pickup_title": "배달/픽업",
-      "new_address_label": "새 주소로 배달"
+      "new_address_label": "새 주소로 배달",
+      "payment_methods": {
+        "coop_pay": "생협 Pay",
+        "credit_card": "신용/체크카드",
+        "easy_payment": "간편결제"
+      }
     },
     "contribution_input": {
       "title": "출자금 입력",
