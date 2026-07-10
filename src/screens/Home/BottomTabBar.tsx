@@ -16,32 +16,36 @@ import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
 import { Paths } from '@navigation/paths';
 import { DeviceUtils } from '@kits/core/utils';
+import CartTabIcon from './CartTabIcon';
+
 const { ifAndroid } = DeviceUtils;
+
 const TAB_ICON_SIZE = ScaleSize(32);
 const TAB_PAY_BUTTON_SIZE = ScaleSize(56);
 const TAB_COUNT = 5;
+const CENTER_INDEX = 2;
 const ACTIVE_COLOR = Colors.primary;
 const INACTIVE_COLOR = '#9E9E9E';
 const TAB_BG = '#FFFFFF';
+const CIRCLE_RAISE = ScaleSize(12);
+const INDICATOR_HEIGHT = 2;
+const INDICATOR_WIDTH = ScaleSize(40);
 const SPRING_TENSION = 60;
 const SPRING_FRICTION = 9;
-// Circle floats this many px above the container top border
-const CIRCLE_RAISE = ScaleSize(12);
-// paddingTop so icon center aligns with circle center:
-// paddingTop = TAB_PAY_BUTTON_SIZE/2 - TAB_ICON_SIZE/2 - CIRCLE_RAISE
 const CONTAINER_PADDING_TOP =
   TAB_PAY_BUTTON_SIZE / 2 - TAB_ICON_SIZE / 2 - CIRCLE_RAISE;
 
 type TabItem = {
   readonly icon: string;
+  readonly isCart?: boolean;
   readonly isCenter?: boolean;
   readonly key: string;
   readonly labelKey: string;
 };
-const INIT_ICON_ACTIVE = 'ic_wallet';
+
 const TABS: readonly TabItem[] = [
   { icon: 'ic_home', key: Paths.Home, labelKey: 'home.tab_home' },
-  { icon: 'ic_cart', key: Paths.Carts, labelKey: 'home.tab_order' },
+  { icon: 'ic_cart', isCart: true, key: Paths.Carts, labelKey: 'home.tab_order' },
   {
     icon: 'ic_wallet',
     isCenter: true,
@@ -56,38 +60,36 @@ function BottomTabBar({ insets, navigation, state }: BottomTabBarProps) {
   const { t } = useTranslation();
   const activeRoute = state.routes[state.index];
 
-  const circleX = useRef(new Animated.Value(0)).current;
+  const indicatorX = useRef(new Animated.Value(0)).current;
   const containerWidthRef = useRef(0);
-  const iconActive = useRef<string>(INIT_ICON_ACTIVE);
 
-  const getCircleX = useCallback((index: number, containerWidth: number) => {
+  const getIndicatorX = useCallback((index: number, containerWidth: number) => {
     const tabWidth = containerWidth / TAB_COUNT;
-    return index * tabWidth + (tabWidth - TAB_PAY_BUTTON_SIZE) / 2;
+    return index * tabWidth + (tabWidth - INDICATOR_WIDTH) / 2;
   }, []);
 
   const handleContainerLayout = useCallback(
     (e: LayoutChangeEvent) => {
       const width = e.nativeEvent.layout.width;
       containerWidthRef.current = width;
-      circleX.setValue(getCircleX(state.index, width));
+      indicatorX.setValue(getIndicatorX(state.index, width));
     },
-    [circleX, getCircleX, state.index],
+    [indicatorX, getIndicatorX, state.index],
   );
 
   useEffect(() => {
     const width = containerWidthRef.current;
     if (width === 0) return;
-    Animated.spring(circleX, {
+    Animated.spring(indicatorX, {
       friction: SPRING_FRICTION,
       tension: SPRING_TENSION,
-      toValue: getCircleX(state.index, width),
+      toValue: getIndicatorX(state.index, width),
       useNativeDriver: true,
     }).start();
-  }, [state.index, circleX, getCircleX]);
+  }, [state.index, indicatorX, getIndicatorX]);
 
   const handlePress = useCallback(
-    (routeName: string, icon: string) => {
-      iconActive.current = icon;
+    (routeName: string) => {
       navigation.dispatch(CommonActions.navigate(routeName));
     },
     [navigation],
@@ -98,48 +100,59 @@ function BottomTabBar({ insets, navigation, state }: BottomTabBarProps) {
       onLayout={handleContainerLayout}
       style={[
         styles.container,
-        { paddingBottom: ifAndroid(16, insets.bottom) },
+        { paddingBottom: ifAndroid(16, insets.bottom + 8) },
       ]}
     >
+      {/* Animated indicator line at the top of the active tab */}
       <Animated.View
-        style={[
-          styles.floatingCircle,
-          { transform: [{ translateX: circleX }] },
-        ]}
-      >
-        {!!iconActive.current && (
-          <Image
-            color="#FFFFFF"
-            height={TAB_ICON_SIZE}
-            name={iconActive.current as any}
-            type="svg"
-            // style={isActive ? styles.iconWrapperActive : {}}
-            width={TAB_ICON_SIZE}
-          />
-        )}
-      </Animated.View>
+        style={[styles.indicator, { transform: [{ translateX: indicatorX }] }]}
+      />
 
-      {TABS.map(tab => {
+      {/* Fixed circle at center tab */}
+      <View style={styles.floatingCircle} pointerEvents="none">
+        <Image
+          color="#FFFFFF"
+          height={TAB_ICON_SIZE}
+          name="ic_wallet"
+          type="svg"
+          width={TAB_ICON_SIZE}
+        />
+      </View>
+
+      {TABS.map((tab, index) => {
         const isActive = activeRoute?.name === tab.key;
-        const iconColor = isActive ? '#FFFFFF' : INACTIVE_COLOR;
+        const isCenter = index === CENTER_INDEX;
+        const isCart = tab.isCart === true;
+        const iconColor = isCenter
+          ? 'transparent'
+          : isActive
+            ? ACTIVE_COLOR
+            : INACTIVE_COLOR;
 
         return (
           <TouchableOpacity
             key={tab.key}
             activeOpacity={0.75}
-            onPress={() => handlePress(tab.key, tab.icon)}
+            onPress={() => handlePress(tab.key)}
             style={styles.tabItem}
             testID={`bottom-tab-${tab.key}`}
           >
-            <View style={styles.iconWrapper}>
-              <Image
-                color={iconColor}
-                height={TAB_ICON_SIZE}
-                name={tab.icon as any}
-                type="svg"
-                style={isActive ? styles.iconWrapperActive : {}}
-                width={TAB_ICON_SIZE}
-              />
+            <View
+              style={isCenter ? styles.iconWrapperCenter : styles.iconWrapper}
+            >
+              {!isCenter && (
+                isCart ? (
+                  <CartTabIcon color={iconColor} size={TAB_ICON_SIZE} />
+                ) : (
+                  <Image
+                    color={iconColor}
+                    height={TAB_ICON_SIZE}
+                    name={tab.icon as any}
+                    type="svg"
+                    width={TAB_ICON_SIZE}
+                  />
+                )
+              )}
             </View>
             <Text
               style={[
@@ -173,21 +186,22 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   floatingCircle: {
+    alignItems: 'center',
     backgroundColor: ACTIVE_COLOR,
     borderRadius: TAB_PAY_BUTTON_SIZE / 2,
     elevation: 6,
     height: TAB_PAY_BUTTON_SIZE,
-    left: 0,
+    justifyContent: 'center',
+    left: `${((CENTER_INDEX + 0.5) / TAB_COUNT) * 100}%` as any,
+    marginLeft: -(TAB_PAY_BUTTON_SIZE / 2),
     position: 'absolute',
     shadowColor: ACTIVE_COLOR,
     shadowOffset: { height: 4, width: 0 },
     shadowOpacity: 0.4,
     shadowRadius: 8,
-    zIndex: 1,
     top: -CIRCLE_RAISE,
     width: TAB_PAY_BUTTON_SIZE,
-    justifyContent: 'center',
-    alignItems: 'center',
+    zIndex: 1,
   },
   iconWrapper: {
     alignItems: 'center',
@@ -195,9 +209,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: TAB_PAY_BUTTON_SIZE,
   },
-  iconWrapperActive: {
-    marginTop: -CIRCLE_RAISE - 14,
-    // marginBottom: -CIRCLE_RAISE,
+  iconWrapperCenter: {
+    alignItems: 'center',
+    height: TAB_PAY_BUTTON_SIZE,
+    justifyContent: 'center',
+    width: TAB_PAY_BUTTON_SIZE,
+  },
+  indicator: {
+    backgroundColor: ACTIVE_COLOR,
+    borderRadius: INDICATOR_HEIGHT / 2,
+    height: INDICATOR_HEIGHT,
+    left: 0,
+    position: 'absolute',
+    top: 0,
+    width: INDICATOR_WIDTH,
+    zIndex: 2,
   },
   label: {
     fontSize: ScaleSize(11),

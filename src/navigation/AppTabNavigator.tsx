@@ -10,7 +10,7 @@ export function AppTabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{ headerShown: false }}
-      initialRouteName={Paths.QRCodePayment}
+      initialRouteName={Paths.Home}
       tabBar={props => <BottomTabBar {...props} />}
     >
       <Tab.Screen component={Screens.Home} name={Paths.Home} />
