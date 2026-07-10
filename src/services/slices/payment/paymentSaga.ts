@@ -16,12 +16,12 @@ import type {
   GetOrderHistoriesPayload,
   GetOrderHistoryDetailPayload,
   InitChargePayload,
-  InitChargeResponse,
   OrderHistoryDetailItem,
   OrderHistoryItem,
   RemoveCartItemPayload,
   UpdateCartItemPayload,
-  IResponseCreateLinkPaymentOrder,
+  IResponseInitPayment,
+  IKcpInitParams,
 } from '@type/payment';
 import type { ListApiResponse } from '@type/common';
 
@@ -39,7 +39,7 @@ import {
   getOrderHistories,
   getOrderHistoryDetail,
   increaseContribution,
-  initCharge,
+  balanceCharge,
   removeCartItem,
   updateCartItem,
 } from '@services/request/payment';
@@ -56,7 +56,7 @@ import {
   getOrderHistoriesRequest,
   getOrderHistoryDetailRequest,
   increaseContributionRequest,
-  initChargeRequest,
+  balanceChargeRequest,
   removeCartItemRequest,
   updateCartItemRequest,
 } from './paymentSlice';
@@ -128,7 +128,7 @@ function* createOrderWorker(
       request,
     );
     try {
-      const responsePayment: IResponseCreateLinkPaymentOrder = yield call(
+      const responsePayment: IResponseInitPayment = yield call(
         createLinkPaymentOrder,
         {
           orderId: responseCreateOrder.id,
@@ -208,12 +208,12 @@ function* generateQRCodeWorker(
   }
 }
 
-function* initChargeWorker(
+function* balanceChargeWorker(
   action: PayloadAction<InitChargePayload>,
-): Generator<unknown, void, InitChargeResponse> {
+): Generator<unknown, void, IKcpInitParams> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: InitChargeResponse = yield call(initCharge, request);
+    const response: IKcpInitParams = yield call(balanceCharge, request);
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -292,7 +292,7 @@ export function* paymentSaga() {
     increaseContributionRequest.type,
     increaseContributionWorker,
   );
-  yield takeLatest(initChargeRequest.type, initChargeWorker);
+  yield takeLatest(balanceChargeRequest.type, balanceChargeWorker);
   yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
   yield takeLatest(updateCartItemRequest.type, updateCartItemWorker);
 }

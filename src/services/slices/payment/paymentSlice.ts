@@ -37,7 +37,7 @@ const paymentSlice = createSlice({
       prepare: (payload: GenerateQRCodePayload) => ({ payload }),
       reducer: () => {},
     },
-    initChargeRequest: {
+    balanceChargeRequest: {
       prepare: (payload: InitChargePayload) => ({ payload }),
       reducer: () => {},
     },
@@ -95,7 +95,7 @@ export const {
   getOrderHistoriesRequest,
   getOrderHistoryDetailRequest,
   increaseContributionRequest,
-  initChargeRequest,
+  balanceChargeRequest,
   removeCartItemRequest,
   updateCartItemRequest,
 } = paymentSlice.actions;

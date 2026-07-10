@@ -2,14 +2,14 @@ import { AppButton, HeaderDetail, Image } from '@components';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { ScaleSize } from '@kits/core';
 import { useTranslation } from 'react-i18next';
-import { Colors } from '@constants';
+import { AppConstants, Colors } from '@constants';
 import imageNames from '@assets/images/names';
-import { PAYMENT_METHODS, useTopUp } from '@hooks';
+import { useTopUp } from '@hooks';
 import { formatCurrency } from '@utils/product';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DeviceUtils } from '@kits/core/utils';
 const { ifAndroid } = DeviceUtils;
-
+const { PaymentTypes } = AppConstants;
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#9B9B9B';
 const TEXT_HINT = '#AAAAAA';
@@ -133,8 +133,8 @@ function TopUp() {
 
           <MethodCard
             icon="ic_credit_card_green"
-            isSelected={methodPayment === PAYMENT_METHODS.CREDIT_CARD}
-            onPress={() => setMethodPayment(PAYMENT_METHODS.CREDIT_CARD)}
+            isSelected={methodPayment === PaymentTypes.CARD_SAVE}
+            onPress={() => setMethodPayment(PaymentTypes.CARD_SAVE)}
             subtitle={t('top_up.method_credit_card_desc')}
             testID="top-up-method-credit-card"
             title={t('top_up.method_credit_card')}
@@ -142,8 +142,8 @@ function TopUp() {
 
           <MethodCard
             icon="ic_bank_green"
-            isSelected={methodPayment === PAYMENT_METHODS.VIRTUAL_ACCOUNT}
-            onPress={() => setMethodPayment(PAYMENT_METHODS.VIRTUAL_ACCOUNT)}
+            isSelected={methodPayment === PaymentTypes.VIRTUAL_ACCOUNT}
+            onPress={() => setMethodPayment(PaymentTypes.VIRTUAL_ACCOUNT)}
             subtitle={t('top_up.method_virtual_account_desc')}
             testID="top-up-method-virtual-account"
             title={t('top_up.method_virtual_account')}

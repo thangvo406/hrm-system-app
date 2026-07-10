@@ -13,7 +13,6 @@ import type {
   GetOrderHistoryDetailRequest,
   IncreaseContributeRequest,
   InitChargeRequest,
-  InitChargeResponse,
   OrderHistoryDetailItem,
   OrderHistoryItem,
   RemoveCartItemPayload,
@@ -21,6 +20,7 @@ import type {
   UpdateCartItemPayload,
   CreateOrderResponse,
   CreateLinkPaymentOrderRequest,
+  IKcpInitParams,
 } from '@type/payment';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -159,12 +159,13 @@ export const generateQRCode = async (
   return response.data;
 };
 
-export const initCharge = async (
+export const balanceCharge = async (
   request: InitChargeRequest,
-): Promise<InitChargeResponse> => {
-  const response = await httpRequest.post<
-    SingleApiResponse<InitChargeResponse>
-  >(EndPoints.PAYMENT.initCharge, request);
+): Promise<IKcpInitParams> => {
+  const response = await httpRequest.post<SingleApiResponse<IKcpInitParams>>(
+    EndPoints.PAYMENT.balanceCharge,
+    request,
+  );
   return response.data;
 };
 

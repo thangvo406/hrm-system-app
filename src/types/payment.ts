@@ -109,7 +109,7 @@ export type RemoveCartItemPayload = {
 
 export interface ICallbackCreateOrder {
   responseCreateOrder: CreateOrderResponse;
-  responsePayment: IResponseCreateLinkPaymentOrder;
+  responsePayment: IResponseInitPayment;
 }
 
 export type CreateOrderPayload = {
@@ -117,7 +117,7 @@ export type CreateOrderPayload = {
 } & AppCallback<ICallbackCreateOrder> &
   CreateOrderRequest;
 
-export interface IResponseCreateLinkPaymentOrder {
+export interface IResponseInitPayment {
   requiresRedirect: boolean;
   paymentType: string;
   paymentResult: any;
@@ -252,18 +252,10 @@ export type GenerateQRCodeResponse = {
 
 export type InitChargeRequest = {
   amount: number;
-  couponCode?: string;
-  easyPayMethod?: string;
-  paymentMethodId?: number;
-  paymentType: string;
+  payment: PaymentRequest;
 };
 
-export type InitChargeResponse = {
-  readonly paymentUrl: string;
-};
-
-export type InitChargePayload = AppCallback<InitChargeResponse> &
-  InitChargeRequest;
+export type InitChargePayload = AppCallback<IKcpInitParams> & InitChargeRequest;
 
 export type GenerateQRCodePayload = AppCallback<GenerateQRCodeResponse> &
   GenerateQRCodeRequest;

@@ -1,25 +1,21 @@
+import { AppConstants } from '@constants';
 import WebViewScreen from '@dialogs/Webview';
 import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch } from '@services/common/storeHooks';
 // import { topUpWalletRequest } from '@services/slices/account/accountSlice';
-import { initChargeRequest } from '@services/slices/payment/paymentSlice';
+import { balanceChargeRequest } from '@services/slices/payment/paymentSlice';
 // import uniqueId from 'lodash/uniqueId';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export type PaymentMethod = 'credit_card' | 'virtual_account';
 
-export const PAYMENT_METHODS = {
-  CREDIT_CARD: 'credit_card' as PaymentMethod,
-  VIRTUAL_ACCOUNT: 'virtual_account' as PaymentMethod,
-} as const;
-
 export const useTopUp = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const [amountTopUp, setAmountTopUp] = useState('');
-  const [methodPayment, setMethodPayment] = useState<PaymentMethod>(
-    PAYMENT_METHODS.CREDIT_CARD,
+  const [methodPayment, setMethodPayment] = useState(
+    AppConstants.PaymentTypes.CARD_SAVE,
   );
 
   const enabledBtnSubmit = useMemo(() => {
@@ -28,19 +24,30 @@ export const useTopUp = () => {
 
   const onSubmit = () => {
     dispatch(
-      initChargeRequest({
+      balanceChargeRequest({
         amount: Number(amountTopUp),
-        paymentType: 'CARD_DIRECT',
+        payment: {
+          paymentType: methodPayment,
+          vaBankCode: '088',
+        },
         onSuccess: data => {
           AppNavigator.showDialog({
             screen: WebViewScreen,
-            url: 'http://192.168.1.67:3000/kcptest.html',
-            isFullScreen: true,
             title: t('common.payment'),
             data: {
-              ...data,
-              amount: Number(amountTopUp),
+              siteCd: data?.siteCd,
+              orderNo: data?.orderNo,
+              amount: data?.reqAmt,
+              qtid: data?.qtid,
             },
+            url: data?.kcpWebViewUrl,
+            isFullScreen: true,
+          });
+        },
+        onFailure: error => {
+          AppNavigator.showSnackBar({
+            message: error,
+            type: 'failed',
           });
         },
       }),
