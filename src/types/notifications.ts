@@ -54,3 +54,20 @@ export type TGetNotificationsPayload = AppCallback<
 export type TMarkReadPayload = {
   readonly notifyId: number;
 } & AppCallback;
+
+export type TNotificationDetail = {
+  id: number;
+  type: string;
+  title: string;
+  message: string;
+  contentHtml: string;
+  imageUrl: any;
+  referenceType: string;
+  referenceId: number;
+  read: boolean;
+  readAt: string;
+  createdDate: string;
+};
+export type TGetNotificationDetailPayload = {
+  readonly notifyId: number | string;
+} & AppCallback<TNotificationItem>;

@@ -1,6 +1,7 @@
 import type {
   TAnnouncementImage,
   TGetAnnouncementImagesPayload,
+  TGetNotificationDetailPayload,
   TGetNotificationsPayload,
   TGetAnnouncementDetailPayload,
   TMarkReadPayload,
@@ -40,8 +41,12 @@ const notificationsSlice = createSlice({
       prepare: (payload: any = {}) => ({ payload }),
       reducer: () => {},
     },
+    getNotificationDetailRequest: {
+      prepare: (payload: TGetNotificationDetailPayload) => ({ payload }),
+      reducer: () => {},
+    },
     getNotificationsRequest: {
-      prepare: (payload: TGetNotificationsPayload = {}) => ({ payload }),
+      prepare: (payload: TGetNotificationsPayload) => ({ payload }),
       reducer: () => {},
     },
     markReadAllRequest: {
@@ -60,6 +65,7 @@ export const {
   getAnnouncementImagesRequest,
   getAnnouncementImagesSuccess,
   getAnnouncementsRequest,
+  getNotificationDetailRequest,
   getNotificationsRequest,
   markReadAllRequest,
   markReadRequest,

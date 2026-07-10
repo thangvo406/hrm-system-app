@@ -5,10 +5,12 @@ import type {
   TGetAnnouncementDetailPayload,
   TGetAnnouncementImagesPayload,
   TGetAnnouncementsPayload,
+  TGetNotificationDetailPayload,
   TGetNotificationsPayload,
   TMarkReadPayload,
   TNotificationItem,
   IResponseAnnouncementImage,
+  TNotificationDetail,
 } from '@type/notifications';
 
 import { call, put, takeLatest } from 'redux-saga/effects';
@@ -18,6 +20,7 @@ import {
   getAnnouncementById,
   getAnnouncementImages,
   getAnnouncements,
+  getNotificationDetail,
   getNotifications,
   markRead,
   markReadAll,
@@ -27,6 +30,7 @@ import {
   getAnnouncementImagesRequest,
   getAnnouncementImagesSuccess,
   getAnnouncementsRequest,
+  getNotificationDetailRequest,
   getNotificationsRequest,
   markReadAllRequest,
   markReadRequest,
@@ -97,6 +101,22 @@ function* getAnnouncementDetailWorker(
   }
 }
 
+function* getNotificationDetailWorker(
+  action: PayloadAction<TGetNotificationDetailPayload>,
+): Generator<unknown, void, TNotificationDetail> {
+  const { notifyId, onSuccess, onFailure } = action.payload || {};
+  try {
+    const response: TNotificationDetail = yield call(
+      getNotificationDetail,
+      notifyId,
+    );
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 function* markReadWorker(
   action: PayloadAction<TMarkReadPayload>,
 ): Generator<unknown, void, void> {
@@ -133,6 +153,10 @@ export function* notificationsSaga() {
   yield takeLatest(
     getAnnouncementDetailRequest.type,
     getAnnouncementDetailWorker,
+  );
+  yield takeLatest(
+    getNotificationDetailRequest.type,
+    getNotificationDetailWorker,
   );
   yield takeLatest(markReadRequest.type, markReadWorker);
   yield takeLatest(markReadAllRequest.type, markReadAllWorker);

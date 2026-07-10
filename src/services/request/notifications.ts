@@ -4,6 +4,7 @@ import type {
   TNotificationItem,
   IRequestGetNotifications,
   IResponseAnnouncementImage,
+  TNotificationDetail,
 } from '@type/notifications';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -63,4 +64,13 @@ export const markRead = async (notifyId: number): Promise<void> => {
 
 export const markReadAll = async (): Promise<void> => {
   await httpRequest.patch(EndPoints.NOTIFICATIONS.markReadAll);
+};
+
+export const getNotificationDetail = async (
+  notifyId: number | string,
+): Promise<TNotificationDetail> => {
+  const response = await httpRequest.get<
+    SingleApiResponse<TNotificationDetail>
+  >(EndPoints.NOTIFICATIONS.detail(notifyId), { loading: false });
+  return response.data;
 };

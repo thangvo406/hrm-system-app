@@ -33,6 +33,7 @@ export const EndPoints = {
     list: (request: string) => `notification?${request}`,
     markRead: (notifyId: number) => `notification/${notifyId}/read`,
     markReadAll: 'notification/read-all',
+    detail: (notifyId: number | string) => `notification/${notifyId}`,
   },
   ANNOUNCEMENTS: {
     detail: (announcementId: number | string) =>

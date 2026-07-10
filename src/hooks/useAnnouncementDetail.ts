@@ -1,7 +1,10 @@
 import type { TAnnouncementItem } from '@type/notifications';
 
 import { useAppDispatch } from '@services/common/storeHooks';
-import { getAnnouncementDetailRequest } from '@services/slices/notifications/notificationsSlice';
+import {
+  getAnnouncementDetailRequest,
+  getNotificationDetailRequest,
+} from '@services/slices/notifications/notificationsSlice';
 import { useEffect, useMemo, useState } from 'react';
 import AppNavigator from '@navigation/AppNavigator';
 import { ScaleSize } from '@kits/core';
@@ -20,6 +23,9 @@ export const useAnnouncementDetail = (props: any) => {
   const contentNotify = useMemo(() => {
     if (!data) {
       return '';
+    }
+    if (notification) {
+      return data?.content;
     }
     return `
             <div style="font-size: ${ScaleSize(12, 14)}px;">
@@ -41,17 +47,29 @@ export const useAnnouncementDetail = (props: any) => {
   useEffect(() => {
     if (announcementId === undefined || announcementId === '') {
       if (notification) {
-        setData({
-          id: notification.id,
-          title: notification.title,
-          content: notification.contentHtml,
-          type: notification.type,
-          createdDate: notification.createdDate,
-        } as TAnnouncementItem);
+        dispatch(
+          getNotificationDetailRequest({
+            notifyId: notification?.id,
+            onSuccess: data => {
+              setData({
+                id: notification.id,
+                title: data.title,
+                content: data.contentHtml,
+                type: data.type,
+                createdDate: data.createdDate,
+              } as TAnnouncementItem);
+              setLoading(false);
+            },
+            onFailure: error => {
+              setError(error);
+              setLoading(false);
+            },
+          }),
+        );
       } else {
         setError('Missing announcement id');
       }
-      setLoading(false);
+
       return;
     }
     // setLoading(true);
