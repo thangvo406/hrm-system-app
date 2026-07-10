@@ -107,12 +107,18 @@ export const useRegister = () => {
   }>({});
 
   const [step, setStep] = useState<AuthStep>(STEP.FORM);
+  const stepStack = useRef<AuthStep[]>([]);
+
+  const navigateToStep = (nextStep: AuthStep) => {
+    stepStack.current?.push?.(step);
+    setStep(nextStep);
+  };
   const [selectedMembershipId, setSelectedMembershipId] = useState<
     string | undefined
   >();
   const [agreed, setAgreed] = useState(false);
   const [carrier, setCarrier] = useState<string>(DEFAULT_CARRIER);
-
+  const needShowBtnBack = useRef(false);
   const onToggleAgreement = () => {
     setAgreed(previous => !previous);
   };
@@ -146,9 +152,10 @@ export const useRegister = () => {
     setErrors({});
   };
 
-  const goToStep = (nextStep: string) => {
+  const goToStep = (nextStep: string, showBtnBack = false) => {
     if (Object.values(STEP).includes(nextStep as AuthStep)) {
-      setStep(nextStep as AuthStep);
+      navigateToStep(nextStep as AuthStep);
+      needShowBtnBack.current = showBtnBack;
     }
   };
 
@@ -182,7 +189,7 @@ export const useRegister = () => {
           setErrors(prev => ({ ...prev, errorApi: error }));
         },
         onSuccess: (response: any) => {
-          setStep(STEP.REGISTER_INPUT);
+          navigateToStep(STEP.REGISTER_INPUT);
           formData.current.registerToken = response.registerToken;
         },
         password: formData.current.password,
@@ -198,7 +205,7 @@ export const useRegister = () => {
   };
 
   const onSubmitRegisterInfo = () => {
-    setStep(STEP.CHOOSE_MEMBERSHIP);
+    navigateToStep(STEP.CHOOSE_MEMBERSHIP);
   };
 
   const onSelectMembership = (id: string) => {
@@ -208,7 +215,7 @@ export const useRegister = () => {
 
   const onSubmitFormRegister = () => {
     if (formData.current?.membershipId !== MEMBERSHIP_TYPE.NON_MEMBER) {
-      setStep(STEP.INPUT_ACADEMIC_EMAIL);
+      navigateToStep(STEP.INPUT_ACADEMIC_EMAIL);
     } else {
       dispatch(
         memberShipVerifyRequest({
@@ -232,6 +239,16 @@ export const useRegister = () => {
 
   const onSelectRole = (id: string) => {
     formData.current = { ...formData.current, roleId: id };
+  };
+
+  const goBack = () => {
+    needShowBtnBack.current = false;
+    const previous = stepStack.current?.pop?.();
+    if (previous !== undefined) {
+      setStep(previous);
+    } else {
+      setStep(STEP.FORM);
+    }
   };
 
   const handleSubmit = (data?: any) => {
@@ -281,7 +298,7 @@ export const useRegister = () => {
   };
 
   const onReEnterEmailAcademic = () => {
-    setStep(STEP.INPUT_ACADEMIC_EMAIL);
+    navigateToStep(STEP.INPUT_ACADEMIC_EMAIL);
   };
 
   const onSubmitAcademicEmail = (email: string) => {
@@ -293,7 +310,7 @@ export const useRegister = () => {
         membershipType: formData.current?.membershipId,
         universityEmail: formData.current?.mailAcademic,
         onSuccess: () => {
-          setStep(STEP.ACADEMIC_VERIFICATION);
+          navigateToStep(STEP.ACADEMIC_VERIFICATION);
         },
         onFailure(error) {
           AppNavigator.showSnackBar({
@@ -355,6 +372,7 @@ export const useRegister = () => {
     carrier,
     chooseOptions: MEMBERSHIP_OPTIONS,
     formData,
+    goBack,
     goToStep,
     handleSubmit,
     isRegisterValid,
@@ -369,6 +387,7 @@ export const useRegister = () => {
     onPressVerify,
     onReEnterEmailAcademic,
     onResendEmailAcademic,
+    needShowBtnBack: needShowBtnBack.current,
     mailAcademic: formData.current.mailAcademic,
     setSignupToken,
     registerErrors: visibleRegisterErrors,

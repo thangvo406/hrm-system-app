@@ -13,7 +13,7 @@ const TEXT_COLOR = '#1A1A1A';
 
 function Index(props: any) {
   const { t } = useTranslation();
-  const { errors, onSubmit, mailAcademic } = props || {};
+  const { errors, onSubmit, mailAcademic, onBack } = props || {};
   const [emailValue, setEmailValue] = useState('');
   const [error, setError] = useState(errors?.emailAcademic);
 
@@ -46,7 +46,7 @@ function Index(props: any) {
 
   return (
     <View style={styles.container}>
-      <RegisterHeader />
+      <RegisterHeader showBtnBack onBack={onBack} />
 
       <View style={styles.content}>
         <Text style={styles.title}>{t('input_academic_email.title')}</Text>

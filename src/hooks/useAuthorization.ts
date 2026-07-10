@@ -198,7 +198,7 @@ export const useAuthorization = () => {
         [NEED_INFO_LOGIN_CODE.VERIFY_UNIVERSITY_EMAIL]: STEP.CHOOSE_MEMBERSHIP,
       };
       const step = stepMapping[error?.code];
-      register.goToStep(step);
+      register.goToStep(step, true);
       const { registerToken, signupToken } = error?.data || {};
       if (registerToken) {
         register.setRegisterToken(registerToken);

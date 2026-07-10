@@ -28,11 +28,11 @@ export type MembershipOption = {
 
 type ChooseMemberShipTypeProps = {
   readonly disabled?: boolean;
+  readonly showBtnBack?: boolean;
   readonly onBack?: () => void;
   readonly onSelectMembership: (id: string) => void;
   readonly onSubmit: (data: any) => void;
   readonly options: readonly MembershipOption[];
-  readonly showBtnBack?: boolean;
 };
 
 function ChooseMemberShipType({

@@ -67,6 +67,7 @@ type InputInfoProps = {
   readonly onSubmit: () => void;
   readonly onToggleAgreement: () => void;
   readonly onPressVerify: () => void;
+  readonly onBack: () => void;
 };
 
 /**
@@ -78,7 +79,7 @@ type InputInfoProps = {
 const DEFAULT_INFO: InputInfoValues = {
   birthday: '',
   indentify: '',
-  // name: '',
+  name: '',
   otp: '',
   phone: '',
 };
@@ -108,6 +109,7 @@ function InputInfo({
   onSubmit,
   onToggleAgreement,
   onPressVerify,
+  onBack,
   isShowFieldName,
   titleRegisterInfoKey = 'register_flow.identity_title',
 }: InputInfoProps) {
@@ -231,10 +233,10 @@ function InputInfo({
 
   const isFormValid =
     agreed &&
-    values.birthday.trim().length == BIRTHDAY_MAX_LENGTH &&
-    values.indentify.trim().length == IDENTIFY_MAX_LENGTH &&
-    values.phone.trim().length > 0 &&
-    values.otp.trim().length === OTP_MAX_LENGTH;
+    values.birthday?.trim?.().length == BIRTHDAY_MAX_LENGTH &&
+    values.indentify?.trim?.().length == IDENTIFY_MAX_LENGTH &&
+    values.phone?.trim?.().length > 0 &&
+    values.otp?.trim?.().length === OTP_MAX_LENGTH;
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -242,7 +244,7 @@ function InputInfo({
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.flex}
       >
-        <RegisterHeader />
+        <RegisterHeader showBtnBack onBack={onBack} />
         <ScrollView
           bounces={false}
           contentContainerStyle={styles.scrollContent}

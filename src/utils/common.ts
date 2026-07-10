@@ -44,19 +44,20 @@ export const removeEmptyFieldObject = (
 };
 
 export const formatPhoneNumber = (input: string): string => {
-  const digits = input.replaceAll(/\D/g, '').slice(0, PHONE_MAX_DIGITS);
-  const area = digits.slice(0, PHONE_AREA_CODE_LENGTH);
-  if (digits.length <= PHONE_AREA_CODE_LENGTH) {
+  input = input || '';
+  const digits = input.replaceAll?.(/\D/g, '')?.slice(0, PHONE_MAX_DIGITS);
+  const area = digits?.slice?.(0, PHONE_AREA_CODE_LENGTH);
+  if (digits?.length <= PHONE_AREA_CODE_LENGTH) {
     return area;
   }
-  const middle = digits.slice(
+  const middle = digits?.slice(
     PHONE_AREA_CODE_LENGTH,
     PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH,
   );
-  if (digits.length <= PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH) {
+  if (digits?.length <= PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH) {
     return `${area}-${middle}`;
   }
-  const last = digits.slice(
+  const last = digits?.slice(
     PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH,
     PHONE_AREA_CODE_LENGTH + PHONE_MIDDLE_LENGTH + PHONE_LAST_LENGTH,
   );
