@@ -45,7 +45,7 @@ function ConfirmPaymentContribution({
           </Text>
           <Text style={styles.cardAmount}>
             {t('confirm_payment_contribution.amount', {
-              amount: formatCurrency(amount, false),
+              amount: formatCurrency(amount),
             })}
           </Text>
         </View>

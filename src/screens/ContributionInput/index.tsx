@@ -47,7 +47,7 @@ function ContributionInput() {
           placeholderTextColor={PLACEHOLDER_COLOR}
           style={styles.input}
           testID="contribution-input-amount"
-          value={formatCurrency(amount, false)}
+          value={formatCurrency(amount)}
         />
         <View style={styles.inputUnderline} />
       </View>

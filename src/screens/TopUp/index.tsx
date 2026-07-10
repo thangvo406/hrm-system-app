@@ -116,7 +116,7 @@ function TopUp() {
               placeholderTextColor={TEXT_HINT}
               style={styles.input}
               testID="top-up-amount-input"
-              value={formatCurrency(amountTopUp, false)}
+              value={formatCurrency(amountTopUp)}
             />
             <Text style={styles.currencyLabel}>{t('top_up.currency')}</Text>
           </View>
