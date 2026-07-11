@@ -34,9 +34,10 @@ type CartRowProps = {
   readonly item: StoreCartItem;
   readonly isManaging: boolean;
   readonly onRemove: (cartItemId: number) => void;
+  readonly onPressItem: (item: StoreCartItem) => void;
 };
 
-function CartRow({ isManaging, item, onRemove, onPressItem }: CartRowProps) {
+const CartRow = React.memo(({ isManaging, item, onRemove, onPressItem }: CartRowProps) => {
   const { t } = useTranslation();
   const handleRemove = () => {
     onRemove(item.id);
@@ -64,7 +65,7 @@ function CartRow({ isManaging, item, onRemove, onPressItem }: CartRowProps) {
             {t('carts.item_count', { count: item.totalQuantity })}
           </Text>
           <Text style={styles.totalPrice}>
-            {ProductUtils.formatCurrency(item.subTotal)}
+            {t('common.display_price', {amount: ProductUtils.formatCurrency(item.subTotal)})}
           </Text>
         </View>
       </View>
@@ -80,9 +81,7 @@ function CartRow({ isManaging, item, onRemove, onPressItem }: CartRowProps) {
       ) : undefined}
     </AppButton>
   );
-}
-
-const MemoCartRow = React.memo(CartRow);
+})
 
 function ItemSeparator() {
   return <View style={styles.separator} />;
@@ -102,7 +101,7 @@ function Carts() {
   } = useCart();
 
   const renderItem: ListRenderItem<StoreCartItem> = ({ item }) => (
-    <MemoCartRow
+    <CartRow
       isManaging={isManaging}
       item={item}
       onRemove={onRemoveItem}

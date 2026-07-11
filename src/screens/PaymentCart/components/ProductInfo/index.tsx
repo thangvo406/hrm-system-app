@@ -18,6 +18,7 @@ import Information from '@dialogs/Information';
 import debounce from 'lodash/debounce';
 import type { DebouncedFunc } from 'lodash';
 import imageNames from '@assets/images/names';
+import { useTranslation } from 'react-i18next';
 
 const TEXT_DARK = '#1A1A1A';
 const CARD_BG = '#FFFFFF';
@@ -47,6 +48,7 @@ function ChevronIcon({ expanded }: { readonly expanded: boolean }) {
 }
 
 function ProductInfo({ onChangeQuantity, items }: ProductInfoProperties) {
+  const {t} = useTranslation()
   const [expanded, setExpanded] = useState(true);
   const hasItems = (items?.length ?? 0) > 0;
   const [products, setProducts] = useState<ProductCart[]>(
@@ -155,7 +157,7 @@ function ProductInfo({ onChangeQuantity, items }: ProductInfoProperties) {
                   </Text>
                 ))}
                 <Text style={styles.itemPrice}>
-                  {formatCurrency(item.totalAmount)}
+                  {t('common.display_price', {amount: formatCurrency(item.unitPrice)})}
                 </Text>
               </View>
             </View>

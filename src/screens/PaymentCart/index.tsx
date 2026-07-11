@@ -1,4 +1,4 @@
-import { Button, HeaderDetail } from '@components';
+import { Button, EmptyView, HeaderDetail } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import {
@@ -13,6 +13,7 @@ import { usePaymentCart } from '@hooks';
 import PaymentMethod from './components/PaymentMethod';
 import ProductInfo from './components/ProductInfo';
 import Shipping from './components/Shipping';
+import imageNames from '@assets/images/names';
 
 const TEXT_DARK = '#1A1A1A';
 const SCREEN_BG = '#F2F2F2';
@@ -49,7 +50,7 @@ function PaymentCart(props: any) {
             alignItems: 'center',
           }}
         >
-          <Text style={styles.error}>{error}</Text>
+         <EmptyView desc={error} icon={imageNames.ic_shopping_error}  />
         </View>
       ) : (
         <>
@@ -118,10 +119,6 @@ const styles = StyleSheet.create({
     color: TEXT_DARK,
     fontSize: ScaleSize(16),
     fontWeight: '700',
-  },
-  error: {
-    color: 'red',
-    fontSize: ScaleSize(14),
   },
   orderButton: {
     borderRadius: ScaleSize(28),

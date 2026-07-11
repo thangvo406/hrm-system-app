@@ -7,6 +7,7 @@ import { useWindowDimensions } from 'react-native';
 import React, { useRef, useState } from 'react';
 import WebView from 'react-native-webview';
 import dayjs from 'dayjs';
+import Loading from '@dialogs/Loading'
 
 import TitleRow from './TitleRow';
 
@@ -57,6 +58,7 @@ function Content({ contentHtml, createdDate, title }: Properties) {
   const { width } = useWindowDimensions();
   const [webViewHeight, setWebViewHeight] = useState(WEBVIEW_MIN_HEIGHT);
   const webViewRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
   const contentWidth = width - HORIZONTAL_PADDING * 2;
   const isFullDocument = contentHtml.trimStart().toLowerCase().startsWith('<!doctype');
 
@@ -67,7 +69,18 @@ function Content({ contentHtml, createdDate, title }: Properties) {
     >
       <TitleRow title={title} />
       {isFullDocument ? (
-        <WebView
+       <>
+          {!isLoading ? undefined : (
+            <Loading
+               style={{
+                  position: 'absolute',
+                  alignSelf: 'center',
+                  bottom: '35%',
+                  zIndex: 999,
+               }}
+            />
+         )}
+         <WebView
           ref={webViewRef}
           injectedJavaScript={INJECTED_JS}
           onMessage={(event) => {
@@ -83,10 +96,20 @@ function Content({ contentHtml, createdDate, title }: Properties) {
               // ignore
             }
           }}
+          onLoadStart={() => {
+            setIsLoading(true);
+          }}
+          onLoadEnd={() => {
+            setIsLoading(false);
+          }}
+          onError={() => {
+            setIsLoading(false);
+          }}
           scrollEnabled={false}
           source={{ html: contentHtml }}
           style={[styles.webView, { height: webViewHeight, width: contentWidth }]}
         />
+       </>
       ) : (
         <RenderHtml
           baseStyle={tagsStyles.body ?? {}}

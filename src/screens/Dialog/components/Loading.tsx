@@ -1,6 +1,6 @@
 import { ScaleSize } from '@kits/core';
 import { SkypeIndicator } from 'react-native-indicators';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 
 const SPINNER_SIZE = ScaleSize(64);
 const SPINNER_COLOR = '#5BB85C';
@@ -15,6 +15,7 @@ const NOOP = (): void => undefined;
 
 type LoadingProps = {
   readonly onRequestClose?: () => void;
+  readonly style?: ViewStyle
 };
 
 /**
@@ -25,12 +26,12 @@ type LoadingProps = {
  * stays visible behind it — only the matching `hideLoading()` call can
  * close it.
  */
-function Loading({ onRequestClose = NOOP }: LoadingProps) {
+function Loading({ style = undefined, onRequestClose = NOOP }: LoadingProps) {
   // `onRequestClose` is injected by the dialog host. Loading intentionally
   // ignores it — the host controls the lifecycle via the loadingId reference.
   void onRequestClose;
   return (
-    <View style={styles.container} testID="loading-screen">
+    <View style={[styles.container,style]} testID="loading-screen">
       <SkypeIndicator
         animationDuration={SPINNER_ANIMATION_DURATION}
         color={SPINNER_COLOR}

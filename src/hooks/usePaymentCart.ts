@@ -111,6 +111,7 @@ export const usePaymentCart = (props: any) => {
           },
           onFailure: error => {
             setError(error);
+            setLoading(false);
           },
         }),
       );
@@ -241,7 +242,7 @@ export const usePaymentCart = (props: any) => {
             });
           }
         },
-        onFailure: (error: string) => {
+        onFailure: (type: string,error: string) => {
           AppNavigator.showSnackBar({
             message: error ?? '',
             type: 'failed',

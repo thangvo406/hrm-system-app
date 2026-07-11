@@ -21,6 +21,7 @@ const imageNames = {
   ic_phone: 'ic_phone',
   ic_protect_green: 'ic_protect_green',
   ic_right_topup: 'ic_right_topup',
+  ic_shopping_error: 'ic_shopping_error',
   ic_sort_gray: 'ic_sort_gray',
   ic_store: 'ic_store',
   ic_success_check: 'ic_success_check',

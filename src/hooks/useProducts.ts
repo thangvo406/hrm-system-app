@@ -14,7 +14,7 @@ export type { Product } from '@type/products';
 
 export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   const dispatch = useAppDispatch();
-  const { data: store } = AppNavigator.getParams(props);
+  const { data: store, storeId } = AppNavigator.getParams(props);
   const [data, setData] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(0);
@@ -49,9 +49,8 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   }, []);
 
   const isShowBtnCart = useMemo(() => {
-    // return storeInfo?.totalAmountItemCart > 0;
-    return true;
-  }, []);
+    return storeInfo?.cartId > 0;
+  }, [storeInfo]);
 
   const onLoadMore = useCallback(() => {
     if (isLast.current || isLoadingMore.current) {
@@ -69,7 +68,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   useEffect(() => {
     dispatch(
       getStoreDetailRequest({
-        storeId: store?.id || 1,
+        storeId: storeId || store?.id,
         // onFailure: handleFailure,
         onSuccess: (data: StoreItem) => {
           setStoreInfo(data);
@@ -85,7 +84,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   useEffect(() => {
     dispatch(
       getProductsRequest({
-        storeId: store?.id || 1,
+        storeId: storeInfo?.id || 1,
         page: currentPage,
         keyword: searchKey,
         size: 10,
@@ -93,7 +92,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
         onSuccess: handleSuccess,
       }),
     );
-  }, [dispatch, searchKey, currentPage]);
+  }, [dispatch, storeInfo, searchKey, currentPage]);
 
   return {
     data,

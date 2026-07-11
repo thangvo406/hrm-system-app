@@ -4,7 +4,8 @@
       "confirm": "Confirm",
       "cancel": "Cancel",
       "no_data": "No data",
-      "payment": "Payment"
+      "payment": "Payment",
+      "display_price": "{{amount}} KRW"
     },
     "notifications": {
       "title": "Notifications",

@@ -4,7 +4,8 @@
       "confirm": "확인",
       "cancel": "취소",
       "no_data": "데이터 없음",
-      "payment": "지불"
+      "payment": "지불",
+      "display_price": "{{amount}} 원"
     },
     "welcome": {
       "login": "로그인",

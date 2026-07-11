@@ -19,6 +19,7 @@ const images = {
   ic_phone: require('./ic_phone.png') as number,
   ic_protect_green: require('./ic_protect_green.png') as number,
   ic_right_topup: require('./ic_right_topup.png') as number,
+  ic_shopping_error: require('./ic_shopping_error.png') as number,
   ic_sort_gray: require('./ic_sort_gray.png') as number,
   ic_store: require('./ic_store.png') as number,
   ic_success_check: require('./ic_success_check.png') as number,

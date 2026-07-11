@@ -142,8 +142,9 @@ function* createOrderWorker(
         responseCreateOrder,
         responsePayment,
       });
-    } catch {
-      onFailure?.('payment', '');
+    } catch (e){
+      const message = getErrorMessageApi(e);
+      onFailure?.('payment', message);
     }
   } catch (error_) {
     const message = getErrorMessageApi(error_);
