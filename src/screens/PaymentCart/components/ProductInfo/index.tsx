@@ -1,13 +1,10 @@
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import { StyleSheet, Text, View } from 'react-native';
+import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from '@utils/product';
 import type { AttributeCart, ProductCart } from '@type';
 import React, { useEffect, useRef, useState } from 'react';
 import Animated, {
-  FadeInUp,
-  FadeOutDown,
-  LinearTransition,
   useAnimatedStyle,
   useDerivedValue,
   withTiming,
@@ -23,7 +20,6 @@ import { useTranslation } from 'react-i18next';
 const TEXT_DARK = '#1A1A1A';
 const CARD_BG = '#FFFFFF';
 const IMAGE_SIZE = ScaleSize(80);
-const SECTION_TITLE = 'Selected Items';
 const ANIM_DURATION = 200;
 const STEPPER_HEIGHT = ScaleSize(28);
 const STEPPER_BTN_WIDTH = ScaleSize(36);
@@ -48,12 +44,14 @@ function ChevronIcon({ expanded }: { readonly expanded: boolean }) {
 }
 
 function ProductInfo({ onChangeQuantity, items }: ProductInfoProperties) {
-  const {t} = useTranslation()
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(true);
   const hasItems = (items?.length ?? 0) > 0;
   const [products, setProducts] = useState<ProductCart[]>(
     items ? [...items] : [],
   );
+  const [errorQuality, setErrorQuality] = useState({})
+  const [contentHeight, setContentHeight] = useState(0);
   const debounceShowPopup = useRef<DebouncedFunc<() => void> | undefined>(
     undefined,
   );
@@ -61,6 +59,24 @@ function ProductInfo({ onChangeQuantity, items }: ProductInfoProperties) {
   useEffect(() => {
     setProducts(items);
   }, [items]);
+
+  const animatedHeight = useDerivedValue(() =>
+    withTiming(expanded ? contentHeight : 0, { duration: ANIM_DURATION }),
+  );
+  const animatedOpacity = useDerivedValue(() =>
+    withTiming(expanded ? 1 : 0, { duration: ANIM_DURATION }),
+  );
+  const containerStyle = useAnimatedStyle(() => ({
+    height: animatedHeight.value,
+    opacity: animatedOpacity.value,
+  }));
+
+  const handleLayout = (event: LayoutChangeEvent) => {
+    const measuredHeight = event.nativeEvent.layout.height;
+    if (measuredHeight !== contentHeight) {
+      setContentHeight(measuredHeight);
+    }
+  };
 
   const handleToggle = () => {
     setExpanded(prev => !prev);
@@ -77,26 +93,36 @@ function ProductInfo({ onChangeQuantity, items }: ProductInfoProperties) {
         return;
       }
       const newItems = [...products];
-      newItems[index] = { ...newItems[index], quantity: newQuantity };
+      const item = { ...newItems[index], quantity: newQuantity };
       if (newQuantity === 0) {
         debounceShowPopup.current = debounce(() => {
           debounceShowPopup.current = undefined;
           AppNavigator.showDialog({
             screen: Information,
-            title: 'Bạn muốn xoá cart này?',
-            cancelTitle: 'No',
-            confirmTitle: 'Confirm',
+            title: t('payment_cart.product_info.remove_dialog_title'),
+            cancelTitle: t('payment_cart.product_info.remove_dialog_cancel'),
+            confirmTitle: t('payment_cart.product_info.remove_dialog_confirm'),
             onConfirm: () => {
-              onChangeQuantity(newItems[index]);
+              onChangeQuantity(item);
             },
           });
         }, DEBOUNCE_REMOVE_MS);
         debounceShowPopup.current();
         return;
+      } else if (newQuantity > item.productStockQuantity) {
+        setErrorQuality(prev => ({
+          ...prev,
+          [item.id]: t('payment_cart.product_info.max_quantity_reached'),
+        }));
+        return;
       }
-
+      newItems[index] = item;
+      setErrorQuality(prev => ({
+        ...prev,
+        [item.id]: ''
+      }));
       setProducts(newItems);
-      onChangeQuantity(newItems[index]);
+      onChangeQuantity(item);
     };
 
   return (
@@ -107,61 +133,70 @@ function ProductInfo({ onChangeQuantity, items }: ProductInfoProperties) {
         style={styles.header}
         testID="payment-product-info-toggle"
       >
-        <Text style={styles.sectionTitle}>{SECTION_TITLE}</Text>
+        <Text style={styles.sectionTitle}>
+          {t('payment_cart.product_info.section_title')}
+        </Text>
         {hasItems ? <ChevronIcon expanded={expanded} /> : undefined}
       </AppButton>
 
-      {hasItems && expanded ? (
-        <Animated.View
-          entering={FadeInUp.duration(ANIM_DURATION)}
-          exiting={FadeOutDown.duration(ANIM_DURATION)}
-          layout={LinearTransition.duration(ANIM_DURATION)}
-        >
-          {products.map((item: ProductCart, index: number) => (
-            <View style={styles.itemRow} key={item.id}>
-              <Image
-                height={IMAGE_SIZE}
-                resizeMode="cover"
-                name={imageNames.img_product_default}
-                style={styles.itemImage}
-                url={item.productThumbnailUrl?.fileUrl}
-                width={IMAGE_SIZE}
-              />
-              <View style={styles.itemInfo}>
-                <Text style={styles.itemName}>{item.productName}</Text>
+      {hasItems ? (
+        <Animated.View style={[styles.animatedContainer, containerStyle]}>
+          <View onLayout={handleLayout} style={styles.measureContainer}>
+            {products.map((item: ProductCart, index: number) => (
+              <View style={styles.itemRow} key={item.id}>
+                <Image
+                  height={IMAGE_SIZE}
+                  resizeMode="cover"
+                  name={imageNames.img_product_default}
+                  style={styles.itemImage}
+                  url={item.productThumbnailUrl?.fileUrl}
+                  width={IMAGE_SIZE}
+                />
+                <View style={styles.itemInfo}>
+                  <Text style={styles.itemName}>{item.productName}</Text>
 
-                <View style={styles.stepper}>
-                  <AppButton
-                    onPress={_onChangeQuantity('minus', index, item.quantity)}
-                    style={styles.stepperBtn}
-                    testID={`stepper-minus-${item.id}`}
-                  >
-                    <Text style={styles.stepperIcon}>−</Text>
-                  </AppButton>
-                  <Text style={styles.stepperCount}>{item.quantity}</Text>
-                  <AppButton
-                    onPress={_onChangeQuantity('plus', index, item.quantity)}
-                    style={styles.stepperBtn}
-                    testID={`stepper-plus-${item.id}`}
-                  >
-                    <Text style={styles.stepperIcon}>+</Text>
-                  </AppButton>
-                </View>
-
-                {item.selectedAttributes?.map((attribute: AttributeCart) => (
-                  <Text
-                    style={styles.itemDescription}
-                    key={attribute.attributeId}
-                  >
-                    {attribute.attributeName}
+                  <View style={styles.stepper}>
+                    <AppButton
+                      onPress={_onChangeQuantity(
+                        'minus',
+                        index,
+                        item.quantity,
+                      )}
+                      style={styles.stepperBtn}
+                      testID={`stepper-minus-${item.id}`}
+                    >
+                      <Text style={styles.stepperIcon}>−</Text>
+                    </AppButton>
+                    <Text style={styles.stepperCount}>{item.quantity}</Text>
+                    <AppButton
+                      onPress={_onChangeQuantity('plus', index, item.quantity)}
+                      style={styles.stepperBtn}
+                      testID={`stepper-plus-${item.id}`}
+                    >
+                      <Text style={styles.stepperIcon}>+</Text>
+                    </AppButton>
+                  </View>
+                  {
+                    !!errorQuality?.[item.id] && 
+                      <Text style={styles.errorQuality}>{errorQuality[item.id]}</Text>
+                  }
+                  {item.selectedAttributes?.map((attribute: AttributeCart) => (
+                    <Text
+                      style={styles.itemDescription}
+                      key={attribute.attributeId}
+                    >
+                      {attribute.attributeName}
+                    </Text>
+                  ))}
+                  <Text style={styles.itemPrice}>
+                    {t('common.display_price', {
+                      amount: formatCurrency(item.unitPrice),
+                    })}
                   </Text>
-                ))}
-                <Text style={styles.itemPrice}>
-                  {t('common.display_price', {amount: formatCurrency(item.unitPrice)})}
-                </Text>
+                </View>
               </View>
-            </View>
-          ))}
+            ))}
+          </View>
         </Animated.View>
       ) : undefined}
     </View>
@@ -171,11 +206,19 @@ function ProductInfo({ onChangeQuantity, items }: ProductInfoProperties) {
 export default React.memo(ProductInfo);
 
 const styles = StyleSheet.create({
+  animatedContainer: {
+    overflow: 'hidden',
+  },
   card: {
     backgroundColor: CARD_BG,
     borderRadius: ScaleSize(12),
     paddingHorizontal: ScaleSize(16),
     paddingVertical: ScaleSize(16),
+  },
+  errorQuality: {
+    color: 'red',
+    fontSize: ScaleSize(12),
+    paddingVertical: ScaleSize(5)
   },
   chevron: {
     color: TEXT_DARK,
@@ -217,6 +260,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     marginTop: ScaleSize(12),
+  },
+  measureContainer: {
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   sectionTitle: {
     color: TEXT_DARK,

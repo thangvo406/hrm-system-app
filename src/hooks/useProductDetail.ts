@@ -213,6 +213,7 @@ export const useProductDetail = (props: any) => {
             message: t('product_detail.add_cart_success'),
             type: 'success',
           });
+          dispatch(getTotalItemCartRequest())
           AppNavigator.replace(Paths.Products, {
             storeId: data?.storeId,
           });

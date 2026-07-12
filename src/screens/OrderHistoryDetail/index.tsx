@@ -127,6 +127,7 @@ function OrderHistoryDetail(props: any) {
     showAllProducts,
     toggleShowAllProducts,
     visibleProducts,
+    isSuccess,
     onPressCopyOrderNumber,
   } = useOrderHistoryDetail(props);
 
@@ -158,13 +159,13 @@ function OrderHistoryDetail(props: any) {
                 {t('order_history_detail.order_code_label')}
               </Text>
               <View style={styles.codeRow}>
-                <Text style={styles.orderCode}>{data?.orderNumber}</Text>
+                <Text style={[styles.orderCode, {color: isSuccess ? Colors.primary : Colors.yellow01 }]}>{data?.orderNumber}</Text>
                 <AppButton
                   style={styles.copyIcon}
                   onPress={onPressCopyOrderNumber}
                 >
                   <Image
-                    color={Colors.primary}
+                    color={ isSuccess ? Colors.primary : Colors.yellow01}
                     height={ScaleSize(18)}
                     name="ic_copy"
                     type="svg"
@@ -182,7 +183,7 @@ function OrderHistoryDetail(props: any) {
                   styles.statusBadge,
                   {
                     backgroundColor:
-                      data?.status === 'COMPLETED'
+                    isSuccess
                         ? STATUS_COMPLETED_BG
                         : data?.status === 'PENDING'
                           ? STATUS_PENDING_BG
@@ -195,7 +196,7 @@ function OrderHistoryDetail(props: any) {
                     styles.statusText,
                     {
                       color:
-                        data?.status === 'COMPLETED'
+                      isSuccess
                           ? STATUS_COMPLETED_TEXT
                           : data?.status === 'PENDING'
                             ? STATUS_PENDING_TEXT

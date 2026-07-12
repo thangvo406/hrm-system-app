@@ -78,6 +78,7 @@ export interface ProductCart {
   selectedAttributes: AttributeCart[];
   productDeleted: boolean;
   productStatus: string;
+  productStockQuantity: number;
 }
 
 export interface AttributeCart {

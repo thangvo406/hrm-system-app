@@ -44,7 +44,13 @@ export type RootStackParamList = {
   [Paths.Home]: undefined;
   [Paths.InputAddress]: undefined;
   [Paths.Notifications]: undefined;
-  [Paths.OrderCompleted]: undefined;
+  [Paths.OrderCompleted]:
+    | {
+        data?: unknown;
+        dataOrder?: { deliveryMethod?: string; paymentMethod?: string };
+        status?: 'pending' | 'success';
+      }
+    | undefined;
   [Paths.OrderHistories]: undefined;
   [Paths.ContributionHistory]: undefined;
   [Paths.ContributeHistoryDetail]: { id: string };

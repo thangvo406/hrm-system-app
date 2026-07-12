@@ -242,11 +242,22 @@ export const usePaymentCart = (props: any) => {
             });
           }
         },
-        onFailure: (type: string,error: string) => {
-          AppNavigator.showSnackBar({
-            message: error ?? '',
-            type: 'failed',
-          });
+        onFailure: (type: string, error: any) => {
+          if(typeof error == "string") {
+            AppNavigator.showSnackBar({
+              message: error,
+              type: 'failed'
+            })
+          }else {
+            AppNavigator.navigate(Paths.OrderCompleted, {
+              data: error,
+              status: 'pending',
+              dataOrder: {
+                deliveryMethod: deliveryTab,
+                paymentMethod,
+              },
+            });
+          }
         },
       }),
     );

@@ -14,6 +14,8 @@ export function useOrderHistoryDetail(props: any) {
   const dispatch = useAppDispatch();
   const toggleShowAllProducts = () => setShowAllProducts(prev => !prev);
 
+ const isSuccess =  data?.status === 'COMPLETED'
+
   const onPressCopyOrderNumber = () => {
     Clipboard.setString(data?.orderNumber ?? '');
     AppNavigator.showSnackBar({
@@ -39,6 +41,7 @@ export function useOrderHistoryDetail(props: any) {
 
   return {
     data,
+    isSuccess,
     onPressCopyOrderNumber,
     showAllProducts,
     toggleShowAllProducts,

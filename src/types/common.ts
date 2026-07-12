@@ -10,7 +10,7 @@ export type ListApiResponse<T> = {
 };
 
 export type AppCallback<T = void> = {
-  readonly onFailure?: (error: string, additionalMsg?: string) => void;
+  readonly onFailure?: (error: string, additional?: any) => void;
   readonly onSuccess?: (data: T) => void;
 };
 

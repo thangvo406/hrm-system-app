@@ -385,19 +385,27 @@
       "next": "Next"
     },
     "order_completed": {
-      "title": "Order Placed Successfully!",
-      "subtitle": "Thank you for your purchase.\nYour order is being processed.",
       "order_code": "Order Code",
       "copy": "Copy",
       "order_date": "Order Date",
       "delivery_address": "Delivery Address",
       "shipping_method": "Shipping Method",
       "payment_method": "Payment Method",
-      "notify_title": "We will notify you",
-      "notify_subtitle": "when your order is confirmed and shipped.",
       "view_detail": "View Order Detail",
       "continue_shopping": "Continue Shopping",
-      "go_home": "Go to Home"
+      "go_home": "Go to Home",
+      "pending": {
+        "title": "Order Pending!",
+        "subtitle": "Your order has been received and is pending.\nWe'll notify you once it's confirmed.",
+        "notify_title": "We are processing your order",
+        "notify_subtitle": "You will be notified once your order is confirmed."
+      },
+      "success": {
+        "title": "Order Placed Successfully!",
+        "subtitle": "Thank you for your purchase.\nYour order is being processed.",
+        "notify_title": "We will notify you",
+        "notify_subtitle": "when your order is confirmed and shipped."
+      }
     },
     "order_histories": {
       "title": "Order History",
@@ -451,6 +459,13 @@
         "coop_pay": "Coop Pay",
         "credit_card": "Credit/Debit Card",
         "easy_payment": "Easy Payment"
+      },
+      "product_info": {
+        "section_title": "Selected Items",
+        "remove_dialog_title": "Do you want to remove this item?",
+        "remove_dialog_cancel": "No",
+        "remove_dialog_confirm": "Confirm",
+        "max_quantity_reached": "The quantity you selected has reached the maximum available for this product."
       }
     },
     "contribution_input": {
