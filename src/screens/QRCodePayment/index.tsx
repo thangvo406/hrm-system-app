@@ -1,9 +1,8 @@
-import { AppButton, HeaderDetail, Image } from '@components';
+import { AppButton, Counter, HeaderDetail, Image } from '@components';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ScaleSize } from '@kits/core';
 import { useQRCodePayment } from '@hooks';
 import { useTranslation } from 'react-i18next';
-import Counter from './components/Counter';
 import { Colors } from '@constants';
 import QRCode from 'react-native-qrcode-svg';
 import {

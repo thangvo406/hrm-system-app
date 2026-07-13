@@ -6,10 +6,14 @@ import { Colors } from '@constants';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
 type CounterProps = {
+  readonly desc?: string;
   readonly expiresIn: number;
 };
 
-function Counter({ expiresIn }: CounterProps) {
+function Counter({
+  expiresIn,
+  desc = 'qr_code_payment.expires_in',
+}: CounterProps) {
   const { t } = useTranslation();
   const [remainingSeconds, setRemainingSeconds] = useState(expiresIn);
   const interval = useRef<ReturnType<typeof setInterval> | undefined>(
@@ -34,9 +38,7 @@ function Counter({ expiresIn }: CounterProps) {
   }, [expiresIn]);
 
   return (
-    <Text style={styles.text}>
-      {t('qr_code_payment.expires_in', { seconds: remainingSeconds })}
-    </Text>
+    <Text style={styles.text}>{t(desc, { seconds: remainingSeconds })}</Text>
   );
 }
 

@@ -1,5 +1,5 @@
 import type { IconName } from '@assets/icons';
-import type { Ref } from 'react';
+import type { JSX, Ref } from 'react';
 import type { KeyboardTypeOptions, TextInputProps } from 'react-native';
 
 import Image from '@components/Image';
@@ -26,6 +26,7 @@ type TextFieldProps = {
   readonly keyboardType?: KeyboardTypeOptions;
   readonly label: string;
   readonly onChangeText: (text: string) => void;
+  readonly renderRightComponent: () => JSX.Element;
   readonly onSubmitEditing?: TextInputProps['onSubmitEditing'];
   readonly placeholder: string;
   readonly ref?: Ref<TextInput>;
@@ -53,6 +54,7 @@ function TextField({
   showClear = false,
   submitBehavior = undefined,
   testID = undefined,
+  renderRightComponent = undefined,
   value,
   ...textInputProps
 }: TextFieldProps) {
@@ -131,6 +133,7 @@ function TextField({
             />
           </TouchableOpacity>
         ) : undefined}
+        {renderRightComponent?.()}
       </View>
       {hasError ? (
         <Text

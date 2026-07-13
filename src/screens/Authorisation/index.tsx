@@ -15,6 +15,9 @@ import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AcademicVerification from './components/RegisterFlow/AcademicVerification';
 import AcademicVerifyCompleted from './components/RegisterFlow/AcademicVerifyCompleted';
+import RegisterCompleted from './components/RegisterFlow/RegisterCompleted';
+import SchoolSelection from '@screens/SchoolSelection';
+
 type AuthTab = 'login' | 'registration';
 
 function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
@@ -50,6 +53,8 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     onForgotPassword,
     onGoRegisterForm: register.onGoRegisterForm,
     onInfoChange: register.onInfoChange,
+    titleBtnPrimary: register.titleRegisterCompletedBtnPrimary,
+    titleBtnSecondary: register.titleRegisterCompletedBtnSecondary,
     onLoginChange,
     onPressCarrier: register.onPressCarrier,
     onPressRequestOtp: register.onPressRequestOtp,
@@ -60,7 +65,8 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     onPressVerify: register.onPressVerify,
     onReEnterEmailAcademic: register.onReEnterEmailAcademic,
     onResendEmailAcademic: register.onResendEmailAcademic,
-    onContribution: register.onContribution,
+    onPressSecondary: register.onPressSelectSchool,
+    onOtpEmailAcademicChanged: register.onOtpEmailAcademicChanged,
     onBack: register.goBack,
     showBtnBack: register.needShowBtnBack,
     registerValues: register.formData.current,
@@ -83,6 +89,8 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
       academic_verification: AcademicVerification,
       register_input: RegisterForm,
       bank_information: BankInformation,
+      verified_info: RegisterCompleted,
+      choose_school: SchoolSelection,
     };
     return screens[register.step];
   }, [register.step]);

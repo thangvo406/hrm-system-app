@@ -48,12 +48,7 @@ function Products(props: RootScreenProps<Paths.Products>) {
   } = useProducts(props);
   const { t } = useTranslation();
   const scrollY = React.useMemo(() => new Animated.Value(0), []);
-  // While search is open, frozenScrollY drives the hero height
-  // instead of scrollY — this completely isolates the hero from any
-  // FlatList movement caused by the keyboard (auto-scroll,
-  // contentInset, scroll-to-input). When search closes, we copy
-  // frozenScrollY back into scrollY before re-attaching to the live
-  // FlatList offset, so the banner's height is preserved.
+
   const frozenScrollY = React.useMemo(() => new Animated.Value(0), []);
   const isSearchActiveRef = useRef(false);
   const flatListRef = useRef<FlatList>(null);
@@ -249,7 +244,9 @@ function Products(props: RootScreenProps<Paths.Products>) {
           />
           {isShowBtnCart ? (
             <Button
-              title={t('products.cart_button', { amount: formatCurrency(storeInfo?.totalAmountCart) })}
+              title={t('products.cart_button', {
+                amount: formatCurrency(storeInfo?.totalAmountCart),
+              })}
               type="rounded"
               onPress={goToCart}
               style={{

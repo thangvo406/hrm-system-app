@@ -154,6 +154,17 @@
       "btn_submit": "Send verification",
       "resend_email_success": "Re-send email successfully"
     },
+    "academic_verification": {
+      "title": "Academic Verification",
+      "subtitle": "Please verify using your institutional email.",
+      "sent_message": "A verification email has been sent to {{email}}",
+      "otp_placeholder": "Enter OTP",
+      "verify_action": "Verify",
+      "submit": "Verify",
+      "time_remaining": "Time remaining {{seconds}}s",
+      "resend_email": "Resend email",
+      "re_enter_email": "Re-enter email"
+    },
     "academic_verify_finish": {
       "success": {
         "title": "Academic verification completed!",

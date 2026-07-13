@@ -87,6 +87,17 @@
       "btn_submit": "인증 메일 발송",
       "resend_email_success": "이메일을 재전송했습니다"
     },
+    "academic_verification": {
+      "title": "학적인증",
+      "subtitle": "소속학교 이메일로 인증해주세요.",
+      "sent_message": "{{email}}(으)로 인증 메일이 발송되었습니다",
+      "otp_placeholder": "OTP 입력",
+      "verify_action": "인증",
+      "submit": "인증하기",
+      "time_remaining": "남은시간 {{seconds}}초",
+      "resend_email": "인증 메일 재발송",
+      "re_enter_email": "이메일 다시 입력"
+    },
     "academic_verify_finish": {
       "success": {
         "title": "학적 인증이 완료되었습니다!",

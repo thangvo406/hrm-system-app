@@ -11,8 +11,7 @@ import { AppStacks } from '@navigation/paths';
 
 const PAGE_SIZE = 20;
 
-
-export const useSchoolSelection = () => {
+export const useSchoolSelection = ({ onSubmit }: any) => {
   const dispatch = useAppDispatch();
   const [universities, setUniversities] = useState<IResponseUniversity[]>([]);
   const [keyword, setKeyword] = useState('');
@@ -67,6 +66,10 @@ export const useSchoolSelection = () => {
 
   const handleSubmit = () => {
     if (!selectedSchool) return;
+    if (onSubmit) {
+      onSubmit(selectedSchool);
+      return;
+    }
     dispatch(
       selectSchoolRequest({
         onFailure: (error: any) => {

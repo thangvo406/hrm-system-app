@@ -12,14 +12,18 @@ const SEPARATOR_HEIGHT = ScaleSize(10);
 
 type RegisterCompletedProps = {
   readonly desc: string;
-  readonly disabled?: boolean;
+  readonly titleBtnSecondary: string;
+  readonly titleBtnPrimary: string;
   readonly onSubmit: () => void;
+  readonly onPressSecondary: () => void;
 };
 
 function RegisterCompleted({
   desc,
-  disabled = false,
+  titleBtnPrimary,
+  titleBtnSecondary,
   onSubmit,
+  onPressSecondary,
 }: RegisterCompletedProps) {
   const { t } = useTranslation();
 
@@ -40,12 +44,19 @@ function RegisterCompleted({
       <View style={styles.footer}>
         <View style={styles.footerSeparator} />
         <Button
-          disabled={disabled}
           onPress={onSubmit}
           style={styles.nextButton}
           testID="register-completed-next"
-          title={t('register_completed.next')}
+          // title={t('register_completed.next')}
+          title={t(titleBtnPrimary)}
           type="primary"
+        />
+        <Button
+          onPress={onPressSecondary}
+          style={styles.nextButton}
+          testID="register-completed-next"
+          title={t(titleBtnSecondary)}
+          type="outline-bordered"
         />
       </View>
     </View>
