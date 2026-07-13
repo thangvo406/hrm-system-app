@@ -6,6 +6,7 @@ import type {
   GetCartDetailPayload,
   GetContributeHistoryDetailPayload,
   GetContributeSummaryPayload,
+  GetHistoriesDividendPayload,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
   GetOrderHistoriesPayload,
@@ -86,6 +87,10 @@ const paymentSlice = createSlice({
       prepare: (payload: GetCartDetailPayload) => ({ payload }),
       reducer: () => {},
     },
+    getHistoriesDividendRequest: {
+      prepare: (payload: GetHistoriesDividendPayload) => ({ payload }),
+      reducer: () => {},
+    },
   },
 });
 
@@ -96,6 +101,7 @@ export const {
   getCartDetailRequest,
   getContributeHistoryDetailRequest,
   getContributeSummaryRequest,
+  getHistoriesDividendRequest,
   getInfoProductCheckoutRequest,
   getListCartRequest,
   getOrderHistoriesRequest,

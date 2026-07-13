@@ -11,6 +11,18 @@ export type ContributeHistory = {
   status: string;
   occurredAt: string;
 };
+
+export type IDividendHistory = {
+  id: number;
+  fiscalYear: string;
+  totalDividend: number;
+  contributionDividend: number;
+  usageDividend: number;
+  balanceBefore: number;
+  balanceAfter: number;
+  paidAt: string;
+};
+
 export type IRequestGetTransactionHistories = {
   balanceAccountType: string;
   page: number;

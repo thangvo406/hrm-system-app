@@ -6,7 +6,7 @@ import { useContributeHistory } from '@hooks';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
 import { formatCurrency } from '@utils/product';
-import PointHistoryList from './PointHistoryList';
+import DividendHistory from './DividendHistory';
 import TransactionList from './TransactionList';
 import dayjs from 'dayjs';
 
@@ -47,10 +47,10 @@ function PayCard() {
         id: 'point' as const,
         label: t('pay_card.tab_point'),
         render: () => (
-          <PointHistoryList
+          <DividendHistory
             loading={loading}
             data={pointTransactions ?? []}
-            // onPressItem={onPressTranItem}
+            onPressItem={onPressTranItem}
             onLoadMore={onLoadMore}
           />
         ),

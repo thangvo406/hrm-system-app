@@ -248,6 +248,11 @@
       "cumulative_dividend": "누적 배당금 : {{amount}}원",
       "expected_dividend": "예상 배당금 : {{amount}}원",
       "expected_dividend_date": "예상 배당일 : {{date}}",
+      "dividend_row": {
+        "contribution_dividend": "이용고 배당: {{amount}}원",
+        "cumulative_dividend": "누적 배당금: {{amount}}원",
+        "usage_dividend": "이용고 배당: {{amount}}원"
+      },
       "detail": {
         "title": "출자 내역",
         "date_label": "납부일시",

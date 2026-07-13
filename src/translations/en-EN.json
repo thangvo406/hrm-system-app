@@ -42,6 +42,11 @@
       "cumulative_dividend": "Cumulative Dividend : {{amount}} KRW",
       "expected_dividend": "Expected Dividend : {{amount}} KRW",
       "expected_dividend_date": "Expected Dividend Date : {{date}}",
+      "dividend_row": {
+        "contribution_dividend": "Contribution dividend: {{amount}} KRW",
+        "usage_dividend": "Usage dividend: {{amount}} KRW",
+        "cumulative_dividend": "Cumulative dividend: {{amount}} KRW"
+      },
       "detail": {
         "title": "Contribution History",
         "date_label": "Payment Date: {{date}}",

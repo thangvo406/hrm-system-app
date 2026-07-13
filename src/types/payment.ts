@@ -1,5 +1,6 @@
 import type { AppCallback, IImage, ListApiResponse } from './common';
 import type { IRequestCheckout, Product } from './products';
+import { IDividendHistory } from './wallet';
 
 export type CheckoutInfoItem = {
   readonly attributeItemId: number;
@@ -99,7 +100,8 @@ export type GetCartDetailRequest = {
   readonly cartId: number;
 };
 
-export type GetCartDetailPayload = AppCallback<StoreCartItem> & GetCartDetailRequest;
+export type GetCartDetailPayload = AppCallback<StoreCartItem> &
+  GetCartDetailRequest;
 
 export type GetInfoProductCheckoutPayload = {
   readonly productId: number;
@@ -300,3 +302,13 @@ export type GetContributeHistoryDetailPayload =
   GetContributeHistoryDetailRequest & AppCallback<ContributeHistoryDetail>;
 
 export type GetContributeSummaryPayload = AppCallback<ContributeSummary>;
+
+export type GetHistoriesDividendRequest = {
+  readonly page: number;
+  readonly size: number;
+};
+
+export type GetHistoriesDividendPayload = AppCallback<
+  ListApiResponse<IDividendHistory[]>
+> &
+  GetHistoriesDividendRequest;

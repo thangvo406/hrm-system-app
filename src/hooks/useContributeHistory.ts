@@ -6,13 +6,12 @@ import {
   getCurrentWalletRequest,
   getContributeHistoriesRequest,
 } from '@services/slices/account/accountSlice';
-import { getContributeSummaryRequest } from '@services/slices/payment/paymentSlice';
-import type { ContributeSummary } from '@type/payment';
-import type {
-  ContributeHistory,
-  ListApiResponse,
-  TransactionHistory,
-} from '@type';
+import {
+  getContributeSummaryRequest,
+  getHistoriesDividendRequest,
+} from '@services/slices/payment/paymentSlice';
+import type { ContributeSummary, IDividendHistory } from '@type/payment';
+import type { ContributeHistory, ListApiResponse } from '@type';
 import { useCallback, useRef, useState } from 'react';
 
 export type PayCardHistoryTab = 'pay' | 'point';
@@ -26,6 +25,18 @@ export type PayCardTransaction = {
   readonly type: PayCardHistoryTab;
 };
 
+type TabPaginationState = {
+  isLast: boolean;
+  isLoadingMore: boolean;
+  page: number;
+};
+
+const INITIAL_PAGINATION: TabPaginationState = {
+  isLast: false,
+  isLoadingMore: false,
+  page: 0,
+};
+
 const onRecharge = () => {
   AppNavigator.navigate(Paths.ContributionInput);
 };
@@ -36,42 +47,75 @@ export const useContributeHistory = () => {
   const [summary, setSummary] = useState<ContributeSummary | undefined>(
     undefined,
   );
+  const [loading, setLoading] = useState(true);
 
-  const [pointTransactions, setPointTransactions] =
-    useState<TransactionHistory[]>();
-  const [currentPage, setCurrentPage] = useState(0);
-  const [tranHistories, setTranHistories] = useState<TransactionHistory[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const isLast = useRef(false);
-  const isLoadingMore = useRef(false);
+  const [payItems, setPayItems] = useState<ContributeHistory[]>([]);
+  const [pointItems, setPointItems] = useState<IDividendHistory[]>([]);
 
-  const handleGetTranSuccess = (data: ListApiResponse<ContributeHistory[]>) => {
-    isLast.current = data.last;
-    setLoading(false);
-    const executor =
-      historyTab === 'pay' ? setTranHistories : setPointTransactions;
-    executor((prev: any) => {
-      let results = [];
-      results =
-        currentPage != 0
-          ? (prev || [])?.concat?.(data?.content)
-          : data?.content;
-      isLoadingMore.current = false;
-      return results;
-    });
-  };
+  const payPagination = useRef<TabPaginationState>({ ...INITIAL_PAGINATION });
+  const pointPagination = useRef<TabPaginationState>({ ...INITIAL_PAGINATION });
+
+  const getPagination = useCallback(
+    (tab: PayCardHistoryTab) =>
+      tab === 'pay' ? payPagination : pointPagination,
+    [],
+  );
+
+  const fetchTab = useCallback(
+    (tab: PayCardHistoryTab, page: number) => {
+      const pagination = getPagination(tab);
+
+      if (tab === 'pay') {
+        dispatch(
+          getContributeHistoriesRequest({
+            balanceAccountType: 'CONTRIBUTION',
+            page,
+            size: 20,
+            onSuccess: (data: ListApiResponse<ContributeHistory[]>) => {
+              pagination.current.isLast = data.last;
+              pagination.current.isLoadingMore = false;
+              setPayItems(prev =>
+                page === 0 ? data.content : [...prev, ...data.content],
+              );
+              setLoading(false);
+            },
+            onFailure: () => {
+              pagination.current.isLoadingMore = false;
+              setLoading(false);
+            },
+          }),
+        );
+      } else {
+        dispatch(
+          getHistoriesDividendRequest({
+            page,
+            size: 20,
+            onSuccess: (data: ListApiResponse<IDividendHistory[]>) => {
+              pagination.current.isLast = data.last;
+              pagination.current.isLoadingMore = false;
+              setPointItems(prev =>
+                page === 0 ? data.content : [...prev, ...data.content],
+              );
+              setLoading(false);
+            },
+            onFailure: () => {
+              pagination.current.isLoadingMore = false;
+              setLoading(false);
+            },
+          }),
+        );
+      }
+    },
+    [dispatch, getPagination],
+  );
 
   useFocusEffect(
     useCallback(() => {
       dispatch(getCurrentWalletRequest());
       dispatch(
         getContributeSummaryRequest({
-          onSuccess: data => {
-            setSummary(data);
-          },
-          onFailure: () => {
-            setSummary(undefined);
-          },
+          onSuccess: data => setSummary(data),
+          onFailure: () => setSummary(undefined),
         }),
       );
     }, []),
@@ -79,47 +123,41 @@ export const useContributeHistory = () => {
 
   useFocusEffect(
     useCallback(() => {
-      const balanceAccountType = historyTab === 'pay' ? 'PAY_MONEY' : 'POINT';
-      dispatch(
-        getContributeHistoriesRequest({
-          page: currentPage,
-          size: 20,
-          balanceAccountType,
-          onSuccess: handleGetTranSuccess,
-          onFailure: () => {
-            setLoading(false);
-          },
-        }),
-      );
-    }, [currentPage, historyTab]),
+      setLoading(true);
+      fetchTab(historyTab, getPagination(historyTab).current.page);
+    }, [historyTab, fetchTab, getPagination]),
   );
 
   const onLoadMore = useCallback(() => {
-    if (isLast.current || isLoadingMore.current) {
-      return;
-    }
-    isLoadingMore.current = true;
-    setCurrentPage(prev => prev + 1);
-  }, []);
+    const pagination = getPagination(historyTab);
+    if (pagination.current.isLast || pagination.current.isLoadingMore) return;
+    pagination.current.isLoadingMore = true;
+    const nextPage = pagination.current.page + 1;
+    pagination.current.page = nextPage;
+    fetchTab(historyTab, nextPage);
+  }, [historyTab, fetchTab, getPagination]);
+
+  const onChangeTab = useCallback(
+    (tab: PayCardHistoryTab) => {
+      setHistoryTab(tab);
+      getPagination(tab).current = { ...INITIAL_PAGINATION };
+    },
+    [getPagination],
+  );
 
   const onPressTranItem = useCallback((item: any) => {
     AppNavigator.navigate(Paths.ContributeHistoryDetail, { id: item.id });
   }, []);
 
-  const onChangeTab = (tab: any) => {
-    setHistoryTab(tab);
-    setCurrentPage(0);
-  };
-
   return {
     historyTab,
     loading,
-    summary,
+    onChangeTab,
     onLoadMore,
     onPressTranItem,
     onRecharge,
-    tranHistories,
-    pointTransactions,
-    onChangeTab,
+    pointTransactions: pointItems,
+    summary,
+    tranHistories: payItems,
   };
 };

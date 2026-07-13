@@ -6,14 +6,15 @@ import type {
   CreateOrderPayload,
   GenerateQRCodeRequest,
   GenerateQRCodeResponse,
+  GetCartDetailRequest,
   GetContributeHistoryDetailRequest,
+  GetHistoriesDividendRequest,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
   GetOrderHistoriesRequest,
   GetOrderHistoryDetailRequest,
   IncreaseContributeRequest,
   InitChargeRequest,
-  GetCartDetailRequest,
   OrderHistoryDetailItem,
   OrderHistoryItem,
   RemoveCartItemPayload,
@@ -29,6 +30,7 @@ import { EndPoints } from '@constants';
 import { CommonUtils } from '@utils';
 import { ListApiResponse, SingleApiResponse } from '@type/common';
 import { StoreItem } from '@hooks';
+import { IDividendHistory } from '@type';
 
 type GetInfoProductCheckoutRequest = Omit<
   GetInfoProductCheckoutPayload,
@@ -202,5 +204,17 @@ export const getContributeHistoryDetail = async (
   >(EndPoints.CONTRIBUTION.historyDetail(request.historyId), {
     loading: false,
   });
+  return response.data;
+};
+
+export const getHistoriesDividend = async (
+  request: GetHistoriesDividendRequest,
+): Promise<ListApiResponse<IDividendHistory[]>> => {
+  const params = CommonUtils.objectToQueryParams(
+    CommonUtils.removeEmptyFieldObject(request, true),
+  );
+  const response = await httpRequest.get<
+    SingleApiResponse<ListApiResponse<IDividendHistory[]>>
+  >(EndPoints.CONTRIBUTION.historiesDividend(params), { loading: false });
   return response.data;
 };

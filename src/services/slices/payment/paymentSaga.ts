@@ -12,6 +12,7 @@ import type {
   GetCartDetailPayload,
   GetContributeHistoryDetailPayload,
   GetContributeSummaryPayload,
+  GetHistoriesDividendPayload,
   GetInfoProductCheckoutPayload,
   GetListCartPayload,
   GetOrderHistoriesPayload,
@@ -36,6 +37,7 @@ import {
   getCartDetail,
   getContributeHistoryDetail,
   getContributeSummary,
+  getHistoriesDividend,
   getInfoProductCheckout,
   getListCart,
   getOrderHistories,
@@ -54,6 +56,7 @@ import {
   getCartDetailRequest,
   getContributeHistoryDetailRequest,
   getContributeSummaryRequest,
+  getHistoriesDividendRequest,
   getInfoProductCheckoutRequest,
   getListCartRequest,
   getOrderHistoriesRequest,
@@ -63,6 +66,7 @@ import {
   removeCartItemRequest,
   updateCartItemRequest,
 } from './paymentSlice';
+import { IDividendHistory } from '@type';
 
 function* getInfoProductCheckoutWorker(
   action: PayloadAction<GetInfoProductCheckoutPayload>,
@@ -173,6 +177,22 @@ function* getCartDetailWorker(
   const { onFailure, onSuccess, cartId } = action.payload;
   try {
     const response: StoreCartItem = yield call(getCartDetail, { cartId });
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* getHistoriesDividendWorker(
+  action: PayloadAction<GetHistoriesDividendPayload>,
+): Generator<unknown, void, ListApiResponse<IDividendHistory[]>> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: ListApiResponse<IDividendHistory[]> = yield call(
+      getHistoriesDividend,
+      request,
+    );
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -312,4 +332,8 @@ export function* paymentSaga() {
   yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
   yield takeLatest(updateCartItemRequest.type, updateCartItemWorker);
   yield takeLatest(getCartDetailRequest.type, getCartDetailWorker);
+  yield takeLatest(
+    getHistoriesDividendRequest.type,
+    getHistoriesDividendWorker,
+  );
 }
