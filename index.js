@@ -1,3 +1,4 @@
+import 'text-encoding';
 import { AppRegistry, Platform } from 'react-native';
 
 import { name as appName } from './app.json';
