@@ -22,7 +22,7 @@ import { getCurrentWalletRequest } from '@services/slices/account/accountSlice';
 import { getStoreOrderRecentRequest } from '@services/slices/stores/storesSlice';
 import { AppStorage } from '@services/common/storage';
 import { AppConstants } from '@constants';
-import SocketService from '@services/common/websocket';
+import SocketService from '@services/common/webSocket';
 
 export type UseHome = ReturnType<typeof useHome>;
 
