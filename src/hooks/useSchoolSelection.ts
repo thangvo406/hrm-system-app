@@ -15,6 +15,7 @@ export const useSchoolSelection = ({ onSubmit }: any) => {
   const dispatch = useAppDispatch();
   const [universities, setUniversities] = useState<IResponseUniversity[]>([]);
   const [keyword, setKeyword] = useState('');
+  const [loading, setLoading] = useState(true);
   const [selectedSchool, setSelectedSchool] = useState<
     IResponseUniversity | undefined
   >();
@@ -34,11 +35,13 @@ export const useSchoolSelection = ({ onSubmit }: any) => {
         onSuccess: (data: ListApiResponse<IResponseUniversity[]>) => {
           isLast.current = data.last;
           isLoadingMore.current = false;
+          setLoading(false);
           setUniversities(prev =>
             reset ? data.content : [...prev, ...data.content],
           );
         },
         onFailure: () => {
+          setLoading(false);
           isLoadingMore.current = false;
         },
       }),
@@ -94,6 +97,7 @@ export const useSchoolSelection = ({ onSubmit }: any) => {
     isStale: keyword !== deferredKeyword,
     keyword,
     onLoadMore,
+    loading,
     selectedSchool,
     setKeyword,
     universities,

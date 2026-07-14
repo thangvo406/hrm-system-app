@@ -34,12 +34,13 @@ function* startupAppWorker(action: PayloadAction<StartupAppPayload>) {
     const universityId: number | undefined = yield select(
       AuthSelector.getUniversityId,
     );
-    const profile: Profile = yield select(
-      AccountSelector.getProfile,
-    );
+    const profile: Profile = yield select(AccountSelector.getProfile);
     let isAuthenticated = Boolean(accessToken);
-    if(profile?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER && !universityId) {
-      yield put(logoutRequest())
+    if (
+      !profile ||
+      (profile?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER && !universityId)
+    ) {
+      yield put(logoutRequest());
       isAuthenticated = false;
     }
     if (isAuthenticated) {
