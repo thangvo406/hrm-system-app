@@ -6,7 +6,9 @@ import { useTranslation } from 'react-i18next';
 
 import { useAppDispatch } from '@services/common/storeHooks';
 import {
-  memberShipVerifyRequest,
+  confirmMemberShipVerifyRequest,
+  sendOtpVerifyMembershipRequest,
+  registerUserRequest,
   sendOTPRequest,
   verifyOTPRequest,
 } from '@services/slices/auth/authSlice';
@@ -22,6 +24,7 @@ import {
   IResponseRegisterVerifyOtp,
 } from '@type/auth';
 import { validatePassword } from '@utils/common';
+import Information from '@dialogs/Information';
 
 const {
   CARRIER_ITEMS,
@@ -47,7 +50,8 @@ export type AuthStep =
   | 'form'
   | 'bank_information'
   | 'verified_info'
-  | 'register_input';
+  | 'register_input'
+  | 'choose_school';
 
 export type FormData = {
   birthday?: string;
@@ -63,8 +67,10 @@ export type FormData = {
   phoneVerificationToken?: string;
   registerToken?: string;
   roleId?: string;
+  otpAcademic?: string;
   school?: IResponseUniversity;
   signupToken?: string;
+  emailVerificationToken?: string;
 };
 
 type RegisterFormFields = Pick<FormData, 'email' | 'name' | 'password'>;
@@ -106,10 +112,16 @@ export const useRegister = () => {
     password?: boolean;
   }>({});
 
+  const dataInfoVerifyMembership = useRef(null);
+  const [isVerifiedEmailAcademic, setVerifiedEmailAcademic] = useState(false);
+
   const [step, setStep] = useState<AuthStep>(STEP.FORM);
   const stepStack = useRef<AuthStep[]>([]);
 
   const navigateToStep = (nextStep: AuthStep) => {
+    if (nextStep == STEP.CHOOSE_MEMBERSHIP) {
+      needShowBtnBack.current = true;
+    }
     stepStack.current?.push?.(step);
     setStep(nextStep);
   };
@@ -122,17 +134,17 @@ export const useRegister = () => {
 
   const titleRegisterCompletedBtnPrimary = useMemo(() => {
     if (step == STEP.VERIFIED_INFO) {
-      return '확인';
+      return 'register_completed.btn_confirm';
     }
     return '';
-  }, []);
+  }, [step]);
 
   const titleRegisterCompletedBtnSecondary = useMemo(() => {
     if (step == STEP.VERIFIED_INFO) {
-      return '대학인증';
+      return 'register_completed.btn_academic_verification';
     }
     return '';
-  }, []);
+  }, [step]);
 
   const onToggleAgreement = () => {
     setAgreed(previous => !previous);
@@ -193,24 +205,51 @@ export const useRegister = () => {
     };
   }, [errors, step, t]);
 
+  const onPressVerifyEmailAcademic = (otp: string) => {
+    formData.current.otpAcademic = otp;
+    dispatch(
+      confirmMemberShipVerifyRequest({
+        otp,
+        emailVerificationToken: formData.current.emailVerificationToken || '',
+        universityEmail: formData.current.mailAcademic || '',
+        onSuccess: (response: any) => {
+          dataInfoVerifyMembership.current = response;
+          setVerifiedEmailAcademic(true);
+        },
+      }),
+    );
+  };
+
+  const onOTPEmailAcademicExpired = (callback: any) => {
+    AppNavigator.showDialog({
+      screen: Information,
+      title: t('academic_verification.otp_expired_title'),
+      desc: t('academic_verification.otp_expired_desc'),
+      confirmTitle: t('academic_verification.otp_expired_confirm'),
+      onConfirm: () => {
+        onResendEmailAcademic();
+        callback?.();
+      },
+    });
+  };
+
   const onGoRegisterForm = () => {
     setErrors({ email: true, name: true, password: true });
     if (!isRegisterValid) return;
-    navigateToStep(STEP.REGISTER_INPUT);
-    // dispatch(
-    //   registerUserRequest({
-    //     email: formData.current.email,
-    //     name: formData.current.name,
-    //     onFailure: (error: string) => {
-    //       setErrors(prev => ({ ...prev, errorApi: error }));
-    //     },
-    //     onSuccess: (response: any) => {
-    //       navigateToStep(STEP.REGISTER_INPUT);
-    //       formData.current.registerToken = response.registerToken;
-    //     },
-    //     password: formData.current.password,
-    //   }),
-    // );
+    dispatch(
+      registerUserRequest({
+        email: formData.current.email,
+        name: formData.current.name,
+        onFailure: (error: string) => {
+          setErrors(prev => ({ ...prev, errorApi: error }));
+        },
+        onSuccess: (response: any) => {
+          navigateToStep(STEP.REGISTER_INPUT);
+          formData.current.registerToken = response.registerToken;
+        },
+        password: formData.current.password,
+      }),
+    );
   };
 
   const setSignupToken = (token: string) => {
@@ -236,7 +275,8 @@ export const useRegister = () => {
       navigateToStep(STEP.INPUT_ACADEMIC_EMAIL);
     } else {
       dispatch(
-        memberShipVerifyRequest({
+        sendOtpVerifyMembershipRequest({
+          universityId: formData.current.school?.id,
           signupToken: formData.current?.signupToken,
           membershipType: formData.current?.membershipId,
           onSuccess: () => {
@@ -263,6 +303,9 @@ export const useRegister = () => {
     needShowBtnBack.current = false;
     const previous = stepStack.current?.pop?.();
     if (previous !== undefined) {
+      if (previous == STEP.CHOOSE_MEMBERSHIP) {
+        needShowBtnBack.current = true;
+      }
       setStep(previous);
     } else {
       setStep(STEP.FORM);
@@ -280,11 +323,16 @@ export const useRegister = () => {
         break;
       }
       case STEP.CHOOSE_SCHOOL: {
+        formData.current.school = data;
         navigateToStep(STEP.CHOOSE_MEMBERSHIP);
         break;
       }
       case STEP.ACADEMIC_VERIFICATION_COMPLETED: {
         AppNavigator.navigate(Paths.RegisterCompleted);
+        break;
+      }
+      case STEP.ACADEMIC_VERIFICATION: {
+        navigateToStep(STEP.ACADEMIC_VERIFICATION_COMPLETED);
         break;
       }
       case STEP.REGISTER_INPUT: {
@@ -306,8 +354,6 @@ export const useRegister = () => {
   };
 
   const onPressRequestOtp = (onSuccess: (isSuccess: boolean) => void) => {
-    onSuccess(true);
-    return;
     dispatch(
       sendOTPRequest({
         onFailure: (error: string) => {
@@ -326,19 +372,21 @@ export const useRegister = () => {
   };
 
   const onReEnterEmailAcademic = () => {
+    setVerifiedEmailAcademic(false);
     navigateToStep(STEP.INPUT_ACADEMIC_EMAIL);
   };
 
   const onSubmitAcademicEmail = (email: string) => {
     formData.current.mailAcademic = email;
-    setStep(STEP.ACADEMIC_VERIFICATION);
-    return;
     dispatch(
-      memberShipVerifyRequest({
+      sendOtpVerifyMembershipRequest({
+        universityId: formData.current.school?.id,
         signupToken: formData.current?.signupToken,
         membershipType: formData.current?.membershipId,
         universityEmail: formData.current?.mailAcademic,
-        onSuccess: () => {
+        onSuccess: (response: any) => {
+          formData.current.emailVerificationToken =
+            response.emailVerificationToken;
           navigateToStep(STEP.ACADEMIC_VERIFICATION);
         },
         onFailure(error) {
@@ -353,11 +401,14 @@ export const useRegister = () => {
 
   const onResendEmailAcademic = () => {
     dispatch(
-      memberShipVerifyRequest({
+      sendOtpVerifyMembershipRequest({
+        universityId: formData.current.school?.id,
         signupToken: formData.current?.signupToken,
         membershipType: formData.current?.membershipId,
         universityEmail: formData.current?.mailAcademic,
-        onSuccess: () => {
+        onSuccess: (response: any) => {
+          formData.current.emailVerificationToken =
+            response.emailVerificationToken;
           AppNavigator.showSnackBar({
             message: t('input_academic_email.resend_email_success'),
             type: 'success',
@@ -374,8 +425,6 @@ export const useRegister = () => {
   };
 
   const onPressVerify = (callback: any) => {
-    callback?.(true);
-    return;
     dispatch(
       verifyOTPRequest({
         identityNumber: `${formData.current.birthday ?? ''}-${
@@ -401,10 +450,6 @@ export const useRegister = () => {
     navigateToStep(STEP.CHOOSE_SCHOOL);
   };
 
-  const onOtpEmailAcademicChanged = (text: string) => {
-    formData.current.otpAcademic = text;
-  };
-
   return {
     clearErrors,
     agreed,
@@ -412,7 +457,6 @@ export const useRegister = () => {
     chooseOptions: MEMBERSHIP_OPTIONS,
     formData,
     goBack,
-    onOtpEmailAcademicChanged,
     goToStep,
     handleSubmit,
     isRegisterValid,
@@ -421,6 +465,9 @@ export const useRegister = () => {
     onPressSelectSchool,
     titleRegisterCompletedBtnPrimary,
     titleRegisterCompletedBtnSecondary,
+    isVerifiedEmailAcademic,
+    dataInfoVerifyMembership: dataInfoVerifyMembership.current,
+    onPressVerifyEmailAcademic,
     onPressCarrier,
     onPressRequestOtp,
     onRegisterChange,
@@ -430,6 +477,7 @@ export const useRegister = () => {
     onPressVerify,
     onReEnterEmailAcademic,
     onResendEmailAcademic,
+    onOTPEmailAcademicExpired,
     needShowBtnBack: needShowBtnBack.current,
     mailAcademic: formData.current.mailAcademic,
     setSignupToken,

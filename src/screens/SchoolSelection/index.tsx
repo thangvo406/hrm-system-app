@@ -63,6 +63,7 @@ const UniversityItem = React.memo(function UniversityItem({
 });
 
 function SchoolSelection(props: any) {
+  const { topHeader, onBack } = props || {};
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const {
@@ -74,6 +75,14 @@ function SchoolSelection(props: any) {
     universities,
   } = useSchoolSelection(props);
 
+  const onPressBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      AppNavigator.goBack();
+    }
+  };
+
   const renderItem = ({ item }: { item: IResponseUniversity }) => (
     <UniversityItem
       isSelected={item.id === selectedSchool?.id}
@@ -84,10 +93,10 @@ function SchoolSelection(props: any) {
 
   return (
     <AppButton
-      style={[styles.container, { paddingTop: insets.top }]}
+      style={[styles.container, { paddingTop: topHeader || insets.top }]}
       onPress={handleDismissKeyboard}
     >
-      <RegisterHeader showBtnBack onBack={() => AppNavigator.goBack()} />
+      <RegisterHeader showBtnBack onBack={onPressBack} />
 
       <View style={styles.searchBlock}>
         <Text style={styles.title}>{t('school_selection.title')}</Text>

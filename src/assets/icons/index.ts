@@ -7,6 +7,7 @@ import EmailIcon from './email.svg';
 import IcHourglassIcon from './ic_hourglass.svg';
 import IcMapPinIcon from './ic_map_pin.svg';
 import IcOrderReceiptIcon from './ic_order_receipt.svg';
+import IcOtpPlaceholderIcon from './ic_otp_placeholder.svg';
 import IcShieldCheckIcon from './ic_shield_check.svg';
 import IcShoppingBagIcon from './ic_shopping_bag.svg';
 import IcStarIcon from './ic_star.svg';
@@ -53,6 +54,7 @@ const icons = {
   ic_hourglass: IcHourglassIcon,
   ic_map_pin: IcMapPinIcon,
   ic_order_receipt: IcOrderReceiptIcon,
+  ic_otp_placeholder: IcOtpPlaceholderIcon,
   ic_shield_check: IcShieldCheckIcon,
   ic_shopping_bag: IcShoppingBagIcon,
   ic_star: IcStarIcon,

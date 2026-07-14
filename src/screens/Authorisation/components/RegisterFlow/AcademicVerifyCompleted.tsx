@@ -4,6 +4,8 @@ import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { Colors } from '@constants';
+import { useTranslation } from 'react-i18next';
+import { IResponseConfirmMemberShipVerify } from '@type';
 
 const GREEN = '#5BB85C';
 const CIRCLE_BG = '#F0F0F0';
@@ -13,18 +15,15 @@ const VALUE_COLOR = '#1A1A1A';
 const BORDER_COLOR = '#E5E7EB';
 
 type AcademicVerifyCompletedProps = {
-  readonly department?: string;
-  readonly membershipType?: string;
+  readonly dataVerifiedMembership: IResponseConfirmMemberShipVerify;
   readonly onSubmit: () => void;
-  readonly school?: string;
 };
 
 function AcademicVerifyCompleted({
-  department = '',
-  membershipType = '',
+  dataVerifiedMembership: data,
   onSubmit,
-  school = '',
 }: AcademicVerifyCompletedProps) {
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
       <RegisterHeader />
@@ -36,26 +35,30 @@ function AcademicVerifyCompleted({
           </View>
         </View>
 
-        <Text style={styles.title}>Academic verification completed!</Text>
+        <Text style={styles.title}>
+          {t('academic_verify_finish.success.title')}
+        </Text>
         <Text style={styles.subtitle}>
-          Your school has been successfully verified
+          {t('academic_verify_finish.success.subtitle')}
         </Text>
 
         <View style={styles.separator} />
 
         <View style={styles.detailCard}>
-          <Text style={styles.sectionLabel}>VERIFICATION DETAILS</Text>
+          <Text style={styles.sectionLabel}>
+            {t('academic_verify_finish.success.section_label')}
+          </Text>
           <View style={styles.row}>
-            <Text style={styles.rowLabel}>School</Text>
-            <Text style={styles.rowValue}>{school ?? '-'}</Text>
+            <Text style={styles.rowLabel}>
+              {t('academic_verify_finish.success.label_school')}
+            </Text>
+            <Text style={styles.rowValue}>{data?.universityName ?? '-'}</Text>
           </View>
           <View style={styles.row}>
-            <Text style={styles.rowLabel}>Department</Text>
-            <Text style={styles.rowValue}>{department ?? '-'}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text style={styles.rowLabel}>Type</Text>
-            <Text style={styles.rowValue}>{membershipType ?? '-'}</Text>
+            <Text style={styles.rowLabel}>
+              {t('academic_verify_finish.success.label_type')}
+            </Text>
+            <Text style={styles.rowValue}>{data?.membershipType ?? '-'}</Text>
           </View>
         </View>
       </View>
@@ -66,7 +69,7 @@ function AcademicVerifyCompleted({
           onPress={onSubmit}
           style={styles.nextButton}
           testID="academic-verfy-completed-next"
-          title="NEXT"
+          title={t('academic_verify_finish.success.next')}
           type="primary"
         />
       </View>

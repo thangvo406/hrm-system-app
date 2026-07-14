@@ -15,6 +15,11 @@ export type ISelectSchoolRequest = {
   universityId: number;
 } & AppCallback;
 
+export interface IConfirmMembershipVerification {
+  otp: string;
+  universityEmail: string;
+  emailVerificationToken: string;
+}
 export interface IResponseRefreshToken {
   accessToken: string;
   refreshToken?: string;
@@ -38,6 +43,20 @@ export type IResponseLoginSocial = {
 };
 export type IResponseVerifyOtpForgotPass = {
   resetToken: string;
+};
+export type IResponseConfirmMemberShipVerify = {
+  registrationStatus: string;
+  membershipType: string;
+  membershipStatus: string;
+  universityId: number;
+  universityName: string;
+  universityEmail: string;
+  emailVerificationRequired: boolean;
+  emailVerificationExpiresIn: number;
+  resendAfterMs: number;
+};
+export type IResponseSendOtpVerifyMembership = {
+  emailVerificationToken: string;
 };
 export type IResponseSubmitForgotPass = {
   success?: boolean;

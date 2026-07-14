@@ -1,6 +1,7 @@
 import type {
+  ConfirmMemberShipVerifyPayload,
   LoginPayload,
-  MemberShipVerifyPayload,
+  SendOtpVerifyMembershipPayload,
   RegisterUserPayload,
   SendOTPPayload,
   SendOtpForgotPassPayload,
@@ -22,6 +23,8 @@ import type {
   IResponseRefreshToken,
   IResponseRegisterUser,
   ISelectSchoolRequest,
+  IResponseSendOtpVerifyMembership,
+  IResponseConfirmMemberShipVerify,
 } from '@type/auth';
 import omit from 'lodash/omit';
 import { httpRequest } from '@services/common/httpRequest';
@@ -142,10 +145,22 @@ export const logout = async (request: LogoutRequest): Promise<void> => {
   await httpRequest.post(EndPoints.AUTH.logout, request, { loading: false });
 };
 
-export const memberShipVerify = async (
-  request: MemberShipVerifyPayload,
-): Promise<void> => {
-  await httpRequest.post(EndPoints.AUTH.memberShipVerify, request);
+export const sendOtpVerifyMembership = async (
+  request: SendOtpVerifyMembershipPayload,
+): Promise<IResponseSendOtpVerifyMembership> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<IResponseSendOtpVerifyMembership>
+  >(EndPoints.AUTH.sendOtpVerifyMembership, request);
+  return response.data;
+};
+
+export const confirmMemberShipVerify = async (
+  request: ConfirmMemberShipVerifyPayload,
+): Promise<IResponseConfirmMemberShipVerify> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<IResponseConfirmMemberShipVerify>
+  >(EndPoints.AUTH.confirmMemberShipVerify, request);
+  return response.data;
 };
 
 export const selectSchool = async (

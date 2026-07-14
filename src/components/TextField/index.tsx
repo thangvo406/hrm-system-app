@@ -24,7 +24,7 @@ type TextFieldProps = {
   readonly error?: string;
   readonly iconName: IconName;
   readonly keyboardType?: KeyboardTypeOptions;
-  readonly label: string;
+  readonly label?: string;
   readonly onChangeText: (text: string) => void;
   readonly renderRightComponent: () => JSX.Element;
   readonly onSubmitEditing?: TextInputProps['onSubmitEditing'];
@@ -44,7 +44,7 @@ function TextField({
   error = undefined,
   iconName,
   keyboardType = 'default',
-  label,
+  label = '',
   onChangeText,
   onSubmitEditing = undefined,
   placeholder,

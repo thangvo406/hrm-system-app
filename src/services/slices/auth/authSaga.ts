@@ -1,10 +1,11 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AuthResponse } from '@services/request/auth';
 import type {
+  ConfirmMemberShipVerifyPayload,
   GetUniversitiesPayload,
   LoginPayload,
   LoginSocialPayload,
-  MemberShipVerifyPayload,
+  SendOtpVerifyMembershipPayload,
   RegisterUserPayload,
   SendOTPPayload,
   SendOtpForgotPassPayload,
@@ -14,10 +15,11 @@ import type {
 } from './authSlice';
 
 import {
+  confirmMemberShipVerify,
   getUniversities,
   login,
   loginSocial,
-  memberShipVerify,
+  sendOtpVerifyMembership,
   registerUser,
   selectSchool,
   sendOTP,
@@ -35,12 +37,13 @@ import { persistor } from '@services/common/store';
 import {
   authFailure,
   authSuccess,
+  confirmMemberShipVerifyRequest,
   getUniversitiesRequest,
   loginRequest,
   loginSocialRequest,
   logout,
   logoutSuccess,
-  memberShipVerifyRequest,
+  sendOtpVerifyMembershipRequest,
   refreshTokenRequest,
   registerUserRequest,
   selectSchoolRequest,
@@ -62,6 +65,8 @@ import {
   IResponseVerifyOtpForgotPass,
   IResponseRefreshToken,
   ISelectSchoolRequest,
+  IResponseSendOtpVerifyMembership,
+  IResponseConfirmMemberShipVerify,
 } from '@type/auth';
 import { Globals } from '@utils';
 import { AccountSelector, AuthSelector } from '@services/selectors';
@@ -205,12 +210,29 @@ function* submitForgotPassWorker(
   }
 }
 
-function* memberShipVerifyWorker(
-  action: PayloadAction<MemberShipVerifyPayload>,
+function* sendOtpVerifyMembershipWorker(
+  action: PayloadAction<SendOtpVerifyMembershipPayload>,
 ) {
   try {
-    yield call(memberShipVerify, action.payload);
-    action.payload.onSuccess?.();
+    const response: IResponseSendOtpVerifyMembership = yield call(
+      sendOtpVerifyMembership,
+      action.payload,
+    );
+    action.payload.onSuccess?.(response);
+  } catch (error) {
+    action.payload.onFailure?.(getErrorMessageApi(error));
+  }
+}
+
+function* confirmMemberShipVerifyWorker(
+  action: PayloadAction<ConfirmMemberShipVerifyPayload>,
+) {
+  try {
+    const response: IResponseConfirmMemberShipVerify = yield call(
+      confirmMemberShipVerify,
+      action.payload,
+    );
+    action.payload.onSuccess?.(response);
   } catch (error) {
     action.payload.onFailure?.(getErrorMessageApi(error));
   }
@@ -260,7 +282,14 @@ export function* authSaga() {
   yield takeLatest(sendOtpForgotPassRequest.type, sendOtpForgotPassWorker);
   yield takeLatest(verifyOtpForgotPassRequest.type, verifyOtpForgotPassWorker);
   yield takeLatest(submitForgotPassRequest.type, submitForgotPassWorker);
-  yield takeLatest(memberShipVerifyRequest.type, memberShipVerifyWorker);
+  yield takeLatest(
+    sendOtpVerifyMembershipRequest.type,
+    sendOtpVerifyMembershipWorker,
+  );
+  yield takeLatest(
+    confirmMemberShipVerifyRequest.type,
+    confirmMemberShipVerifyWorker,
+  );
   yield takeLatest(selectSchoolRequest.type, selectSchoolWorker);
   yield takeLatest(logout.type, logoutWorker);
   yield takeLatest(refreshTokenRequest.type, refreshTokenWorker);

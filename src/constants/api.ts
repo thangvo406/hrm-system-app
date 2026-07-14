@@ -11,7 +11,9 @@ export const EndPoints = {
     submitForgotPass: 'auth/forgot-password/reset',
     refreshToken: 'auth/refresh',
     logout: 'auth/logout',
-    memberShipVerify: 'auth/register/membership-verification',
+    sendOtpVerifyMembership: 'auth/register/membership-verification',
+    confirmMemberShipVerify:
+      'auth/register/membership-verification/confirm-otp',
     selectSchool: 'user/session/university',
   },
   CONTRIBUTION: {

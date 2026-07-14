@@ -20,3 +20,4 @@ export { default as TextField } from './TextField';
 export { default as EmptyView } from './EmptyView';
 export { default as AppButton } from './AppButton';
 export { default as Counter } from './Counter';
+export type { TCounterRef } from './Counter';

@@ -56,7 +56,7 @@ function RegisterCompleted({
           style={styles.nextButton}
           testID="register-completed-next"
           title={t(titleBtnSecondary)}
-          type="outline-bordered"
+          type="outline-bordered-rounded"
         />
       </View>
     </View>
@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
   nextButton: {
     alignSelf: 'center',
     width: '90%',
+    marginBottom: ScaleSize(10),
   },
 });
 
