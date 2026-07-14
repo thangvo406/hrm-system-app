@@ -1,4 +1,4 @@
-import { AppButton, Button } from '@components';
+import { AppButton, Button, TextField, UniversitiesLoading } from '@components';
 import Image from '@components/Image';
 import RegisterHeader from '@screens/Authorisation/components/RegisterFlow/Header';
 import { useTranslation } from 'react-i18next';
@@ -10,15 +10,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { ScaleSize } from '@kits/core';
 import type { IResponseUniversity } from '@type/auth';
 import { useSchoolSelection } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppNavigator from '@navigation/AppNavigator';
 import { DeviceUtils } from '@kits/core/utils';
+import debounce from 'lodash/debounce';
 const { ifIPadOrTablet } = DeviceUtils;
-const LOGO_SIZE = 56;
+const LOGO_SIZE = ScaleSize(56);
 const NUM_COLUMNS = 3;
 const PRIMARY_COLOR = '#5BB85C';
 const TEXT_COLOR = '#1A1A1A';
@@ -35,6 +36,7 @@ const UniversityItem = React.memo(function UniversityItem({
   readonly isSelected: boolean;
   readonly onPress: (item: IResponseUniversity) => void;
 }) {
+  const [logo, setLogo] = useState(item?.logo);
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -43,11 +45,16 @@ const UniversityItem = React.memo(function UniversityItem({
       testID={`school-selection-item-${item.id}`}
     >
       <View style={styles.logoWrapper}>
-        {item.logoUrl ? (
+        {logo ? (
           <Image
             resizeMode="contain"
             style={styles.logoImage}
-            url={item.logoUrl}
+            width={LOGO_SIZE}
+            height={LOGO_SIZE}
+            onError={() => {
+              setLogo(null);
+            }}
+            url={logo?.fileUrl}
           />
         ) : (
           <View style={styles.logoFallback}>
@@ -55,7 +62,7 @@ const UniversityItem = React.memo(function UniversityItem({
           </View>
         )}
       </View>
-      <Text numberOfLines={2} style={styles.schoolName}>
+      <Text numberOfLines={3} style={styles.schoolName}>
         {item.name}
       </Text>
     </TouchableOpacity>
@@ -63,16 +70,28 @@ const UniversityItem = React.memo(function UniversityItem({
 });
 
 function SchoolSelection(props: any) {
+  const { topHeader, onBack } = props || {};
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+
   const {
     handleSelectSchool,
     handleSubmit,
+    setKeyword,
     keyword,
+    loading,
     onLoadMore,
     selectedSchool,
     universities,
   } = useSchoolSelection(props);
+
+  const onPressBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      AppNavigator.goBack();
+    }
+  };
 
   const renderItem = ({ item }: { item: IResponseUniversity }) => (
     <UniversityItem
@@ -82,54 +101,79 @@ function SchoolSelection(props: any) {
     />
   );
 
+  const renderSearchBar = () => (
+    <View style={styles.searchRow}>
+      <TextField
+        iconName="ic_search"
+        autoCapitalize="none"
+        onChangeText={debounce(setKeyword, 350)}
+        showClear
+        placeholder={t('school_selection.search_placeholder')}
+        returnKeyType="done"
+        testID="auth-password-input"
+        containerStyle={{
+          width: '90%',
+          alignSelf: 'center',
+          marginLeft: ScaleSize(20),
+        }}
+      />
+    </View>
+  );
+
   return (
     <AppButton
-      style={[styles.container, { paddingTop: insets.top }]}
+      style={[styles.container, { paddingTop: topHeader || insets.top }]}
       onPress={handleDismissKeyboard}
     >
-      <RegisterHeader showBtnBack onBack={() => AppNavigator.goBack()} />
+      <RegisterHeader showBtnBack onBack={onPressBack} />
 
       <View style={styles.searchBlock}>
         <Text style={styles.title}>{t('school_selection.title')}</Text>
       </View>
+      {renderSearchBar()}
+      {loading ? (
+        <UniversitiesLoading />
+      ) : (
+        <>
+          <FlatList
+            ListEmptyComponent={
+              keyword.length > 0 ? (
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>
+                    {t('school_selection.empty')}
+                  </Text>
+                </View>
+              ) : undefined
+            }
+            columnWrapperStyle={styles.columnWrapper}
+            contentContainerStyle={styles.listContent}
+            data={universities}
+            keyExtractor={item => item.id}
+            keyboardShouldPersistTaps="handled"
+            maxToRenderPerBatch={12}
+            numColumns={NUM_COLUMNS}
+            onEndReached={onLoadMore}
+            onEndReachedThreshold={1.5}
+            removeClippedSubviews
+            renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
+            style={styles.list}
+            windowSize={5}
+          />
 
-      <FlatList
-        ListEmptyComponent={
-          keyword.length > 0 ? (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
-                {t('school_selection.empty')}
-              </Text>
-            </View>
-          ) : undefined
-        }
-        columnWrapperStyle={styles.columnWrapper}
-        contentContainerStyle={styles.listContent}
-        data={universities}
-        keyExtractor={item => item.id}
-        keyboardShouldPersistTaps="handled"
-        maxToRenderPerBatch={12}
-        numColumns={NUM_COLUMNS}
-        onEndReached={onLoadMore}
-        onEndReachedThreshold={1.5}
-        removeClippedSubviews
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        style={styles.list}
-        windowSize={5}
-      />
-
-      <View style={styles.footer}>
-        <View style={styles.footerDivider} />
-        <Button
-          disabled={selectedSchool === undefined}
-          onPress={handleSubmit}
-          style={styles.submitButton}
-          testID="school-selection-next"
-          title={t('school_selection.next')}
-          type="primary"
-        />
-      </View>
+          <View style={styles.footer}>
+            <View style={styles.footerDivider} />
+            <Button
+              disabled={selectedSchool === undefined}
+              onPress={handleSubmit}
+              style={styles.submitButton}
+              testID="school-selection-next"
+              title={t('school_selection.next')}
+              type="primary"
+            />
+          </View>
+        </>
+      )}
     </AppButton>
   );
 }
@@ -170,6 +214,13 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 24,
     paddingHorizontal: 20,
+  },
+  searchRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 20,
+    width: '100%',
   },
   logoFallback: {
     alignItems: 'center',

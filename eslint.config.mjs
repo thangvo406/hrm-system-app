@@ -91,6 +91,7 @@ export default defineConfig(
       'perfectionist/sort-sets': OFF,
       'react-hooks/refs': OFF,
       'perfectionist/sort-classes': OFF,
+      'react/hook-use-state': OFF,
       '@typescript-eslint/no-extraneous-class': OFF,
       'unicorn/no-static-only-class': OFF,
       'react/require-default-props': [

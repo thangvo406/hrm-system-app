@@ -1,6 +1,10 @@
 import type { IconName } from '@assets/icons';
 import type { JSX, Ref } from 'react';
-import type { KeyboardTypeOptions, TextInputProps } from 'react-native';
+import type {
+  KeyboardTypeOptions,
+  TextInputProps,
+  ViewStyle,
+} from 'react-native';
 
 import Image from '@components/Image';
 import React, { useRef, useState } from 'react';
@@ -24,7 +28,7 @@ type TextFieldProps = {
   readonly error?: string;
   readonly iconName: IconName;
   readonly keyboardType?: KeyboardTypeOptions;
-  readonly label: string;
+  readonly label?: string;
   readonly onChangeText: (text: string) => void;
   readonly renderRightComponent: () => JSX.Element;
   readonly onSubmitEditing?: TextInputProps['onSubmitEditing'];
@@ -36,6 +40,7 @@ type TextFieldProps = {
   readonly submitBehavior?: TextInputProps['submitBehavior'];
   readonly testID?: string;
   readonly value?: string;
+  readonly containerStyle?: ViewStyle;
 } & TextInputProps;
 
 function TextField({
@@ -44,7 +49,7 @@ function TextField({
   error = undefined,
   iconName,
   keyboardType = 'default',
-  label,
+  label = '',
   onChangeText,
   onSubmitEditing = undefined,
   placeholder,
@@ -56,6 +61,7 @@ function TextField({
   testID = undefined,
   renderRightComponent = undefined,
   value,
+  containerStyle,
   ...textInputProps
 }: TextFieldProps) {
   const [secure, setSecure] = useState(secureTextEntry);
@@ -72,7 +78,7 @@ function TextField({
   };
 
   return (
-    <View>
+    <View style={containerStyle}>
       {!!label && <Text style={styles.label}>{label}</Text>}
       <View style={[styles.inputWrapper, hasError && styles.inputWrapperError]}>
         {!!iconName && (

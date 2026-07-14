@@ -163,7 +163,10 @@
       "submit": "Verify",
       "time_remaining": "Time remaining {{seconds}}s",
       "resend_email": "Resend email",
-      "re_enter_email": "Re-enter email"
+      "re_enter_email": "Re-enter email",
+      "otp_expired_title": "Verification code has expired",
+      "otp_expired_desc": "The verification code validity time (5 minutes) has expired. Please resend and try again.",
+      "otp_expired_confirm": "Confirm (Resend)"
     },
     "academic_verify_finish": {
       "success": {
@@ -186,7 +189,9 @@
     "register_completed": {
       "desc": "Registration completed!",
       "complete": "Complete",
-      "contribution": "Contribution"
+      "contribution": "Contribution",
+      "btn_confirm": "Confirm",
+      "btn_academic_verification": "University Verification"
     },
     "new_password": {
       "title": "Please enter your\nnew password.",

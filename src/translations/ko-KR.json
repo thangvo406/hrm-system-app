@@ -96,7 +96,10 @@
       "submit": "인증하기",
       "time_remaining": "남은시간 {{seconds}}초",
       "resend_email": "인증 메일 재발송",
-      "re_enter_email": "이메일 다시 입력"
+      "re_enter_email": "이메일 다시 입력",
+      "otp_expired_title": "인증번호가 만료되었습니다",
+      "otp_expired_desc": "인증번호 유효시간(5분)이 지났습니다. 재발송 후 다시 시도해주세요.",
+      "otp_expired_confirm": "확인 (재발송)"
     },
     "academic_verify_finish": {
       "success": {
@@ -119,7 +122,9 @@
     "register_completed": {
       "desc": "가입이 완료되었습니다!",
       "complete": "완료",
-      "contribution": "출자금 납부"
+      "contribution": "출자금 납부",
+      "btn_confirm": "확인",
+      "btn_academic_verification": "대학인증"
     },
     "new_password": {
       "title": "새로운 비밀번호를\n입력해 주세요.",

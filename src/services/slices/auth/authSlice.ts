@@ -1,7 +1,10 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 import { createSlice } from '@reduxjs/toolkit';
-import type { ISelectSchoolRequest } from '@type/auth';
+import type {
+  IConfirmMembershipVerification,
+  ISelectSchoolRequest,
+} from '@type/auth';
 
 export type AuthState = {
   accessToken: string | undefined;
@@ -78,11 +81,15 @@ export type SubmitForgotPassPayload = {
   resetToken: string;
 } & AuthCallback;
 
-export type MemberShipVerifyPayload = {
+export type SendOtpVerifyMembershipPayload = {
   membershipType?: string;
   signupToken?: string;
+  universityId?: number;
   universityEmail?: string;
 } & AuthCallback;
+
+export type ConfirmMemberShipVerifyPayload = AuthCallback &
+  IConfirmMembershipVerification;
 
 export type SelectSchoolSuccessPayload = {
   universityId: number;
@@ -162,8 +169,12 @@ const authSlice = createSlice({
       prepare: (payload: SubmitForgotPassPayload) => ({ payload }),
       reducer: () => {},
     },
-    memberShipVerifyRequest: {
-      prepare: (payload: MemberShipVerifyPayload) => ({ payload }),
+    sendOtpVerifyMembershipRequest: {
+      prepare: (payload: SendOtpVerifyMembershipPayload) => ({ payload }),
+      reducer: () => {},
+    },
+    confirmMemberShipVerifyRequest: {
+      prepare: (payload: ConfirmMemberShipVerifyPayload) => ({ payload }),
       reducer: () => {},
     },
     // Persist the user's selected university on the session.
@@ -196,12 +207,13 @@ export const {
   authFailure,
   authSuccess,
   clearCredentials,
+  confirmMemberShipVerifyRequest,
   getUniversitiesRequest,
   loginRequest,
   loginSocialRequest,
   logout,
   logoutSuccess,
-  memberShipVerifyRequest,
+  sendOtpVerifyMembershipRequest,
   refreshTokenRequest,
   registerUserRequest,
   selectSchoolRequest,

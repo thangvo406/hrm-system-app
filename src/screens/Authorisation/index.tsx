@@ -38,46 +38,38 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     onForgotPassword,
   } = useAuthorization();
 
-  const detailProps = {
-    agreed: register.agreed,
-    carrier: register.carrier,
-    desc: t('register_completed.desc'),
-    initialTab,
-    loading,
-    loginErrors,
-    loginWithSocial,
-    onClearErrors: () => {
-      clearLoginErrors();
-      register.clearErrors();
-    },
-    onForgotPassword,
-    onGoRegisterForm: register.onGoRegisterForm,
-    onInfoChange: register.onInfoChange,
-    titleBtnPrimary: register.titleRegisterCompletedBtnPrimary,
-    titleBtnSecondary: register.titleRegisterCompletedBtnSecondary,
-    onLoginChange,
-    onPressCarrier: register.onPressCarrier,
-    onPressRequestOtp: register.onPressRequestOtp,
-    onRegisterChange: register.onRegisterChange,
-    onSelectMembership: register.onSelectMembership,
-    onSubmit: register.handleSubmit,
-    onToggleAgreement: register.onToggleAgreement,
-    onPressVerify: register.onPressVerify,
-    onReEnterEmailAcademic: register.onReEnterEmailAcademic,
-    onResendEmailAcademic: register.onResendEmailAcademic,
-    onPressSecondary: register.onPressSelectSchool,
-    onOtpEmailAcademicChanged: register.onOtpEmailAcademicChanged,
-    onBack: register.goBack,
-    showBtnBack: register.needShowBtnBack,
-    registerValues: register.formData.current,
-    mailAcademic: register.mailAcademic,
-    options: register.chooseOptions,
-    registerErrors: register.registerErrors,
-    selectedMembershipId: register.selectedMembershipId,
-    submitLogin,
-    validLogin: isLoginValid,
-    validRegister: register.isRegisterValid,
-  };
+  const {
+    agreed,
+    carrier,
+    chooseOptions,
+    clearErrors,
+    formData,
+    goBack,
+    handleSubmit,
+    isRegisterValid,
+    isVerifiedEmailAcademic,
+    mailAcademic,
+    needShowBtnBack,
+    onGoRegisterForm,
+    onInfoChange,
+    onPressCarrier,
+    onPressRequestOtp,
+    onPressSelectSchool,
+    onPressVerify,
+    onPressVerifyEmailAcademic,
+    onReEnterEmailAcademic,
+    onRegisterChange,
+    onResendEmailAcademic,
+    dataInfoVerifyMembership,
+    onSelectMembership,
+    onToggleAgreement,
+    onOTPEmailAcademicExpired,
+    registerErrors,
+    selectedMembershipId,
+    step,
+    titleRegisterCompletedBtnPrimary,
+    titleRegisterCompletedBtnSecondary,
+  } = register;
 
   const DetailComponent = useMemo(() => {
     const screens: Record<AuthStep, ComponentType<any>> = {
@@ -92,12 +84,55 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
       verified_info: RegisterCompleted,
       choose_school: SchoolSelection,
     };
-    return screens[register.step];
-  }, [register.step]);
+    return screens[step];
+  }, [step]);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
-      <DetailComponent {...detailProps} />
+      <DetailComponent
+        agreed={agreed}
+        carrier={carrier}
+        desc={t('register_completed.desc')}
+        initialTab={initialTab}
+        isVerifiedEmailAcademic={isVerifiedEmailAcademic}
+        loading={loading}
+        loginErrors={loginErrors}
+        loginWithSocial={loginWithSocial}
+        mailAcademic={mailAcademic}
+        onBack={goBack}
+        onClearErrors={() => {
+          clearLoginErrors();
+          clearErrors();
+        }}
+        onOTPEmailAcademicExpired={onOTPEmailAcademicExpired}
+        dataVerifiedMembership={dataInfoVerifyMembership}
+        onForgotPassword={onForgotPassword}
+        onGoRegisterForm={onGoRegisterForm}
+        onInfoChange={onInfoChange}
+        onLoginChange={onLoginChange}
+        onPressCarrier={onPressCarrier}
+        onPressRequestOtp={onPressRequestOtp}
+        onPressSecondary={onPressSelectSchool}
+        onPressVerify={onPressVerify}
+        onPressVerifyEmailAcademic={onPressVerifyEmailAcademic}
+        onReEnterEmailAcademic={onReEnterEmailAcademic}
+        onRegisterChange={onRegisterChange}
+        onResendEmailAcademic={onResendEmailAcademic}
+        onSelectMembership={onSelectMembership}
+        onSubmit={handleSubmit}
+        onToggleAgreement={onToggleAgreement}
+        options={chooseOptions}
+        registerErrors={registerErrors}
+        registerValues={formData.current}
+        selectedMembershipId={selectedMembershipId}
+        showBtnBack={needShowBtnBack}
+        submitLogin={submitLogin}
+        titleBtnPrimary={titleRegisterCompletedBtnPrimary}
+        titleBtnSecondary={titleRegisterCompletedBtnSecondary}
+        topHeader={1}
+        validLogin={isLoginValid}
+        validRegister={isRegisterValid}
+      />
     </View>
   );
 }
