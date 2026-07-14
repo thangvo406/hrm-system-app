@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { ScaleSize } from '@kits/core';
 import type { IResponseUniversity } from '@type/auth';
 import { useSchoolSelection } from '@hooks';
@@ -18,7 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppNavigator from '@navigation/AppNavigator';
 import { DeviceUtils } from '@kits/core/utils';
 const { ifIPadOrTablet } = DeviceUtils;
-const LOGO_SIZE = 56;
+const LOGO_SIZE = ScaleSize(56);
 const NUM_COLUMNS = 3;
 const PRIMARY_COLOR = '#5BB85C';
 const TEXT_COLOR = '#1A1A1A';
@@ -35,6 +35,7 @@ const UniversityItem = React.memo(function UniversityItem({
   readonly isSelected: boolean;
   readonly onPress: (item: IResponseUniversity) => void;
 }) {
+  const [logo, setLogo] = useState(item?.logo);
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -43,11 +44,16 @@ const UniversityItem = React.memo(function UniversityItem({
       testID={`school-selection-item-${item.id}`}
     >
       <View style={styles.logoWrapper}>
-        {item.logoUrl ? (
+        {logo ? (
           <Image
             resizeMode="contain"
             style={styles.logoImage}
-            url={item.logoUrl}
+            width={LOGO_SIZE}
+            height={LOGO_SIZE}
+            onError={() => {
+              setLogo(null);
+            }}
+            url={logo?.fileUrl}
           />
         ) : (
           <View style={styles.logoFallback}>

@@ -17,6 +17,7 @@ type ImageSvgProps = {
   readonly type: 'svg';
   readonly url?: never;
   readonly width?: number;
+  readonly onError?: () => void;
 } & SvgProps;
 
 type ImageLocalProps = {
@@ -27,6 +28,7 @@ type ImageLocalProps = {
   readonly type?: 'image';
   readonly url?: never;
   readonly width?: number;
+  readonly onError?: () => void;
 } & Omit<FastImageProps, 'resizeMode' | 'source'>;
 
 type ImageUrlProps = {
@@ -37,6 +39,7 @@ type ImageUrlProps = {
   readonly type?: 'image';
   readonly url: string;
   readonly width?: number | string;
+  readonly onError?: () => void;
 } & Omit<FastImageProps, 'resizeMode' | 'source'>;
 
 type Properties = ImageSvgProps | ImageLocalProps | ImageUrlProps;
@@ -50,6 +53,7 @@ function Image(props: Properties) {
     type,
     url,
     width,
+    onError,
     ...rest
   } = props || {};
   const [urlPathImage, setUrlPathImage] = useState(url);
@@ -68,6 +72,7 @@ function Image(props: Properties) {
           if (imageName) {
             setUrlPathImage('');
           }
+          onError?.();
         }}
         resizeMode={resizeMode}
         source={{ uri: url }}

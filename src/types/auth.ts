@@ -1,10 +1,10 @@
-import { AppCallback } from './common';
+import { AppCallback, IImage } from './common';
 
 export type IResponseUniversity = {
   id: number;
   name: string;
   address: string;
-  logoUrl: string;
+  logo: IImage;
   code: string;
 };
 export type IResponseRegisterVerifyOtp = {

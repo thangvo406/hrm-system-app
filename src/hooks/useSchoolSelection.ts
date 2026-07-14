@@ -48,6 +48,7 @@ export const useSchoolSelection = ({ onSubmit }: any) => {
   useEffect(() => {
     currentPage.current = 0;
     isLast.current = false;
+    isLoadingMore.current = true;
     fetchUniversities(true);
   }, [deferredKeyword]);
 
