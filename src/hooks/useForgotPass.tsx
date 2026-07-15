@@ -27,6 +27,10 @@ const FORGOT_STEP: Record<string, ForgotStep> = {
   REGISTER_INPUT: 'register_input',
 };
 
+const onBack = () => {
+  AppNavigator.goBack();
+};
+
 const onSubmitRegisterCompleted = () => {
   AppNavigator.reset(Paths.Authorization);
 };
@@ -159,6 +163,7 @@ export const useForgotPass = () => {
     step,
     // disabled = false,
     errorMessage,
+    onBack,
     onInfoChange,
     onPressVerify,
     onPressCarrier,

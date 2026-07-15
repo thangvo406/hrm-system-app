@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import type { TextInput } from 'react-native';
 import {
   Keyboard,
-  KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
@@ -13,6 +12,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  Animated,
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { ScaleSize } from '@kits/core';
@@ -21,7 +21,7 @@ import AppNavigator from '@navigation/AppNavigator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '@constants';
 import { formatPhoneNumber } from '@utils/common';
-const { ifIPadOrTablet, ifAndroid } = DeviceUtils;
+const { ifIPadOrTablet, isIPadOrTablet, ifAndroid } = DeviceUtils;
 
 const BACK_ICON_SIZE = ScaleSize(24);
 const ICON_CHEVRON_SIZE = ScaleSize(18);
@@ -126,6 +126,8 @@ function InputInfo({
   const verifiedOtp = useRef(false);
   const [enableBtnSubmit, setEnableBtnSubmit] = useState(false);
   const insset = useSafeAreaInsets();
+  const keyboardOffset = useRef(new Animated.Value(0)).current;
+
   const fieldReferences: Record<
     keyof InputInfoValues,
     React.RefObject<TextInput | null>
@@ -141,6 +143,40 @@ function InputInfo({
       otpReference.current?.focus();
     }
   }, [otpSent]);
+
+  useEffect(() => {
+    if (isIPadOrTablet()) {
+      return;
+    }
+    const showEvent =
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent =
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const onShow = () => {
+      Animated.timing(keyboardOffset, {
+        toValue: -ScaleSize(100),
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const onHide = () => {
+      Animated.timing(keyboardOffset, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const showSub = Keyboard.addListener(showEvent, onShow);
+    const hideSub = Keyboard.addListener(hideEvent, onHide);
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   useEffect(() => {
     setEnableBtnSubmit(verifiedOtp.current ? agreed : false);
@@ -241,9 +277,8 @@ function InputInfo({
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.flex}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardArea}
+        <Animated.View
+          style={[{ flex: 1, transform: [{ translateY: keyboardOffset }] }]}
         >
           <RegisterHeader showBtnBack onBack={onBack} />
           <ScrollView
@@ -462,7 +497,7 @@ function InputInfo({
               <Text style={styles.warning}>{t('register_flow.warning')}</Text>
             </View>
           </ScrollView>
-        </KeyboardAvoidingView>
+        </Animated.View>
         <View
           style={[
             styles.footer,

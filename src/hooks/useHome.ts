@@ -1,5 +1,9 @@
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
-import { AccountSelector, StoresSelector } from '@services/selectors';
+import {
+  AccountSelector,
+  AuthSelector,
+  StoresSelector,
+} from '@services/selectors';
 import { Paths } from '@navigation/paths';
 import AppNavigator from '@navigation/AppNavigator';
 import useNotification from './useNotification';
@@ -18,7 +22,7 @@ import { getCurrentWalletRequest } from '@services/slices/account/accountSlice';
 import { getStoreOrderRecentRequest } from '@services/slices/stores/storesSlice';
 import { AppStorage } from '@services/common/storage';
 import { AppConstants } from '@constants';
-// import Address from '@screens/Address';
+import SocketService from '@services/common/webSocket';
 
 export type UseHome = ReturnType<typeof useHome>;
 
@@ -58,6 +62,7 @@ export const useHome = () => {
   const profile = useAppSelector(AccountSelector.getProfile);
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const storeOrderRecent = useAppSelector(StoresSelector.getStoreOrderRecent);
+  const accessToken = useAppSelector(AuthSelector.getAccessToken);
   useNotification();
   const dispatch = useAppDispatch();
 
@@ -70,6 +75,14 @@ export const useHome = () => {
       profile?.registrationStatus == 'COMPLETED'
     );
   }, [profile]);
+
+  useEffect(() => {
+    if (!accessToken) return;
+    SocketService.connect(accessToken);
+    return () => {
+      SocketService.disconnect();
+    };
+  }, [accessToken]);
 
   const onGoToProduct = (productId: number) => {
     AppNavigator.navigate(Paths.ProductDetail, {

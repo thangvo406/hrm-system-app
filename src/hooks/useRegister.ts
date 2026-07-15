@@ -216,6 +216,12 @@ export const useRegister = () => {
           dataInfoVerifyMembership.current = response;
           setVerifiedEmailAcademic(true);
         },
+        onFailure: error => {
+          AppNavigator.showSnackBar({
+            message: error,
+            type: 'failed',
+          });
+        },
       }),
     );
   };

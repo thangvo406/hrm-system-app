@@ -19,6 +19,7 @@ function ForgotPass() {
     onSubmit,
     onToggleAgreement,
     step,
+    onBack,
     onPressVerify,
   } = useForgotPass();
 
@@ -32,6 +33,7 @@ function ForgotPass() {
     onPressCarrier,
     onPressRequestOtp,
     onSubmit,
+    onBack,
     onToggleAgreement,
     onPressVerify,
     titleRegisterInfoKey: 'forgot_password.title_register_info',
