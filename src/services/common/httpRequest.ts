@@ -5,6 +5,8 @@ import { instance } from '@services/common/instance';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
 import { DeviceUtils } from '@kits/core/utils';
+import { ApiLanguages } from '@hooks/language/schema';
+import i18next from 'i18next';
 
 type RequestOptions = {
   // Số lần thử lại khi gặp lỗi network. 0 = không retry.
@@ -14,6 +16,11 @@ type RequestOptions = {
   // Khi true, tự động show loading dialog trước request và hide loading
   // sau khi request hoàn tất (return hoặc throw).
   loading?: boolean;
+  // Khi true, show popup NetworkError khi request thất bại vì lỗi mạng
+  // (sau khi đã hết retry) hoặc lỗi server 5xx. User bấm Try Again → gửi
+  // lại request, đóng popup → throw lỗi gốc. Pass false cho các call ngầm
+  // không cần popup.
+  networkErrorPopup?: boolean;
 } & AxiosRequestConfig;
 
 const DEFAULT_RETRY = 0;
@@ -35,6 +42,7 @@ const DEVICE_HEADERS = {
   'x-device-systemVersion': DeviceInfo.getSystemVersion(),
   'x-device-deviceId': DeviceUtils.getDeviceId(),
   'x-device-manufacturer': deviceManufacturer,
+  'accept-language': ApiLanguages[i18next.language as any],
 };
 
 const delay = (ms: number) =>
@@ -47,11 +55,45 @@ const delay = (ms: number) =>
 const isNetworkError = (error: unknown): boolean =>
   axios.isAxiosError(error) && error.response === undefined;
 
+// Lỗi server (status >= 500): về mặt UX coi như lỗi kết nối — cũng show
+// popup NetworkError. Chỉ ảnh hưởng việc show popup, không ảnh hưởng
+// option `retry` (vẫn chỉ auto-retry lỗi network thật).
+const MIN_SERVER_ERROR_STATUS = 500;
+const isServerError = (error: unknown): boolean =>
+  axios.isAxiosError(error) &&
+  (error.response?.status ?? 0) >= MIN_SERVER_ERROR_STATUS;
+
+// Single-flight: nhiều request cùng thất bại vì lỗi mạng chỉ show 1 popup
+// NetworkError; tất cả cùng chờ chung lựa chọn của user. Resolve true khi
+// user bấm Try Again, false khi popup bị đóng bằng cách khác.
+let networkErrorPrompt: Promise<boolean> | undefined;
+
+const promptNetworkRetry = (): Promise<boolean> => {
+  networkErrorPrompt ??= new Promise<boolean>(resolve => {
+    let shouldRetry = false;
+    AppNavigator.showDialogNetworkError({
+      callback: () => {
+        shouldRetry = true;
+      },
+      onDismiss: () => {
+        networkErrorPrompt = undefined;
+        resolve(shouldRetry);
+      },
+    });
+  });
+  return networkErrorPrompt;
+};
+
 const request = async <T>(
   config: AxiosRequestConfig,
-  options: { loading: boolean; retry: number; retryDelay: number },
+  options: {
+    loading: boolean;
+    networkErrorPopup: boolean;
+    retry: number;
+    retryDelay: number;
+  },
 ): Promise<T> => {
-  const { loading, retry, retryDelay } = options;
+  const { loading, networkErrorPopup, retry, retryDelay } = options;
   // Called from both the success and final-error paths so the dialog
   // dismisses BEFORE the return/throw. `hideLoading` returns a Promise
   // that resolves after the dialog system's hide-debounce; we don't await
@@ -82,12 +124,23 @@ const request = async <T>(
       await dismissLoading();
       return response.data;
     } catch (error) {
-      if (attempt >= retry || !isNetworkError(error)) {
-        await dismissLoading();
+      const networkError = isNetworkError(error);
+      if (networkError && attempt < retry) {
+        attempt += 1;
+        await delay(retryDelay);
+        continue;
+      }
+      await dismissLoading();
+      const showPopup =
+        networkErrorPopup && (networkError || isServerError(error));
+      if (!showPopup || !(await promptNetworkRetry())) {
         throw error;
       }
-      attempt += 1;
-      await delay(retryDelay);
+      // User bấm Try Again: chạy lại từ đầu với đủ retry budget.
+      attempt = 0;
+      if (loading) {
+        AppNavigator.showLoading();
+      }
     }
   }
 };
@@ -95,11 +148,12 @@ const request = async <T>(
 const buildOptions = (options: RequestOptions) => {
   const {
     loading = true,
+    networkErrorPopup = true,
     retry = DEFAULT_RETRY,
     retryDelay = DEFAULT_RETRY_DELAY,
     ...config
   } = options;
-  return { config, loading, retry, retryDelay };
+  return { config, loading, networkErrorPopup, retry, retryDelay };
 };
 
 export const httpRequest = {

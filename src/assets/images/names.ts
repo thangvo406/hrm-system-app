@@ -16,6 +16,7 @@ const imageNames = {
   ic_logout_white: 'ic_logout_white',
   ic_map_gray: 'ic_map_gray',
   ic_mega_phone: 'ic_mega_phone',
+  ic_network_error: 'ic_network_error',
   ic_outlet_close_white: 'ic_outlet_close_white',
   ic_package: 'ic_package',
   ic_phone: 'ic_phone',

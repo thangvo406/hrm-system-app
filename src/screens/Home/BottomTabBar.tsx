@@ -45,7 +45,12 @@ type TabItem = {
 
 const TABS: readonly TabItem[] = [
   { icon: 'ic_home', key: Paths.Home, labelKey: 'home.tab_home' },
-  { icon: 'ic_cart', isCart: true, key: Paths.Carts, labelKey: 'home.tab_order' },
+  {
+    icon: 'ic_cart',
+    isCart: true,
+    key: Paths.Carts,
+    labelKey: 'home.tab_order',
+  },
   {
     icon: 'ic_wallet',
     isCenter: true,
@@ -100,7 +105,7 @@ function BottomTabBar({ insets, navigation, state }: BottomTabBarProps) {
       onLayout={handleContainerLayout}
       style={[
         styles.container,
-        { paddingBottom: ifAndroid(16, insets.bottom + 8) },
+        // { paddingBottom: ifAndroid(16, insets.bottom + 8) },
       ]}
     >
       {/* Animated indicator line at the top of the active tab */}
@@ -134,14 +139,17 @@ function BottomTabBar({ insets, navigation, state }: BottomTabBarProps) {
             key={tab.key}
             activeOpacity={0.75}
             onPress={() => handlePress(tab.key)}
-            style={styles.tabItem}
+            style={[
+              styles.tabItem,
+              { paddingBottom: ifAndroid(16, insets.bottom + 8) },
+            ]}
             testID={`bottom-tab-${tab.key}`}
           >
             <View
               style={isCenter ? styles.iconWrapperCenter : styles.iconWrapper}
             >
-              {!isCenter && (
-                isCart ? (
+              {!isCenter &&
+                (isCart ? (
                   <CartTabIcon color={iconColor} size={TAB_ICON_SIZE} />
                 ) : (
                   <Image
@@ -151,8 +159,7 @@ function BottomTabBar({ insets, navigation, state }: BottomTabBarProps) {
                     type="svg"
                     width={TAB_ICON_SIZE}
                   />
-                )
-              )}
+                ))}
             </View>
             <Text
               style={[
@@ -233,6 +240,5 @@ const styles = StyleSheet.create({
   tabItem: {
     alignItems: 'center',
     flex: 1,
-    paddingBottom: ScaleSize(2),
   },
 });

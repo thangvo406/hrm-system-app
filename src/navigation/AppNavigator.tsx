@@ -6,6 +6,7 @@ import { CommonActions, StackActions } from '@react-navigation/native';
 // import Information from '@dialogs/Information';
 // import { CrashlyticsUtils } from '@utils';
 import type { DialogHandle } from '@screens/Dialog/types';
+import NetworkError from '@dialogs/NetworkError';
 import { Keyboard } from 'react-native';
 // import analytics from '@react-native-firebase/analytics';
 // import ForceUpdate from '@dialogs/ForceUpdate';
@@ -234,24 +235,13 @@ function showDialogErrorOpenPhoto() {
   //     ],
   //   });
 }
-function showDialogNetworkError({ callback }: any) {
-  //   showDialog({
-  //     screen: Information,
-  //     popupType: 'dialog',
-  //     isFullScreen: true,
-  //     title: 'common.popup.desc_network_title',
-  //     desc: 'common.popup.desc_network_error',
-  //     needTranslate: true,
-  //     styleContainer,
-  //     buttons: [
-  //       {
-  //         title: 'common.popup.btn_try_again',
-  //         onPress: () => {
-  //           callback?.();
-  //         },
-  //       },
-  //     ],
-  //   });
+function showDialogNetworkError({ callback, onDismiss }: any = {}) {
+  showDialog({
+    screen: NetworkError,
+    popupType: 'dialog',
+    onRetry: callback,
+    onDismiss,
+  });
 }
 
 function onTrackScreenChange() {

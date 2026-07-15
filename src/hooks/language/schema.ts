@@ -5,6 +5,11 @@ export const enum SupportedLanguages {
   KO_KR = 'ko-KR',
 }
 
+export const ApiLanguages = {
+  [SupportedLanguages.EN_EN]: 'en',
+  [SupportedLanguages.KO_KR]: 'ko',
+};
+
 export const languageSchema = z.enum([
   SupportedLanguages.EN_EN,
   SupportedLanguages.KO_KR,
