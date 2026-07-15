@@ -517,6 +517,44 @@
       "status": "Status",
       "status_processing": "처리 중",
       "confirm": "Confirm"
+    },
+    "inactive_account": {
+      "title": "Inactive Account Notice",
+      "dormant_title": "Dormant Account Notice",
+      "dormant_desc": "Your account has been marked as dormant after more than one year of inactivity",
+      "info_title": "Dormant Account Information",
+      "last_login_date": "Last Login Date",
+      "dormant_date": "Dormant Date",
+      "archived_info": "Archived Information",
+      "expired_info": "Expired Information",
+      "reactivation_title": "Account Reactivation",
+      "reactivation_desc": "You can immediately reactivate your account through identity verification.",
+      "reactivation_note": "Your points and benefits will be retained.",
+      "reactivate_button": "Reactivate Account After Identity Verification",
+      "delete_button": "Delete Account"
+    },
+    "deletion_account": {
+      "title": "Account Deletion",
+      "confirm_question": "Are you sure you want to delete this account?",
+      "info_title": "Information to Be Deleted",
+      "info_account": "Account information (Name, Email Address, Phone Number)",
+      "info_points": "Available Points and Benefits",
+      "info_orders": "Order History and Payment Details",
+      "info_membership": "Co-op Membership Information",
+      "notice_title": "Important Information Before Deleting Your Account",
+      "notice_line1": "Your capital contribution requires a separate refund request.",
+      "notice_line2": "You cannot re-register for 30 days after deleting your account.",
+      "reason_title": "Delete Reason (Choose)",
+      "reason_dissatisfaction": "Service Dissatisfaction",
+      "reason_rarely_use": "Rarely Use the Service",
+      "reason_privacy": "Privacy Protection",
+      "reason_other": "Other",
+      "delete_button": "Delete Account"
+    },
+    "network_error": {
+      "title": "Network Error",
+      "desc": "Unable to connect to the internet.\nPlease check your network connection and try again.",
+      "retry_button": "Try Again"
     }
   }
 }

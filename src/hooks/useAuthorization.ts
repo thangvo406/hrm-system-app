@@ -26,6 +26,8 @@ import NaverLogin from '@react-native-seoul/naver-login';
 import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
 import { AuthResponse } from '@services/request/auth';
 import { MEMBERSHIP_TYPE } from '@constants/config';
+// import InActiveAccount from '@dialogs/InActiveAccount';
+// import DeletionAccount from '@dialogs/DeletionAccount';
 
 const { STEP, NEED_INFO_LOGIN_CODE, initialLoginForm } = AppConstants;
 export type { AuthStep, RegisterErrors } from './useRegister';
@@ -222,6 +224,22 @@ export const useAuthorization = () => {
     setLoginErrors(errors);
     if (Object.keys(errors).length > 0) return;
 
+    // AppNavigator.showDialog({
+    //   screen: InActiveAccount,
+    //   isFullScreen: true,
+    //   archivedInformation:
+    //     'Personal infor, 포인트 Personal infor, 포인트 Personal infor, 포인트',
+    //   dormantDate: '2025.06.30',
+    //   expiredInformation: 'None',
+    //   lastLoginDate: '2025.06.30',
+    //   onDeleteAccount: () => {
+    //     AppNavigator.showDialog({
+    //       screen: DeletionAccount,
+    //       isFullScreen: true,
+    //     });
+    //   },
+    // });
+    // return;
     setLoading(true);
     dispatch(
       loginRequest({

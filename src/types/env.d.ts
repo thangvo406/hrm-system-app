@@ -16,6 +16,7 @@ declare module 'react-native-config' {
     URL_GET_ADDRESS?: string;
     GET_ADDRESS_KEY?: string;
     ONE_SIGNAL_ID?: string;
+    SOCKET_URL?: string;
   };
 
   const Config: NativeConfig;
