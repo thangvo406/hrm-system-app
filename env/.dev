@@ -1,4 +1,5 @@
 BASE_URL=https://coop-mobile-dev.specominc.com/
+SOCKET_URL=wss://coop-mobile-dev.specominc.com/ws
 APP_NAME=Coop Test
 APP_ID=com.coop_use
 APP_IOS_ID=com.coopuse.dev

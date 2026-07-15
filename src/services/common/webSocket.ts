@@ -1,3 +1,4 @@
+import { Environment } from '@constants';
 import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
 
 class WebSocketService {
@@ -16,7 +17,7 @@ class WebSocketService {
       // official stomp-js workaround for React Native.
       appendMissingNULLonIncoming: true,
       forceBinaryWSFrames: true,
-      brokerURL: 'wss://coop-mobile-dev.specominc.com/ws',
+      brokerURL: Environment.SOCKET_URL,
       connectHeaders: {
         Authorization: `Bearer ${token}`,
       },
