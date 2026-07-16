@@ -7,6 +7,10 @@ export interface IRequestAutoCompleteAddress
   readonly query: string;
 }
 
+export interface IRequestUpdatePassword extends AppCallback {
+  currentPassword: string;
+  newPassword: string;
+}
 export interface IRequestUpdateMembership extends AppCallback {
   membershipType: string;
 }

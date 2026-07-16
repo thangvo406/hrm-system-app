@@ -10,6 +10,7 @@ import type { TotalItemCart } from '@type/payment';
 import type {
   IRequestAutoCompleteAddress,
   IRequestUpdateMembership,
+  IRequestUpdatePassword,
   IRequestUpdatePushId,
 } from '@type/account';
 import type { AuthCallback, IRequestDeleteAccount } from '@type/auth';
@@ -85,6 +86,10 @@ const accountSlice = createSlice({
       prepare: (payload: IRequestUpdateMembership) => ({ payload }),
       reducer: () => {},
     },
+    updatePasswordRequest: {
+      prepare: (payload: IRequestUpdatePassword) => ({ payload }),
+      reducer: () => {},
+    },
     updatePushIdRequest: {
       prepare: (payload: IRequestUpdatePushId) => ({ payload }),
       reducer: (state, action: PayloadAction<IRequestUpdatePushId>) => {
@@ -108,6 +113,7 @@ export const {
   getContributeHistoriesRequest,
   topUpWalletRequest,
   updateMembershipRequest,
+  updatePasswordRequest,
   updatePushIdRequest,
 } = accountSlice.actions;
 

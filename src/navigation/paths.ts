@@ -31,6 +31,7 @@ export enum Paths {
   Survey = 'survey',
   SurveyDetail = 'survey_detail',
   TopUp = 'top_up',
+  UpdatePass = 'update_pass',
   Vouchers = 'vouchers',
   Welcome = 'welcome',
 }

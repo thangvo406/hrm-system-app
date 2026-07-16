@@ -4,6 +4,7 @@ import type { AddressSuggestion } from '@services/request/account';
 import type {
   IRequestAutoCompleteAddress,
   IRequestUpdateMembership,
+  IRequestUpdatePassword,
   IRequestUpdatePushId,
 } from '@type/account';
 import type {
@@ -23,6 +24,7 @@ import {
   deleteAccount,
   getProfile,
   updateMembership,
+  updatePassword,
   updatePushId,
 } from '@services/request/account';
 import {
@@ -47,6 +49,7 @@ import {
   getContributeHistoriesRequest,
   topUpWalletRequest,
   updateMembershipRequest,
+  updatePasswordRequest,
   updatePushIdRequest,
 } from './accountSlice';
 import { AccountSelector } from '@services/selectors';
@@ -127,6 +130,19 @@ function* updateMembershipWorker(
   }
 }
 
+function* updatePasswordWorker(
+  action: PayloadAction<IRequestUpdatePassword>,
+) {
+  const { onSuccess, onFailure, ...request } = action.payload;
+  try {
+    yield call(updatePassword, request);
+    onSuccess?.();
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 function* getCurrentWalletWorker(
   action: PayloadAction<AppCallback<Wallet>>,
 ): Generator<unknown, void, Wallet> {
@@ -193,6 +209,7 @@ export function* accountSaga() {
   yield takeLatest(getTotalItemCartRequest.type, getTotalItemCartWorker);
   yield takeLatest(getProfileRequest.type, getProfileWorker);
   yield takeLatest(updateMembershipRequest.type, updateMembershipWorker);
+  yield takeLatest(updatePasswordRequest.type, updatePasswordWorker);
   yield takeLatest(updatePushIdRequest.type, updatePushIdWorker);
   yield takeLatest(getCurrentWalletRequest.type, getCurrentWalletWorker);
   yield takeLatest(

@@ -167,7 +167,8 @@
       "placeholder_name": "홍길동",
       "placeholder_email": "hong@univ.ac.kr",
       "placeholder_phone": "010-0000-0000",
-      "save": "저장하기"
+      "save": "저장하기",
+      "change_pass": "비밀번호 변경"
     },
     "home": {
       "greeting": "반가워요!",

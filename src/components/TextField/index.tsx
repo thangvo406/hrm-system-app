@@ -30,7 +30,7 @@ type TextFieldProps = {
   readonly keyboardType?: KeyboardTypeOptions;
   readonly label?: string;
   readonly onChangeText: (text: string) => void;
-  readonly renderRightComponent: () => JSX.Element;
+  readonly renderRightComponent?: () => JSX.Element;
   readonly onSubmitEditing?: TextInputProps['onSubmitEditing'];
   readonly placeholder: string;
   readonly ref?: Ref<TextInput>;
@@ -60,8 +60,8 @@ function TextField({
   submitBehavior = undefined,
   testID = undefined,
   renderRightComponent = undefined,
-  value,
-  containerStyle,
+  value = undefined,
+  containerStyle = undefined,
   ...textInputProps
 }: TextFieldProps) {
   const [secure, setSecure] = useState(secureTextEntry);

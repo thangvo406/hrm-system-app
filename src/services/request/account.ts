@@ -3,6 +3,7 @@ import type { IRequestActiveAccount, IRequestDeleteAccount } from '@type/auth';
 import type {
   IRequestAutoCompleteAddress,
   IRequestUpdateMembership,
+  IRequestUpdatePassword,
   IRequestUpdatePushId,
 } from '@type/account';
 
@@ -57,6 +58,12 @@ export const activeAccount = async (
   request: IRequestActiveAccount,
 ): Promise<void> => {
   await httpRequest.post(EndPoints.ACCOUNT.activeAccount, request);
+};
+
+export const updatePassword = async (
+  request: IRequestUpdatePassword,
+): Promise<void> => {
+  await httpRequest.put(EndPoints.ACCOUNT.changePass, request);
 };
 
 export const autoCompleteAddress = async (

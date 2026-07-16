@@ -13,6 +13,8 @@ import { useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { Colors } from '@constants';
 import { formatPhoneNumber } from '@utils/common';
+import AppNavigator from '@navigation/AppNavigator';
+import { Paths } from '@navigation/paths';
 
 const AVATAR_SIZE = ScaleSize(72 + 25);
 const AVATAR_ICON_SIZE = ScaleSize(48);
@@ -35,6 +37,10 @@ function Profile() {
 
   const onPressSave = useCallback(() => {
     // TODO: dispatch update profile action
+  }, []);
+
+  const onPressChangePass = useCallback(() => {
+    AppNavigator.navigate(Paths.UpdatePass);
   }, []);
 
   return (
@@ -103,6 +109,14 @@ function Profile() {
           title={t('profile.save')}
           type="rounded"
           onPress={onPressSave}
+        />
+        <Button
+          title={t('profile.change_pass')}
+          type="rounded"
+          style={{
+            marginTop: ScaleSize(12),
+          }}
+          onPress={onPressChangePass}
         />
       </View>
     </View>

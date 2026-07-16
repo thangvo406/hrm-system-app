@@ -33,6 +33,7 @@ export const EndPoints = {
     updatePushId: 'notification/push-subscription',
     deleteAccount: 'user/delete',
     activeAccount: 'activeAccount',
+    changePass: 'user/change-password',
   },
   NOTIFICATIONS: {
     list: (request: string) => `notification?${request}`,

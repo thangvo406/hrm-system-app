@@ -234,7 +234,8 @@
       "placeholder_name": "Hong Gildong",
       "placeholder_email": "hong@univ.ac.kr",
       "placeholder_phone": "010-0000-0000",
-      "save": "Save"
+      "save": "Save",
+      "change_pass": "Change password"
     },
     "home": {
       "greeting": "Nice to meet you!",
