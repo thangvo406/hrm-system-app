@@ -2,7 +2,17 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 
 import { createSlice } from '@reduxjs/toolkit';
 import type {
-  IConfirmMembershipVerification,
+  IRequestConfirmMemberShipVerify,
+  IRequestGetUniversities,
+  IRequestLogin,
+  IRequestLoginSocial,
+  IRequestRegisterUser,
+  IRequestSendOTP,
+  IRequestSendOtpForgotPass,
+  IRequestSendOtpVerifyMembership,
+  IRequestSubmitForgotPass,
+  IRequestVerifyOTP,
+  IRequestVerifyOtpForgotPass,
   ISelectSchoolRequest,
 } from '@type/auth';
 
@@ -16,80 +26,6 @@ export type Credentials = {
   accessToken: string;
   refreshToken?: string;
 };
-
-export type AuthCallback = {
-  onFailure?: (error: string, status?: number) => void;
-  onSuccess?: (data?: any) => void;
-};
-
-export type LoginPayload = {
-  email: string;
-  password: string;
-} & AuthCallback;
-
-export type RegisterUserPayload = {
-  email: string;
-  name: string;
-  password: string;
-} & AuthCallback;
-
-export type SendOTPPayload = {
-  registerToken: string;
-  phone: string;
-} & AuthCallback;
-
-export type LoginSocialPayload = {
-  accessToken?: string;
-  authorizationCode?: string;
-  codeVerifier?: string;
-  idToken?: string;
-  provider: 'GOOGLE' | 'KAKAO' | 'NAVER';
-  redirectUri?: string;
-  state?: string;
-} & AuthCallback;
-export type VerifyOTPPayload = {
-  phoneVerificationToken?: string;
-  phone: string;
-  identityNumber: string;
-  otp: string;
-  termsAgreed: boolean;
-} & AuthCallback;
-
-export type GetUniversitiesPayload = {
-  keyword?: string;
-  page?: number;
-  size?: number;
-} & AuthCallback;
-
-export type SendOtpForgotPassPayload = {
-  identifier: string;
-} & AuthCallback;
-
-export type VerifyOtpForgotPassPayload = {
-  email: string;
-  identityNumber: string;
-  otp: string;
-  phone: string;
-  fullName: string;
-  phoneVerificationToken: string;
-  termsAgreed: boolean;
-} & AuthCallback;
-
-export type SubmitForgotPassPayload = {
-  confirmPassword: string;
-  newPassword: string;
-  resetToken: string;
-} & AuthCallback;
-
-export type SendOtpVerifyMembershipPayload = {
-  membershipType?: string;
-  signupToken?: string;
-  universityId?: number;
-  universityEmail?: string;
-} & AuthCallback;
-
-export type ConfirmMemberShipVerifyPayload = AuthCallback &
-  IConfirmMembershipVerification;
 
 export type SelectSchoolSuccessPayload = {
   universityId: number;
@@ -121,7 +57,7 @@ const authSlice = createSlice({
     logoutSuccess: () => initialState,
     // Triggers the saga; carries the login form values.
     loginRequest: {
-      prepare: (payload: LoginPayload) => ({ payload }),
+      prepare: (payload: IRequestLogin) => ({ payload }),
       reducer: () => {},
     },
     refreshTokenRequest: {
@@ -131,50 +67,50 @@ const authSlice = createSlice({
     // Triggers the saga; carries the social-login token + provider. Shared
     // across Google, Kakao, and Naver — the saga dispatches the same API.
     loginSocialRequest: {
-      prepare: (payload: LoginSocialPayload) => ({ payload }),
+      prepare: (payload: IRequestLoginSocial) => ({ payload }),
       reducer: () => {},
     },
     // Step 1 of multi-step registration.
     registerUserRequest: {
-      prepare: (payload: RegisterUserPayload) => ({ payload }),
+      prepare: (payload: IRequestRegisterUser) => ({ payload }),
       reducer: () => {},
     },
     // Step 2: send OTP to phone.
     sendOTPRequest: {
-      prepare: (payload: SendOTPPayload) => ({ payload }),
+      prepare: (payload: IRequestSendOTP) => ({ payload }),
       reducer: () => {},
     },
     // Step 3: verify OTP.
     verifyOTPRequest: {
-      prepare: (payload: VerifyOTPPayload) => ({ payload }),
+      prepare: (payload: IRequestVerifyOTP) => ({ payload }),
       reducer: () => {},
     },
     // Fetch the list of universities for the school picker.
     getUniversitiesRequest: {
-      prepare: (payload: GetUniversitiesPayload = {}) => ({ payload }),
+      prepare: (payload: IRequestGetUniversities = {}) => ({ payload }),
       reducer: () => {},
     },
     // Forgot-password step 1: send OTP to the user's identifier (email/phone).
     sendOtpForgotPassRequest: {
-      prepare: (payload: SendOtpForgotPassPayload) => ({ payload }),
+      prepare: (payload: IRequestSendOtpForgotPass) => ({ payload }),
       reducer: () => {},
     },
     // Forgot-password step 2: verify the OTP and receive a reset token.
     verifyOtpForgotPassRequest: {
-      prepare: (payload: VerifyOtpForgotPassPayload) => ({ payload }),
+      prepare: (payload: IRequestVerifyOtpForgotPass) => ({ payload }),
       reducer: () => {},
     },
     // Forgot-password step 3: submit a new password with the reset token.
     submitForgotPassRequest: {
-      prepare: (payload: SubmitForgotPassPayload) => ({ payload }),
+      prepare: (payload: IRequestSubmitForgotPass) => ({ payload }),
       reducer: () => {},
     },
     sendOtpVerifyMembershipRequest: {
-      prepare: (payload: SendOtpVerifyMembershipPayload) => ({ payload }),
+      prepare: (payload: IRequestSendOtpVerifyMembership) => ({ payload }),
       reducer: () => {},
     },
     confirmMemberShipVerifyRequest: {
-      prepare: (payload: ConfirmMemberShipVerifyPayload) => ({ payload }),
+      prepare: (payload: IRequestConfirmMemberShipVerify) => ({ payload }),
       reducer: () => {},
     },
     // Persist the user's selected university on the session.

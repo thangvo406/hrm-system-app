@@ -1,4 +1,9 @@
-import { AppCallback, IImage } from './common';
+import { IImage } from './common';
+
+export interface AuthCallback {
+  onFailure?: (error: string, status?: number) => void;
+  onSuccess?: (data?: any) => void;
+}
 
 export type IResponseUniversity = {
   id: number;
@@ -11,9 +16,9 @@ export type IResponseRegisterVerifyOtp = {
   signupToken: string;
 };
 
-export type ISelectSchoolRequest = {
+export interface ISelectSchoolRequest extends AuthCallback {
   universityId: number;
-} & AppCallback;
+}
 
 export interface IConfirmMembershipVerification {
   otp: string;
@@ -61,3 +66,80 @@ export type IResponseSendOtpVerifyMembership = {
 export type IResponseSubmitForgotPass = {
   success?: boolean;
 };
+
+export interface IRequestLogin extends AuthCallback {
+  email: string;
+  password: string;
+}
+
+export interface IRequestLoginSocial extends AuthCallback {
+  accessToken?: string;
+  authorizationCode?: string;
+  codeVerifier?: string;
+  idToken?: string;
+  provider: 'GOOGLE' | 'KAKAO' | 'NAVER';
+  redirectUri?: string;
+  state?: string;
+}
+
+export interface IRequestRegisterUser extends AuthCallback {
+  email: string;
+  name: string;
+  password: string;
+}
+
+export interface IRequestSendOTP extends AuthCallback {
+  registerToken: string;
+  phone: string;
+}
+
+export interface IRequestVerifyOTP extends AuthCallback {
+  phoneVerificationToken?: string;
+  phone: string;
+  identityNumber: string;
+  otp: string;
+  termsAgreed: boolean;
+}
+
+export interface IRequestGetUniversities extends AuthCallback {
+  keyword?: string;
+  page?: number;
+  size?: number;
+}
+
+export interface IRequestSendOtpForgotPass extends AuthCallback {
+  identifier: string;
+}
+
+export interface IRequestVerifyOtpForgotPass extends AuthCallback {
+  email: string;
+  identityNumber: string;
+  otp: string;
+  phone: string;
+  fullName: string;
+  phoneVerificationToken: string;
+  termsAgreed: boolean;
+}
+
+export interface IRequestSubmitForgotPass extends AuthCallback {
+  confirmPassword: string;
+  newPassword: string;
+  resetToken: string;
+}
+
+export interface IRequestSendOtpVerifyMembership extends AuthCallback {
+  membershipType?: string;
+  signupToken?: string;
+  universityId?: number;
+  universityEmail?: string;
+}
+
+export interface IRequestConfirmMemberShipVerify
+  extends AuthCallback,
+    IConfirmMembershipVerification {}
+
+export interface IRequestDeleteAccount {
+  reason: string;
+}
+// TODO: define request fields when the reactivation API spec is available.
+export type IRequestActiveAccount = Record<string, never>;

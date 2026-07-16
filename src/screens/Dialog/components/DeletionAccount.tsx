@@ -25,7 +25,7 @@ const DELETE_REASONS = [
 type DeleteReason = (typeof DELETE_REASONS)[number];
 
 type Properties = {
-  readonly onDeleteAccount?: (reason?: DeleteReason) => void;
+  readonly onSubmit?: (reason?: DeleteReason) => void;
   readonly onRequestClose?: () => void;
 };
 
@@ -36,7 +36,7 @@ type Properties = {
  * before confirming.
  */
 function DeletionAccount({
-  onDeleteAccount = NOOP,
+  onSubmit = NOOP,
   onRequestClose = NOOP,
 }: Properties) {
   const { t } = useTranslation();
@@ -52,7 +52,7 @@ function DeletionAccount({
   ];
 
   const handleDelete = () => {
-    onDeleteAccount(selectedReason);
+    onSubmit(selectedReason);
   };
 
   return (

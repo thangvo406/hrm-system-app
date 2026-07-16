@@ -23,7 +23,11 @@ import {
 } from '@react-native-google-signin/google-signin';
 import { loginWithKakaoAccount } from '@react-native-seoul/kakao-login';
 import NaverLogin from '@react-native-seoul/naver-login';
-import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
+import {
+  activeAccountRequest,
+  deleteAccountRequest,
+  getTotalItemCartRequest,
+} from '@services/slices/account/accountSlice';
 import { AuthResponse } from '@services/request/auth';
 import { MEMBERSHIP_TYPE } from '@constants/config';
 // import InActiveAccount from '@dialogs/InActiveAccount';
@@ -215,6 +219,30 @@ export const useAuthorization = () => {
     }));
   };
 
+  const onReActiveAccount = (data: any) => {
+    dispatch(
+      activeAccountRequest({
+        onSuccess: () => {
+          /* refresh profile / đóng dialog InActiveAccount */
+        },
+        onFailure: message =>
+          AppNavigator.showSnackBar({ message, type: 'failed' }),
+      }),
+    );
+  };
+
+  const onDeleteAccount = (selectedReason: string) => {
+    dispatch(
+      deleteAccountRequest({
+        reason: selectedReason,
+        onSuccess: () => {
+          /* logout + reset về Auth stack */
+        },
+        onFailure: message =>
+          AppNavigator.showSnackBar({ message, type: 'failed' }),
+      }),
+    );
+  };
   const onForgotPassword = () => {
     navigation.navigate(Paths.ForgotPass);
   };
@@ -232,10 +260,12 @@ export const useAuthorization = () => {
     //   dormantDate: '2025.06.30',
     //   expiredInformation: 'None',
     //   lastLoginDate: '2025.06.30',
+    //   onReActiveAccount,
     //   onDeleteAccount: () => {
     //     AppNavigator.showDialog({
     //       screen: DeletionAccount,
     //       isFullScreen: true,
+    //       onSubmit: onDeleteAccount,
     //     });
     //   },
     // });

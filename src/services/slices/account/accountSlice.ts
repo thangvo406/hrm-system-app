@@ -9,10 +9,18 @@ import type {
   Wallet,
 } from '@type/wallet';
 import type { GetTotalItemCartPayload, TotalItemCart } from '@type/payment';
+import type {
+  IRequestActiveAccount,
+  IRequestDeleteAccount,
+} from '@type/auth';
 
 import { createSlice } from '@reduxjs/toolkit';
 
 import { logoutSuccess } from '@services/slices/auth/authSlice';
+
+export type ActiveAccountPayload = AppCallback & IRequestActiveAccount;
+
+export type DeleteAccountPayload = AppCallback & IRequestDeleteAccount;
 
 export type GetProfilePayload = AppCallback<Profile>;
 
@@ -51,11 +59,19 @@ const accountSlice = createSlice({
   initialState,
   name: 'account',
   reducers: {
+    activeAccountRequest: {
+      prepare: (payload: ActiveAccountPayload = {}) => ({ payload }),
+      reducer: () => {},
+    },
     autoCompleteAddressRequest: {
       prepare: (payload: AutoCompleteAddressPayload) => ({ payload }),
       reducer: () => {},
     },
     clearProfile: () => initialState,
+    deleteAccountRequest: {
+      prepare: (payload: DeleteAccountPayload) => ({ payload }),
+      reducer: () => {},
+    },
     getTotalItemCartRequest: {
       prepare: (payload: GetTotalItemCartPayload = {}) => ({ payload }),
       reducer: () => {},
@@ -98,8 +114,10 @@ const accountSlice = createSlice({
 });
 
 export const {
+  activeAccountRequest,
   autoCompleteAddressRequest,
   clearProfile,
+  deleteAccountRequest,
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
   getProfileRequest,

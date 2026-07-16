@@ -2,7 +2,9 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Profile } from '@services/request/account';
 import type { AddressSuggestion } from '@services/request/account';
 import type {
+  ActiveAccountPayload,
   AutoCompleteAddressPayload,
+  DeleteAccountPayload,
   GetProfilePayload,
   UpdateMembershipPayload,
   UpdatePushIdPayload,
@@ -19,7 +21,9 @@ import type { TransactionHistory } from '@type/wallet';
 import type { GetTotalItemCartPayload, TotalItemCart } from '@type/payment';
 
 import {
+  activeAccount,
   autoCompleteAddress,
+  deleteAccount,
   getProfile,
   updateMembership,
   updatePushId,
@@ -34,7 +38,9 @@ import { call, put, select, takeLatest } from 'redux-saga/effects';
 import { getErrorMessageApi } from '@utils/common';
 
 import {
+  activeAccountRequest,
   autoCompleteAddressRequest,
+  deleteAccountRequest,
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
   getProfileRequest,
@@ -57,6 +63,28 @@ function* getTotalItemCartWorker(
     const data: TotalItemCart = yield call(getTotalItemCart);
     yield put(getTotalItemCartSuccess(data));
     onSuccess?.(data);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* activeAccountWorker(action: PayloadAction<ActiveAccountPayload>) {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    yield call(activeAccount, request);
+    onSuccess?.();
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* deleteAccountWorker(action: PayloadAction<DeleteAccountPayload>) {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    yield call(deleteAccount, request);
+    onSuccess?.();
   } catch (error_) {
     const message = getErrorMessageApi(error_);
     onFailure?.(message);
@@ -162,7 +190,9 @@ function* autoCompleteAddressWorker(
 }
 
 export function* accountSaga() {
+  yield takeLatest(activeAccountRequest.type, activeAccountWorker);
   yield takeLatest(autoCompleteAddressRequest.type, autoCompleteAddressWorker);
+  yield takeLatest(deleteAccountRequest.type, deleteAccountWorker);
   yield takeLatest(getTotalItemCartRequest.type, getTotalItemCartWorker);
   yield takeLatest(getProfileRequest.type, getProfileWorker);
   yield takeLatest(updateMembershipRequest.type, updateMembershipWorker);

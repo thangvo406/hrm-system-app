@@ -31,6 +31,8 @@ export const EndPoints = {
     getProfile: 'user/profile',
     updateMembership: 'user/membership/request',
     updatePushId: 'notification/push-subscription',
+    deleteAccount: 'deleteAccount',
+    activeAccount: 'activeAccount',
   },
   NOTIFICATIONS: {
     list: (request: string) => `notification?${request}`,

@@ -1,18 +1,18 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AuthResponse } from '@services/request/auth';
 import type {
-  ConfirmMemberShipVerifyPayload,
-  GetUniversitiesPayload,
-  LoginPayload,
-  LoginSocialPayload,
-  SendOtpVerifyMembershipPayload,
-  RegisterUserPayload,
-  SendOTPPayload,
-  SendOtpForgotPassPayload,
-  SubmitForgotPassPayload,
-  VerifyOTPPayload,
-  VerifyOtpForgotPassPayload,
-} from './authSlice';
+  IRequestConfirmMemberShipVerify,
+  IRequestGetUniversities,
+  IRequestLogin,
+  IRequestLoginSocial,
+  IRequestSendOtpVerifyMembership,
+  IRequestRegisterUser,
+  IRequestSendOTP,
+  IRequestSendOtpForgotPass,
+  IRequestSubmitForgotPass,
+  IRequestVerifyOTP,
+  IRequestVerifyOtpForgotPass,
+} from '@type/auth';
 
 import {
   confirmMemberShipVerify,
@@ -73,7 +73,7 @@ import { AccountSelector, AuthSelector } from '@services/selectors';
 import { deletePushId } from '@services/request/account';
 import { getErrorMessageApi } from '@utils/common';
 
-function* loginWorker(action: PayloadAction<LoginPayload>) {
+function* loginWorker(action: PayloadAction<IRequestLogin>) {
   try {
     const response: AuthResponse = yield call(login, action.payload);
     yield put(authSuccess(response));
@@ -84,7 +84,7 @@ function* loginWorker(action: PayloadAction<LoginPayload>) {
   }
 }
 
-function* loginSocialWorker(action: PayloadAction<LoginSocialPayload>) {
+function* loginSocialWorker(action: PayloadAction<IRequestLoginSocial>) {
   try {
     const response: AuthResponse = yield call(loginSocial, action.payload);
     yield put(authSuccess(response));
@@ -95,7 +95,7 @@ function* loginSocialWorker(action: PayloadAction<LoginSocialPayload>) {
   }
 }
 
-function* registerUserWorker(action: PayloadAction<RegisterUserPayload>) {
+function* registerUserWorker(action: PayloadAction<IRequestRegisterUser>) {
   try {
     // alert('registerUserWorker');
     const response: IResponseRegisterUser = yield call(
@@ -110,7 +110,7 @@ function* registerUserWorker(action: PayloadAction<RegisterUserPayload>) {
   }
 }
 
-function* sendOTPWorker(action: PayloadAction<SendOTPPayload>) {
+function* sendOTPWorker(action: PayloadAction<IRequestSendOTP>) {
   try {
     const response: IResponseRegisterSendOtp = yield call(
       sendOTP,
@@ -123,7 +123,7 @@ function* sendOTPWorker(action: PayloadAction<SendOTPPayload>) {
   }
 }
 
-function* verifyOTPWorker(action: PayloadAction<VerifyOTPPayload>) {
+function* verifyOTPWorker(action: PayloadAction<IRequestVerifyOTP>) {
   try {
     const response: IResponseRegisterVerifyOtp = yield call(
       verifyOTP,
@@ -152,7 +152,7 @@ function* refreshTokenWorker() {
   }
 }
 
-function* getUniversitiesWorker(action: PayloadAction<GetUniversitiesPayload>) {
+function* getUniversitiesWorker(action: PayloadAction<IRequestGetUniversities>) {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
     const response: IResponseUniversity[] = yield call(
@@ -166,7 +166,7 @@ function* getUniversitiesWorker(action: PayloadAction<GetUniversitiesPayload>) {
 }
 
 function* sendOtpForgotPassWorker(
-  action: PayloadAction<SendOtpForgotPassPayload>,
+  action: PayloadAction<IRequestSendOtpForgotPass>,
 ) {
   try {
     const response: IResponseSendOtpForgotPass = yield call(
@@ -181,7 +181,7 @@ function* sendOtpForgotPassWorker(
 }
 
 function* verifyOtpForgotPassWorker(
-  action: PayloadAction<VerifyOtpForgotPassPayload>,
+  action: PayloadAction<IRequestVerifyOtpForgotPass>,
 ) {
   try {
     const response: IResponseVerifyOtpForgotPass = yield call(
@@ -196,7 +196,7 @@ function* verifyOtpForgotPassWorker(
 }
 
 function* submitForgotPassWorker(
-  action: PayloadAction<SubmitForgotPassPayload>,
+  action: PayloadAction<IRequestSubmitForgotPass>,
 ) {
   try {
     const response: IResponseSubmitForgotPass = yield call(
@@ -211,7 +211,7 @@ function* submitForgotPassWorker(
 }
 
 function* sendOtpVerifyMembershipWorker(
-  action: PayloadAction<SendOtpVerifyMembershipPayload>,
+  action: PayloadAction<IRequestSendOtpVerifyMembership>,
 ) {
   try {
     const response: IResponseSendOtpVerifyMembership = yield call(
@@ -225,7 +225,7 @@ function* sendOtpVerifyMembershipWorker(
 }
 
 function* confirmMemberShipVerifyWorker(
-  action: PayloadAction<ConfirmMemberShipVerifyPayload>,
+  action: PayloadAction<IRequestConfirmMemberShipVerify>,
 ) {
   try {
     const response: IResponseConfirmMemberShipVerify = yield call(

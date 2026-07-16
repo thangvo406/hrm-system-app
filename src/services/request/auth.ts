@@ -1,17 +1,14 @@
 import type {
-  ConfirmMemberShipVerifyPayload,
-  LoginPayload,
-  SendOtpVerifyMembershipPayload,
-  RegisterUserPayload,
-  SendOTPPayload,
-  SendOtpForgotPassPayload,
-  SubmitForgotPassPayload,
-  VerifyOTPPayload,
-  LoginSocialPayload,
-  VerifyOtpForgotPassPayload,
-} from '@services/slices/auth/authSlice';
-
-import type {
+  IRequestConfirmMemberShipVerify,
+  IRequestLogin,
+  IRequestSendOtpVerifyMembership,
+  IRequestRegisterUser,
+  IRequestSendOTP,
+  IRequestSendOtpForgotPass,
+  IRequestSubmitForgotPass,
+  IRequestVerifyOTP,
+  IRequestLoginSocial,
+  IRequestVerifyOtpForgotPass,
   IResponseRegisterVerifyOtp,
   IResponseRegisterSendOtp,
   IResponseUniversity,
@@ -41,7 +38,7 @@ export const authResponseSchema = z.object({
 
 export type AuthResponse = z.infer<typeof authResponseSchema>;
 
-export const login = async (payload: LoginPayload): Promise<AuthResponse> => {
+export const login = async (payload: IRequestLogin): Promise<AuthResponse> => {
   const response = await httpRequest.post<SingleApiResponse<AuthResponse>>(
     EndPoints.AUTH.login,
     payload,
@@ -50,7 +47,7 @@ export const login = async (payload: LoginPayload): Promise<AuthResponse> => {
 };
 
 export const registerUser = async (
-  request: RegisterUserPayload,
+  request: IRequestRegisterUser,
 ): Promise<IResponseRegisterUser> => {
   const response = await httpRequest.post<
     SingleApiResponse<IResponseRegisterUser>
@@ -59,7 +56,7 @@ export const registerUser = async (
 };
 
 export const sendOTP = async (
-  request: SendOTPPayload,
+  request: IRequestSendOTP,
 ): Promise<IResponseRegisterSendOtp> => {
   const response = await httpRequest.post<
     SingleApiResponse<IResponseRegisterSendOtp>
@@ -68,7 +65,7 @@ export const sendOTP = async (
 };
 
 export const verifyOTP = async (
-  request: VerifyOTPPayload,
+  request: IRequestVerifyOTP,
 ): Promise<IResponseRegisterVerifyOtp> => {
   const response = await httpRequest.post<
     SingleApiResponse<IResponseRegisterVerifyOtp>
@@ -88,7 +85,7 @@ export const getUniversities = async (
 };
 
 export const loginSocial = async (
-  request: LoginSocialPayload,
+  request: IRequestLoginSocial,
 ): Promise<IResponseLoginSocial> => {
   const _request = omit(request, ['provider']);
   const response = await httpRequest.post<
@@ -98,7 +95,7 @@ export const loginSocial = async (
 };
 
 export const sendOtpForgotPass = async (
-  request: SendOtpForgotPassPayload,
+  request: IRequestSendOtpForgotPass,
 ): Promise<IResponseSendOtpForgotPass> => {
   const response = await httpRequest.post<
     SingleApiResponse<IResponseSendOtpForgotPass>
@@ -124,7 +121,7 @@ export const refreshToken = async (
 };
 
 export const verifyOtpForgotPass = async (
-  request: VerifyOtpForgotPassPayload,
+  request: IRequestVerifyOtpForgotPass,
 ): Promise<IResponseVerifyOtpForgotPass> => {
   const response = await httpRequest.post<
     SingleApiResponse<IResponseVerifyOtpForgotPass>
@@ -133,7 +130,7 @@ export const verifyOtpForgotPass = async (
 };
 
 export const submitForgotPass = async (
-  request: SubmitForgotPassPayload,
+  request: IRequestSubmitForgotPass,
 ): Promise<IResponseSubmitForgotPass> => {
   const response = await httpRequest.post<
     SingleApiResponse<IResponseSubmitForgotPass>
@@ -146,7 +143,7 @@ export const logout = async (request: LogoutRequest): Promise<void> => {
 };
 
 export const sendOtpVerifyMembership = async (
-  request: SendOtpVerifyMembershipPayload,
+  request: IRequestSendOtpVerifyMembership,
 ): Promise<IResponseSendOtpVerifyMembership> => {
   const response = await httpRequest.post<
     SingleApiResponse<IResponseSendOtpVerifyMembership>
@@ -155,7 +152,7 @@ export const sendOtpVerifyMembership = async (
 };
 
 export const confirmMemberShipVerify = async (
-  request: ConfirmMemberShipVerifyPayload,
+  request: IRequestConfirmMemberShipVerify,
 ): Promise<IResponseConfirmMemberShipVerify> => {
   const response = await httpRequest.post<
     SingleApiResponse<IResponseConfirmMemberShipVerify>

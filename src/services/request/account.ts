@@ -1,3 +1,8 @@
+import type {
+  IRequestActiveAccount,
+  IRequestDeleteAccount,
+} from '@type/auth';
+
 import { httpRequest } from '@services/common/httpRequest';
 import { z } from 'zod';
 import { EndPoints } from '@constants';
@@ -38,6 +43,18 @@ export const getProfile = async (): Promise<Profile> => {
     { loading: false },
   );
   return response.data;
+};
+
+export const deleteAccount = async (
+  request: IRequestDeleteAccount,
+): Promise<void> => {
+  await httpRequest.delete(EndPoints.ACCOUNT.deleteAccount, { data: request });
+};
+
+export const activeAccount = async (
+  request: IRequestActiveAccount,
+): Promise<void> => {
+  await httpRequest.post(EndPoints.ACCOUNT.activeAccount, request);
 };
 
 export const autoCompleteAddress = async (
