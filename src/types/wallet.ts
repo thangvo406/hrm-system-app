@@ -1,6 +1,6 @@
 import type { AppCallback, ListApiResponse } from './common';
 
-export type ContributeHistory = {
+export interface ContributeHistory {
   id: number;
   type: string;
   displayType: string;
@@ -10,9 +10,9 @@ export type ContributeHistory = {
   paymentMethod: string;
   status: string;
   occurredAt: string;
-};
+}
 
-export type IDividendHistory = {
+export interface IDividendHistory {
   id: number;
   fiscalYear: string;
   totalDividend: number;
@@ -21,22 +21,23 @@ export type IDividendHistory = {
   balanceBefore: number;
   balanceAfter: number;
   paidAt: string;
-};
+}
 
-export type IRequestGetTransactionHistories = {
+export interface IRequestGetTransactionHistories
+  extends AppCallback<ListApiResponse<ContributeHistory[]>> {
   balanceAccountType: string;
   page: number;
   size: number;
-};
-export type Wallet = {
+}
+export interface Wallet {
   id: number;
   userId: number;
   balance: number;
   pointBalance: number;
   status: string;
-};
+}
 
-export type TransactionHistory = {
+export interface TransactionHistory {
   id: number;
   walletId: number;
   userId: number;
@@ -52,21 +53,12 @@ export type TransactionHistory = {
   description: string;
   status: string;
   createdDate: string;
-};
+}
 
-export type IRequestTopUpWallet = {
+export interface IRequestTopUpWallet extends AppCallback {
   amount: number;
   couponCode?: string;
   paymentProvider: string;
   paymentTransactionId: string;
   description: string;
-};
-
-export type GetCurrentWalletPayload = AppCallback<Wallet>;
-
-export type GetTransactionHistoriesPayload = AppCallback<
-  ListApiResponse<ContributeHistory[]>
-> &
-  IRequestGetTransactionHistories;
-
-export type TopUpWalletPayload = AppCallback & IRequestTopUpWallet;
+}

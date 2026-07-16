@@ -1,6 +1,6 @@
 import type { AppCallback, IImage, ListApiResponse } from './common';
 
-export type StoreItem = {
+export interface StoreItem {
   id: number;
   universityId: number;
   code: string;
@@ -18,9 +18,9 @@ export type StoreItem = {
   products: Product[];
   totalAmountCart: number;
   cartId: number;
-};
+}
 
-export type Product = {
+export interface Product {
   id: number;
   storeId: number;
   categoryId: number;
@@ -34,30 +34,29 @@ export type Product = {
   sortOrder: number;
   thumbnail: IImage;
   images: IImage[];
-};
+}
 
-export type TOperatingHour = {
+export interface TOperatingHour {
   dayOfWeek: string;
   open: boolean;
   openTime: string;
   closeTime: string;
-};
+}
 
-export type StoreProductItem = {
+export interface StoreProductItem {
   id: number;
   name: string;
   price: number;
   thumbnail?: { fileUrl: string };
-};
+}
 
-export type GetStoreDetailPayload = {
+export interface IRequestGetStoreDetail extends AppCallback<StoreItem> {
   storeId: number | string;
-} & AppCallback<StoreItem>;
+}
 
-export type GetStoreOrderRecentActionPayload = AppCallback<StoreItem[]>;
-
-export type GetStoresPayload = {
+export interface IRequestGetStores
+  extends AppCallback<ListApiResponse<StoreItem[]>> {
+  keyword?: string;
   page: number;
   size: number;
-  keyword?: string;
-} & AppCallback<ListApiResponse<StoreItem[]>>;
+}

@@ -33,15 +33,15 @@ const deviceManufacturerInLib = DeviceInfo.getManufacturerSync();
 const deviceManufacturer =
   deviceManufacturerInLib == undefined ? '' : deviceManufacturerInLib;
 const DEVICE_HEADERS = {
-  'x-app-buildNumber': DeviceInfo.getBuildNumber(),
-  'x-app-version': DeviceInfo.getVersion(),
-  'x-device-brand': DeviceInfo.getBrand(),
-  'x-device-deviceType': DeviceInfo.getDeviceType(),
-  'x-device-model': DeviceInfo.getModel(),
-  'x-device-systemName': DeviceInfo.getSystemName(),
-  'x-device-systemVersion': DeviceInfo.getSystemVersion(),
-  'x-device-deviceId': DeviceUtils.getDeviceId(),
-  'x-device-manufacturer': deviceManufacturer,
+  'app-buildNumber': DeviceInfo.getBuildNumber(),
+  'app-version': DeviceInfo.getVersion(),
+  'device-brand': DeviceInfo.getBrand(),
+  'device-deviceType': DeviceInfo.getDeviceType(),
+  'device-model': DeviceInfo.getModel(),
+  'device-systemName': DeviceInfo.getSystemName(),
+  'device-systemVersion': DeviceInfo.getSystemVersion(),
+  'device-deviceId': DeviceUtils.getDeviceId(),
+  'device-manufacturer': deviceManufacturer,
   'accept-language': ApiLanguages[i18next.language as any],
 };
 

@@ -74,65 +74,61 @@ import { deletePushId } from '@services/request/account';
 import { getErrorMessageApi } from '@utils/common';
 
 function* loginWorker(action: PayloadAction<IRequestLogin>) {
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: AuthResponse = yield call(login, action.payload);
+    const response: AuthResponse = yield call(login, request);
     yield put(authSuccess(response));
-    action.payload.onSuccess?.(response);
+    onSuccess?.(response);
   } catch (error: any) {
-    action.payload.onFailure?.(error?.response?.data);
+    onFailure?.(error?.response?.data);
     // yield put(authFailure(toErrorMessage(error)));
   }
 }
 
 function* loginSocialWorker(action: PayloadAction<IRequestLoginSocial>) {
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: AuthResponse = yield call(loginSocial, action.payload);
+    const response: AuthResponse = yield call(loginSocial, request);
     yield put(authSuccess(response));
-    action.payload.onSuccess?.();
+    onSuccess?.();
   } catch (error: any) {
-    action.payload.onFailure?.(error?.response?.data);
+    onFailure?.(error?.response?.data);
     // yield put(authFailure(toErrorMessage(error)));
   }
 }
 
 function* registerUserWorker(action: PayloadAction<IRequestRegisterUser>) {
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
     // alert('registerUserWorker');
-    const response: IResponseRegisterUser = yield call(
-      registerUser,
-      action.payload,
-    );
+    const response: IResponseRegisterUser = yield call(registerUser, request);
     // yield put(authSuccess(response));
-    action.payload.onSuccess?.(response);
+    onSuccess?.(response);
   } catch (error) {
     // yield put(authFailure(toErrorMessage(error)));
-    action.payload.onFailure?.(getErrorMessageApi(error));
+    onFailure?.(getErrorMessageApi(error));
   }
 }
 
 function* sendOTPWorker(action: PayloadAction<IRequestSendOTP>) {
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: IResponseRegisterSendOtp = yield call(
-      sendOTP,
-      action.payload,
-    );
-    action.payload.onSuccess?.(response);
+    const response: IResponseRegisterSendOtp = yield call(sendOTP, request);
+    onSuccess?.(response);
   } catch (error) {
     // yield put(authFailure(toErrorMessage(error)));
-    action.payload.onFailure?.(getErrorMessageApi(error));
+    onFailure?.(getErrorMessageApi(error));
   }
 }
 
 function* verifyOTPWorker(action: PayloadAction<IRequestVerifyOTP>) {
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: IResponseRegisterVerifyOtp = yield call(
-      verifyOTP,
-      action.payload,
-    );
-    action.payload.onSuccess?.(response);
+    const response: IResponseRegisterVerifyOtp = yield call(verifyOTP, request);
+    onSuccess?.(response);
   } catch (error) {
     // yield put(authFailure(toErrorMessage(error)));
-    action.payload.onFailure?.(getErrorMessageApi(error));
+    onFailure?.(getErrorMessageApi(error));
   }
 }
 
@@ -168,85 +164,89 @@ function* getUniversitiesWorker(action: PayloadAction<IRequestGetUniversities>) 
 function* sendOtpForgotPassWorker(
   action: PayloadAction<IRequestSendOtpForgotPass>,
 ) {
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
     const response: IResponseSendOtpForgotPass = yield call(
       sendOtpForgotPass,
-      action.payload,
+      request,
     );
-    action.payload.onSuccess?.(response);
+    onSuccess?.(response);
   } catch (error) {
     yield put(authFailure(getErrorMessageApi(error)));
-    action.payload.onFailure?.(getErrorMessageApi(error));
+    onFailure?.(getErrorMessageApi(error));
   }
 }
 
 function* verifyOtpForgotPassWorker(
   action: PayloadAction<IRequestVerifyOtpForgotPass>,
 ) {
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
     const response: IResponseVerifyOtpForgotPass = yield call(
       verifyOtpForgotPass,
-      action.payload,
+      request,
     );
-    action.payload.onSuccess?.(response);
+    onSuccess?.(response);
   } catch (error) {
     yield put(authFailure(getErrorMessageApi(error)));
-    action.payload.onFailure?.(getErrorMessageApi(error));
+    onFailure?.(getErrorMessageApi(error));
   }
 }
 
 function* submitForgotPassWorker(
   action: PayloadAction<IRequestSubmitForgotPass>,
 ) {
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
     const response: IResponseSubmitForgotPass = yield call(
       submitForgotPass,
-      action.payload,
+      request,
     );
-    action.payload.onSuccess?.(response);
+    onSuccess?.(response);
   } catch (error) {
     // yield put(authFailure(toErrorMessage(error)));
-    action.payload.onFailure?.(getErrorMessageApi(error));
+    onFailure?.(getErrorMessageApi(error));
   }
 }
 
 function* sendOtpVerifyMembershipWorker(
   action: PayloadAction<IRequestSendOtpVerifyMembership>,
 ) {
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
     const response: IResponseSendOtpVerifyMembership = yield call(
       sendOtpVerifyMembership,
-      action.payload,
+      request,
     );
-    action.payload.onSuccess?.(response);
+    onSuccess?.(response);
   } catch (error) {
-    action.payload.onFailure?.(getErrorMessageApi(error));
+    onFailure?.(getErrorMessageApi(error));
   }
 }
 
 function* confirmMemberShipVerifyWorker(
   action: PayloadAction<IRequestConfirmMemberShipVerify>,
 ) {
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
     const response: IResponseConfirmMemberShipVerify = yield call(
       confirmMemberShipVerify,
-      action.payload,
+      request,
     );
-    action.payload.onSuccess?.(response);
+    onSuccess?.(response);
   } catch (error) {
-    action.payload.onFailure?.(getErrorMessageApi(error));
+    onFailure?.(getErrorMessageApi(error));
   }
 }
 
 function* selectSchoolWorker(action: PayloadAction<ISelectSchoolRequest>) {
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    yield call(selectSchool, action.payload);
-    yield put(
-      selectSchoolSuccess({ universityId: action.payload?.universityId }),
-    );
-    action.payload.onSuccess?.();
+    yield call(selectSchool, request);
+    yield put(selectSchoolSuccess({ universityId: request.universityId }));
+    onSuccess?.();
   } catch (error) {
-    action.payload.onFailure?.(getErrorMessageApi(error));
+    onFailure?.(getErrorMessageApi(error));
   }
 }
 

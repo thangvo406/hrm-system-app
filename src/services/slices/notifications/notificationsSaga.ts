@@ -2,12 +2,11 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   TAnnouncementImage,
   TAnnouncementItem,
-  TGetAnnouncementDetailPayload,
-  TGetAnnouncementImagesPayload,
-  TGetAnnouncementsPayload,
-  TGetNotificationDetailPayload,
-  TGetNotificationsPayload,
-  TMarkReadPayload,
+  IRequestGetAnnouncementDetail,
+  IRequestGetAnnouncements,
+  IRequestGetNotificationDetail,
+  IRequestGetNotifications,
+  IRequestMarkRead,
   TNotificationItem,
   IResponseAnnouncementImage,
   TNotificationDetail,
@@ -15,7 +14,7 @@ import type {
 
 import { call, put, takeLatest } from 'redux-saga/effects';
 
-import type { ListApiResponse } from '@type/common';
+import type { AppCallback, ListApiResponse } from '@type/common';
 import {
   getAnnouncementById,
   getAnnouncementImages,
@@ -38,9 +37,9 @@ import {
 import { getErrorMessageApi } from '@utils/common';
 
 function* getNotificationsWorker(
-  action: PayloadAction<TGetNotificationsPayload>,
+  action: PayloadAction<IRequestGetNotifications>,
 ) {
-  const { onSuccess, onFailure, ...request } = action.payload || {};
+  const { onFailure, onSuccess, ...request } = action.payload || {};
   try {
     const response: ListApiResponse<TNotificationItem[]> = yield call(
       getNotifications,
@@ -54,9 +53,9 @@ function* getNotificationsWorker(
 }
 
 function* getAnnouncementsWorker(
-  action: PayloadAction<TGetAnnouncementsPayload>,
+  action: PayloadAction<IRequestGetAnnouncements>,
 ): Generator<unknown, void, ListApiResponse<TAnnouncementItem[]>> {
-  const { onSuccess, onFailure, ...request } = action.payload || {};
+  const { onFailure, onSuccess, ...request } = action.payload || {};
   try {
     const response: ListApiResponse<TAnnouncementItem[]> = yield call(
       getAnnouncements,
@@ -70,9 +69,9 @@ function* getAnnouncementsWorker(
 }
 
 function* getAnnouncementImagesWorker(
-  action: PayloadAction<TGetAnnouncementImagesPayload>,
+  action: PayloadAction<AppCallback<TAnnouncementImage[]>>,
 ): Generator<unknown, void, TAnnouncementImage[]> {
-  const { onSuccess, onFailure } = action.payload || {};
+  const { onFailure, onSuccess } = action.payload || {};
   try {
     const response: IResponseAnnouncementImage = yield call(
       getAnnouncementImages,
@@ -86,13 +85,13 @@ function* getAnnouncementImagesWorker(
 }
 
 function* getAnnouncementDetailWorker(
-  action: PayloadAction<TGetAnnouncementDetailPayload>,
+  action: PayloadAction<IRequestGetAnnouncementDetail>,
 ): Generator<unknown, void, TAnnouncementItem> {
-  const { announcementId, onSuccess, onFailure } = action.payload || {};
+  const { onFailure, onSuccess, ...request } = action.payload || {};
   try {
     const response: TAnnouncementItem = yield call(
       getAnnouncementById,
-      announcementId,
+      request,
     );
     onSuccess?.(response);
   } catch (error) {
@@ -102,13 +101,13 @@ function* getAnnouncementDetailWorker(
 }
 
 function* getNotificationDetailWorker(
-  action: PayloadAction<TGetNotificationDetailPayload>,
+  action: PayloadAction<IRequestGetNotificationDetail>,
 ): Generator<unknown, void, TNotificationDetail> {
-  const { notifyId, onSuccess, onFailure } = action.payload || {};
+  const { onFailure, onSuccess, ...request } = action.payload || {};
   try {
     const response: TNotificationDetail = yield call(
       getNotificationDetail,
-      notifyId,
+      request,
     );
     onSuccess?.(response);
   } catch (error_) {
@@ -118,11 +117,11 @@ function* getNotificationDetailWorker(
 }
 
 function* markReadWorker(
-  action: PayloadAction<TMarkReadPayload>,
+  action: PayloadAction<IRequestMarkRead>,
 ): Generator<unknown, void, void> {
-  const { notifyId, onSuccess, onFailure } = action.payload || {};
+  const { onFailure, onSuccess, ...request } = action.payload || {};
   try {
-    yield call(markRead, notifyId);
+    yield call(markRead, request);
     onSuccess?.();
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -131,9 +130,9 @@ function* markReadWorker(
 }
 
 function* markReadAllWorker(
-  action: PayloadAction<TMarkReadPayload>,
+  action: PayloadAction<AppCallback>,
 ): Generator<unknown, void, void> {
-  const { onSuccess, onFailure } = action.payload || {};
+  const { onFailure, onSuccess } = action.payload || {};
   try {
     yield call(markReadAll);
     onSuccess?.();

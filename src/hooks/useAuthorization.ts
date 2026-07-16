@@ -2,6 +2,7 @@ import { useAppDispatch } from '@services/common/storeHooks';
 import {
   loginRequest,
   loginSocialRequest,
+  logout,
 } from '@services/slices/auth/authSlice';
 import { useRef, useState } from 'react';
 import { Alert } from 'react-native';
@@ -234,9 +235,10 @@ export const useAuthorization = () => {
   const onDeleteAccount = (selectedReason: string) => {
     dispatch(
       deleteAccountRequest({
-        reason: selectedReason,
+        deletedReason: selectedReason,
         onSuccess: () => {
-          /* logout + reset về Auth stack */
+          dispatch(logout());
+          AppNavigator.reset(AppStacks.Auth);
         },
         onFailure: message =>
           AppNavigator.showSnackBar({ message, type: 'failed' }),

@@ -5,19 +5,28 @@ export interface AuthCallback {
   onSuccess?: (data?: any) => void;
 }
 
-export type IResponseUniversity = {
+export interface IResponseUniversity {
   id: number;
   name: string;
   address: string;
   logo: IImage;
   code: string;
-};
-export type IResponseRegisterVerifyOtp = {
+}
+export interface IResponseRegisterVerifyOtp {
   signupToken: string;
-};
+}
 
 export interface ISelectSchoolRequest extends AuthCallback {
   universityId: number;
+}
+
+export interface ISelectSchoolSuccessPayload {
+  universityId: number;
+}
+
+export interface ICredentials {
+  accessToken: string;
+  refreshToken?: string;
 }
 
 export interface IConfirmMembershipVerification {
@@ -30,26 +39,25 @@ export interface IResponseRefreshToken {
   refreshToken?: string;
 }
 
-export type IResponseRegisterUser = {
+export interface IResponseRegisterUser {
   phoneVerificationToken: string;
-};
-export type IResponseRegisterSendOtp = {
+}
+export interface IResponseRegisterSendOtp {
   phoneVerificationToken: string;
-};
+}
 
-export type IResponseSendOtpForgotPass = {
+export interface IResponseSendOtpForgotPass {
   phoneVerificationToken?: string;
-};
-export type LogoutRequest = {
+}
+export interface LogoutRequest {
   refreshToken: string;
-};
-export type IResponseLoginSocial = {
-  //TODO: define response
-};
-export type IResponseVerifyOtpForgotPass = {
+}
+// TODO: define response fields when the social-login API spec is available.
+export type IResponseLoginSocial = Record<string, never>;
+export interface IResponseVerifyOtpForgotPass {
   resetToken: string;
-};
-export type IResponseConfirmMemberShipVerify = {
+}
+export interface IResponseConfirmMemberShipVerify {
   registrationStatus: string;
   membershipType: string;
   membershipStatus: string;
@@ -59,13 +67,13 @@ export type IResponseConfirmMemberShipVerify = {
   emailVerificationRequired: boolean;
   emailVerificationExpiresIn: number;
   resendAfterMs: number;
-};
-export type IResponseSendOtpVerifyMembership = {
+}
+export interface IResponseSendOtpVerifyMembership {
   emailVerificationToken: string;
-};
-export type IResponseSubmitForgotPass = {
+}
+export interface IResponseSubmitForgotPass {
   success?: boolean;
-};
+}
 
 export interface IRequestLogin extends AuthCallback {
   email: string;
@@ -138,8 +146,8 @@ export interface IRequestConfirmMemberShipVerify
   extends AuthCallback,
     IConfirmMembershipVerification {}
 
-export interface IRequestDeleteAccount {
-  reason: string;
+export interface IRequestDeleteAccount extends AuthCallback {
+  deletedReason: string;
 }
 // TODO: define request fields when the reactivation API spec is available.
 export type IRequestActiveAccount = Record<string, never>;

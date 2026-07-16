@@ -5,12 +5,10 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { logoutSuccess } from '@services/slices/auth/authSlice';
 
-export type AppState = {
+export interface AppState {
   counter: number;
   showFloatingCart: boolean;
-};
-
-export type StartupAppPayload = AppCallback<boolean>;
+}
 
 const initialState: AppState = {
   counter: 0,
@@ -44,7 +42,7 @@ const appSlice = createSlice({
     },
     // Triggers the saga at app cold-start; result is delivered via callbacks.
     startupApp: {
-      prepare: (payload: StartupAppPayload = {}) => ({ payload }),
+      prepare: (payload: AppCallback<boolean> = {}) => ({ payload }),
       reducer: () => {
         // No state mutation — saga handles work, callbacks deliver result.
       },

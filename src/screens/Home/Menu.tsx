@@ -17,7 +17,8 @@ import Animated, {
 import { useEffect, useRef, useState } from 'react';
 import { ScaleSize } from '@kits/core';
 import imageNames from '@assets/images/names';
-import { useAppDispatch } from '@services/common/storeHooks';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { AccountSelector } from '@services/selectors';
 import { logout } from '@services/slices/auth/authSlice';
 import { AppStacks, Paths } from '@navigation/paths';
 import AppNavigator from '@navigation/AppNavigator';
@@ -134,6 +135,15 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
   const [closing, setClosing] = useState(false);
   const afterCloseReference = useRef<(() => void) | undefined>(undefined);
   const { toggleLanguage } = useI18n();
+  const profile = useAppSelector(AccountSelector.getProfile);
+  // Khi avatar load lỗi (link chết) thì fall back về chữ cái đầu của tên.
+  const [avatarError, setAvatarError] = useState(false);
+
+  const avatarUrl = profile?.avatar;
+  const showAvatar = !!avatarUrl && !avatarError;
+  const profileName = profile?.name ?? profile?.fullName ?? '';
+  const profileInitial =
+    profileName.trim().charAt(0).toUpperCase() || LOGO_INITIALS;
 
   useEffect(() => {
     if (closing) {
@@ -232,11 +242,24 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
             <View style={styles.header}>
               <AppButton
                 style={styles.logoBadge}
-                onPress={() => {
-                  toggleLanguage();
-                }}
+                // onPress={() => {
+                //   toggleLanguage();
+                // }}
               >
-                <Text style={styles.logoText}>{LOGO_INITIALS}</Text>
+                {showAvatar ? (
+                  <Image
+                    height={LOGO_SIZE}
+                    onError={() => {
+                      setAvatarError(true);
+                    }}
+                    resizeMode="cover"
+                    style={styles.avatarImage}
+                    url={avatarUrl}
+                    width={LOGO_SIZE}
+                  />
+                ) : (
+                  <Text style={styles.logoText}>{profileInitial}</Text>
+                )}
               </AppButton>
               <TouchableOpacity
                 accessibilityRole="button"
@@ -294,6 +317,9 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
 }
 
 const styles = StyleSheet.create({
+  avatarImage: {
+    borderRadius: LOGO_SIZE / 2,
+  },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#000000',

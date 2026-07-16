@@ -3,10 +3,15 @@ import type {
   IRequestDeleteAccount,
 } from '@type/auth';
 
+import type {
+  IRequestAutoCompleteAddress,
+  IRequestUpdateMembership,
+  IRequestUpdatePushId,
+} from '@type/account';
+
 import { httpRequest } from '@services/common/httpRequest';
 import { z } from 'zod';
 import { EndPoints } from '@constants';
-import { UpdatePushIdPayload } from '@services/slices/account/accountSlice';
 import { SingleApiResponse } from '@type/common';
 import { addressInstance } from '@services/common/instance';
 import { CommonUtils } from '@utils';
@@ -58,7 +63,7 @@ export const activeAccount = async (
 };
 
 export const autoCompleteAddress = async (
-  request: any,
+  request: IRequestAutoCompleteAddress,
 ): Promise<AddressSuggestion[]> => {
   // const response = await httpRequest.get<SingleApiResponse<AddressSuggestion[]>>(
   //   EndPoints.ACCOUNT.autoCompleteAddress(query),
@@ -71,15 +76,15 @@ export const autoCompleteAddress = async (
 };
 
 export const updatePushId = async (
-  request: UpdatePushIdPayload,
+  request: IRequestUpdatePushId,
 ): Promise<void> => {
   await httpRequest.post(EndPoints.ACCOUNT.updatePushId, request, {
     loading: false,
   });
 };
-export const updateMembership = async (request: {
-  membershipType: string;
-}): Promise<void> => {
+export const updateMembership = async (
+  request: IRequestUpdateMembership,
+): Promise<void> => {
   await httpRequest.post(EndPoints.ACCOUNT.updateMembership, request);
 };
 

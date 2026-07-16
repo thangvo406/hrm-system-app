@@ -2,23 +2,20 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Profile } from '@services/request/account';
 import type { AddressSuggestion } from '@services/request/account';
 import type {
-  ActiveAccountPayload,
-  AutoCompleteAddressPayload,
-  DeleteAccountPayload,
-  GetProfilePayload,
-  UpdateMembershipPayload,
-  UpdatePushIdPayload,
-} from './accountSlice';
+  IRequestAutoCompleteAddress,
+  IRequestUpdateMembership,
+  IRequestUpdatePushId,
+} from '@type/account';
 import type {
   ContributeHistory,
-  GetCurrentWalletPayload,
-  GetTransactionHistoriesPayload,
-  TopUpWalletPayload,
+  IRequestGetTransactionHistories,
+  IRequestTopUpWallet,
   Wallet,
 } from '@type/wallet';
-import type { ListApiResponse } from '@type/common';
+import type { AppCallback, ListApiResponse } from '@type/common';
 import type { TransactionHistory } from '@type/wallet';
-import type { GetTotalItemCartPayload, TotalItemCart } from '@type/payment';
+import type { TotalItemCart } from '@type/payment';
+import type { AuthCallback, IRequestDeleteAccount } from '@type/auth';
 
 import {
   activeAccount,
@@ -56,7 +53,7 @@ import { AccountSelector } from '@services/selectors';
 import { refreshTokenRequest } from '../auth/authSlice';
 
 function* getTotalItemCartWorker(
-  action: PayloadAction<GetTotalItemCartPayload>,
+  action: PayloadAction<AppCallback<TotalItemCart>>,
 ): Generator<unknown, void, TotalItemCart> {
   const { onSuccess, onFailure } = action.payload || {};
   try {
@@ -69,7 +66,7 @@ function* getTotalItemCartWorker(
   }
 }
 
-function* activeAccountWorker(action: PayloadAction<ActiveAccountPayload>) {
+function* activeAccountWorker(action: PayloadAction<AuthCallback>) {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
     yield call(activeAccount, request);
@@ -80,7 +77,7 @@ function* activeAccountWorker(action: PayloadAction<ActiveAccountPayload>) {
   }
 }
 
-function* deleteAccountWorker(action: PayloadAction<DeleteAccountPayload>) {
+function* deleteAccountWorker(action: PayloadAction<IRequestDeleteAccount>) {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
     yield call(deleteAccount, request);
@@ -91,7 +88,7 @@ function* deleteAccountWorker(action: PayloadAction<DeleteAccountPayload>) {
   }
 }
 
-function* getProfileWorker(action: PayloadAction<GetProfilePayload>) {
+function* getProfileWorker(action: PayloadAction<AppCallback<Profile>>) {
   try {
     const oldProfile: Profile = yield select(AccountSelector.getProfile);
     const profile: Profile = yield call(getProfile);
@@ -109,7 +106,7 @@ function* getProfileWorker(action: PayloadAction<GetProfilePayload>) {
   }
 }
 
-function* updatePushIdWorker(action: PayloadAction<UpdatePushIdPayload>) {
+function* updatePushIdWorker(action: PayloadAction<IRequestUpdatePushId>) {
   try {
     yield call(updatePushId, action.payload);
   } catch {
@@ -118,7 +115,7 @@ function* updatePushIdWorker(action: PayloadAction<UpdatePushIdPayload>) {
 }
 
 function* updateMembershipWorker(
-  action: PayloadAction<UpdateMembershipPayload>,
+  action: PayloadAction<IRequestUpdateMembership>,
 ) {
   const { onSuccess, onFailure, ...request } = action.payload;
   try {
@@ -131,7 +128,7 @@ function* updateMembershipWorker(
 }
 
 function* getCurrentWalletWorker(
-  action: PayloadAction<GetCurrentWalletPayload>,
+  action: PayloadAction<AppCallback<Wallet>>,
 ): Generator<unknown, void, Wallet> {
   const { onSuccess, onFailure } = action.payload || {};
   try {
@@ -145,7 +142,7 @@ function* getCurrentWalletWorker(
 }
 
 function* getContributeHistoriesWorker(
-  action: PayloadAction<GetTransactionHistoriesPayload>,
+  action: PayloadAction<IRequestGetTransactionHistories>,
 ): Generator<unknown, void, ListApiResponse<ContributeHistory[]>> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
@@ -161,7 +158,7 @@ function* getContributeHistoriesWorker(
 }
 
 function* topUpWalletWorker(
-  action: PayloadAction<TopUpWalletPayload>,
+  action: PayloadAction<IRequestTopUpWallet>,
 ): Generator<unknown, void, ListApiResponse<TransactionHistory[]>> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
@@ -177,7 +174,7 @@ function* topUpWalletWorker(
 }
 
 function* autoCompleteAddressWorker(
-  action: PayloadAction<AutoCompleteAddressPayload>,
+  action: PayloadAction<IRequestAutoCompleteAddress>,
 ): Generator<unknown, void, AddressSuggestion[]> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {

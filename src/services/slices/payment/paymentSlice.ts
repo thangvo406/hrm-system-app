@@ -1,27 +1,27 @@
+import type { AppCallback } from '@type/common';
 import type {
   CheckoutInfo,
-  CreateOrderPayload,
-  GenerateQRCodePayload,
-  GetAddressOrderRecentPayload,
-  GetCartDetailPayload,
-  GetContributeHistoryDetailPayload,
-  GetContributeSummaryPayload,
-  GetHistoriesDividendPayload,
-  GetInfoProductCheckoutPayload,
-  GetListCartPayload,
-  GetOrderHistoriesPayload,
-  GetOrderHistoryDetailPayload,
-  IncreaseContributePayload,
-  InitChargePayload,
-  RemoveCartItemPayload,
-  UpdateCartItemPayload,
+  ContributeSummary,
+  IRequestCreateOrder,
+  IRequestGenerateQRCode,
+  IRequestGetCartDetail,
+  IRequestGetContributeHistoryDetail,
+  IRequestGetHistoriesDividend,
+  IRequestGetInfoProductCheckout,
+  IRequestGetListCart,
+  IRequestGetOrderHistories,
+  IRequestGetOrderHistoryDetail,
+  IRequestIncreaseContribute,
+  IRequestInitCharge,
+  IRequestRemoveCartItem,
+  IRequestUpdateCartItem,
 } from '@type/payment';
 
 import { createSlice } from '@reduxjs/toolkit';
 
-export type PaymentState = {
+export interface PaymentState {
   checkoutInfo: CheckoutInfo | undefined;
-};
+}
 
 const initialState: PaymentState = {
   checkoutInfo: undefined,
@@ -32,63 +32,63 @@ const paymentSlice = createSlice({
   name: 'payment',
   reducers: {
     createOrderRequest: {
-      prepare: (payload: CreateOrderPayload) => ({ payload }),
+      prepare: (payload: IRequestCreateOrder) => ({ payload }),
       reducer: () => {},
     },
     generateQRCodeRequest: {
-      prepare: (payload: GenerateQRCodePayload) => ({ payload }),
+      prepare: (payload: IRequestGenerateQRCode) => ({ payload }),
       reducer: () => {},
     },
     balanceChargeRequest: {
-      prepare: (payload: InitChargePayload) => ({ payload }),
+      prepare: (payload: IRequestInitCharge) => ({ payload }),
       reducer: () => {},
     },
     getAddressOrderRecentRequest: {
-      prepare: (payload: GetAddressOrderRecentPayload = {}) => ({ payload }),
+      prepare: (payload: AppCallback<string[]> = {}) => ({ payload }),
       reducer: () => {},
     },
     getInfoProductCheckoutRequest: {
-      prepare: (payload: GetInfoProductCheckoutPayload) => ({ payload }),
+      prepare: (payload: IRequestGetInfoProductCheckout) => ({ payload }),
       reducer: () => {},
     },
     getListCartRequest: {
-      prepare: (payload: GetListCartPayload) => ({ payload }),
+      prepare: (payload: IRequestGetListCart) => ({ payload }),
       reducer: () => {},
     },
     getOrderHistoriesRequest: {
-      prepare: (payload: GetOrderHistoriesPayload) => ({ payload }),
+      prepare: (payload: IRequestGetOrderHistories) => ({ payload }),
       reducer: () => {},
     },
     getOrderHistoryDetailRequest: {
-      prepare: (payload: GetOrderHistoryDetailPayload) => ({ payload }),
+      prepare: (payload: IRequestGetOrderHistoryDetail) => ({ payload }),
       reducer: () => {},
     },
     removeCartItemRequest: {
-      prepare: (payload: RemoveCartItemPayload) => ({ payload }),
+      prepare: (payload: IRequestRemoveCartItem) => ({ payload }),
       reducer: () => {},
     },
     updateCartItemRequest: {
-      prepare: (payload: UpdateCartItemPayload) => ({ payload }),
+      prepare: (payload: IRequestUpdateCartItem) => ({ payload }),
       reducer: () => {},
     },
     increaseContributionRequest: {
-      prepare: (payload: IncreaseContributePayload) => ({ payload }),
+      prepare: (payload: IRequestIncreaseContribute) => ({ payload }),
       reducer: () => {},
     },
     getContributeSummaryRequest: {
-      prepare: (payload: GetContributeSummaryPayload) => ({ payload }),
+      prepare: (payload: AppCallback<ContributeSummary>) => ({ payload }),
       reducer: () => {},
     },
     getContributeHistoryDetailRequest: {
-      prepare: (payload: GetContributeHistoryDetailPayload) => ({ payload }),
+      prepare: (payload: IRequestGetContributeHistoryDetail) => ({ payload }),
       reducer: () => {},
     },
     getCartDetailRequest: {
-      prepare: (payload: GetCartDetailPayload) => ({ payload }),
+      prepare: (payload: IRequestGetCartDetail) => ({ payload }),
       reducer: () => {},
     },
     getHistoriesDividendRequest: {
-      prepare: (payload: GetHistoriesDividendPayload) => ({ payload }),
+      prepare: (payload: IRequestGetHistoriesDividend) => ({ payload }),
       reducer: () => {},
     },
   },

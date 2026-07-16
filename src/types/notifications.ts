@@ -1,34 +1,34 @@
 import type { AppCallback, IImage, ListApiResponse } from './common';
 
-export type TAnnouncementItem = {
+export interface TAnnouncementItem {
   id: number;
   title: string;
   content: string;
   type: string;
   createdDate: string;
-};
+}
 
-export type TGetAnnouncementsPayload = {
+export interface IRequestGetAnnouncements
+  extends AppCallback<ListApiResponse<TAnnouncementItem[]>> {
   type: string;
   page: number;
   size: number;
-} & AppCallback<ListApiResponse<TAnnouncementItem[]>>;
+}
 
-export type TGetAnnouncementDetailPayload = {
+export interface IRequestGetAnnouncementDetail
+  extends AppCallback<TAnnouncementItem> {
   readonly announcementId: number | string;
-} & AppCallback<TAnnouncementItem>;
+}
 
-export type IResponseAnnouncementImage = {
+export interface IResponseAnnouncementImage {
   items: TAnnouncementImage[];
-};
-export type TAnnouncementImage = {
+}
+export interface TAnnouncementImage {
   id: number;
   image: IImage;
-};
+}
 
-export type TGetAnnouncementImagesPayload = AppCallback<TAnnouncementImage[]>;
-
-export type TNotificationItem = {
+export interface TNotificationItem {
   id: number;
   type: string;
   title: string;
@@ -39,23 +39,19 @@ export type TNotificationItem = {
   read: boolean;
   readAt: string;
   createdDate: string;
-};
+}
 
-export type IRequestGetNotifications = {
+export interface IRequestGetNotifications
+  extends AppCallback<ListApiResponse<TNotificationItem[]>> {
   page: number;
   size: number;
-};
+}
 
-export type TGetNotificationsPayload = AppCallback<
-  ListApiResponse<TNotificationItem[]>
-> &
-  IRequestGetNotifications;
-
-export type TMarkReadPayload = {
+export interface IRequestMarkRead extends AppCallback {
   readonly notifyId: number;
-} & AppCallback;
+}
 
-export type TNotificationDetail = {
+export interface TNotificationDetail {
   id: number;
   type: string;
   title: string;
@@ -67,7 +63,8 @@ export type TNotificationDetail = {
   read: boolean;
   readAt: string;
   createdDate: string;
-};
-export type TGetNotificationDetailPayload = {
+}
+export interface IRequestGetNotificationDetail
+  extends AppCallback<TNotificationItem> {
   readonly notifyId: number | string;
-} & AppCallback<TNotificationItem>;
+}

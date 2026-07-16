@@ -1,7 +1,7 @@
+import type { AppCallback } from '@type/common';
 import type {
-  GetStoreDetailPayload,
-  GetStoreOrderRecentActionPayload,
-  GetStoresPayload,
+  IRequestGetStoreDetail,
+  IRequestGetStores,
   StoreItem,
 } from '@type/store';
 
@@ -20,17 +20,17 @@ const storesSlice = createSlice({
   name: 'stores',
   reducers: {
     getStoreDetailRequest: {
-      prepare: (payload: GetStoreDetailPayload) => ({ payload }),
+      prepare: (payload: IRequestGetStoreDetail) => ({ payload }),
       reducer: () => {},
     },
     getStoreOrderRecentRequest: {
-      prepare: (payload: GetStoreOrderRecentActionPayload = {}) => ({
+      prepare: (payload: AppCallback<StoreItem[]> = {}) => ({
         payload,
       }),
       reducer: () => {},
     },
     getStoresRequest: {
-      prepare: (payload: GetStoresPayload) => ({ payload }),
+      prepare: (payload: IRequestGetStores) => ({ payload }),
       reducer: () => {},
     },
     setStoreOrderRecent: {

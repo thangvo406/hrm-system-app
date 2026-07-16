@@ -1,8 +1,9 @@
 import type {
   Product,
   IResponseProductDetail,
-  GetProductsPayload,
-  IRequestCheckout,
+  IRequestCheckoutProduct,
+  IRequestGetProductById,
+  IRequestGetProducts,
 } from '@type/products';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -24,7 +25,7 @@ export const productsResponseSchema = z.object({
 });
 
 export const getProducts = async (
-  request: GetProductsPayload,
+  request: IRequestGetProducts,
 ): Promise<ListApiResponse<Product[]>> => {
   const _request = CommonUtils.removeEmptyFieldObject(request, true);
   const params = CommonUtils.objectToQueryParams(_request);
@@ -36,17 +37,17 @@ export const getProducts = async (
 };
 
 export const getProductById = async (
-  productId: number | string,
+  request: IRequestGetProductById,
 ): Promise<IResponseProductDetail> => {
   const response = await httpRequest.get<SingleApiResponse<Product>>(
-    EndPoints.PRODUCTS.detail(productId),
+    EndPoints.PRODUCTS.detail(request.productId),
     { loading: false },
   );
   return response?.data;
 };
 
 export const checkoutProduct = async (
-  request: IRequestCheckout,
+  request: IRequestCheckoutProduct,
 ): Promise<IResponseProductDetail> => {
   const response = await httpRequest.post<SingleApiResponse<Product>>(
     EndPoints.PAYMENT.checkout, request

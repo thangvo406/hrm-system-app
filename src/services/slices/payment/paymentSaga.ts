@@ -4,28 +4,27 @@ import type {
   CheckoutInfo,
   ContributeHistoryDetail,
   ContributeSummary,
-  CreateOrderPayload,
+  IRequestCreateOrder,
   CreateOrderResponse,
-  GenerateQRCodePayload,
+  IRequestGenerateQRCode,
   GenerateQRCodeResponse,
-  GetAddressOrderRecentPayload,
-  GetCartDetailPayload,
-  GetContributeHistoryDetailPayload,
-  GetContributeSummaryPayload,
-  GetHistoriesDividendPayload,
-  GetInfoProductCheckoutPayload,
-  GetListCartPayload,
-  GetOrderHistoriesPayload,
-  GetOrderHistoryDetailPayload,
-  InitChargePayload,
+  IRequestGetCartDetail,
+  IRequestGetContributeHistoryDetail,
+  IRequestGetHistoriesDividend,
+  IRequestGetInfoProductCheckout,
+  IRequestGetListCart,
+  IRequestGetOrderHistories,
+  IRequestGetOrderHistoryDetail,
+  IRequestIncreaseContribute,
+  IRequestInitCharge,
   OrderHistoryDetailItem,
   OrderHistoryItem,
-  RemoveCartItemPayload,
-  UpdateCartItemPayload,
+  IRequestRemoveCartItem,
+  IRequestUpdateCartItem,
   IResponseInitPayment,
   IKcpInitParams,
 } from '@type/payment';
-import type { ListApiResponse } from '@type/common';
+import type { AppCallback, ListApiResponse } from '@type/common';
 
 import { call, takeLatest } from 'redux-saga/effects';
 
@@ -69,7 +68,7 @@ import {
 import { IDividendHistory } from '@type';
 
 function* getInfoProductCheckoutWorker(
-  action: PayloadAction<GetInfoProductCheckoutPayload>,
+  action: PayloadAction<IRequestGetInfoProductCheckout>,
 ): Generator<unknown, void, CheckoutInfo> {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
@@ -82,7 +81,7 @@ function* getInfoProductCheckoutWorker(
 }
 
 function* getListCartWorker(
-  action: PayloadAction<GetListCartPayload>,
+  action: PayloadAction<IRequestGetListCart>,
 ): Generator<unknown, void, ListApiResponse<StoreCartItem[]>> {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
@@ -98,7 +97,7 @@ function* getListCartWorker(
 }
 
 function* removeCartItemWorker(
-  action: PayloadAction<RemoveCartItemPayload>,
+  action: PayloadAction<IRequestRemoveCartItem>,
 ): Generator<unknown, void, void> {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
@@ -111,7 +110,7 @@ function* removeCartItemWorker(
 }
 
 function* updateCartItemWorker(
-  action: PayloadAction<UpdateCartItemPayload>,
+  action: PayloadAction<IRequestUpdateCartItem>,
 ): Generator<unknown, void, void> {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
@@ -124,7 +123,7 @@ function* updateCartItemWorker(
 }
 
 function* createOrderWorker(
-  action: PayloadAction<CreateOrderPayload>,
+  action: PayloadAction<IRequestCreateOrder>,
 ): Generator<unknown, void, CreateOrderResponse> {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
@@ -156,7 +155,7 @@ function* createOrderWorker(
 }
 
 function* getOrderHistoriesWorker(
-  action: PayloadAction<GetOrderHistoriesPayload>,
+  action: PayloadAction<IRequestGetOrderHistories>,
 ): Generator<unknown, void, ListApiResponse<OrderHistoryItem[]>> {
   const { onFailure, onSuccess, page, size } = action.payload;
   try {
@@ -172,7 +171,7 @@ function* getOrderHistoriesWorker(
 }
 
 function* getCartDetailWorker(
-  action: PayloadAction<GetCartDetailPayload>,
+  action: PayloadAction<IRequestGetCartDetail>,
 ): Generator<unknown, void, StoreCartItem> {
   const { onFailure, onSuccess, cartId } = action.payload;
   try {
@@ -185,7 +184,7 @@ function* getCartDetailWorker(
 }
 
 function* getHistoriesDividendWorker(
-  action: PayloadAction<GetHistoriesDividendPayload>,
+  action: PayloadAction<IRequestGetHistoriesDividend>,
 ): Generator<unknown, void, ListApiResponse<IDividendHistory[]>> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
@@ -201,7 +200,7 @@ function* getHistoriesDividendWorker(
 }
 
 function* getOrderHistoryDetailWorker(
-  action: PayloadAction<GetOrderHistoryDetailPayload>,
+  action: PayloadAction<IRequestGetOrderHistoryDetail>,
 ): Generator<unknown, void, OrderHistoryDetailItem> {
   const { onFailure, onSuccess, orderId } = action.payload;
   try {
@@ -216,7 +215,7 @@ function* getOrderHistoryDetailWorker(
 }
 
 function* getAddressOrderRecentWorker(
-  action: PayloadAction<GetAddressOrderRecentPayload>,
+  action: PayloadAction<AppCallback<string[]>>,
 ): Generator<unknown, void, string[]> {
   const { onFailure, onSuccess } = action.payload;
   try {
@@ -229,7 +228,7 @@ function* getAddressOrderRecentWorker(
 }
 
 function* generateQRCodeWorker(
-  action: PayloadAction<GenerateQRCodePayload>,
+  action: PayloadAction<IRequestGenerateQRCode>,
 ): Generator<unknown, void, GenerateQRCodeResponse> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
@@ -245,7 +244,7 @@ function* generateQRCodeWorker(
 }
 
 function* balanceChargeWorker(
-  action: PayloadAction<InitChargePayload>,
+  action: PayloadAction<IRequestInitCharge>,
 ): Generator<unknown, void, IKcpInitParams> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
@@ -258,7 +257,7 @@ function* balanceChargeWorker(
 }
 
 function* increaseContributionWorker(
-  action: PayloadAction<import('@type/payment').IncreaseContributePayload>,
+  action: PayloadAction<IRequestIncreaseContribute>,
 ): Generator<unknown, void, void> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
@@ -271,7 +270,7 @@ function* increaseContributionWorker(
 }
 
 function* getContributeSummaryWorker(
-  action: PayloadAction<GetContributeSummaryPayload>,
+  action: PayloadAction<AppCallback<ContributeSummary>>,
 ): Generator<unknown, void, ContributeSummary> {
   const { onFailure, onSuccess } = action.payload;
   try {
@@ -284,7 +283,7 @@ function* getContributeSummaryWorker(
 }
 
 function* getContributeHistoryDetailWorker(
-  action: PayloadAction<GetContributeHistoryDetailPayload>,
+  action: PayloadAction<IRequestGetContributeHistoryDetail>,
 ): Generator<unknown, void, ContributeHistoryDetail> {
   const { onFailure, onSuccess, historyId } = action.payload;
   try {

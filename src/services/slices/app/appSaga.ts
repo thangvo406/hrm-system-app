@@ -1,5 +1,5 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { StartupAppPayload } from './appSlice';
+import type { AppCallback } from '@type/common';
 
 import { AccountSelector, AuthSelector } from '@services/selectors';
 import { delay, put, select, takeLatest } from 'redux-saga/effects';
@@ -24,7 +24,7 @@ function* incrementAsyncWorker(action: PayloadAction<number>) {
   yield put(incrementAsyncSuccess(action.payload));
 }
 
-function* startupAppWorker(action: PayloadAction<StartupAppPayload>) {
+function* startupAppWorker(action: PayloadAction<AppCallback<boolean>>) {
   try {
     // Splash hold while any future bootstrap work runs (config, i18n, …).
     yield delay(STARTUP_DELAY);

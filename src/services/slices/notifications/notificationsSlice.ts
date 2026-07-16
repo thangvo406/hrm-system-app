@@ -1,10 +1,11 @@
+import type { AppCallback } from '@type/common';
 import type {
   TAnnouncementImage,
-  TGetAnnouncementImagesPayload,
-  TGetNotificationDetailPayload,
-  TGetNotificationsPayload,
-  TGetAnnouncementDetailPayload,
-  TMarkReadPayload,
+  IRequestGetAnnouncementDetail,
+  IRequestGetAnnouncements,
+  IRequestGetNotificationDetail,
+  IRequestGetNotifications,
+  IRequestMarkRead,
 } from '@type/notifications';
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
@@ -22,11 +23,13 @@ const notificationsSlice = createSlice({
   name: 'notifications',
   reducers: {
     getAnnouncementDetailRequest: {
-      prepare: (payload: TGetAnnouncementDetailPayload) => ({ payload }),
+      prepare: (payload: IRequestGetAnnouncementDetail) => ({ payload }),
       reducer: () => {},
     },
     getAnnouncementImagesRequest: {
-      prepare: (payload: TGetAnnouncementImagesPayload = {}) => ({ payload }),
+      prepare: (payload: AppCallback<TAnnouncementImage[]> = {}) => ({
+        payload,
+      }),
       reducer: () => {},
     },
     getAnnouncementImagesSuccess: {
@@ -38,23 +41,23 @@ const notificationsSlice = createSlice({
       },
     },
     getAnnouncementsRequest: {
-      prepare: (payload: any = {}) => ({ payload }),
+      prepare: (payload: IRequestGetAnnouncements) => ({ payload }),
       reducer: () => {},
     },
     getNotificationDetailRequest: {
-      prepare: (payload: TGetNotificationDetailPayload) => ({ payload }),
+      prepare: (payload: IRequestGetNotificationDetail) => ({ payload }),
       reducer: () => {},
     },
     getNotificationsRequest: {
-      prepare: (payload: TGetNotificationsPayload) => ({ payload }),
+      prepare: (payload: IRequestGetNotifications) => ({ payload }),
       reducer: () => {},
     },
     markReadAllRequest: {
-      prepare: (payload: any) => ({ payload }),
+      prepare: (payload: AppCallback) => ({ payload }),
       reducer: () => {},
     },
     markReadRequest: {
-      prepare: (payload: TMarkReadPayload) => ({ payload }),
+      prepare: (payload: IRequestMarkRead) => ({ payload }),
       reducer: () => {},
     },
   },

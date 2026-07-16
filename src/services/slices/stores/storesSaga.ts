@@ -1,8 +1,8 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { ListApiResponse } from '@type/common';
 import type {
-  GetStoreDetailPayload,
-  GetStoresPayload,
+  IRequestGetStoreDetail,
+  IRequestGetStores,
   StoreItem,
 } from '@type/store';
 
@@ -22,7 +22,7 @@ import {
 import { getErrorMessageApi } from '@utils/common';
 
 function* getStoresWorker(
-  action: PayloadAction<GetStoresPayload>,
+  action: PayloadAction<IRequestGetStores>,
 ): Generator<unknown, void, ListApiResponse<StoreItem[]>> {
   const { onFailure, onSuccess, ...request } = action.payload || {};
   try {
@@ -38,11 +38,11 @@ function* getStoresWorker(
 }
 
 function* getStoreDetailWorker(
-  action: PayloadAction<GetStoreDetailPayload>,
+  action: PayloadAction<IRequestGetStoreDetail>,
 ): Generator<unknown, void, StoreItem> {
-  const { onFailure, onSuccess, storeId } = action.payload;
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: StoreItem = yield call(getStoreDetail, storeId);
+    const response: StoreItem = yield call(getStoreDetail, request);
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);

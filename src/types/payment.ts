@@ -2,21 +2,21 @@ import type { AppCallback, IImage, ListApiResponse } from './common';
 import type { IRequestCheckout, Product } from './products';
 import { IDividendHistory } from './wallet';
 
-export type CheckoutInfoItem = {
+export interface CheckoutInfoItem {
   readonly attributeItemId: number;
-};
+}
 
-export type CheckoutInfo = {
+export interface CheckoutInfo {
   readonly quantity: number;
   readonly finalPrice: number;
   readonly selectedAttributes: CheckoutInfoItem[];
   readonly subTotal: number;
   readonly cartItemId: number;
-};
+}
 
-export type TotalItemCart = {
+export interface TotalItemCart {
   readonly totalCart: number;
-};
+}
 
 export interface PaymentRequest {
   paymentType: string;
@@ -25,7 +25,7 @@ export interface PaymentRequest {
   vaBankCode?: string;
 }
 
-export type StoreCartItem = {
+export interface StoreCartItem {
   id: number;
   userId: number;
   storeId: number;
@@ -36,7 +36,7 @@ export type StoreCartItem = {
   items: ProductCart[];
   storeLogo: IImage;
   storeReceiveMethod: string[];
-};
+}
 
 export interface ProductCreateOrder {
   id: number;
@@ -47,24 +47,17 @@ export interface VoucherOrder {
   id: number;
   quantity: number;
 }
-export interface CreateOrderRequest {
-  storeId: number;
-  note: string;
-  address: string;
-  products: ProductCreateOrder[];
-  vouchers: VoucherOrder[];
-}
-
-export type StoreAddress = {
+export interface StoreAddress {
   addressText: string;
   latitude: string;
   longitude: string;
-};
+}
 
-export type IRequestGetListCart = {
+export interface IRequestGetListCart
+  extends AppCallback<ListApiResponse<StoreCartItem[]>> {
   page: number;
   size: number;
-};
+}
 
 export interface ProductCart {
   id: number;
@@ -91,40 +84,36 @@ export interface AttributeCart {
   price: number;
 }
 
-export type GetTotalItemCartPayload = AppCallback<TotalItemCart>;
-
-export type GetListCartPayload = AppCallback<ListApiResponse<StoreCartItem[]>> &
-  IRequestGetListCart;
-
-export type GetCartDetailRequest = {
+export interface IRequestGetCartDetail extends AppCallback<StoreCartItem> {
   readonly cartId: number;
-};
+}
 
-export type GetCartDetailPayload = AppCallback<StoreCartItem> &
-  GetCartDetailRequest;
-
-export type GetInfoProductCheckoutPayload = {
+export interface IRequestGetInfoProductCheckout
+  extends AppCallback<CheckoutInfo> {
   readonly productId: number;
-} & AppCallback<CheckoutInfo>;
+}
 
-export type UpdateCartItemPayload = {
+export interface IRequestUpdateCartItem extends AppCallback, IRequestCheckout {
   readonly cartItemId: number;
-} & AppCallback &
-  IRequestCheckout;
+}
 
-export type RemoveCartItemPayload = {
+export interface IRequestRemoveCartItem extends AppCallback {
   readonly cartItemId: number;
-} & AppCallback;
+}
 
 export interface ICallbackCreateOrder {
   responseCreateOrder: CreateOrderResponse;
   responsePayment: IResponseInitPayment;
 }
 
-export type CreateOrderPayload = {
+export interface IRequestCreateOrder extends AppCallback<ICallbackCreateOrder> {
+  address: string;
   createLinkRequest: CreateLinkPaymentOrderRequest;
-} & AppCallback<ICallbackCreateOrder> &
-  CreateOrderRequest;
+  note: string;
+  products: ProductCreateOrder[];
+  storeId: number;
+  vouchers: VoucherOrder[];
+}
 
 export interface IResponseInitPayment {
   requiresRedirect: boolean;
@@ -142,11 +131,6 @@ export interface IKcpInitParams {
   reqAmt: string;
   kcpWebViewUrl: string;
 }
-export interface IncreaseContributeRequest {
-  amount: number;
-  payment: PaymentRequest;
-}
-
 export interface CreateLinkPaymentOrderRequest extends PaymentRequest {
   orderId: number;
 }
@@ -182,24 +166,22 @@ export interface OrderSummary {
 
 export type OrderHistoryAction = 'rate' | 'reorder';
 
-export type OrderHistoryItem = {
+export interface OrderHistoryItem {
   readonly id: string;
   readonly storeLogo: IImage;
   readonly totalAmount: number;
   readonly storeName: string;
   readonly orderNumber: string;
   readonly orderedAt: string;
-};
+}
 
-export type GetOrderHistoriesRequest = {
+export interface IRequestGetOrderHistories
+  extends AppCallback<ListApiResponse<OrderHistoryItem[]>> {
   readonly page: number;
   readonly size: number;
-};
+}
 
-export type GetOrderHistoriesPayload = GetOrderHistoriesRequest &
-  AppCallback<ListApiResponse<OrderHistoryItem[]>>;
-
-export type OrderHistoryDetailItem = {
+export interface OrderHistoryDetailItem {
   id: number;
   orderNumber: string;
   orderedAt: string;
@@ -221,7 +203,7 @@ export type OrderHistoryDetailItem = {
   paymentDueAt: string;
   createdDate: string;
   updatedDate: string;
-};
+}
 
 export interface OrderSummary {
   productPrice: number;
@@ -232,53 +214,48 @@ export interface OrderSummary {
   finalPrice: number;
 }
 
-export type OrderHistoryDetailProduct = {
+export interface OrderHistoryDetailProduct {
   readonly id: string;
   readonly name: string;
   readonly attributes: string;
   readonly quantity: number;
   readonly price: number;
   readonly imageUrl: string;
-};
+}
 
-export type GetOrderHistoryDetailRequest = {
+export interface IRequestGetOrderHistoryDetail
+  extends AppCallback<OrderHistoryDetailItem> {
   readonly orderId: string;
-};
+}
 
-export type GetOrderHistoryDetailPayload = GetOrderHistoryDetailRequest &
-  AppCallback<OrderHistoryDetailItem>;
-
-export type GetAddressOrderRecentPayload = AppCallback<string[]>;
-
-export type GenerateQRCodeRequest = {
-  readonly orderId?: string;
-};
-
-export type GenerateQRCodeResponse = {
+export interface GenerateQRCodeResponse {
   readonly expiresIn: number;
   readonly qrData: string;
-};
+}
 
-export type InitChargeRequest = {
+export interface IRequestInitCharge extends AppCallback<IKcpInitParams> {
   amount: number;
   payment: PaymentRequest;
-};
+}
 
-export type InitChargePayload = AppCallback<IKcpInitParams> & InitChargeRequest;
+export interface IRequestGenerateQRCode
+  extends AppCallback<GenerateQRCodeResponse> {
+  readonly orderId?: string;
+}
 
-export type GenerateQRCodePayload = AppCallback<GenerateQRCodeResponse> &
-  GenerateQRCodeRequest;
+export interface IRequestIncreaseContribute extends AppCallback {
+  amount: number;
+  payment: PaymentRequest;
+}
 
-export type IncreaseContributePayload = AppCallback & IncreaseContributeRequest;
-
-export type ContributeSummary = {
+export interface ContributeSummary {
   readonly currentContribution: number;
   readonly totalDividend: number;
   readonly expectedDividend: number;
   readonly expectedDividendDate: string;
-};
+}
 
-export type ContributeHistoryDetail = {
+export interface ContributeHistoryDetail {
   id: number;
   type: string;
   displayType: string;
@@ -292,23 +269,15 @@ export type ContributeHistoryDetail = {
   adminNote: string;
   kcpSessionData: string;
   virtualAccount: string;
-};
+}
 
-export type GetContributeHistoryDetailRequest = {
+export interface IRequestGetContributeHistoryDetail
+  extends AppCallback<ContributeHistoryDetail> {
   readonly historyId: number | string;
-};
+}
 
-export type GetContributeHistoryDetailPayload =
-  GetContributeHistoryDetailRequest & AppCallback<ContributeHistoryDetail>;
-
-export type GetContributeSummaryPayload = AppCallback<ContributeSummary>;
-
-export type GetHistoriesDividendRequest = {
+export interface IRequestGetHistoriesDividend
+  extends AppCallback<ListApiResponse<IDividendHistory[]>> {
   readonly page: number;
   readonly size: number;
-};
-
-export type GetHistoriesDividendPayload = AppCallback<
-  ListApiResponse<IDividendHistory[]>
-> &
-  GetHistoriesDividendRequest;
+}

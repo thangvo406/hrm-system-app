@@ -1,6 +1,9 @@
 import type {
   TAnnouncementItem,
-  TGetAnnouncementsPayload,
+  IRequestGetAnnouncementDetail,
+  IRequestGetAnnouncements,
+  IRequestGetNotificationDetail,
+  IRequestMarkRead,
   TNotificationItem,
   IRequestGetNotifications,
   IResponseAnnouncementImage,
@@ -24,7 +27,7 @@ export const getNotifications = async (
 };
 
 export const getAnnouncements = async (
-  request: TGetAnnouncementsPayload,
+  request: IRequestGetAnnouncements,
 ): Promise<ListApiResponse<TAnnouncementItem[]>> => {
   const _request = CommonUtils.removeEmptyFieldObject(request, true);
   const params = CommonUtils.objectToQueryParams(_request);
@@ -43,18 +46,18 @@ export const getAnnouncementImages =
   };
 
 export const getAnnouncementById = async (
-  announcementId: number | string,
+  request: IRequestGetAnnouncementDetail,
 ): Promise<TAnnouncementItem> => {
   const response = await httpRequest.get<SingleApiResponse<TAnnouncementItem>>(
-    EndPoints.ANNOUNCEMENTS.detail(announcementId),
+    EndPoints.ANNOUNCEMENTS.detail(request.announcementId),
     { loading: false },
   );
   return response?.data;
 };
 
-export const markRead = async (notifyId: number): Promise<void> => {
+export const markRead = async (request: IRequestMarkRead): Promise<void> => {
   await httpRequest.patch(
-    EndPoints.NOTIFICATIONS.markRead(notifyId),
+    EndPoints.NOTIFICATIONS.markRead(request.notifyId),
     undefined,
     {
       loading: false,
@@ -67,10 +70,10 @@ export const markReadAll = async (): Promise<void> => {
 };
 
 export const getNotificationDetail = async (
-  notifyId: number | string,
+  request: IRequestGetNotificationDetail,
 ): Promise<TNotificationDetail> => {
   const response = await httpRequest.get<
     SingleApiResponse<TNotificationDetail>
-  >(EndPoints.NOTIFICATIONS.detail(notifyId), { loading: false });
+  >(EndPoints.NOTIFICATIONS.detail(request.notifyId), { loading: false });
   return response.data;
 };

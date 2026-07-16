@@ -1,7 +1,7 @@
 import type {
-  GetSurveyDetailPayload,
-  GetSurveyPayload,
-  SubmitSurveyPayload,
+  IRequestGetSurveyDetail,
+  IRequestGetSurveyList,
+  IRequestSubmitSurvey,
 } from '@type/survey';
 
 import { createSlice } from '@reduxjs/toolkit';
@@ -11,15 +11,15 @@ const surveySlice = createSlice({
   name: 'survey',
   reducers: {
     getSurveyDetailRequest: {
-      prepare: (payload: GetSurveyDetailPayload) => ({ payload }),
+      prepare: (payload: IRequestGetSurveyDetail) => ({ payload }),
       reducer: () => {},
     },
     getSurveyListRequest: {
-      prepare: (payload: GetSurveyPayload = {}) => ({ payload }),
+      prepare: (payload: IRequestGetSurveyList = {}) => ({ payload }),
       reducer: () => {},
     },
     submitSurveyRequest: {
-      prepare: (payload: SubmitSurveyPayload) => ({ payload }),
+      prepare: (payload: IRequestSubmitSurvey) => ({ payload }),
       reducer: () => {},
     },
   },

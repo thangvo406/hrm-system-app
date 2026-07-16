@@ -1,7 +1,7 @@
 import type {
-  CheckoutProductPayload,
-  GetProductByIdPayload,
-  GetProductsPayload,
+  IRequestCheckoutProduct,
+  IRequestGetProductById,
+  IRequestGetProducts,
 } from '@type/products';
 
 import { createSlice } from '@reduxjs/toolkit';
@@ -11,15 +11,15 @@ const productsSlice = createSlice({
   name: 'products',
   reducers: {
     checkoutProductRequest: {
-      prepare: (payload: CheckoutProductPayload) => ({ payload }),
+      prepare: (payload: IRequestCheckoutProduct) => ({ payload }),
       reducer: () => {},
     },
     getProductByIdRequest: {
-      prepare: (payload: GetProductByIdPayload) => ({ payload }),
+      prepare: (payload: IRequestGetProductById) => ({ payload }),
       reducer: () => {},
     },
     getProductsRequest: {
-      prepare: (payload: GetProductsPayload) => ({ payload }),
+      prepare: (payload: IRequestGetProducts) => ({ payload }),
       reducer: () => {},
     },
   },

@@ -1,7 +1,8 @@
 import type {
-  GetSurveyPayload,
+  IRequestGetSurveyDetail,
+  IRequestGetSurveyList,
+  IRequestSubmitSurvey,
   IResponseSurveyDetail,
-  SubmitSurveyAnswer,
   Survey,
 } from '@type/survey';
 
@@ -10,10 +11,8 @@ import { EndPoints } from '@constants';
 import { ListApiResponse, SingleApiResponse } from '@type/common';
 import { CommonUtils } from '@utils';
 
-type GetSurveyListRequest = Omit<GetSurveyPayload, 'onFailure' | 'onSuccess'>;
-
 export const getSurveyList = async (
-  request: GetSurveyListRequest,
+  request: IRequestGetSurveyList,
 ): Promise<ListApiResponse<Survey[]>> => {
   const _request = CommonUtils.removeEmptyFieldObject(request, true);
   const params = CommonUtils.objectToQueryParams(_request);
@@ -24,17 +23,19 @@ export const getSurveyList = async (
 };
 
 export const getSurveyDetail = async (
-  surveyId: number | string,
+  request: IRequestGetSurveyDetail,
 ): Promise<IResponseSurveyDetail> => {
   const response = await httpRequest.get<
     SingleApiResponse<IResponseSurveyDetail>
-  >(EndPoints.SURVEY.detail(surveyId), { loading: false });
+  >(EndPoints.SURVEY.detail(request.surveyId), { loading: false });
   return response.data;
 };
 
 export const submitSurvey = async (
-  surveyId: number | string,
-  body: SubmitSurveyAnswer[],
+  request: IRequestSubmitSurvey,
 ): Promise<void> => {
-  await httpRequest.patch(EndPoints.SURVEY.submitSurvey(surveyId), body);
+  await httpRequest.patch(
+    EndPoints.SURVEY.submitSurvey(request.surveyId),
+    request.answers,
+  );
 };

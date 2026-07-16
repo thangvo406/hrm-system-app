@@ -13,23 +13,16 @@ import type {
   IRequestSubmitForgotPass,
   IRequestVerifyOTP,
   IRequestVerifyOtpForgotPass,
+  ICredentials,
   ISelectSchoolRequest,
+  ISelectSchoolSuccessPayload,
 } from '@type/auth';
 
-export type AuthState = {
+export interface AuthState {
   accessToken: string | undefined;
   refreshToken: string | undefined;
   universityId: number | undefined;
-};
-
-export type Credentials = {
-  accessToken: string;
-  refreshToken?: string;
-};
-
-export type SelectSchoolSuccessPayload = {
-  universityId: number;
-};
+}
 
 const initialState: AuthState = {
   accessToken: undefined,
@@ -42,7 +35,7 @@ const authSlice = createSlice({
   name: 'auth',
   reducers: {
     authFailure: () => {},
-    authSuccess: (state, action: PayloadAction<Credentials>) => {
+    authSuccess: (state, action: PayloadAction<ICredentials>) => {
       state.accessToken = action.payload.accessToken;
       if (action.payload.refreshToken !== undefined) {
         state.refreshToken = action.payload.refreshToken;
@@ -123,14 +116,14 @@ const authSlice = createSlice({
     // (e.g. account, payments) can read it from the store.
     selectSchoolSuccess: (
       state,
-      action: PayloadAction<SelectSchoolSuccessPayload>,
+      action: PayloadAction<ISelectSchoolSuccessPayload>,
     ) => {
       state.universityId = action.payload.universityId;
     },
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
     },
-    setCredentials: (state, action: PayloadAction<Credentials>) => {
+    setCredentials: (state, action: PayloadAction<ICredentials>) => {
       state.accessToken = action.payload.accessToken;
       if (action.payload.refreshToken !== undefined) {
         state.refreshToken = action.payload.refreshToken;

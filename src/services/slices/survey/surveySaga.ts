@@ -1,10 +1,10 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { ListApiResponse } from '@type/common';
 import type {
-  GetSurveyDetailPayload,
-  GetSurveyPayload,
+  IRequestGetSurveyDetail,
+  IRequestGetSurveyList,
+  IRequestSubmitSurvey,
   IResponseSurveyDetail,
-  SubmitSurveyPayload,
   Survey,
 } from '@type/survey';
 
@@ -22,7 +22,7 @@ import {
 } from './surveySlice';
 
 function* getSurveyListWorker(
-  action: PayloadAction<GetSurveyPayload>,
+  action: PayloadAction<IRequestGetSurveyList>,
 ): Generator<unknown, void, ListApiResponse<Survey[]>> {
   const { onFailure, onSuccess, ...request } = action.payload || {};
   try {
@@ -38,13 +38,13 @@ function* getSurveyListWorker(
 }
 
 function* getSurveyDetailWorker(
-  action: PayloadAction<GetSurveyDetailPayload>,
+  action: PayloadAction<IRequestGetSurveyDetail>,
 ): Generator<unknown, void, IResponseSurveyDetail> {
-  const { onFailure, onSuccess, surveyId } = action.payload;
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
     const response: IResponseSurveyDetail = yield call(
       getSurveyDetail,
-      surveyId,
+      request,
     );
     onSuccess?.(response);
   } catch (error_) {
@@ -54,11 +54,11 @@ function* getSurveyDetailWorker(
 }
 
 function* submitSurveyWorker(
-  action: PayloadAction<SubmitSurveyPayload>,
+  action: PayloadAction<IRequestSubmitSurvey>,
 ): Generator<unknown, void, void> {
-  const { onFailure, onSuccess, surveyId, answers } = action.payload;
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    yield call(submitSurvey, surveyId, answers);
+    yield call(submitSurvey, request);
     onSuccess?.();
   } catch (error_: any) {
     const message =

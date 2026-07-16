@@ -1,24 +1,26 @@
-export type SingleApiResponse<T> = { data: T };
+export interface SingleApiResponse<T> {
+  data: T;
+}
 
-export type ListApiResponse<T> = {
+export interface ListApiResponse<T> {
   content: T;
   page: number;
   size: number;
   totalElements: number;
   totalPages: number;
   last: boolean;
-};
+}
 
-export type AppCallback<T = void> = {
+export interface AppCallback<T = void> {
   readonly onFailure?: (error: string, additional?: any) => void;
   readonly onSuccess?: (data: T) => void;
-};
+}
 
-export type IImage = {
+export interface IImage {
   readonly filePath: string;
   readonly fileUrl: string;
-};
-export type SearchAddressItem = {
+}
+export interface SearchAddressItem {
   id: string;
 
   roadAddress?: string;
@@ -33,7 +35,7 @@ export type SearchAddressItem = {
   longitude: string;
   latitude: string;
   detail: KakaoDocument;
-};
+}
 
 export interface KakaoDocument {
   address: KakaoAddress;

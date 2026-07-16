@@ -1,49 +1,29 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AppCallback } from '@type/common';
 import type { Profile } from '@services/request/account';
-import type { AddressSuggestion } from '@services/request/account';
 import type {
-  GetCurrentWalletPayload,
-  GetTransactionHistoriesPayload,
-  TopUpWalletPayload,
+  IRequestGetTransactionHistories,
+  IRequestTopUpWallet,
   Wallet,
 } from '@type/wallet';
-import type { GetTotalItemCartPayload, TotalItemCart } from '@type/payment';
+import type { TotalItemCart } from '@type/payment';
 import type {
-  IRequestActiveAccount,
-  IRequestDeleteAccount,
-} from '@type/auth';
+  IRequestAutoCompleteAddress,
+  IRequestUpdateMembership,
+  IRequestUpdatePushId,
+} from '@type/account';
+import type { AuthCallback, IRequestDeleteAccount } from '@type/auth';
 
 import { createSlice } from '@reduxjs/toolkit';
 
 import { logoutSuccess } from '@services/slices/auth/authSlice';
 
-export type ActiveAccountPayload = AppCallback & IRequestActiveAccount;
-
-export type DeleteAccountPayload = AppCallback & IRequestDeleteAccount;
-
-export type GetProfilePayload = AppCallback<Profile>;
-
-export type AutoCompleteAddressPayload = {
-  readonly query: string;
-} & AppCallback<AddressSuggestion[]>;
-
-export type UpdatePushIdPayload = {
-  optedIn: boolean;
-  pushToken: string;
-  subscriptionId: string;
-};
-
-export type UpdateMembershipPayload = {
-  membershipType: string;
-} & AppCallback;
-
-export type AccountState = {
+export interface AccountState {
   currentWallet: Wallet | undefined;
   profile: Profile | undefined;
   pushId: string | undefined;
   totalItemCart: number;
-};
+}
 
 const initialState: AccountState = {
   currentWallet: undefined,
@@ -60,53 +40,54 @@ const accountSlice = createSlice({
   name: 'account',
   reducers: {
     activeAccountRequest: {
-      prepare: (payload: ActiveAccountPayload = {}) => ({ payload }),
+      prepare: (payload: AuthCallback = {}) => ({ payload }),
       reducer: () => {},
     },
     autoCompleteAddressRequest: {
-      prepare: (payload: AutoCompleteAddressPayload) => ({ payload }),
+      prepare: (payload: IRequestAutoCompleteAddress) => ({ payload }),
       reducer: () => {},
     },
     clearProfile: () => initialState,
     deleteAccountRequest: {
-      prepare: (payload: DeleteAccountPayload) => ({ payload }),
+      prepare: (payload: IRequestDeleteAccount) => ({ payload }),
       reducer: () => {},
     },
     getTotalItemCartRequest: {
-      prepare: (payload: GetTotalItemCartPayload = {}) => ({ payload }),
+      prepare: (payload: AppCallback<TotalItemCart> = {}) => ({ payload }),
       reducer: () => {},
     },
     getTotalItemCartSuccess: (state, action: PayloadAction<TotalItemCart>) => {
       state.totalItemCart = action.payload.totalCart;
     },
-    getCurrentWalletRequest: {      prepare: (payload: GetCurrentWalletPayload = {}) => ({ payload }),
+    getCurrentWalletRequest: {
+      prepare: (payload: AppCallback<Wallet> = {}) => ({ payload }),
       reducer: () => {},
     },
     getCurrentWalletSuccess: (state, action: PayloadAction<Wallet>) => {
       state.currentWallet = action.payload;
     },
     getProfileRequest: {
-      prepare: (payload: GetProfilePayload = {}) => ({ payload }),
+      prepare: (payload: AppCallback<Profile> = {}) => ({ payload }),
       reducer: () => {},
     },
     getProfileSuccess: (state, action: PayloadAction<Profile>) => {
       state.profile = action.payload;
     },
     getContributeHistoriesRequest: {
-      prepare: (payload: GetTransactionHistoriesPayload) => ({ payload }),
+      prepare: (payload: IRequestGetTransactionHistories) => ({ payload }),
       reducer: () => {},
     },
     topUpWalletRequest: {
-      prepare: (payload: TopUpWalletPayload) => ({ payload }),
+      prepare: (payload: IRequestTopUpWallet) => ({ payload }),
       reducer: () => {},
     },
     updateMembershipRequest: {
-      prepare: (payload: UpdateMembershipPayload) => ({ payload }),
+      prepare: (payload: IRequestUpdateMembership) => ({ payload }),
       reducer: () => {},
     },
     updatePushIdRequest: {
-      prepare: (payload: UpdatePushIdPayload) => ({ payload }),
-      reducer: (state, action: PayloadAction<UpdatePushIdPayload>) => {
+      prepare: (payload: IRequestUpdatePushId) => ({ payload }),
+      reducer: (state, action: PayloadAction<IRequestUpdatePushId>) => {
         state.pushId = action.payload.subscriptionId;
       },
     },

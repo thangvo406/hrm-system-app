@@ -1,8 +1,8 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
-  CheckoutProductPayload,
-  GetProductByIdPayload,
-  GetProductsPayload,
+  IRequestCheckoutProduct,
+  IRequestGetProductById,
+  IRequestGetProducts,
 } from '@type/products';
 
 import { call, takeLatest } from 'redux-saga/effects';
@@ -19,9 +19,9 @@ import {
 import { getErrorMessageApi } from '@utils/common';
 
 function* getProductsWorker(
-  action: PayloadAction<GetProductsPayload>,
+  action: PayloadAction<IRequestGetProducts>,
 ): Generator<unknown, void, void> {
-  const { onSuccess, onFailure, ...request } = action.payload;
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
     const response = yield call(getProducts, request);
     onSuccess?.(response);
@@ -32,11 +32,11 @@ function* getProductsWorker(
 }
 
 function* getProductByIdWorker(
-  action: PayloadAction<GetProductByIdPayload>,
+  action: PayloadAction<IRequestGetProductById>,
 ): Generator<unknown, void, void> {
-  const { onSuccess, onFailure, productId } = action.payload;
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response = yield call(getProductById, productId);
+    const response = yield call(getProductById, request);
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_)
@@ -45,7 +45,7 @@ function* getProductByIdWorker(
 }
 
 function* checkoutProductWorker(
-  action: PayloadAction<CheckoutProductPayload>,
+  action: PayloadAction<IRequestCheckoutProduct>,
 ): Generator<unknown, void, void> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {

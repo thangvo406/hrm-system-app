@@ -31,7 +31,7 @@ export const EndPoints = {
     getProfile: 'user/profile',
     updateMembership: 'user/membership/request',
     updatePushId: 'notification/push-subscription',
-    deleteAccount: 'deleteAccount',
+    deleteAccount: 'user/delete',
     activeAccount: 'activeAccount',
   },
   NOTIFICATIONS: {
