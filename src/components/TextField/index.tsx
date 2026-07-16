@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import imageNames from '@assets/images/names';
 import { ScaleSize } from '@kits/core';
+import { Colors } from '@constants';
 
 const ICON_SIZE = 20;
 const ICON_COLOR = '#9E9E9E';
@@ -46,6 +47,7 @@ type TextFieldProps = {
 function TextField({
   autoCapitalize = 'sentences',
   defaultValue = undefined,
+  editable = true,
   error = undefined,
   iconName,
   keyboardType = 'default',
@@ -80,7 +82,13 @@ function TextField({
   return (
     <View style={containerStyle}>
       {!!label && <Text style={styles.label}>{label}</Text>}
-      <View style={[styles.inputWrapper, hasError && styles.inputWrapperError]}>
+      <View
+        style={[
+          styles.inputWrapper,
+          !editable && styles.inputWrapperEditable,
+          hasError && styles.inputWrapperError,
+        ]}
+      >
         {!!iconName && (
           <Image
             color={ICON_COLOR}
@@ -94,6 +102,7 @@ function TextField({
           {...textInputProps}
           autoCapitalize={autoCapitalize}
           defaultValue={defaultValue}
+          editable={editable}
           keyboardType={keyboardType}
           onChangeText={_onChangeText}
           onSubmitEditing={onSubmitEditing}
@@ -176,6 +185,9 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: ScaleSize(6),
     paddingHorizontal: ScaleSize(14),
+  },
+  inputWrapperEditable: {
+    backgroundColor: Colors.gray3,
   },
   inputWrapperError: {
     borderColor: '#D32F2F',

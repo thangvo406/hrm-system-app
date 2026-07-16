@@ -1,4 +1,4 @@
-import { AppButton, Image } from '@components';
+import { AppButton, Image, ProgressiveImage } from '@components';
 import { useTranslation } from 'react-i18next';
 import {
   ScrollView,
@@ -139,7 +139,7 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
   // Khi avatar load lỗi (link chết) thì fall back về chữ cái đầu của tên.
   const [avatarError, setAvatarError] = useState(false);
 
-  const avatarUrl = profile?.avatar;
+  const avatarUrl = profile?.avatar?.fileUrl;
   const showAvatar = !!avatarUrl && !avatarError;
   const profileName = profile?.name ?? profile?.fullName ?? '';
   const profileInitial =
@@ -247,13 +247,14 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
                 // }}
               >
                 {showAvatar ? (
-                  <Image
+                  <ProgressiveImage
                     height={LOGO_SIZE}
                     onError={() => {
                       setAvatarError(true);
                     }}
                     resizeMode="cover"
-                    style={styles.avatarImage}
+                    imageStyle={styles.avatarImage}
+                    containerStyle={styles.avatarImage}
                     url={avatarUrl}
                     width={LOGO_SIZE}
                   />

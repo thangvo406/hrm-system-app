@@ -21,6 +21,7 @@ type Properties = {
   readonly url: string;
   readonly width: number | string;
   readonly name?: string;
+  readonly onError?: () => void;
 };
 
 function ProgressiveImage({
@@ -33,6 +34,7 @@ function ProgressiveImage({
   skeletonHighlightColor = DEFAULT_HIGHLIGHT_COLOR,
   url,
   width,
+  onError = undefined,
   name = '',
 }: Properties) {
   const [isLoading, setIsLoading] = useState(true);
@@ -43,6 +45,7 @@ function ProgressiveImage({
 
   const handleError = useCallback(() => {
     setIsLoading(false);
+    onError?.();
   }, []);
 
   return (

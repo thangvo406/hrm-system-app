@@ -76,6 +76,14 @@
 			<key>NSAllowsArbitraryLoads</key>
 			<true/>
 		</dict>
+		<key>NSCameraUsageDescription</key>
+		<string>Allow Camera to update avatar</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Allow Photo to update avatar</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>Cho phép Lưu ảnh vào Album</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Allow Photo to update avatar</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string/>
 		<key>RCTNewArchEnabled</key>

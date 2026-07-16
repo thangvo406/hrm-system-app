@@ -12,6 +12,8 @@ import type {
   IRequestUpdateMembership,
   IRequestUpdatePassword,
   IRequestUpdatePushId,
+  IUpdateAvatarRequest,
+  IUpdateProfileInfoRequest,
 } from '@type/account';
 import type { AuthCallback, IRequestDeleteAccount } from '@type/auth';
 
@@ -90,6 +92,14 @@ const accountSlice = createSlice({
       prepare: (payload: IRequestUpdatePassword) => ({ payload }),
       reducer: () => {},
     },
+    updateProfileInfoRequest: {
+      prepare: (payload: IUpdateProfileInfoRequest) => ({ payload }),
+      reducer: () => {},
+    },
+    uploadAvatarRequest: {
+      prepare: (payload: IUpdateAvatarRequest) => ({ payload }),
+      reducer: () => {},
+    },
     updatePushIdRequest: {
       prepare: (payload: IRequestUpdatePushId) => ({ payload }),
       reducer: (state, action: PayloadAction<IRequestUpdatePushId>) => {
@@ -114,7 +124,9 @@ export const {
   topUpWalletRequest,
   updateMembershipRequest,
   updatePasswordRequest,
+  updateProfileInfoRequest,
   updatePushIdRequest,
+  uploadAvatarRequest,
 } = accountSlice.actions;
 
 export const accountReducer = accountSlice.reducer;

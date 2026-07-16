@@ -1,4 +1,7 @@
 export const EndPoints = {
+  BASE: {
+    uploadFile: 'file/upload',
+  },
   AUTH: {
     login: 'auth/login',
     loginSocial: (provider: string) => `auth/social/${provider}/login`,
@@ -34,6 +37,7 @@ export const EndPoints = {
     deleteAccount: 'user/delete',
     activeAccount: 'activeAccount',
     changePass: 'user/change-password',
+    updateProfile: 'user/profile',
   },
   NOTIFICATIONS: {
     list: (request: string) => `notification?${request}`,

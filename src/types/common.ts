@@ -20,6 +20,9 @@ export interface IImage {
   readonly filePath: string;
   readonly fileUrl: string;
 }
+export interface IUploadFileRequest {
+  file: any;
+}
 export interface SearchAddressItem {
   id: string;
 

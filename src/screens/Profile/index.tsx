@@ -1,20 +1,18 @@
-import React, { useCallback, useState } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, { useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Button, HeaderDetail, Image, TextField } from '@components';
+import {
+  AppButton,
+  Button,
+  HeaderDetail,
+  Image,
+  ProgressiveImage,
+  TextField,
+} from '@components';
 import { ScaleSize } from '@kits/core';
-import { useAppSelector } from '@services/common/storeHooks';
-import { AccountSelector } from '@services/selectors';
 import { Colors } from '@constants';
-import { formatPhoneNumber } from '@utils/common';
-import AppNavigator from '@navigation/AppNavigator';
-import { Paths } from '@navigation/paths';
+import { useProfile } from '@hooks';
+import { NOOP } from '@utils/common';
 
 const AVATAR_SIZE = ScaleSize(72 + 25);
 const AVATAR_ICON_SIZE = ScaleSize(48);
@@ -24,24 +22,21 @@ const TEXT_COLOR = '#1A1A1A';
 
 function Profile() {
   const { t } = useTranslation();
-  const profile = useAppSelector(AccountSelector.getProfile);
-  const [fullName, setFullName] = useState(profile?.fullName ?? '');
-  const [email, setEmail] = useState(profile?.email ?? '');
-  const [phone, setPhone] = useState(
-    (profile?.phone ?? '').replaceAll(/\D/g, ''),
-  );
+  const {
+    displayPhone,
+    email,
+    fullName,
+    avatar,
+    membershipType,
+    onChangeAvatar,
+    onChangeEmail,
+    onChangeFullName,
+    onChangePhone,
+    onPressChangePass,
+    onPressSave,
+  } = useProfile();
 
-  const onChangePhone = useCallback((text: string) => {
-    setPhone(text.replaceAll(/\D/g, ''));
-  }, []);
-
-  const onPressSave = useCallback(() => {
-    // TODO: dispatch update profile action
-  }, []);
-
-  const onPressChangePass = useCallback(() => {
-    AppNavigator.navigate(Paths.UpdatePass);
-  }, []);
+  const [isAvatarError, setAvatarError] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -53,15 +48,29 @@ function Profile() {
       >
         {/* Avatar */}
         <View style={styles.avatarSection}>
-          <TouchableOpacity activeOpacity={0.8} style={styles.avatarCircle}>
-            <Image
-              color={Colors.primary}
-              height={AVATAR_ICON_SIZE}
-              name="user"
-              type="svg"
-              width={AVATAR_ICON_SIZE}
-            />
-          </TouchableOpacity>
+          <AppButton onPress={onChangeAvatar} style={styles.avatarCircle}>
+            {!isAvatarError && avatar?.fileUrl ? (
+              <ProgressiveImage
+                height={AVATAR_SIZE}
+                onError={() => {
+                  setAvatarError(true);
+                }}
+                resizeMode="cover"
+                imageStyle={styles.avatarImage}
+                containerStyle={styles.avatarImage}
+                url={avatar?.fileUrl}
+                width={AVATAR_SIZE}
+              />
+            ) : (
+              <Image
+                color={Colors.primary}
+                height={AVATAR_ICON_SIZE}
+                name="user"
+                type="svg"
+                width={AVATAR_ICON_SIZE}
+              />
+            )}
+          </AppButton>
           <Text style={styles.avatarLabel}>{t('profile.change_photo')}</Text>
         </View>
 
@@ -72,33 +81,35 @@ function Profile() {
           <TextField
             iconName="user"
             label={t('profile.field_name')}
-            onChangeText={setFullName}
+            onChangeText={onChangeFullName}
             placeholder={t('profile.placeholder_name')}
             value={fullName}
           />
           <TextField
             iconName="email"
+            editable={false}
             keyboardType="email-address"
             label={t('profile.field_email')}
-            onChangeText={setEmail}
+            onChangeText={onChangeEmail}
             placeholder={t('profile.placeholder_email')}
             value={email}
           />
           <TextField
+            editable={false}
             iconName="ic_phone"
             keyboardType="phone-pad"
             label={t('profile.field_phone')}
             onChangeText={onChangePhone}
             placeholder={t('profile.placeholder_phone')}
-            value={formatPhoneNumber(phone)}
+            value={displayPhone}
           />
           <TextField
+            editable={false}
             iconName="ic_id_card"
             label={t('profile.field_member_type')}
-            onChangeText={() => {}}
+            onChangeText={NOOP}
             placeholder=""
-            editable={false}
-            value={profile?.membershipType ?? ''}
+            value={membershipType}
           />
         </View>
       </ScrollView>
@@ -133,6 +144,9 @@ const styles = StyleSheet.create({
     height: AVATAR_SIZE,
     justifyContent: 'center',
     width: AVATAR_SIZE,
+  },
+  avatarImage: {
+    borderRadius: AVATAR_SIZE / 2,
   },
   avatarLabel: {
     color: LABEL_COLOR,

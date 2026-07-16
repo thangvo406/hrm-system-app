@@ -168,7 +168,13 @@
       "placeholder_email": "hong@univ.ac.kr",
       "placeholder_phone": "010-0000-0000",
       "save": "저장하기",
-      "change_pass": "비밀번호 변경"
+      "change_pass": "비밀번호 변경",
+      "update_success": "정보가 수정되었습니다.",
+      "image_picker": {
+        "title": "프로필 사진 선택",
+        "take_photo": "사진 촬영",
+        "open_gallery": "앨범에서 선택"
+      }
     },
     "home": {
       "greeting": "반가워요!",

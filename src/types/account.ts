@@ -21,3 +21,12 @@ export interface IRequestUpdatePushId {
   pushToken: string;
   subscriptionId: string;
 }
+
+export interface IUpdateProfileInfoRequest extends AppCallback {
+  name?: string;
+  fullName?: string;
+}
+export interface IUpdateAvatarRequest extends AppCallback {
+  avatarPath?: string;
+  file?: any;
+}

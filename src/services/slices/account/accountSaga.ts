@@ -6,6 +6,8 @@ import type {
   IRequestUpdateMembership,
   IRequestUpdatePassword,
   IRequestUpdatePushId,
+  IUpdateAvatarRequest,
+  IUpdateProfileInfoRequest,
 } from '@type/account';
 import type {
   ContributeHistory,
@@ -13,7 +15,7 @@ import type {
   IRequestTopUpWallet,
   Wallet,
 } from '@type/wallet';
-import type { AppCallback, ListApiResponse } from '@type/common';
+import type { AppCallback, IImage, ListApiResponse } from '@type/common';
 import type { TransactionHistory } from '@type/wallet';
 import type { TotalItemCart } from '@type/payment';
 import type { AuthCallback, IRequestDeleteAccount } from '@type/auth';
@@ -25,7 +27,10 @@ import {
   getProfile,
   updateMembership,
   updatePassword,
+  updateProfileInfo,
   updatePushId,
+  uploadAvatar,
+  uploadFile,
 } from '@services/request/account';
 import {
   getCurrentWallet,
@@ -50,7 +55,9 @@ import {
   topUpWalletRequest,
   updateMembershipRequest,
   updatePasswordRequest,
+  updateProfileInfoRequest,
   updatePushIdRequest,
+  uploadAvatarRequest,
 } from './accountSlice';
 import { AccountSelector } from '@services/selectors';
 import { refreshTokenRequest } from '../auth/authSlice';
@@ -130,12 +137,41 @@ function* updateMembershipWorker(
   }
 }
 
-function* updatePasswordWorker(
-  action: PayloadAction<IRequestUpdatePassword>,
-) {
+function* updatePasswordWorker(action: PayloadAction<IRequestUpdatePassword>) {
   const { onSuccess, onFailure, ...request } = action.payload;
   try {
     yield call(updatePassword, request);
+    onSuccess?.();
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* uploadAvatarWorker(action: PayloadAction<IUpdateAvatarRequest>) {
+  const { onSuccess, onFailure, ...request } = action.payload;
+  try {
+    const uploadResponse: IImage = yield call(uploadFile, {
+      file: request.file,
+    });
+    const response: Profile = yield call(uploadAvatar, {
+      avatarPath: uploadResponse.filePath,
+    });
+    yield put(getProfileSuccess(response));
+    onSuccess?.();
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* updateProfileInfoWorker(
+  action: PayloadAction<IUpdateProfileInfoRequest>,
+) {
+  const { onSuccess, onFailure, ...request } = action.payload;
+  try {
+    const response: Profile = yield call(updateProfileInfo, request);
+    yield put(getProfileSuccess(response));
     onSuccess?.();
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -210,7 +246,9 @@ export function* accountSaga() {
   yield takeLatest(getProfileRequest.type, getProfileWorker);
   yield takeLatest(updateMembershipRequest.type, updateMembershipWorker);
   yield takeLatest(updatePasswordRequest.type, updatePasswordWorker);
+  yield takeLatest(updateProfileInfoRequest.type, updateProfileInfoWorker);
   yield takeLatest(updatePushIdRequest.type, updatePushIdWorker);
+  yield takeLatest(uploadAvatarRequest.type, uploadAvatarWorker);
   yield takeLatest(getCurrentWalletRequest.type, getCurrentWalletWorker);
   yield takeLatest(
     getContributeHistoriesRequest.type,

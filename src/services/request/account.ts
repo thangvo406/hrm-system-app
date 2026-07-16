@@ -5,33 +5,33 @@ import type {
   IRequestUpdateMembership,
   IRequestUpdatePassword,
   IRequestUpdatePushId,
+  IUpdateAvatarRequest,
+  IUpdateProfileInfoRequest,
 } from '@type/account';
 
 import { httpRequest } from '@services/common/httpRequest';
 import { z } from 'zod';
 import { EndPoints } from '@constants';
-import { SingleApiResponse } from '@type/common';
+import { IImage, IUploadFileRequest, SingleApiResponse } from '@type/common';
 import { addressInstance } from '@services/common/instance';
 import { CommonUtils } from '@utils';
 
-export const profileSchema = z.object({
-  avatar: z.string().optional(),
-  email: z.string().optional(),
-  id: z.union([z.string(), z.number()]).optional(),
-  identityNumber: z.string().optional(),
-  membershipAffiliationType: z.string().optional(),
-  membershipType: z.string().optional(),
-  registrationStatus: z.string().optional(),
-  name: z.string().optional(),
-  fullName: z.string().optional(),
-  phone: z.string().optional(),
-  roleCode: z.string().optional(),
-  universityExternalId: z.string().optional(),
-  universityName: z.string().optional(),
-  permissionCodes: z.array(z.string()).optional(),
-});
-
-export type Profile = z.infer<typeof profileSchema>;
+export interface Profile {
+  avatar?: IImage;
+  email?: string;
+  id?: string | number;
+  identityNumber?: string;
+  membershipAffiliationType?: string;
+  membershipType?: string;
+  registrationStatus?: string;
+  name?: string;
+  fullName?: string;
+  phone?: string;
+  roleCode?: string;
+  universityExternalId?: string;
+  universityName?: string;
+  permissionCodes?: string[];
+}
 
 export const addressSuggestionSchema = z.object({
   address: z.string(),
@@ -64,6 +64,41 @@ export const updatePassword = async (
   request: IRequestUpdatePassword,
 ): Promise<void> => {
   await httpRequest.put(EndPoints.ACCOUNT.changePass, request);
+};
+
+export const uploadAvatar = async (
+  request: IUpdateAvatarRequest,
+): Promise<Profile> => {
+  const response = await httpRequest.put<SingleApiResponse<Profile>>(
+    EndPoints.ACCOUNT.updateProfile,
+    request,
+  );
+  return response.data;
+};
+
+export const updateProfileInfo = async (
+  request: IUpdateProfileInfoRequest,
+): Promise<Profile> => {
+  const response = await httpRequest.put<SingleApiResponse<Profile>>(
+    EndPoints.ACCOUNT.updateProfile,
+    request,
+  );
+  return response.data;
+};
+
+export const uploadFile = async (
+  request: IUploadFileRequest,
+): Promise<IImage> => {
+  const formData = new FormData();
+  formData.append('file', request.file);
+  const response = await httpRequest.post<SingleApiResponse<IImage>>(
+    EndPoints.BASE.uploadFile,
+    formData,
+    {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    },
+  );
+  return response.data;
 };
 
 export const autoCompleteAddress = async (

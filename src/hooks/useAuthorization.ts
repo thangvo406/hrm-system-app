@@ -184,7 +184,7 @@ export const useAuthorization = () => {
 
   const onLoginSuccess = (response: IResponseLogin) => {
     setLoading(false);
-    if (response.membershipStatus == MEMBER_STATUS.HIBERNATION) {
+    if (response.accountStatus == MEMBER_STATUS.HIBERNATION) {
       AppNavigator.showDialog({
         screen: InActiveAccount,
         isFullScreen: true,
@@ -201,7 +201,7 @@ export const useAuthorization = () => {
           });
         },
       });
-    } else if (response?.roleCode == MEMBERSHIP_TYPE.NON_MEMBER) {
+    } else if (response?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER) {
       AppNavigator.navigate(Paths.SchoolSelection);
       return;
     } else {

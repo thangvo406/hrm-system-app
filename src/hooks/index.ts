@@ -39,5 +39,6 @@ export { useTopUp } from './useTopUp';
 export { useQRCodePayment } from './useQRCodePayment';
 export type { QRCodePaymentData } from './useQRCodePayment';
 export { useInputAddress } from './useInputAddress';
+export { useProfile } from './useProfile';
 export { useSchoolSelection } from './useSchoolSelection';
 export { useUpdatePass } from './useUpdatePass';

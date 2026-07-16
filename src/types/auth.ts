@@ -59,13 +59,14 @@ export interface IResponseVerifyOtpForgotPass {
 }
 export interface IResponseLogin {
   accessToken: string;
-  roleCode: string;
+  membershipType: string;
   membershipStatus: string;
   refreshToken: string;
   archivedInformation: string;
   dormantDate: string;
   lastLoginDate: string;
   expiredInformation: string;
+  accountStatus: string;
 }
 export interface IResponseConfirmMemberShipVerify {
   registrationStatus: string;
