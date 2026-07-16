@@ -3,6 +3,7 @@ import { AppButton, Button, Image } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { NOOP } from '@utils/common';
+import dayjs from 'dayjs';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -49,11 +50,26 @@ function InActiveAccount({
     onReactivate();
   };
 
+  const emptyValue = '-';
   const infoRows = [
-    { label: t('inactive_account.last_login_date'), value: lastLoginDate },
-    { label: t('inactive_account.dormant_date'), value: dormantDate },
-    { label: t('inactive_account.archived_info'), value: archivedInformation },
-    { label: t('inactive_account.expired_info'), value: expiredInformation },
+    {
+      label: t('inactive_account.last_login_date'),
+      value: lastLoginDate
+        ? dayjs(lastLoginDate).format('YYYY.MM.DD')
+        : emptyValue,
+    },
+    {
+      label: t('inactive_account.dormant_date'),
+      value: dormantDate ? dayjs(dormantDate).format('YYYY.MM.DD') : emptyValue,
+    },
+    {
+      label: t('inactive_account.archived_info'),
+      value: archivedInformation || t('inactive_account.archived_info_default'),
+    },
+    {
+      label: t('inactive_account.expired_info'),
+      value: expiredInformation || t('inactive_account.expired_info_default'),
+    },
   ];
 
   return (

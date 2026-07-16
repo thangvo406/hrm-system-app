@@ -57,6 +57,16 @@ export type IResponseLoginSocial = Record<string, never>;
 export interface IResponseVerifyOtpForgotPass {
   resetToken: string;
 }
+export interface IResponseLogin {
+  accessToken: string;
+  roleCode: string;
+  membershipStatus: string;
+  refreshToken: string;
+  archivedInformation: string;
+  dormantDate: string;
+  lastLoginDate: string;
+  expiredInformation: string;
+}
 export interface IResponseConfirmMemberShipVerify {
   registrationStatus: string;
   membershipType: string;

@@ -1,5 +1,4 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { AuthResponse } from '@services/request/auth';
 import type {
   IRequestConfirmMemberShipVerify,
   IRequestGetUniversities,
@@ -12,6 +11,7 @@ import type {
   IRequestSubmitForgotPass,
   IRequestVerifyOTP,
   IRequestVerifyOtpForgotPass,
+  IResponseLogin,
 } from '@type/auth';
 
 import {
@@ -76,7 +76,7 @@ import { getErrorMessageApi } from '@utils/common';
 function* loginWorker(action: PayloadAction<IRequestLogin>) {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: AuthResponse = yield call(login, request);
+    const response: IResponseLogin = yield call(login, request);
     yield put(authSuccess(response));
     onSuccess?.(response);
   } catch (error: any) {
@@ -88,7 +88,7 @@ function* loginWorker(action: PayloadAction<IRequestLogin>) {
 function* loginSocialWorker(action: PayloadAction<IRequestLoginSocial>) {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: AuthResponse = yield call(loginSocial, request);
+    const response: IResponseLogin = yield call(loginSocial, request);
     yield put(authSuccess(response));
     onSuccess?.();
   } catch (error: any) {
@@ -148,7 +148,9 @@ function* refreshTokenWorker() {
   }
 }
 
-function* getUniversitiesWorker(action: PayloadAction<IRequestGetUniversities>) {
+function* getUniversitiesWorker(
+  action: PayloadAction<IRequestGetUniversities>,
+) {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
     const response: IResponseUniversity[] = yield call(

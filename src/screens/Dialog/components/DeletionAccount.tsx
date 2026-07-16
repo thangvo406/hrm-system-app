@@ -22,11 +22,13 @@ const DELETE_REASONS = [
   'reason_other',
 ] as const;
 
-type DeleteReason = (typeof DELETE_REASONS)[number];
-
 type Properties = {
-  readonly onSubmit?: (reason?: DeleteReason) => void;
+  readonly onSubmit?: (reason?: string) => void;
   readonly onRequestClose?: () => void;
+};
+type TReasonSelected = {
+  id: string;
+  value: string;
 };
 
 /**
@@ -41,7 +43,7 @@ function DeletionAccount({
 }: Properties) {
   const { t } = useTranslation();
   const [selectedReason, setSelectedReason] = useState<
-    DeleteReason | undefined
+    TReasonSelected | undefined
   >(undefined);
 
   const infoLines = [
@@ -52,7 +54,8 @@ function DeletionAccount({
   ];
 
   const handleDelete = () => {
-    onSubmit(selectedReason);
+    onRequestClose?.();
+    onSubmit?.(selectedReason?.value);
   };
 
   return (
@@ -124,9 +127,12 @@ function DeletionAccount({
             label={t(`deletion_account.${reason}`)}
             labelStyle={styles.reasonLabel}
             onPress={() => {
-              setSelectedReason(reason);
+              setSelectedReason({
+                id: reason,
+                value: t(`deletion_account.${reason}`),
+              });
             }}
-            selected={selectedReason === reason}
+            selected={selectedReason?.id === reason}
             style={styles.reasonCard}
             testID={`deletion-account-${reason}`}
           />

@@ -137,6 +137,20 @@
       "error_password_mismatch": "비밀번호가 일치하지 않습니다",
       "next": "다음"
     },
+    "update_pass": {
+      "title": "새로운 비밀번호를\n입력해 주세요.",
+      "current_label": "현재 비밀번호",
+      "current_placeholder": "현재 비밀번호를 입력해 주세요",
+      "new_label": "변경 비밀번호",
+      "new_placeholder": "새 비밀번호를 입력해 주세요",
+      "confirm_label": "비밀번호 확인",
+      "confirm_placeholder": "새 비밀번호를 다시 입력해 주세요",
+      "error_current_required": "현재 비밀번호를 입력해 주세요",
+      "error_confirm_required": "비밀번호를 확인해 주세요",
+      "error_password_mismatch": "비밀번호가 일치하지 않습니다",
+      "success": "비밀번호가 변경되었습니다.",
+      "next": "다음"
+    },
     "bank_information": {
       "intro": "조합원 최초 가입시,\n출자금 납부가 필요합니다.",
       "instruction": "아래 계좌로 최초 {{amount}}원을\n납부하여 신청을 완료하세요.",
@@ -527,7 +541,9 @@
       "last_login_date": "마지막 로그인 일자",
       "dormant_date": "휴면 전환 일자",
       "archived_info": "보관 정보",
+      "archived_info_default": "개인정보, 포인트",
       "expired_info": "만료 정보",
+      "expired_info_default": "없음",
       "reactivation_title": "계정 재활성화",
       "reactivation_desc": "본인 인증을 통해 즉시 계정을 다시 활성화할 수 있습니다.",
       "reactivation_note": "포인트와 혜택은 그대로 유지됩니다.",

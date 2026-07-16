@@ -22,28 +22,22 @@ import type {
   ISelectSchoolRequest,
   IResponseSendOtpVerifyMembership,
   IResponseConfirmMemberShipVerify,
+  IResponseLogin,
 } from '@type/auth';
 import omit from 'lodash/omit';
 import { httpRequest } from '@services/common/httpRequest';
-import { z } from 'zod';
 import { EndPoints } from '@constants';
 import { ListApiResponse, SingleApiResponse } from '@type/common';
 import { CommonUtils } from '@utils';
 
-export const authResponseSchema = z.object({
-  accessToken: z.string(),
-  roleCode: z.string().optional(),
-  refreshToken: z.string().optional(),
-});
-
-export type AuthResponse = z.infer<typeof authResponseSchema>;
-
-export const login = async (payload: IRequestLogin): Promise<AuthResponse> => {
-  const response = await httpRequest.post<SingleApiResponse<AuthResponse>>(
+export const login = async (
+  payload: IRequestLogin,
+): Promise<IResponseLogin> => {
+  const response = await httpRequest.post<SingleApiResponse<IResponseLogin>>(
     EndPoints.AUTH.login,
     payload,
   );
-  return authResponseSchema.parse(response.data);
+  return response.data;
 };
 
 export const registerUser = async (

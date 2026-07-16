@@ -204,6 +204,20 @@
       "error_password_mismatch": "Passwords do not match",
       "next": "Next"
     },
+    "update_pass": {
+      "title": "Please enter your\nnew password.",
+      "current_label": "Current password",
+      "current_placeholder": "Enter your current password",
+      "new_label": "New password",
+      "new_placeholder": "Enter your new password",
+      "confirm_label": "Confirm password",
+      "confirm_placeholder": "Re-enter your new password",
+      "error_current_required": "Please enter your current password",
+      "error_confirm_required": "Please confirm your password",
+      "error_password_mismatch": "Passwords do not match",
+      "success": "Password changed successfully.",
+      "next": "Next"
+    },
     "bank_information": {
       "intro": "When joining as a member for the first time,\na contribution payment is required.",
       "instruction": "Pay the initial {{amount}} KRW\nto the account below to complete your application.",
@@ -526,7 +540,9 @@
       "last_login_date": "Last Login Date",
       "dormant_date": "Dormant Date",
       "archived_info": "Archived Information",
+      "archived_info_default": "Personal info, Points",
       "expired_info": "Expired Information",
+      "expired_info_default": "None",
       "reactivation_title": "Account Reactivation",
       "reactivation_desc": "You can immediately reactivate your account through identity verification.",
       "reactivation_note": "Your points and benefits will be retained.",

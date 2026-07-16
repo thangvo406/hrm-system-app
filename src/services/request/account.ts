@@ -1,7 +1,4 @@
-import type {
-  IRequestActiveAccount,
-  IRequestDeleteAccount,
-} from '@type/auth';
+import type { IRequestActiveAccount, IRequestDeleteAccount } from '@type/auth';
 
 import type {
   IRequestAutoCompleteAddress,
@@ -53,7 +50,7 @@ export const getProfile = async (): Promise<Profile> => {
 export const deleteAccount = async (
   request: IRequestDeleteAccount,
 ): Promise<void> => {
-  await httpRequest.delete(EndPoints.ACCOUNT.deleteAccount, { data: request });
+  await httpRequest.put(EndPoints.ACCOUNT.deleteAccount, request);
 };
 
 export const activeAccount = async (

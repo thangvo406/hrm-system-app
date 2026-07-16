@@ -25,12 +25,14 @@ import {
 import { loginWithKakaoAccount } from '@react-native-seoul/kakao-login';
 import NaverLogin from '@react-native-seoul/naver-login';
 import {
-  activeAccountRequest,
+  // activeAccountRequest,
   deleteAccountRequest,
   getTotalItemCartRequest,
 } from '@services/slices/account/accountSlice';
-import { AuthResponse } from '@services/request/auth';
-import { MEMBERSHIP_TYPE } from '@constants/config';
+import { MEMBER_STATUS, MEMBERSHIP_TYPE } from '@constants/config';
+import InActiveAccount from '@dialogs/InActiveAccount';
+import DeletionAccount from '@dialogs/DeletionAccount';
+import { IResponseLogin } from '@type';
 // import InActiveAccount from '@dialogs/InActiveAccount';
 // import DeletionAccount from '@dialogs/DeletionAccount';
 
@@ -180,14 +182,32 @@ export const useAuthorization = () => {
       });
     };
 
-  const onLoginSuccess = (response: AuthResponse) => {
+  const onLoginSuccess = (response: IResponseLogin) => {
     setLoading(false);
-    if (response?.roleCode == MEMBERSHIP_TYPE.NON_MEMBER) {
+    if (response.membershipStatus == MEMBER_STATUS.HIBERNATION) {
+      AppNavigator.showDialog({
+        screen: InActiveAccount,
+        isFullScreen: true,
+        archivedInformation: response.archivedInformation,
+        dormantDate: response.dormantDate,
+        expiredInformation: response.expiredInformation,
+        lastLoginDate: response.lastLoginDate,
+        onReActiveAccount,
+        onDeleteAccount: () => {
+          AppNavigator.showDialog({
+            screen: DeletionAccount,
+            isFullScreen: true,
+            onSubmit: onDeleteAccount,
+          });
+        },
+      });
+    } else if (response?.roleCode == MEMBERSHIP_TYPE.NON_MEMBER) {
       AppNavigator.navigate(Paths.SchoolSelection);
       return;
+    } else {
+      AppNavigator.replace(AppStacks.App);
+      dispatch(getTotalItemCartRequest());
     }
-    AppNavigator.replace(AppStacks.App);
-    dispatch(getTotalItemCartRequest());
   };
 
   const onLoginFailure = (error: any) => {
@@ -221,15 +241,15 @@ export const useAuthorization = () => {
   };
 
   const onReActiveAccount = (data: any) => {
-    dispatch(
-      activeAccountRequest({
-        onSuccess: () => {
-          /* refresh profile / đóng dialog InActiveAccount */
-        },
-        onFailure: message =>
-          AppNavigator.showSnackBar({ message, type: 'failed' }),
-      }),
-    );
+    // dispatch(
+    //   activeAccountRequest({
+    //     onSuccess: () => {
+    //       /* refresh profile / đóng dialog InActiveAccount */
+    //     },
+    //     onFailure: message =>
+    //       AppNavigator.showSnackBar({ message, type: 'failed' }),
+    //   }),
+    // );
   };
 
   const onDeleteAccount = (selectedReason: string) => {
@@ -254,24 +274,6 @@ export const useAuthorization = () => {
     setLoginErrors(errors);
     if (Object.keys(errors).length > 0) return;
 
-    // AppNavigator.showDialog({
-    //   screen: InActiveAccount,
-    //   isFullScreen: true,
-    //   archivedInformation:
-    //     'Personal infor, 포인트 Personal infor, 포인트 Personal infor, 포인트',
-    //   dormantDate: '2025.06.30',
-    //   expiredInformation: 'None',
-    //   lastLoginDate: '2025.06.30',
-    //   onReActiveAccount,
-    //   onDeleteAccount: () => {
-    //     AppNavigator.showDialog({
-    //       screen: DeletionAccount,
-    //       isFullScreen: true,
-    //       onSubmit: onDeleteAccount,
-    //     });
-    //   },
-    // });
-    // return;
     setLoading(true);
     dispatch(
       loginRequest({
