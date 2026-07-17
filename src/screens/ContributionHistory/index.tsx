@@ -98,8 +98,11 @@ function PayCard() {
             <Button
               onPress={() => {}}
               style={styles.dividendDetailButton}
+              titleStyle={{
+                color: Colors.primary,
+              }}
               testID="contribute-history-dividend-detail"
-              title={t('contribute_history.dividend_detail')}
+              title={t('contribute_history.btn_dividend_detail')}
               type="outline-bordered"
             />
           </View>
@@ -153,6 +156,8 @@ const styles = StyleSheet.create({
     height: ScaleSize(36),
     paddingHorizontal: ScaleSize(14),
     width: undefined,
+    borderWidth: 1,
+    borderColor: Colors.primary,
   },
   historySection: {
     backgroundColor: '#FFFFFF',

@@ -242,9 +242,11 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
             <View style={styles.header}>
               <AppButton
                 style={styles.logoBadge}
-                // onPress={() => {
-                //   toggleLanguage();
-                // }}
+                onPress={() => {
+                  if (__DEV__) {
+                    toggleLanguage();
+                  }
+                }}
               >
                 {showAvatar ? (
                   <ProgressiveImage

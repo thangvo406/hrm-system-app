@@ -94,13 +94,7 @@ export default defineConfig(
       'react/hook-use-state': OFF,
       '@typescript-eslint/no-extraneous-class': OFF,
       'unicorn/no-static-only-class': OFF,
-      'react/require-default-props': [
-        ERROR,
-        {
-          forbidDefaultForRequired: true,
-          functions: 'defaultArguments',
-        },
-      ],
+      'react/require-default-props': OFF,
       'unicorn/filename-case': OFF,
       'unicorn/no-keyword-prefix': OFF,
       'unicorn/no-useless-undefined': OFF,
@@ -120,6 +114,7 @@ export default defineConfig(
       '@typescript-eslint/prefer-nullish-coalescing': OFF,
       'perfectionist/sort-switch-case': OFF,
       'unicorn/no-negated-condition': OFF,
+      'react/function-component-definition': OFF,
       'perfectionist/sort-interfaces': OFF,
       'react/display-name': OFF,
       '@typescript-eslint/consistent-type-definitions': OFF,

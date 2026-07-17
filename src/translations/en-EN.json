@@ -27,7 +27,7 @@
       "point_title": "Point",
       "point_balance": "Remaining point: {{amount}} point",
       "history_title": "History",
-      "tab_pay": "Investment History",
+      "tab_pay": "Contribution History",
       "tab_point": "Dividend History",
       "balance_after": "Balance: {{amount}} KRW",
       "empty": "No history to display.",
@@ -45,7 +45,7 @@
       "add_contribute": "Add Contribution",
       "cumulative_contribution": "Cumulative Contribution : {{amount}} KRW",
       "dividend_info_title": "Dividend Information",
-      "dividend_detail": "View Details",
+      "btn_dividend_detail": "View Details",
       "cumulative_dividend": "Cumulative Dividend : {{amount}} KRW",
       "expected_dividend": "Expected Dividend : {{amount}} KRW",
       "expected_dividend_date": "Expected Dividend Date : {{date}}",
@@ -54,14 +54,22 @@
         "usage_dividend": "Usage dividend: {{amount}} KRW",
         "cumulative_dividend": "Cumulative dividend: {{amount}} KRW"
       },
+      "dividend_detail": {
+        "title": "Dividend History",
+        "date_label": "Dividend Date",
+        "amount_label": "Dividend Amount",
+        "contribution_dividend": "Contribution Dividend",
+        "usage_dividend": "Usage Dividend"
+      },
       "detail": {
-        "title": "Contribution History",
-        "date_label": "Payment Date: {{date}}",
-        "amount_label": "Contribution Amount",
-        "payment_method_label": "Payment Method",
+        "title": "Contribution detail",
+        "date_label": "Contribution Date",
+        "amount_label": "Contribution amount",
+        "payment_method_label": "Contribution Type",
         "statuses": {
-          "completed": "Completed",
-          "pending": "Pending"
+          "approved": "Payment Completed",
+          "pending": "Pending",
+          "failed": "Payment failed"
         }
       }
     },

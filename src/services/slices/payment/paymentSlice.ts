@@ -6,6 +6,7 @@ import type {
   IRequestGenerateQRCode,
   IRequestGetCartDetail,
   IRequestGetContributeHistoryDetail,
+  IRequestGetDividendDetail,
   IRequestGetHistoriesDividend,
   IRequestGetInfoProductCheckout,
   IRequestGetListCart,
@@ -91,6 +92,10 @@ const paymentSlice = createSlice({
       prepare: (payload: IRequestGetHistoriesDividend) => ({ payload }),
       reducer: () => {},
     },
+    getDividendDetailRequest: {
+      prepare: (payload: IRequestGetDividendDetail) => ({ payload }),
+      reducer: () => {},
+    },
   },
 });
 
@@ -101,6 +106,7 @@ export const {
   getCartDetailRequest,
   getContributeHistoryDetailRequest,
   getContributeSummaryRequest,
+  getDividendDetailRequest,
   getHistoriesDividendRequest,
   getInfoProductCheckoutRequest,
   getListCartRequest,

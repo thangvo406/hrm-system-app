@@ -260,10 +260,15 @@ export interface ContributeHistoryDetail {
   type: string;
   displayType: string;
   amount: number;
+  contributionDividend?: number;
+  paidAt?: number;
+  totalDividend?: number;
+  usageDividend?: number;
   status: string;
   paymentCompleted: boolean;
   adminApproved: boolean;
   paymentMethod: string;
+  paymentType?: string;
   requestedAt: string;
   processedAt: string;
   adminNote: string;
@@ -280,4 +285,9 @@ export interface IRequestGetHistoriesDividend
   extends AppCallback<ListApiResponse<IDividendHistory[]>> {
   readonly page: number;
   readonly size: number;
+}
+
+export interface IRequestGetDividendDetail
+  extends AppCallback<ContributeHistoryDetail> {
+  readonly dividendId: number;
 }

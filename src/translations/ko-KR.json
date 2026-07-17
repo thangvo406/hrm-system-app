@@ -288,7 +288,7 @@
       "add_contribute": "추가 출자",
       "cumulative_contribution": "누적 출자금 : {{amount}}원",
       "dividend_info_title": "배당금 정보",
-      "dividend_detail": "상세 조회",
+      "btn_dividend_detail": "상세 조회",
       "cumulative_dividend": "누적 배당금 : {{amount}}원",
       "expected_dividend": "예상 배당금 : {{amount}}원",
       "expected_dividend_date": "예상 배당일 : {{date}}",
@@ -297,14 +297,22 @@
         "cumulative_dividend": "누적 배당금: {{amount}}원",
         "usage_dividend": "이용고 배당: {{amount}}원"
       },
+      "dividend_detail": {
+        "title": "배당 이력",
+        "date_label": "배당일시",
+        "amount_label": "배당금",
+        "contribution_dividend": "출자배당금",
+        "usage_dividend": "이용배당금"
+      },
       "detail": {
         "title": "출자 내역",
         "date_label": "납부일시",
         "amount_label": "출자금",
         "payment_method_label": "출자 유형",
         "statuses": {
-          "completed": "납부 완료",
-          "pending": "납부 대기"
+          "approved": "납부완료",
+          "pending": "대기",
+          "failed": "납부실패"
         }
       }
     },

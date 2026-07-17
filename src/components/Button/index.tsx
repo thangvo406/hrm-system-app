@@ -1,4 +1,4 @@
-import type { TouchableOpacityProps, ViewStyle } from 'react-native';
+import type { TextStyle, TouchableOpacityProps, ViewStyle } from 'react-native';
 
 import {
   ActivityIndicator,
@@ -28,6 +28,7 @@ type ButtonProps = {
   readonly loading?: boolean;
   readonly type?: ButtonType;
   readonly style?: ViewStyle;
+  readonly titleStyle?: TextStyle;
 } & Omit<TouchableOpacityProps, 'style'>;
 
 function Button({
@@ -35,7 +36,8 @@ function Button({
   title,
   loading = false,
   type = 'primary',
-  style = undefined,
+  style,
+  titleStyle,
   ...rest
 }: ButtonProps) {
   const isDisabled = disabled === true || loading;
@@ -78,6 +80,7 @@ function Button({
             styles.label,
             isOutlet && styles.labelOutline,
             isDisabled && !isOutlet && styles.labelDisabled,
+            titleStyle,
           ]}
         >
           {title}

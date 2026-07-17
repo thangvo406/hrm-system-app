@@ -23,6 +23,8 @@ export const EndPoints = {
     increase: 'contribution/increase-request',
     summary: 'contribution/summary',
     historiesDividend: (request: string) => `contribution/dividend?${request}`,
+    dividendDetail: (dividendId: number) =>
+      `contribution/dividend/${dividendId}`,
     histories: (request: string) => `contribution/history?${request}`,
     historyDetail: (historyId: number | string) =>
       `contribution/history/${historyId}`,

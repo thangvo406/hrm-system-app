@@ -10,6 +10,7 @@ import type {
   GenerateQRCodeResponse,
   IRequestGetCartDetail,
   IRequestGetContributeHistoryDetail,
+  IRequestGetDividendDetail,
   IRequestGetHistoriesDividend,
   IRequestGetInfoProductCheckout,
   IRequestGetListCart,
@@ -36,6 +37,7 @@ import {
   getCartDetail,
   getContributeHistoryDetail,
   getContributeSummary,
+  getDividendDetail,
   getHistoriesDividend,
   getInfoProductCheckout,
   getListCart,
@@ -55,6 +57,7 @@ import {
   getCartDetailRequest,
   getContributeHistoryDetailRequest,
   getContributeSummaryRequest,
+  getDividendDetailRequest,
   getHistoriesDividendRequest,
   getInfoProductCheckoutRequest,
   getListCartRequest,
@@ -298,6 +301,21 @@ function* getContributeHistoryDetailWorker(
   }
 }
 
+function* getDividendDetailWorker(
+  action: PayloadAction<IRequestGetDividendDetail>,
+): Generator<unknown, void, ContributeHistoryDetail> {
+  const { onFailure, onSuccess, dividendId } = action.payload;
+  try {
+    const response: ContributeHistoryDetail = yield call(getDividendDetail, {
+      dividendId,
+    });
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 export function* paymentSaga() {
   yield takeLatest(createOrderRequest.type, createOrderWorker);
   yield takeLatest(generateQRCodeRequest.type, generateQRCodeWorker);
@@ -313,6 +331,7 @@ export function* paymentSaga() {
     getContributeHistoryDetailRequest.type,
     getContributeHistoryDetailWorker,
   );
+  yield takeLatest(getDividendDetailRequest.type, getDividendDetailWorker);
   yield takeLatest(
     getInfoProductCheckoutRequest.type,
     getInfoProductCheckoutWorker,

@@ -29,7 +29,7 @@ class WebSocketService {
       // webSocketFactory: () =>
       //   new WebSocket('wss://coop-mobile-dev.specominc.com/ws'),
       debug: str => {
-        console.log('[STOMP]', str);
+        // console.log('[STOMP]', str);
       },
     });
 

@@ -7,12 +7,20 @@ import {
   getContributeHistoriesRequest,
 } from '@services/slices/account/accountSlice';
 import {
+  getContributeHistoryDetailRequest,
   getContributeSummaryRequest,
+  getDividendDetailRequest,
   getHistoriesDividendRequest,
 } from '@services/slices/payment/paymentSlice';
-import type { ContributeSummary, IDividendHistory } from '@type/payment';
-import type { ContributeHistory, ListApiResponse } from '@type';
+import type { ContributeHistoryDetail, ContributeSummary } from '@type/payment';
+import type {
+  IDividendHistory,
+  ContributeHistory,
+  ListApiResponse,
+} from '@type';
 import { useCallback, useRef, useState } from 'react';
+import ContributionDetail from '@dialogs/ContributionDetail';
+import { useTranslation } from 'react-i18next';
 
 export type PayCardHistoryTab = 'pay' | 'point';
 
@@ -48,7 +56,7 @@ export const useContributeHistory = () => {
     undefined,
   );
   const [loading, setLoading] = useState(true);
-
+  const { t } = useTranslation();
   const [payItems, setPayItems] = useState<ContributeHistory[]>([]);
   const [pointItems, setPointItems] = useState<IDividendHistory[]>([]);
 
@@ -145,9 +153,32 @@ export const useContributeHistory = () => {
     [getPagination],
   );
 
-  const onPressTranItem = useCallback((item: any) => {
-    AppNavigator.navigate(Paths.ContributeHistoryDetail, { id: item.id });
-  }, []);
+  const onPressTranItem = useCallback(
+    (item: any) => {
+      const isTabContribute = historyTab == 'pay';
+      const onSuccess = (detail: ContributeHistoryDetail) => {
+        AppNavigator.showDialog({
+          data: detail,
+          screen: ContributionDetail,
+          popupType: 'bottomSheet',
+          isContribute: isTabContribute,
+          title: isTabContribute
+            ? t('pay_card.tab_pay')
+            : t('pay_card.tab_point'),
+        });
+      };
+      if (!isTabContribute) {
+        dispatch(
+          getDividendDetailRequest({ dividendId: Number(item.id), onSuccess }),
+        );
+      } else {
+        dispatch(
+          getContributeHistoryDetailRequest({ historyId: item.id, onSuccess }),
+        );
+      }
+    },
+    [dispatch, historyTab],
+  );
 
   return {
     historyTab,

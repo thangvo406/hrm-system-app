@@ -8,6 +8,7 @@ import type {
   IRequestGenerateQRCode,
   IRequestGetCartDetail,
   IRequestGetContributeHistoryDetail,
+  IRequestGetDividendDetail,
   IRequestGetHistoriesDividend,
   IRequestGetInfoProductCheckout,
   IRequestGetListCart,
@@ -184,6 +185,17 @@ export const getContributeHistoryDetail = async (
   const response = await httpRequest.get<
     SingleApiResponse<ContributeHistoryDetail>
   >(EndPoints.CONTRIBUTION.historyDetail(request.historyId), {
+    loading: false,
+  });
+  return response.data;
+};
+
+export const getDividendDetail = async (
+  request: WithoutCallbacks<IRequestGetDividendDetail>,
+): Promise<ContributeHistoryDetail> => {
+  const response = await httpRequest.get<
+    SingleApiResponse<ContributeHistoryDetail>
+  >(EndPoints.CONTRIBUTION.dividendDetail(request.dividendId), {
     loading: false,
   });
   return response.data;
