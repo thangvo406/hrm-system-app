@@ -4,9 +4,12 @@ import type { Product } from '@hooks';
 
 import { Button, EmptyView, ProductsLoading } from '@components';
 import { Paths } from '@navigation/paths';
-import { Animated, Dimensions, StyleSheet, View } from 'react-native';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import type { FlatList } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import Animated, {
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from 'react-native-reanimated';
+import React, { useCallback, useMemo } from 'react';
 import { ScaleSize } from '@kits/core';
 import { useProducts } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -24,7 +27,6 @@ import { formatCurrency } from '@utils/product';
 const { ifAndroid } = DeviceUtils;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = ScaleSize(220);
-const COLLAPSE_TITLE_START = 0.8;
 const DIVIDER_COLOR = '#F0F0F0';
 
 const keyExtractor = (item: Product) => String(item.id);
@@ -47,86 +49,40 @@ function Products(props: RootScreenProps<Paths.Products>) {
     onSearchChange,
   } = useProducts(props);
   const { t } = useTranslation();
-  const scrollY = React.useMemo(() => new Animated.Value(0), []);
 
-  const frozenScrollY = React.useMemo(() => new Animated.Value(0), []);
-  const isSearchActiveRef = useRef(false);
-  const flatListRef = useRef<FlatList>(null);
+  // scrollY always tracks the FlatList offset; frozenScrollY is what every
+  // header interpolation reads. While search is open the mirror is paused,
+  // so the hero header stays put no matter how the list scrolls behind the
+  // keyboard (filter results, inset adjustments...).
+  const scrollY = useSharedValue(0);
+  const frozenScrollY = useSharedValue(0);
+  const isSearchActive = useSharedValue(false);
+
   const HERO_COLLAPSED_HEIGHT = useMemo(() => {
     return ScaleSize(54) + insets.top;
   }, [insets.top]);
 
   const collapseScroll = HERO_HEIGHT - HERO_COLLAPSED_HEIGHT;
 
-  const heroHeight = useMemo(
-    () =>
-      frozenScrollY.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [0, collapseScroll],
-        outputRange: [HERO_HEIGHT, HERO_COLLAPSED_HEIGHT],
-      }),
-    [frozenScrollY, collapseScroll],
-  );
+  const onScroll = useAnimatedScrollHandler(event => {
+    scrollY.value = event.contentOffset.y;
+    if (!isSearchActive.value) {
+      frozenScrollY.value = event.contentOffset.y;
+    }
+  });
 
-  const backButtonTop = useMemo(
-    () =>
-      frozenScrollY.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [0, collapseScroll],
-        outputRange: [insets.top + ScaleSize(8), insets.top + ScaleSize(7)],
-      }),
-    [frozenScrollY, collapseScroll, insets.top],
-  );
+  const handleSearchOpen = useCallback(() => {
+    // Lock the hero header at its current visual state.
+    isSearchActive.value = true;
+  }, [isSearchActive]);
 
-  const titleHeaderOpacity = useMemo(
-    () =>
-      frozenScrollY.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
-        outputRange: [0, 1],
-      }),
-    [frozenScrollY, collapseScroll],
-  );
+  const handleSearchClose = useCallback(() => {
+    // Re-attach the hero to live scroll and snap it to wherever the list
+    // currently sits so the next scroll event doesn't jump the banner.
+    isSearchActive.value = false;
+    frozenScrollY.value = scrollY.value;
+  }, [frozenScrollY, isSearchActive, scrollY]);
 
-  const titleStoreOpacity = useMemo(
-    () =>
-      frozenScrollY.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
-        outputRange: [1, 0],
-      }),
-    [frozenScrollY, collapseScroll],
-  );
-
-  const titleTranslateY = useMemo(
-    () =>
-      frozenScrollY.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
-        outputRange: [ScaleSize(48), 0],
-      }),
-    [frozenScrollY, collapseScroll],
-  );
-
-  const headerOverlayOpacity = useMemo(
-    () =>
-      frozenScrollY.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
-        outputRange: [0, 1],
-      }),
-    [frozenScrollY, collapseScroll],
-  );
-
-  const iconLightOpacity = useMemo(
-    () =>
-      frozenScrollY.interpolate({
-        extrapolate: 'clamp',
-        inputRange: [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
-        outputRange: [1, 0],
-      }),
-    [frozenScrollY, collapseScroll],
-  );
   const onPressProduct = React.useMemo(
     () => (item: any) => {
       AppNavigator.navigate(Paths.ProductDetail, {
@@ -152,62 +108,17 @@ function Products(props: RootScreenProps<Paths.Products>) {
     [onPressProduct],
   );
 
-  // Mirror scrollY into frozenScrollY ONLY while search is closed.
-  // Once search opens, we stop forwarding so frozenScrollY (and thus
-  // every interpolated style) stays put no matter what the FlatList
-  // does in response to the keyboard.
-  useEffect(() => {
-    const listenerId = scrollY.addListener(({ value }) => {
-      if (!isSearchActiveRef.current) {
-        frozenScrollY.setValue(value);
-      }
-    });
-    return () => scrollY.removeListener(listenerId);
-  }, [scrollY, frozenScrollY]);
-
-  const onScroll = useMemo(
-    () =>
-      Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
-        useNativeDriver: false,
-      }),
-    [scrollY],
-  );
-
-  const handleSearchOpen = useCallback(() => {
-    // Lock the hero header at its current visual state. From here on
-    // any FlatList scroll caused by the keyboard is ignored.
-    isSearchActiveRef.current = true;
-  }, []);
-
-  const handleSearchClose = useCallback(() => {
-    // Re-attach the hero to live scroll. Sync scrollY back to the
-    // frozen value first so the FlatList's native contentOffset is
-    // realigned and the next scroll event doesn't snap the banner.
-    isSearchActiveRef.current = false;
-    // @ts-expect-error _value is a private but stable RN runtime field
-    const frozenValue = frozenScrollY._value as number;
-    scrollY.setValue(frozenValue);
-    flatListRef.current?.scrollToOffset({
-      animated: false,
-      offset: frozenValue,
-    });
-  }, [scrollY, frozenScrollY]);
-
   return (
     <View style={styles.safeArea}>
       <HeroHeader
-        backButtonTop={backButtonTop}
         banner={storeInfo?.banner}
-        headerOverlayOpacity={headerOverlayOpacity}
-        heroHeight={heroHeight}
-        iconLightOpacity={iconLightOpacity}
+        collapseScroll={collapseScroll}
         onPressBack={onPressBack}
+        onSearchChange={onSearchChange}
         onSearchClose={handleSearchClose}
         onSearchOpen={handleSearchOpen}
-        onSearchChange={onSearchChange}
+        scrollY={frozenScrollY}
         storeName={storeInfo?.name}
-        titleOpacity={titleHeaderOpacity}
-        titleTranslateY={titleTranslateY}
       />
       {loading ? (
         <ProductsLoading
@@ -218,13 +129,13 @@ function Products(props: RootScreenProps<Paths.Products>) {
       ) : data?.length > 0 ? (
         <>
           <Animated.FlatList
-            ref={flatListRef}
             ItemSeparatorComponent={ItemSeparator}
             ListEmptyComponent={<ListEmpty loading={loading} />}
             ListHeaderComponent={
               <StoreInfo
+                collapseScroll={collapseScroll}
+                scrollY={frozenScrollY}
                 storeInfo={storeInfo}
-                titleOpacity={titleStoreOpacity}
               />
             }
             automaticallyAdjustKeyboardInsets={false}

@@ -1,8 +1,15 @@
+import type { SharedValue } from 'react-native-reanimated';
+
 import { Image, ProgressiveImage } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { ProductUtils } from '@utils';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  Extrapolation,
+  interpolate,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { StoreItem } from '@type/store';
@@ -17,20 +24,35 @@ const LOGO_SIZE = ScaleSize(56);
 const META_ICON_SIZE = ScaleSize(14);
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = Colors.gray1;
+const COLLAPSE_TITLE_START = 0.8;
 
 type Properties = {
+  readonly collapseScroll?: number;
+  readonly scrollY?: SharedValue<number>;
   readonly storeInfo?: StoreItem;
-  readonly titleOpacity?: Animated.AnimatedInterpolation<number>;
 };
 
 function StoreInfo({
+  collapseScroll = 0,
+  scrollY = undefined,
   storeInfo = undefined,
-  titleOpacity = undefined,
 }: Properties) {
   const { t } = useTranslation();
-  const titleStyle = titleOpacity
-    ? [styles.storeName, { opacity: titleOpacity }]
-    : styles.storeName;
+
+  // Fades the in-list store name out as the collapsed header title fades in.
+  const titleAnimatedStyle = useAnimatedStyle(() => {
+    if (!scrollY || collapseScroll <= 0) {
+      return { opacity: 1 };
+    }
+    return {
+      opacity: interpolate(
+        scrollY.value,
+        [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
+        [1, 0],
+        Extrapolation.CLAMP,
+      ),
+    };
+  });
 
   const minOrderText = isNumber(storeInfo?.minOrder)
     ? `${t('product_detail.min_order_label')}: ${ProductUtils.formatCurrency(storeInfo.minOrder)}`
@@ -68,7 +90,10 @@ function StoreInfo({
           )}
         </View>
         <View style={styles.details}>
-          <Animated.Text numberOfLines={2} style={titleStyle}>
+          <Animated.Text
+            numberOfLines={2}
+            style={[styles.storeName, titleAnimatedStyle]}
+          >
             {storeInfo?.name}
           </Animated.Text>
           {hasMeta ? (

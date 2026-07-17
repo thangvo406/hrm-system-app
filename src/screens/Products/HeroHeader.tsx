@@ -1,20 +1,31 @@
+import type { IImage } from '@type';
+import type { SharedValue } from 'react-native-reanimated';
+
 import { Image } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import {
-  Animated,
   Dimensions,
-  Easing,
   Keyboard,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import Animated, {
+  Easing,
+  Extrapolation,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
+import React, { useCallback, useRef, useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import LinearGradient from 'react-native-linear-gradient';
-import { IImage } from '@type';
 import debounce from 'lodash/debounce';
 import { NOOP } from '@utils/common';
 
@@ -32,30 +43,68 @@ const SEARCH_BAR_EXPANDED_WIDTH = SCREEN_WIDTH - SEARCH_HORIZONTAL_INSET * 2;
 const SEARCH_EXPAND_DURATION = 250;
 const PLACEHOLDER_COLOR = '#9E9E9E';
 const BANNER_OVERLAY_COLORS = ['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.2)'];
+const COLLAPSE_TITLE_START = 0.8;
+const BACK_TOP_EXPANDED = ScaleSize(8);
+const BACK_TOP_COLLAPSED = ScaleSize(7);
+const TITLE_TRANSLATE_FROM = ScaleSize(48);
+
+// Shared interpolation helpers (worklets) so every header layer reads the
+// same collapse timing from the frozen scroll value.
+const collapseRange = (
+  value: number,
+  collapseScroll: number,
+  outputRange: readonly [number, number],
+) => {
+  'worklet';
+  return interpolate(
+    value,
+    [collapseScroll * COLLAPSE_TITLE_START, collapseScroll],
+    outputRange,
+    Extrapolation.CLAMP,
+  );
+};
+
+const controlTop = (
+  value: number,
+  collapseScroll: number,
+  topInset: number,
+) => {
+  'worklet';
+  return interpolate(
+    value,
+    [0, collapseScroll],
+    [topInset + BACK_TOP_EXPANDED, topInset + BACK_TOP_COLLAPSED],
+    Extrapolation.CLAMP,
+  );
+};
 
 type HeaderIconProps = {
-  readonly grayOpacity: Animated.AnimatedInterpolation<number>;
-  readonly lightOpacity: Animated.AnimatedInterpolation<number>;
+  readonly collapseScroll: number;
   readonly name: 'ic_chevron_right' | 'ic_search';
   readonly rotate?: boolean;
+  readonly scrollY: SharedValue<number>;
 };
 
 function HeaderIcon({
-  grayOpacity,
-  lightOpacity,
+  collapseScroll,
   name,
   rotate = false,
+  scrollY,
 }: HeaderIconProps) {
   const iconStyle = rotate ? styles.backIcon : undefined;
+
+  const lightLayerStyle = useAnimatedStyle(() => ({
+    opacity: collapseRange(scrollY.value, collapseScroll, [1, 0]),
+  }));
+
+  const grayLayerStyle = useAnimatedStyle(() => ({
+    opacity: collapseRange(scrollY.value, collapseScroll, [0, 1]),
+  }));
 
   return (
     <View style={styles.iconStack}>
       <Animated.View
-        style={[
-          styles.iconLayer,
-          styles.borderRounded,
-          { opacity: lightOpacity },
-        ]}
+        style={[styles.iconLayer, styles.borderRounded, lightLayerStyle]}
       >
         <Image
           color={ICON_LIGHT}
@@ -66,7 +115,7 @@ function HeaderIcon({
           width={BACK_ICON_SIZE}
         />
       </Animated.View>
-      <Animated.View style={[styles.iconLayer, { opacity: grayOpacity }]}>
+      <Animated.View style={[styles.iconLayer, grayLayerStyle]}>
         <Image
           color={ICON_GRAY}
           height={BACK_ICON_SIZE}
@@ -81,59 +130,111 @@ function HeaderIcon({
 }
 
 type Properties = {
-  readonly backButtonTop: Animated.AnimatedInterpolation<number>;
   readonly banner?: IImage;
-  readonly headerOverlayOpacity: Animated.AnimatedInterpolation<number>;
-  readonly heroHeight: Animated.AnimatedInterpolation<number>;
-  readonly iconLightOpacity: Animated.AnimatedInterpolation<number>;
+  readonly collapseScroll: number;
   readonly onPressBack: () => void;
+  readonly onSearchChange?: (text: string) => void;
   readonly onSearchClose?: () => void;
   readonly onSearchOpen?: () => void;
-  readonly onSearchChange?: (text: string) => void;
+  readonly scrollY: SharedValue<number>;
   readonly storeName?: string;
-  readonly titleOpacity: Animated.AnimatedInterpolation<number>;
-  readonly titleTranslateY: Animated.AnimatedInterpolation<number>;
 };
 
 function HeroHeader({
   banner = undefined,
-  backButtonTop,
-  headerOverlayOpacity,
-  heroHeight,
-  iconLightOpacity,
+  collapseScroll,
   onPressBack,
+  onSearchChange = NOOP,
   onSearchClose = undefined,
   onSearchOpen = undefined,
-  onSearchChange = NOOP,
+  scrollY,
   storeName = '',
-  titleOpacity,
-  titleTranslateY,
 }: Properties) {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const searchExpand = useMemo(() => new Animated.Value(0), []);
+  const searchExpand = useSharedValue(0);
   const searchInputRef = useRef<TextInput>(null);
+  const topInset = insets.top;
 
-  const searchBarTranslateX = searchExpand.interpolate({
-    inputRange: [0, 1],
-    outputRange: [SEARCH_BAR_EXPANDED_WIDTH, 0],
-  });
+  const heroBannerStyle = useAnimatedStyle(() => ({
+    height: interpolate(
+      scrollY.value,
+      [0, collapseScroll],
+      [HERO_HEIGHT, HERO_HEIGHT - collapseScroll],
+      Extrapolation.CLAMP,
+    ),
+  }));
 
-  const searchBarOpacity = searchExpand.interpolate({
-    inputRange: [0, 0.15, 1],
-    outputRange: [0, 1, 1],
-  });
+  const heroControlsStyle = useAnimatedStyle(() => ({
+    height: interpolate(
+      scrollY.value,
+      [0, collapseScroll],
+      [HERO_HEIGHT, HERO_HEIGHT - collapseScroll],
+      Extrapolation.CLAMP,
+    ),
+  }));
 
-  const searchInputOpacity = searchExpand.interpolate({
-    inputRange: [0, 0.6, 1],
-    outputRange: [0, 0, 1],
-  });
+  const headerOverlayStyle = useAnimatedStyle(() => ({
+    opacity: collapseRange(scrollY.value, collapseScroll, [0, 1]),
+  }));
+
+  const controlsBackgroundStyle = useAnimatedStyle(() => ({
+    opacity: collapseRange(scrollY.value, collapseScroll, [0, 1]),
+  }));
+
+  const bottomShadowStyle = useAnimatedStyle(() => ({
+    opacity: collapseRange(scrollY.value, collapseScroll, [0, 1]),
+  }));
+
+  const backButtonStyle = useAnimatedStyle(() => ({
+    top: controlTop(scrollY.value, collapseScroll, topInset),
+  }));
+
+  const titleStyle = useAnimatedStyle(() => ({
+    opacity: collapseRange(scrollY.value, collapseScroll, [0, 1]),
+    top: controlTop(scrollY.value, collapseScroll, topInset),
+    transform: [
+      {
+        translateY: collapseRange(scrollY.value, collapseScroll, [
+          TITLE_TRANSLATE_FROM,
+          0,
+        ]),
+      },
+    ],
+  }));
+
+  const searchBarStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(searchExpand.value, [0, 0.15, 1], [0, 1, 1]),
+    top: controlTop(scrollY.value, collapseScroll, topInset),
+    transform: [
+      {
+        translateX: interpolate(
+          searchExpand.value,
+          [0, 1],
+          [SEARCH_BAR_EXPANDED_WIDTH, 0],
+        ),
+      },
+    ],
+  }));
+
+  const searchInputStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(searchExpand.value, [0, 0.6, 1], [0, 0, 1]),
+  }));
+
+  const searchButtonStyle = useAnimatedStyle(() => ({
+    top: controlTop(scrollY.value, collapseScroll, topInset),
+  }));
+
+  const focusSearchInput = useCallback(() => {
+    searchInputRef.current?.focus();
+  }, []);
 
   const handleToggleSearch = useCallback(() => {
     const nextOpen = !isSearchOpen;
 
     if (nextOpen) {
-      // Save scroll position before keyboard appears
+      // Freeze the hero header before the keyboard appears
       onSearchOpen?.();
     } else {
       onSearchClose?.();
@@ -142,23 +243,24 @@ function HeroHeader({
 
     setIsSearchOpen(nextOpen);
 
-    Animated.timing(searchExpand, {
-      duration: SEARCH_EXPAND_DURATION,
-      easing: Easing.out(Easing.ease),
-      toValue: nextOpen ? 1 : 0,
-      useNativeDriver: true,
-    }).start(({ finished }) => {
-      if (finished && nextOpen) {
-        searchInputRef.current?.focus();
-      }
-    });
-  }, [isSearchOpen, searchExpand, onSearchClose, onSearchOpen]);
+    searchExpand.set(
+      withTiming(
+        nextOpen ? 1 : 0,
+        { duration: SEARCH_EXPAND_DURATION, easing: Easing.out(Easing.ease) },
+        finished => {
+          if (finished && nextOpen) {
+            scheduleOnRN(focusSearchInput);
+          }
+        },
+      ),
+    );
+  }, [focusSearchInput, isSearchOpen, onSearchClose, onSearchOpen, searchExpand]);
 
   return (
     <>
       <Animated.View
         pointerEvents="none"
-        style={[styles.heroBanner, { height: heroHeight }]}
+        style={[styles.heroBanner, heroBannerStyle]}
       >
         <View style={styles.heroClip}>
           <Image
@@ -179,21 +281,21 @@ function HeroHeader({
           </View>
           <Animated.View
             pointerEvents="none"
-            style={[styles.headerOverlay, { opacity: headerOverlayOpacity }]}
+            style={[styles.headerOverlay, headerOverlayStyle]}
           />
         </View>
       </Animated.View>
       <Animated.View
         pointerEvents="box-none"
-        style={[styles.heroControls, { height: heroHeight }]}
+        style={[styles.heroControls, heroControlsStyle]}
       >
         <Animated.View
           pointerEvents="none"
-          style={[styles.controlsBackground, { opacity: headerOverlayOpacity }]}
+          style={[styles.controlsBackground, controlsBackgroundStyle]}
         />
         <Animated.View
           pointerEvents="none"
-          style={[styles.headerBottomShadow, { opacity: headerOverlayOpacity }]}
+          style={[styles.headerBottomShadow, bottomShadowStyle]}
         >
           <LinearGradient
             colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0)']}
@@ -202,50 +304,36 @@ function HeroHeader({
             style={styles.headerBottomShadowGradient}
           />
         </Animated.View>
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={onPressBack}
-          style={[styles.backButton, { top: backButtonTop }]}
-          testID="products-back"
-        >
-          <HeaderIcon
-            grayOpacity={headerOverlayOpacity}
-            lightOpacity={iconLightOpacity}
-            name="ic_chevron_right"
-            rotate
-          />
-        </TouchableOpacity>
+        <Animated.View style={[styles.backButton, backButtonStyle]}>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={onPressBack}
+            style={styles.controlTouchable}
+            testID="products-back"
+          >
+            <HeaderIcon
+              collapseScroll={collapseScroll}
+              name="ic_chevron_right"
+              rotate
+              scrollY={scrollY}
+            />
+          </TouchableOpacity>
+        </Animated.View>
         {!isSearchOpen ? (
           <Animated.View
             pointerEvents="none"
-            style={[
-              styles.titleWrap,
-              {
-                opacity: titleOpacity,
-                top: backButtonTop,
-                transform: [{ translateY: titleTranslateY }],
-              },
-            ]}
+            style={[styles.titleWrap, titleStyle]}
           >
-            <Animated.Text numberOfLines={1} style={styles.collapsedTitle}>
+            <Text numberOfLines={1} style={styles.collapsedTitle}>
               {storeName}
-            </Animated.Text>
+            </Text>
           </Animated.View>
         ) : undefined}
         <Animated.View
           pointerEvents={isSearchOpen ? 'auto' : 'none'}
-          style={[
-            styles.searchBar,
-            {
-              opacity: searchBarOpacity,
-              top: backButtonTop,
-              transform: [{ translateX: searchBarTranslateX }],
-            },
-          ]}
+          style={[styles.searchBar, searchBarStyle]}
         >
-          <Animated.View
-            style={[styles.searchInputWrap, { opacity: searchInputOpacity }]}
-          >
+          <Animated.View style={[styles.searchInputWrap, searchInputStyle]}>
             <TextInput
               placeholder={t('stores.search_placeholder')}
               placeholderTextColor={PLACEHOLDER_COLOR}
@@ -256,28 +344,30 @@ function HeroHeader({
             />
           </Animated.View>
         </Animated.View>
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={handleToggleSearch}
-          style={[styles.searchIconButton, { top: backButtonTop }]}
-          testID="products-search"
-        >
-          {isSearchOpen ? (
-            <Image
-              color={ICON_GRAY}
-              height={BACK_ICON_SIZE}
-              name="x-circle"
-              type="svg"
-              width={BACK_ICON_SIZE}
-            />
-          ) : (
-            <HeaderIcon
-              grayOpacity={headerOverlayOpacity}
-              lightOpacity={iconLightOpacity}
-              name="ic_search"
-            />
-          )}
-        </TouchableOpacity>
+        <Animated.View style={[styles.searchIconButton, searchButtonStyle]}>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={handleToggleSearch}
+            style={styles.controlTouchable}
+            testID="products-search"
+          >
+            {isSearchOpen ? (
+              <Image
+                color={ICON_GRAY}
+                height={BACK_ICON_SIZE}
+                name="x-circle"
+                type="svg"
+                width={BACK_ICON_SIZE}
+              />
+            ) : (
+              <HeaderIcon
+                collapseScroll={collapseScroll}
+                name="ic_search"
+                scrollY={scrollY}
+              />
+            )}
+          </TouchableOpacity>
+        </Animated.View>
       </Animated.View>
     </>
   );
@@ -287,9 +377,7 @@ export default React.memo(HeroHeader);
 
 const styles = StyleSheet.create({
   backButton: {
-    alignItems: 'center',
     height: BACK_BUTTON_SIZE,
-    justifyContent: 'center',
     left: ScaleSize(12),
     position: 'absolute',
     width: BACK_BUTTON_SIZE,
@@ -310,6 +398,11 @@ const styles = StyleSheet.create({
     color: TEXT_DARK,
     fontSize: ScaleSize(17),
     fontWeight: '700',
+  },
+  controlTouchable: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
   },
   controlsBackground: {
     ...StyleSheet.absoluteFillObject,
@@ -390,9 +483,7 @@ const styles = StyleSheet.create({
     zIndex: 4,
   },
   searchIconButton: {
-    alignItems: 'center',
     height: BACK_BUTTON_SIZE,
-    justifyContent: 'center',
     position: 'absolute',
     right: SEARCH_HORIZONTAL_INSET,
     width: BACK_BUTTON_SIZE,
