@@ -1,5 +1,5 @@
 import type { ListRenderItem } from 'react-native';
-import type { Survey } from '@hooks';
+import type { ISurvey } from '@type/survey';
 
 import { FlatList, StyleSheet, View } from 'react-native';
 import { EmptyView, HeaderDetail } from '@components';
@@ -13,13 +13,13 @@ import imageNames from '@assets/images/names';
 
 const BACKGROUND_COLOR = '#FFFFFF';
 
-const keyExtractor = (item: Survey) => String(item.id);
+const keyExtractor = (item: ISurvey) => String(item.id);
 
 function Survey() {
   const { t } = useTranslation();
   const { data, onLoadMore, onPressViewResult, onPressStart } = useSurvey();
 
-  const renderItem: ListRenderItem<Survey> = ({ item }) => (
+  const renderItem: ListRenderItem<ISurvey> = ({ item }) => (
     <SurveyRow
       item={item}
       onPressViewResult={onPressViewResult}

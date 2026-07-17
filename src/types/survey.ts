@@ -1,39 +1,39 @@
 import type { AppCallback, ListApiResponse } from './common';
 
-export type SurveyStatus = 'CLOSED' | 'OPEN';
+export type ISurveyStatus = 'CLOSED' | 'OPEN';
 
-export interface Survey {
+export interface ISurvey {
   id: number;
   name: string;
-  startDate: SurveyStatus;
+  startDate: ISurveyStatus;
   expireDate: number;
   allowToViewResponse: boolean;
   allowToStartSurvey: boolean;
   createdDate: string;
 }
 
-export interface SurveyAnswerOption {
+export interface ISurveyAnswerOption {
   id: number;
   questionId: number;
   content: string;
   sortOrder: number;
 }
 
-export interface SurveyQuestion {
+export interface ISurveyQuestion {
   id: number;
   surveyId: number;
   content: string;
   sortOrder: number;
-  options: SurveyAnswerOption[];
+  options: ISurveyAnswerOption[];
 }
 
-export interface SurveyDetail {
+export interface ISurveyDetail {
   id: number;
   name: string;
   startDate: string;
   expireDate: string;
   createdDate: string;
-  questions: SurveyQuestion[];
+  questions: ISurveyQuestion[];
 }
 
 export interface IRequestGetSurveyDetail
@@ -42,7 +42,7 @@ export interface IRequestGetSurveyDetail
 }
 
 export interface IRequestGetSurveyList
-  extends AppCallback<ListApiResponse<Survey[]>> {
+  extends AppCallback<ListApiResponse<ISurvey[]>> {
   fromDate?: string;
   name?: string;
   page?: number;
@@ -78,16 +78,13 @@ export interface IAnswer {
   sortOrder: number;
 }
 
-export interface SubmitSurveyAnswer {
+export interface ISubmitSurveyAnswer {
   answerText: string;
   questionId: number;
 }
 
-export interface SubmitSurveyBody {
-  answers: SubmitSurveyAnswer[];
-}
-
-export interface IRequestSubmitSurvey extends AppCallback, SubmitSurveyBody {
+export interface IRequestSubmitSurvey extends AppCallback {
   readonly surveyId: number | string;
+  answers: ISubmitSurveyAnswer[];
 }
 

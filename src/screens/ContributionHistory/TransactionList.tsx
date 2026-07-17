@@ -1,5 +1,5 @@
 import type { ListRenderItem } from 'react-native';
-import type { ContributeHistory, TransactionHistory } from '@type';
+import type { IContributeHistory, TransactionHistory } from '@type';
 
 import { AppButton, EmptyView } from '@components';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
@@ -22,7 +22,7 @@ function TransactionRow({
   item,
   onPress,
 }: {
-  readonly item: ContributeHistory;
+  readonly item: IContributeHistory;
   readonly onPress?: (data: any) => void;
 }) {
   const { t } = useTranslation();

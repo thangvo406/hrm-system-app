@@ -1,4 +1,4 @@
-import type { OrderHistoryItem } from '@type/payment';
+import type { IOrderHistoryItem } from '@type/payment';
 import type { ListApiResponse } from '@type';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -24,7 +24,7 @@ export function useOrderHistories() {
   const isLoadingMore = useRef(false);
   const timoutLoadMore = useRef(false);
 
-  const handleSuccess = (response: ListApiResponse<OrderHistoryItem[]>) => {
+  const handleSuccess = (response: ListApiResponse<IOrderHistoryItem[]>) => {
     isLast.current = response.last;
     setLoading(false);
     setData(prev => {

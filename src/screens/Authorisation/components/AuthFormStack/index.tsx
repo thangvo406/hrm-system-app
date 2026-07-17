@@ -1,4 +1,4 @@
-import type { LoginErrors, RegisterErrors, SocialProvider } from '@hooks';
+import type { TLoginErrors, RegisterErrors, SocialProvider } from '@hooks';
 import type { LoginValues } from '@screens/Authorisation/components/LoginForm';
 import type { RegisterValues } from '@screens/Authorisation/components/RegisterForm';
 
@@ -30,7 +30,7 @@ type AuthTab = 'login' | 'registration';
 type AuthFormStackProps = {
   readonly initialTab: AuthTab;
   readonly loading: boolean;
-  readonly loginErrors: LoginErrors;
+  readonly loginErrors: TLoginErrors;
   readonly loginWithSocial: (provider: SocialProvider) => void;
   readonly onClearErrors: () => void;
   readonly onForgotPassword: () => void;

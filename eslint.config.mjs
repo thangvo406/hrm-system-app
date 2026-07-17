@@ -103,6 +103,7 @@ export default defineConfig(
       'perfectionist/sort-exports': OFF,
       'perfectionist/sort-named-imports': OFF,
       'perfectionist/sort-union-types': OFF,
+      'perfectionist/sort-named-exports': OFF,
       '@typescript-eslint/no-unsafe-member-access': OFF,
       '@typescript-eslint/no-unsafe-call': OFF,
       '@typescript-eslint/no-unsafe-argument': OFF,

@@ -1,15 +1,11 @@
 import type {
-  StoreCartItem,
-  CheckoutInfo,
-  ContributeHistoryDetail,
-  ContributeSummary,
-  GenerateQRCodeResponse,
+  IStoreCartItem,
+  ICheckoutInfo,
+  IGenerateQRCodeResponse,
   IRequestCreateOrder,
   IRequestGenerateQRCode,
   IRequestGetCartDetail,
-  IRequestGetContributeHistoryDetail,
-  IRequestGetDividendDetail,
-  IRequestGetHistoriesDividend,
+
   IRequestGetInfoProductCheckout,
   IRequestGetListCart,
   IRequestGetOrderHistories,
@@ -18,13 +14,21 @@ import type {
   IRequestInitCharge,
   IRequestRemoveCartItem,
   IRequestUpdateCartItem,
-  OrderHistoryDetailItem,
-  OrderHistoryItem,
-  TotalItemCart,
-  CreateOrderResponse,
-  CreateLinkPaymentOrderRequest,
+  IOrderHistoryDetailItem,
+  IOrderHistoryItem,
+  ITotalItemCart,
+  ICreateOrderResponse,
+  ICreateLinkPaymentOrderRequest,
   IKcpInitParams,
 } from '@type/payment';
+
+import {
+  IContributeHistoryDetail,
+  IContributeSummary,
+  IRequestGetContributeHistoryDetail,
+  IRequestGetDividendDetail,
+  IRequestGetHistoriesDividend,
+} from '@type/wallet';
 
 // Các request function nhận payload đã bị saga strip 2 callback, nên param
 // dùng dạng Omit<IRequestX, 'onFailure' | 'onSuccess'>.
@@ -34,15 +38,15 @@ import { httpRequest } from '@services/common/httpRequest';
 import { EndPoints } from '@constants';
 import { CommonUtils } from '@utils';
 import { ListApiResponse, SingleApiResponse } from '@type/common';
-import { StoreItem } from '@hooks';
+import { IStoreItem } from '@type/store';
 import { IDividendHistory } from '@type';
 
 export const getInfoProductCheckout = async (
   request: WithoutCallbacks<IRequestGetInfoProductCheckout>,
-): Promise<CheckoutInfo> => {
+): Promise<ICheckoutInfo> => {
   const _request = CommonUtils.removeEmptyFieldObject(request, true);
   const params = CommonUtils.objectToQueryParams(_request);
-  const response = await httpRequest.get<SingleApiResponse<CheckoutInfo>>(
+  const response = await httpRequest.get<SingleApiResponse<ICheckoutInfo>>(
     EndPoints.PAYMENT.getInfoProductCheckout(params),
     { loading: false },
   );
@@ -59,9 +63,9 @@ export const removeCartItem = async (
 
 export const updateCartItem = async (
   request: WithoutCallbacks<IRequestUpdateCartItem>,
-): Promise<StoreItem> => {
+): Promise<IStoreItem> => {
   const { cartItemId, ...body } = request;
-  const response = await httpRequest.patch<SingleApiResponse<StoreItem>>(
+  const response = await httpRequest.patch<SingleApiResponse<IStoreItem>>(
     EndPoints.PAYMENT.updateProductCart(cartItemId),
     body,
   );
@@ -70,27 +74,27 @@ export const updateCartItem = async (
 
 export const getListCart = async (
   request: WithoutCallbacks<IRequestGetListCart>,
-): Promise<ListApiResponse<StoreCartItem[]>> => {
+): Promise<ListApiResponse<IStoreCartItem[]>> => {
   const _request = CommonUtils.removeEmptyFieldObject(request, true);
   const params = CommonUtils.objectToQueryParams(_request);
   const response = await httpRequest.get<
-    SingleApiResponse<ListApiResponse<StoreCartItem[]>>
+    SingleApiResponse<ListApiResponse<IStoreCartItem[]>>
   >(EndPoints.PAYMENT.getListCart(params), { loading: false });
   return response?.data;
 };
 
 export const getCartDetail = async (
   request: WithoutCallbacks<IRequestGetCartDetail>,
-): Promise<StoreCartItem> => {
-  const response = await httpRequest.get<SingleApiResponse<StoreCartItem>>(
+): Promise<IStoreCartItem> => {
+  const response = await httpRequest.get<SingleApiResponse<IStoreCartItem>>(
     EndPoints.PAYMENT.cartDetail(request.cartId),
     { loading: false },
   );
   return response.data;
 };
 
-export const getTotalItemCart = async (): Promise<TotalItemCart> => {
-  const response = await httpRequest.get<SingleApiResponse<TotalItemCart>>(
+export const getTotalItemCart = async (): Promise<ITotalItemCart> => {
+  const response = await httpRequest.get<SingleApiResponse<ITotalItemCart>>(
     EndPoints.PAYMENT.countTotalItemCart,
     { loading: false },
   );
@@ -99,41 +103,41 @@ export const getTotalItemCart = async (): Promise<TotalItemCart> => {
 
 export const createOrder = async (
   request: WithoutCallbacks<IRequestCreateOrder>,
-): Promise<CreateOrderResponse> => {
+): Promise<ICreateOrderResponse> => {
   const response = await httpRequest.post<
-    SingleApiResponse<CreateOrderResponse>
+    SingleApiResponse<ICreateOrderResponse>
   >(EndPoints.PAYMENT.createOrder, request);
   return response.data;
 };
 
 export const createLinkPaymentOrder = async (
-  request: CreateLinkPaymentOrderRequest,
-): Promise<CreateOrderResponse> => {
+  request: ICreateLinkPaymentOrderRequest,
+): Promise<ICreateOrderResponse> => {
   const orderId = request.orderId;
   delete request.orderId;
   const response = await httpRequest.post<
-    SingleApiResponse<CreateOrderResponse>
+    SingleApiResponse<ICreateOrderResponse>
   >(EndPoints.PAYMENT.createLinkPaymentOrder(orderId), request);
   return response.data;
 };
 
 export const getOrderHistoryDetail = async (
   request: WithoutCallbacks<IRequestGetOrderHistoryDetail>,
-): Promise<OrderHistoryDetailItem> => {
+): Promise<IOrderHistoryDetailItem> => {
   const response = await httpRequest.get<
-    SingleApiResponse<OrderHistoryDetailItem>
+    SingleApiResponse<IOrderHistoryDetailItem>
   >(EndPoints.PAYMENT.orderHistoryDetail(request.orderId), { loading: false });
   return response.data;
 };
 
 export const getOrderHistories = async (
   request: WithoutCallbacks<IRequestGetOrderHistories>,
-): Promise<ListApiResponse<OrderHistoryItem[]>> => {
+): Promise<ListApiResponse<IOrderHistoryItem[]>> => {
   const params = CommonUtils.objectToQueryParams(
     CommonUtils.removeEmptyFieldObject(request, true),
   );
   const response = await httpRequest.get<
-    SingleApiResponse<ListApiResponse<OrderHistoryItem[]>>
+    SingleApiResponse<ListApiResponse<IOrderHistoryItem[]>>
   >(EndPoints.PAYMENT.orderHistories(params), { loading: false });
   return response.data;
 };
@@ -148,9 +152,9 @@ export const getAddressOrderRecent = async (): Promise<string[]> => {
 
 export const generateQRCode = async (
   request: WithoutCallbacks<IRequestGenerateQRCode>,
-): Promise<GenerateQRCodeResponse> => {
+): Promise<IGenerateQRCodeResponse> => {
   const response = await httpRequest.post<
-    SingleApiResponse<GenerateQRCodeResponse>
+    SingleApiResponse<IGenerateQRCodeResponse>
   >(EndPoints.PAYMENT.generateQRCode, request);
   return response.data;
 };
@@ -171,8 +175,8 @@ export const increaseContribution = async (
   await httpRequest.post(EndPoints.CONTRIBUTION.increase, request);
 };
 
-export const getContributeSummary = async (): Promise<ContributeSummary> => {
-  const response = await httpRequest.get<SingleApiResponse<ContributeSummary>>(
+export const getContributeSummary = async (): Promise<IContributeSummary> => {
+  const response = await httpRequest.get<SingleApiResponse<IContributeSummary>>(
     EndPoints.CONTRIBUTION.summary,
     { loading: false },
   );
@@ -181,9 +185,9 @@ export const getContributeSummary = async (): Promise<ContributeSummary> => {
 
 export const getContributeHistoryDetail = async (
   request: WithoutCallbacks<IRequestGetContributeHistoryDetail>,
-): Promise<ContributeHistoryDetail> => {
+): Promise<IContributeHistoryDetail> => {
   const response = await httpRequest.get<
-    SingleApiResponse<ContributeHistoryDetail>
+    SingleApiResponse<IContributeHistoryDetail>
   >(EndPoints.CONTRIBUTION.historyDetail(request.historyId), {
     loading: false,
   });
@@ -192,9 +196,9 @@ export const getContributeHistoryDetail = async (
 
 export const getDividendDetail = async (
   request: WithoutCallbacks<IRequestGetDividendDetail>,
-): Promise<ContributeHistoryDetail> => {
+): Promise<IContributeHistoryDetail> => {
   const response = await httpRequest.get<
-    SingleApiResponse<ContributeHistoryDetail>
+    SingleApiResponse<IContributeHistoryDetail>
   >(EndPoints.CONTRIBUTION.dividendDetail(request.dividendId), {
     loading: false,
   });

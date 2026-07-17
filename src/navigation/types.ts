@@ -1,7 +1,7 @@
 import type { AppStacks, Paths } from '@navigation/paths';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { TNotificationItem } from '@type';
-import { StoreItem } from '@type/store';
+import { IStoreItem } from '@type/store';
 
 export type RootScreenProps<
   S extends keyof RootStackParamList = keyof RootStackParamList,
@@ -57,7 +57,7 @@ export type RootStackParamList = {
   [Paths.QRCodePayment]: undefined;
   [Paths.RegisterCompleted]: { goFrom: 'forgot_pass' } | undefined;
   [Paths.ProductDetail]: { id: number; storeId: number } | undefined;
-  [Paths.Products]: { data: StoreItem } | undefined;
+  [Paths.Products]: { data: IStoreItem } | undefined;
   [Paths.Profile]: undefined;
   [Paths.Startup]: undefined;
   [Paths.Stores]: undefined;

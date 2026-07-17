@@ -1,8 +1,8 @@
 import type { Profile } from '@services/request/account';
 import type { RootState } from '@services/common/store';
-import type { Wallet } from '@type/wallet';
+import type { IWallet } from '@type/wallet';
 
-const getCurrentWallet = (state: RootState): Wallet | undefined =>
+const getCurrentWallet = (state: RootState): IWallet | undefined =>
   state.account.currentWallet;
 const getProfile = (state: RootState): Profile | undefined =>
   state.account.profile;

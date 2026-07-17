@@ -1,5 +1,5 @@
-import type { StoreItem } from '@hooks';
-import type { Product } from '@type/store';
+import type { IStoreItem } from '@type/store';
+import type { IProduct } from '@type/products';
 
 import { Image, ProductList } from '@components';
 import { ProductUtils } from '@utils';
@@ -13,9 +13,9 @@ const ICON_SIZE = ScaleSize(18);
 const TEXT_DARK = '#1A1A1A';
 
 type Properties = {
-  readonly onPressProduct: (store: StoreItem, productId: number) => void;
-  readonly onPressStore: (store: StoreItem) => void;
-  readonly store: StoreItem;
+  readonly onPressProduct: (store: IStoreItem, productId: number) => void;
+  readonly onPressStore: (store: IStoreItem) => void;
+  readonly store: IStoreItem;
 };
 
 function StoreCard({ onPressProduct, onPressStore, store }: Properties) {
@@ -36,7 +36,7 @@ function StoreCard({ onPressProduct, onPressStore, store }: Properties) {
     <View style={styles.card} testID={`store-${store.id}`}>
       <ProductList
         onPressProduct={handlePressProduct}
-        products={store.products as Product[]}
+        products={store.products as IProduct[]}
         storeId={store.id}
       />
 

@@ -6,19 +6,13 @@ import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { generateQRCodeRequest } from '@services/slices/payment/paymentSlice';
-import type { GenerateQRCodeResponse } from '@type/payment';
+import type { IGenerateQRCodeResponse } from '@type/payment';
 import {
   setBrightnessLevel,
   resetBrightness,
 } from '@reeq/react-native-device-brightness';
 import { useFocusEffect } from '@react-navigation/native';
 
-export type QRCodePaymentData = {
-  readonly barcodeValue: string;
-  readonly payBalance: string;
-  readonly pointBalance: string;
-  readonly qrValue: string;
-};
 
 const showQRCodeViewer = (mode: QRCodeViewerMode, value?: string) => {
   AppNavigator.showDialog({
@@ -37,7 +31,7 @@ const onPressScan = () => {
 
 export const useQRCodePayment = () => {
   const dispatch = useAppDispatch();
-  const [data, setData] = useState<GenerateQRCodeResponse | undefined>();
+  const [data, setData] = useState<IGenerateQRCodeResponse | undefined>();
   const timeOutExpired = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );

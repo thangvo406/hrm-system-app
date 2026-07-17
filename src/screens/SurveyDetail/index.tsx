@@ -1,4 +1,4 @@
-import type { IQuestion } from '@hooks';
+import type { IQuestion } from '@type/survey';
 import type { ListRenderItem } from 'react-native';
 import type { Paths } from '@navigation/paths';
 import type { RootScreenProps } from '@navigation/types';

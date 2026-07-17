@@ -1,6 +1,7 @@
 import type { AppCallback, IImage, ListApiResponse } from './common';
+import { IProduct } from './products';
 
-export interface StoreItem {
+export interface IStoreItem {
   id: number;
   universityId: number;
   code: string;
@@ -15,26 +16,11 @@ export interface StoreItem {
   minOrder: string;
   sortOrder: number;
   receiveMethod: string[];
-  products: Product[];
+  products: IProduct[];
   totalAmountCart: number;
   cartId: number;
 }
 
-export interface Product {
-  id: number;
-  storeId: number;
-  categoryId: number;
-  code: string;
-  name: string;
-  description: string;
-  sellingPrice: number;
-  discountPrice: number;
-  stockQuantity: number;
-  status: string;
-  sortOrder: number;
-  thumbnail: IImage;
-  images: IImage[];
-}
 
 export interface TOperatingHour {
   dayOfWeek: string;
@@ -43,19 +29,13 @@ export interface TOperatingHour {
   closeTime: string;
 }
 
-export interface StoreProductItem {
-  id: number;
-  name: string;
-  price: number;
-  thumbnail?: { fileUrl: string };
-}
 
-export interface IRequestGetStoreDetail extends AppCallback<StoreItem> {
+export interface IRequestGetStoreDetail extends AppCallback<IStoreItem> {
   storeId: number | string;
 }
 
 export interface IRequestGetStores
-  extends AppCallback<ListApiResponse<StoreItem[]>> {
+  extends AppCallback<ListApiResponse<IStoreItem[]>> {
   keyword?: string;
   page: number;
   size: number;

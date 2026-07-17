@@ -1,5 +1,5 @@
 import type { ListRenderItem } from 'react-native';
-import type { StoreItem } from '@hooks';
+import type { IStoreItem } from '@type/store';
 
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { ScaleSize } from '@kits/core';
@@ -12,7 +12,7 @@ import StoreCard from './StoreCard';
 import HeaderDetail from '@components/HeaderDetail';
 import imageNames from '@assets/images/names';
 
-const keyExtractor = (item: StoreItem) => String(item.id);
+const keyExtractor = (item: IStoreItem) => String(item.id);
 
 function ItemSeparator() {
   return <View style={styles.separator} />;
@@ -51,7 +51,7 @@ function Stores() {
     onBack,
   } = useStore();
 
-  const renderItem: ListRenderItem<StoreItem> = ({ item }) => {
+  const renderItem: ListRenderItem<IStoreItem> = ({ item }) => {
     return (
       <StoreCard
         onPressProduct={onPressProduct}

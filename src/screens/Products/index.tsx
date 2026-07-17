@@ -1,6 +1,6 @@
 import type { RootScreenProps } from '@navigation/types';
 import type { ListRenderItem } from 'react-native';
-import type { Product } from '@hooks';
+import type { IProduct } from '@type/products';
 
 import { Button, EmptyView, ProductsLoading } from '@components';
 import { Paths } from '@navigation/paths';
@@ -29,7 +29,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = ScaleSize(220);
 const DIVIDER_COLOR = '#F0F0F0';
 
-const keyExtractor = (item: Product) => String(item.id);
+const keyExtractor = (item: IProduct) => String(item.id);
 const onPressBack = () => {
   if (AppNavigator.getPreviousRoute()?.name == Paths.ProductDetail) {
     AppNavigator.navigate(Paths.Stores);
@@ -95,7 +95,7 @@ function Products(props: RootScreenProps<Paths.Products>) {
   );
 
   const renderItem = React.useMemo(
-    (): ListRenderItem<Product> =>
+    (): ListRenderItem<IProduct> =>
       function renderItem({ item, index }) {
         return (
           <ProductRow

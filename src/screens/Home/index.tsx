@@ -13,7 +13,7 @@ import { ScaleSize } from '@kits/core';
 import { useTranslation } from 'react-i18next';
 import { useHome } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Wallet } from '@type';
+import { IWallet } from '@type';
 import StoreOrderRecent from './StoreOrderRecent';
 import { formatCurrency } from '@utils/product';
 import { DeviceUtils } from '@kits/core/utils';
@@ -34,7 +34,7 @@ function PayCard({
   onPress = undefined,
   data = undefined,
 }: {
-  readonly data?: Wallet;
+  readonly data?: IWallet;
   readonly onPress?: () => void;
 }) {
   const { t } = useTranslation();

@@ -1,4 +1,4 @@
-import type { Product } from '@hooks';
+import type { IProduct } from '@type/products';
 
 import { AppButton, Image } from '@components';
 import { ScaleSize } from '@kits/core';
@@ -16,7 +16,7 @@ const PRIMARY_COLOR = '#5BB85C';
 const STEPPER_BORDER = '#E5E5E5';
 
 type Properties = {
-  readonly item: Product;
+  readonly item: IProduct;
   readonly isFirst: boolean;
   readonly onPress: (item: any) => void;
 };

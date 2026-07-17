@@ -1,7 +1,7 @@
 import type {
   IRequestGetStoreDetail,
   IRequestGetStores,
-  StoreItem,
+  IStoreItem,
 } from '@type/store';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -11,27 +11,27 @@ import { CommonUtils } from '@utils';
 
 export const getStores = async (
   request: IRequestGetStores,
-): Promise<ListApiResponse<StoreItem[]>> => {
+): Promise<ListApiResponse<IStoreItem[]>> => {
   const _request = CommonUtils.removeEmptyFieldObject(request, true);
   const params = CommonUtils.objectToQueryParams(_request);
   const response = await httpRequest.get<
-    SingleApiResponse<ListApiResponse<StoreItem[]>>
+    SingleApiResponse<ListApiResponse<IStoreItem[]>>
   >(EndPoints.STORE.list(params), { loading: false });
   return response.data;
 };
 
 export const getStoreDetail = async (
   request: IRequestGetStoreDetail,
-): Promise<StoreItem> => {
-  const response = await httpRequest.get<SingleApiResponse<StoreItem>>(
+): Promise<IStoreItem> => {
+  const response = await httpRequest.get<SingleApiResponse<IStoreItem>>(
     EndPoints.STORE.detail(request.storeId),
     { loading: false },
   );
   return response.data;
 };
 
-export const getStoreOrderRecent = async (): Promise<StoreItem> => {
-  const response = await httpRequest.get<SingleApiResponse<StoreItem>>(
+export const getStoreOrderRecent = async (): Promise<IStoreItem> => {
+  const response = await httpRequest.get<SingleApiResponse<IStoreItem>>(
     EndPoints.STORE.storeOrderRecent,
     { loading: false },
   );

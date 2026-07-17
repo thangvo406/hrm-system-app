@@ -156,7 +156,7 @@ Always import via aliases, never deep relative paths across folders:
    export const getProducts = async (request: GetProductsPayload) => {
      const params = CommonUtils.objectToQueryParams(
        CommonUtils.removeEmptyFieldObject(request, true));
-     const response = await httpRequest.get<SingleApiResponse<ListApiResponse<Product[]>>>(
+     const response = await httpRequest.get<SingleApiResponse<ListApiResponse<IProduct[]>>>(
        EndPoints.PRODUCTS.list(params), { loading: false });
      return response.data;
    };

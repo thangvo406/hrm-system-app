@@ -1,4 +1,4 @@
-import type { IAnswer, IQuestion } from '@hooks';
+import type { IAnswer, IQuestion } from '@type/survey';
 import { RadioButton } from '@components';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, TextInput, View } from 'react-native';

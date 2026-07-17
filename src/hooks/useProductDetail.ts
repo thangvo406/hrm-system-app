@@ -1,4 +1,4 @@
-import type { AttributeDetail, IResponseProductDetail } from '@type/products';
+import type { IAttributeDetail, IResponseProductDetail } from '@type/products';
 
 import { useAppDispatch } from '@services/common/storeHooks';
 import {
@@ -13,13 +13,13 @@ import {
   updateCartItemRequest,
 } from '@services/slices/payment/paymentSlice';
 import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
-import { CheckoutInfo } from '@type';
+import { ICheckoutInfo } from '@type';
 import { groupAttributeItemsByAttributeId } from '@utils/product';
 import { useFocusEffect } from '@react-navigation/native';
 import isNumber from 'lodash/isNumber';
 import { Paths } from '@navigation/paths';
 
-export type { Product } from '@type/products';
+export type { IProduct } from '@type/products';
 
 type SelectedAttributes = Record<number, number[]>;
 
@@ -35,7 +35,7 @@ export const useProductDetail = (props: any) => {
   const [error, setError] = useState<string | undefined>(undefined);
   const [selectedAttributes, setSelectedAttributes] =
     useState<SelectedAttributes>({});
-  const [checkoutInfo, setCheckoutInfo] = useState<CheckoutInfo | null>();
+  const [checkoutInfo, setCheckoutInfo] = useState<ICheckoutInfo | null>();
 
   useEffect(() => {
     setQuantity(checkoutInfo?.quantity || 1);
@@ -89,7 +89,7 @@ export const useProductDetail = (props: any) => {
     return (basePrice + attributesPrice) * quantity;
   }, [data, quantity, selectedAttributes]);
 
-  const handleGetCheckoutInfoSuccess = (data: CheckoutInfo) => {
+  const handleGetCheckoutInfoSuccess = (data: ICheckoutInfo) => {
     setCheckoutInfo(data);
   };
   const handleSuccess = (data: IResponseProductDetail) => {
@@ -144,7 +144,7 @@ export const useProductDetail = (props: any) => {
     }, [dispatch, productId]),
   );
 
-  const onSelectAttribute = (attribute: AttributeDetail, itemId: number) => {
+  const onSelectAttribute = (attribute: IAttributeDetail, itemId: number) => {
     setSelectedAttributes(prev => {
       const current = prev[attribute.id] ?? [];
       if (attribute.type === 'RADIO') {

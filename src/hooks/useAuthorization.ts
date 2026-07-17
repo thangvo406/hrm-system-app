@@ -43,7 +43,7 @@ export type SocialProvider = 'google' | 'kakao' | 'naver';
 
 export type UseAuthorization = ReturnType<typeof useAuthorization>;
 
-export type LoginErrors = {
+export type TLoginErrors = {
   email?: string;
   password?: string;
   errorApi?: string;
@@ -72,8 +72,8 @@ NaverLogin.initialize({
 const validateLogin = (
   values: typeof initialLoginForm,
   t: (key: string) => string,
-): LoginErrors => {
-  const errors: LoginErrors = {};
+): TLoginErrors => {
+  const errors: TLoginErrors = {};
   if (values.email.length === 0) {
     errors.email = t('authorisation.error_email_required');
   } else if (!ValidateUtils.isEmail(values.email)) {
@@ -150,11 +150,11 @@ export const useAuthorization = () => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   // Initialize with errors so button is disabled on mount
-  const [loginErrors, setLoginErrors] = useState<LoginErrors>(() =>
+  const [loginErrors, setLoginErrors] = useState<TLoginErrors>(() =>
     validateLogin(initialLoginForm, k => k),
   );
   const [touchedFields, setTouchedFields] = useState<
-    ReadonlySet<keyof LoginErrors>
+    ReadonlySet<keyof TLoginErrors>
   >(() => new Set());
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { t } = useTranslation();
@@ -312,7 +312,7 @@ export const useAuthorization = () => {
     );
   };
 
-  const visibleErrors: LoginErrors = {
+  const visibleErrors: TLoginErrors = {
     email: touchedFields.has('email') ? loginErrors.email : undefined,
     password: touchedFields.has('password') ? loginErrors.password : undefined,
     errorApi: loginErrors.errorApi,

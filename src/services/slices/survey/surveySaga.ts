@@ -5,7 +5,7 @@ import type {
   IRequestGetSurveyList,
   IRequestSubmitSurvey,
   IResponseSurveyDetail,
-  Survey,
+  ISurvey,
 } from '@type/survey';
 
 import { call, takeLatest } from 'redux-saga/effects';
@@ -23,10 +23,10 @@ import {
 
 function* getSurveyListWorker(
   action: PayloadAction<IRequestGetSurveyList>,
-): Generator<unknown, void, ListApiResponse<Survey[]>> {
+): Generator<unknown, void, ListApiResponse<ISurvey[]>> {
   const { onFailure, onSuccess, ...request } = action.payload || {};
   try {
-    const response: ListApiResponse<Survey[]> = yield call(
+    const response: ListApiResponse<ISurvey[]> = yield call(
       getSurveyList,
       request,
     );

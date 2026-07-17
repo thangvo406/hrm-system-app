@@ -2,13 +2,13 @@ import type { AppCallback } from '@type/common';
 import type {
   IRequestGetStoreDetail,
   IRequestGetStores,
-  StoreItem,
+  IStoreItem,
 } from '@type/store';
 
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 type StoresState = {
-  storeOrderRecent: StoreItem | undefined;
+  storeOrderRecent: IStoreItem | undefined;
 };
 
 const initialState: StoresState = {
@@ -24,7 +24,7 @@ const storesSlice = createSlice({
       reducer: () => {},
     },
     getStoreOrderRecentRequest: {
-      prepare: (payload: AppCallback<StoreItem[]> = {}) => ({
+      prepare: (payload: AppCallback<IStoreItem[]> = {}) => ({
         payload,
       }),
       reducer: () => {},
@@ -34,8 +34,8 @@ const storesSlice = createSlice({
       reducer: () => {},
     },
     setStoreOrderRecent: {
-      prepare: (payload: StoreItem | undefined) => ({ payload }),
-      reducer: (state, action: PayloadAction<StoreItem | undefined>) => {
+      prepare: (payload: IStoreItem | undefined) => ({ payload }),
+      reducer: (state, action: PayloadAction<IStoreItem | undefined>) => {
         state.storeOrderRecent = action.payload;
       },
     },

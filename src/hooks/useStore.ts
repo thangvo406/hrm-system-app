@@ -1,5 +1,5 @@
 import type { ListApiResponse } from '@type/common';
-import type { StoreItem } from '@type/store';
+import type { IStoreItem } from '@type/store';
 import type { StoreFilterValue } from '@dialogs/FilterStore';
 
 import { Paths } from '@navigation/paths';
@@ -10,8 +10,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import AppNavigator from '@navigation/AppNavigator';
 import FilterStore from '@dialogs/FilterStore';
 import { StoresSelector } from '@services/selectors';
-
-export type { StoreItem } from '@type/store';
 
 const PAGE_SIZE = 10;
 const DEFAULT_FILTER: StoreFilterValue = {
@@ -31,7 +29,7 @@ const onBack = () => {
 export const useStore = () => {
   const dispatch = useAppDispatch();
   const storeOrderRecent = useAppSelector(StoresSelector.getStoreOrderRecent);
-  const [data, setData] = useState<readonly StoreItem[]>([]);
+  const [data, setData] = useState<readonly IStoreItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | undefined>(undefined);
   const [searchKey, setSearchKey] = useState('');
@@ -41,7 +39,7 @@ export const useStore = () => {
   const isLoadingMore = useRef(false);
 
   const handleSuccess = useCallback(
-    (response: ListApiResponse<StoreItem[]>) => {
+    (response: ListApiResponse<IStoreItem[]>) => {
       isLast.current = response.last;
       setLoading(false);
       const items = response?.content || [];
@@ -92,11 +90,11 @@ export const useStore = () => {
     setCurrentPage(prev => prev + 1);
   }, []);
 
-  const onPressStore = useCallback((store: StoreItem) => {
+  const onPressStore = useCallback((store: IStoreItem) => {
     AppNavigator.navigate(Paths.Products, { data: store });
   }, []);
 
-  const onPressProduct = useCallback((_store: StoreItem, productId: number) => {
+  const onPressProduct = useCallback((_store: IStoreItem, productId: number) => {
     AppNavigator.navigate(Paths.ProductDetail, {
       id: productId,
       storeId: _store?.id,

@@ -1,5 +1,5 @@
 import type { IconName } from '@assets/icons';
-import type { Product } from '@type/products';
+import type { IProduct } from '@type/products';
 // IconName is used via SectionCardProps below
 
 import {
@@ -88,7 +88,7 @@ function InfoRow({
 }
 
 type ProductRowProps = {
-  readonly product: Product;
+  readonly product: IProduct;
 };
 
 function ProductRow({ product }: ProductRowProps) {

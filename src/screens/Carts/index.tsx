@@ -1,5 +1,5 @@
 import type { ListRenderItem } from 'react-native';
-import type { StoreCartItem } from '@type/payment';
+import type { IStoreCartItem } from '@type/payment';
 
 import {
   FlatList,
@@ -29,13 +29,13 @@ const TEXT_GREEN = '#2FA94A';
 const THUMBNAIL_SIZE = ScaleSize(72);
 const MANAGE_FONT_SIZE = ScaleSize(14);
 
-const keyExtractor = (item: StoreCartItem) => String(item.id);
+const keyExtractor = (item: IStoreCartItem) => String(item.id);
 
 type CartRowProps = {
-  readonly item: StoreCartItem;
+  readonly item: IStoreCartItem;
   readonly isManaging: boolean;
   readonly onRemove: (cartItemId: number) => void;
-  readonly onPressItem: (item: StoreCartItem) => void;
+  readonly onPressItem: (item: IStoreCartItem) => void;
 };
 
 const CartRow = React.memo(
@@ -109,7 +109,7 @@ function Carts() {
     titleManageCart,
   } = useCart();
 
-  const renderItem: ListRenderItem<StoreCartItem> = ({ item }) => (
+  const renderItem: ListRenderItem<IStoreCartItem> = ({ item }) => (
     <CartRow
       isManaging={isManaging}
       item={item}

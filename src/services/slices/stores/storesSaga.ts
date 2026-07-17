@@ -3,7 +3,7 @@ import type { ListApiResponse } from '@type/common';
 import type {
   IRequestGetStoreDetail,
   IRequestGetStores,
-  StoreItem,
+  IStoreItem,
 } from '@type/store';
 
 import { call, put, takeLatest } from 'redux-saga/effects';
@@ -23,10 +23,10 @@ import { getErrorMessageApi } from '@utils/common';
 
 function* getStoresWorker(
   action: PayloadAction<IRequestGetStores>,
-): Generator<unknown, void, ListApiResponse<StoreItem[]>> {
+): Generator<unknown, void, ListApiResponse<IStoreItem[]>> {
   const { onFailure, onSuccess, ...request } = action.payload || {};
   try {
-    const response: ListApiResponse<StoreItem[]> = yield call(
+    const response: ListApiResponse<IStoreItem[]> = yield call(
       getStores,
       request,
     );
@@ -39,10 +39,10 @@ function* getStoresWorker(
 
 function* getStoreDetailWorker(
   action: PayloadAction<IRequestGetStoreDetail>,
-): Generator<unknown, void, StoreItem> {
+): Generator<unknown, void, IStoreItem> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: StoreItem = yield call(getStoreDetail, request);
+    const response: IStoreItem = yield call(getStoreDetail, request);
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -50,9 +50,9 @@ function* getStoreDetailWorker(
   }
 }
 
-function* getStoreOrderRecentWorker(): Generator<unknown, void, StoreItem[]> {
+function* getStoreOrderRecentWorker(): Generator<unknown, void, IStoreItem[]> {
   try {
-    const response: StoreItem = yield call(getStoreOrderRecent);
+    const response: IStoreItem = yield call(getStoreOrderRecent);
     yield put(setStoreOrderRecent(response));
   } catch {
     //TODO: //handle error

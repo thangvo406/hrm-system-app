@@ -1,5 +1,3 @@
-import type { Product } from '@type/products';
-
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getProductsRequest } from '@services/slices/products/productsSlice';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -8,17 +6,17 @@ import type { RootScreenProps } from '@navigation/types';
 import { Paths } from '@navigation/paths';
 import AppNavigator from '@navigation/AppNavigator';
 import { getStoreDetailRequest } from '@services/slices/stores/storesSlice';
-import { StoreItem } from '@type/store';
+import { IStoreItem } from '@type/store';
+import { IProduct } from '@type';
 
-export type { Product } from '@type/products';
 
 export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   const dispatch = useAppDispatch();
   const { data: store, storeId } = AppNavigator.getParams(props);
-  const [data, setData] = useState<Product[]>([]);
+  const [data, setData] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const [storeInfo, setStoreInfo] = useState<StoreItem | undefined>(store);
+  const [storeInfo, setStoreInfo] = useState<IStoreItem | undefined>(store);
   const [searchKey, setSearchKey] = useState('');
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
@@ -28,7 +26,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
       cartId: storeInfo?.cartId,
     });
   };
-  const handleSuccess = (data: ListApiResponse<Product[]>) => {
+  const handleSuccess = (data: ListApiResponse<IProduct[]>) => {
     // setData(items);
     setLoading(false);
     isLast.current = data.last;
@@ -70,7 +68,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
       getStoreDetailRequest({
         storeId: storeId || store?.id,
         // onFailure: handleFailure,
-        onSuccess: (data: StoreItem) => {
+        onSuccess: (data: IStoreItem) => {
           setStoreInfo(data);
         },
         onFailure: () => {

@@ -12,34 +12,25 @@ import {
   getDividendDetailRequest,
   getHistoriesDividendRequest,
 } from '@services/slices/payment/paymentSlice';
-import type { ContributeHistoryDetail, ContributeSummary } from '@type/payment';
+import type { IContributeHistoryDetail, IContributeSummary } from '@type/wallet';
 import type {
   IDividendHistory,
-  ContributeHistory,
+  IContributeHistory,
   ListApiResponse,
 } from '@type';
 import { useCallback, useRef, useState } from 'react';
 import ContributionDetail from '@dialogs/ContributionDetail';
 import { useTranslation } from 'react-i18next';
 
-export type PayCardHistoryTab = 'pay' | 'point';
+type TPayCardHistoryTab = 'pay' | 'point';
 
-export type PayCardTransaction = {
-  readonly amount: string;
-  readonly balanceAfter: string;
-  readonly date: string;
-  readonly description: string;
-  readonly id: string;
-  readonly type: PayCardHistoryTab;
-};
-
-type TabPaginationState = {
+type TTabPaginationState = {
   isLast: boolean;
   isLoadingMore: boolean;
   page: number;
 };
 
-const INITIAL_PAGINATION: TabPaginationState = {
+const INITIAL_PAGINATION: TTabPaginationState = {
   isLast: false,
   isLoadingMore: false,
   page: 0,
@@ -50,27 +41,27 @@ const onRecharge = () => {
 };
 
 export const useContributeHistory = () => {
-  const [historyTab, setHistoryTab] = useState<PayCardHistoryTab>('pay');
+  const [historyTab, setHistoryTab] = useState<TPayCardHistoryTab>('pay');
   const dispatch = useAppDispatch();
-  const [summary, setSummary] = useState<ContributeSummary | undefined>(
+  const [summary, setSummary] = useState<IContributeSummary | undefined>(
     undefined,
   );
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
-  const [payItems, setPayItems] = useState<ContributeHistory[]>([]);
+  const [payItems, setPayItems] = useState<IContributeHistory[]>([]);
   const [pointItems, setPointItems] = useState<IDividendHistory[]>([]);
 
-  const payPagination = useRef<TabPaginationState>({ ...INITIAL_PAGINATION });
-  const pointPagination = useRef<TabPaginationState>({ ...INITIAL_PAGINATION });
+  const payPagination = useRef<TTabPaginationState>({ ...INITIAL_PAGINATION });
+  const pointPagination = useRef<TTabPaginationState>({ ...INITIAL_PAGINATION });
 
   const getPagination = useCallback(
-    (tab: PayCardHistoryTab) =>
+    (tab: TPayCardHistoryTab) =>
       tab === 'pay' ? payPagination : pointPagination,
     [],
   );
 
   const fetchTab = useCallback(
-    (tab: PayCardHistoryTab, page: number) => {
+    (tab: TPayCardHistoryTab, page: number) => {
       const pagination = getPagination(tab);
 
       if (tab === 'pay') {
@@ -79,7 +70,7 @@ export const useContributeHistory = () => {
             balanceAccountType: 'CONTRIBUTION',
             page,
             size: 20,
-            onSuccess: (data: ListApiResponse<ContributeHistory[]>) => {
+            onSuccess: (data: ListApiResponse<IContributeHistory[]>) => {
               pagination.current.isLast = data.last;
               pagination.current.isLoadingMore = false;
               setPayItems(prev =>
@@ -146,7 +137,7 @@ export const useContributeHistory = () => {
   }, [historyTab, fetchTab, getPagination]);
 
   const onChangeTab = useCallback(
-    (tab: PayCardHistoryTab) => {
+    (tab: TPayCardHistoryTab) => {
       setHistoryTab(tab);
       getPagination(tab).current = { ...INITIAL_PAGINATION };
     },
@@ -156,7 +147,7 @@ export const useContributeHistory = () => {
   const onPressTranItem = useCallback(
     (item: any) => {
       const isTabContribute = historyTab == 'pay';
-      const onSuccess = (detail: ContributeHistoryDetail) => {
+      const onSuccess = (detail: IContributeHistoryDetail) => {
         AppNavigator.showDialog({
           data: detail,
           screen: ContributionDetail,

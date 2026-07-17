@@ -1,30 +1,34 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
-  StoreCartItem,
-  CheckoutInfo,
-  ContributeHistoryDetail,
-  ContributeSummary,
+  IStoreCartItem,
+  ICheckoutInfo,
+
   IRequestCreateOrder,
-  CreateOrderResponse,
+  ICreateOrderResponse,
   IRequestGenerateQRCode,
-  GenerateQRCodeResponse,
+  IGenerateQRCodeResponse,
   IRequestGetCartDetail,
-  IRequestGetContributeHistoryDetail,
-  IRequestGetDividendDetail,
-  IRequestGetHistoriesDividend,
+
   IRequestGetInfoProductCheckout,
   IRequestGetListCart,
   IRequestGetOrderHistories,
   IRequestGetOrderHistoryDetail,
   IRequestIncreaseContribute,
   IRequestInitCharge,
-  OrderHistoryDetailItem,
-  OrderHistoryItem,
+  IOrderHistoryDetailItem,
+  IOrderHistoryItem,
   IRequestRemoveCartItem,
   IRequestUpdateCartItem,
   IResponseInitPayment,
   IKcpInitParams,
 } from '@type/payment';
+import {
+  IContributeHistoryDetail,
+  IContributeSummary,
+  IRequestGetContributeHistoryDetail,
+  IRequestGetDividendDetail,
+  IRequestGetHistoriesDividend,
+} from '@type/wallet';
 import type { AppCallback, ListApiResponse } from '@type/common';
 
 import { call, takeLatest } from 'redux-saga/effects';
@@ -72,10 +76,10 @@ import { IDividendHistory } from '@type';
 
 function* getInfoProductCheckoutWorker(
   action: PayloadAction<IRequestGetInfoProductCheckout>,
-): Generator<unknown, void, CheckoutInfo> {
+): Generator<unknown, void, ICheckoutInfo> {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
-    const response: CheckoutInfo = yield call(getInfoProductCheckout, request);
+    const response: ICheckoutInfo = yield call(getInfoProductCheckout, request);
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -85,10 +89,10 @@ function* getInfoProductCheckoutWorker(
 
 function* getListCartWorker(
   action: PayloadAction<IRequestGetListCart>,
-): Generator<unknown, void, ListApiResponse<StoreCartItem[]>> {
+): Generator<unknown, void, ListApiResponse<IStoreCartItem[]>> {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
-    const response: ListApiResponse<StoreCartItem[]> = yield call(
+    const response: ListApiResponse<IStoreCartItem[]> = yield call(
       getListCart,
       request,
     );
@@ -127,12 +131,12 @@ function* updateCartItemWorker(
 
 function* createOrderWorker(
   action: PayloadAction<IRequestCreateOrder>,
-): Generator<unknown, void, CreateOrderResponse> {
+): Generator<unknown, void, ICreateOrderResponse> {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
     const createLinkRequest = request.createLinkRequest;
     delete request.createLinkRequest;
-    const responseCreateOrder: CreateOrderResponse = yield call(
+    const responseCreateOrder: ICreateOrderResponse = yield call(
       createOrder,
       request,
     );
@@ -159,10 +163,10 @@ function* createOrderWorker(
 
 function* getOrderHistoriesWorker(
   action: PayloadAction<IRequestGetOrderHistories>,
-): Generator<unknown, void, ListApiResponse<OrderHistoryItem[]>> {
+): Generator<unknown, void, ListApiResponse<IOrderHistoryItem[]>> {
   const { onFailure, onSuccess, page, size } = action.payload;
   try {
-    const response: ListApiResponse<OrderHistoryItem[]> = yield call(
+    const response: ListApiResponse<IOrderHistoryItem[]> = yield call(
       getOrderHistories,
       { page, size },
     );
@@ -175,10 +179,10 @@ function* getOrderHistoriesWorker(
 
 function* getCartDetailWorker(
   action: PayloadAction<IRequestGetCartDetail>,
-): Generator<unknown, void, StoreCartItem> {
+): Generator<unknown, void, IStoreCartItem> {
   const { onFailure, onSuccess, cartId } = action.payload;
   try {
-    const response: StoreCartItem = yield call(getCartDetail, { cartId });
+    const response: IStoreCartItem = yield call(getCartDetail, { cartId });
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -204,10 +208,10 @@ function* getHistoriesDividendWorker(
 
 function* getOrderHistoryDetailWorker(
   action: PayloadAction<IRequestGetOrderHistoryDetail>,
-): Generator<unknown, void, OrderHistoryDetailItem> {
+): Generator<unknown, void, IOrderHistoryDetailItem> {
   const { onFailure, onSuccess, orderId } = action.payload;
   try {
-    const response: OrderHistoryDetailItem = yield call(getOrderHistoryDetail, {
+    const response: IOrderHistoryDetailItem = yield call(getOrderHistoryDetail, {
       orderId,
     });
     onSuccess?.(response);
@@ -232,10 +236,10 @@ function* getAddressOrderRecentWorker(
 
 function* generateQRCodeWorker(
   action: PayloadAction<IRequestGenerateQRCode>,
-): Generator<unknown, void, GenerateQRCodeResponse> {
+): Generator<unknown, void, IGenerateQRCodeResponse> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: GenerateQRCodeResponse = yield call(
+    const response: IGenerateQRCodeResponse = yield call(
       generateQRCode,
       request,
     );
@@ -273,11 +277,11 @@ function* increaseContributionWorker(
 }
 
 function* getContributeSummaryWorker(
-  action: PayloadAction<AppCallback<ContributeSummary>>,
-): Generator<unknown, void, ContributeSummary> {
+  action: PayloadAction<AppCallback<IContributeSummary>>,
+): Generator<unknown, void, IContributeSummary> {
   const { onFailure, onSuccess } = action.payload;
   try {
-    const response: ContributeSummary = yield call(getContributeSummary);
+    const response: IContributeSummary = yield call(getContributeSummary);
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -287,10 +291,10 @@ function* getContributeSummaryWorker(
 
 function* getContributeHistoryDetailWorker(
   action: PayloadAction<IRequestGetContributeHistoryDetail>,
-): Generator<unknown, void, ContributeHistoryDetail> {
+): Generator<unknown, void, IContributeHistoryDetail> {
   const { onFailure, onSuccess, historyId } = action.payload;
   try {
-    const response: ContributeHistoryDetail = yield call(
+    const response: IContributeHistoryDetail = yield call(
       getContributeHistoryDetail,
       { historyId },
     );
@@ -303,10 +307,10 @@ function* getContributeHistoryDetailWorker(
 
 function* getDividendDetailWorker(
   action: PayloadAction<IRequestGetDividendDetail>,
-): Generator<unknown, void, ContributeHistoryDetail> {
+): Generator<unknown, void, IContributeHistoryDetail> {
   const { onFailure, onSuccess, dividendId } = action.payload;
   try {
-    const response: ContributeHistoryDetail = yield call(getDividendDetail, {
+    const response: IContributeHistoryDetail = yield call(getDividendDetail, {
       dividendId,
     });
     onSuccess?.(response);

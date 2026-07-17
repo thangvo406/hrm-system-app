@@ -18,7 +18,6 @@ import debounce from 'lodash/debounce';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter } from 'react-native';
-export type DeliveryTab = 'DELIVERY' | 'PICKUP';
 
 export type UsePaymentCart = ReturnType<typeof usePaymentCart>;
 

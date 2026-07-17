@@ -1,6 +1,51 @@
 import type { AppCallback, ListApiResponse } from './common';
 
-export interface ContributeHistory {
+
+export interface IContributeSummary {
+  readonly currentContribution: number;
+  readonly totalDividend: number;
+  readonly expectedDividend: number;
+  readonly expectedDividendDate: string;
+}
+
+export interface IContributeHistoryDetail {
+  id: number;
+  type: string;
+  displayType: string;
+  amount: number;
+  contributionDividend?: number;
+  paidAt?: number;
+  totalDividend?: number;
+  usageDividend?: number;
+  status: string;
+  paymentCompleted: boolean;
+  adminApproved: boolean;
+  paymentMethod: string;
+  paymentType?: string;
+  requestedAt: string;
+  processedAt: string;
+  adminNote: string;
+  kcpSessionData: string;
+  virtualAccount: string;
+}
+
+export interface IRequestGetContributeHistoryDetail
+  extends AppCallback<IContributeHistoryDetail> {
+  readonly historyId: number | string;
+}
+
+export interface IRequestGetHistoriesDividend
+  extends AppCallback<ListApiResponse<IDividendHistory[]>> {
+  readonly page: number;
+  readonly size: number;
+}
+
+export interface IRequestGetDividendDetail
+  extends AppCallback<IContributeHistoryDetail> {
+  readonly dividendId: number;
+}
+
+export interface IContributeHistory {
   id: number;
   type: string;
   displayType: string;
@@ -24,12 +69,12 @@ export interface IDividendHistory {
 }
 
 export interface IRequestGetTransactionHistories
-  extends AppCallback<ListApiResponse<ContributeHistory[]>> {
+  extends AppCallback<ListApiResponse<IContributeHistory[]>> {
   balanceAccountType: string;
   page: number;
   size: number;
 }
-export interface Wallet {
+export interface IWallet {
   id: number;
   userId: number;
   balance: number;
@@ -62,3 +107,4 @@ export interface IRequestTopUpWallet extends AppCallback {
   paymentTransactionId: string;
   description: string;
 }
+

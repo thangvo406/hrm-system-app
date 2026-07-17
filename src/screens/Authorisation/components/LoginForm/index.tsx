@@ -1,5 +1,5 @@
 import { Button, TextField } from '@components';
-import type { LoginErrors } from '@hooks';
+import type { TLoginErrors } from '@hooks';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
 import React, { useRef } from 'react';
@@ -11,7 +11,7 @@ export type LoginValues = {
 };
 
 type LoginFormProps = {
-  readonly errors: LoginErrors;
+  readonly errors: TLoginErrors;
   readonly loading?: boolean;
   readonly onChange: (field: keyof LoginValues) => (value: string) => void;
   readonly onForgotPassword?: () => void;

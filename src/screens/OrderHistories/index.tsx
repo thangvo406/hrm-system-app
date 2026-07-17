@@ -1,4 +1,4 @@
-import type { OrderHistoryItem } from '@type/payment';
+import type { IOrderHistoryItem } from '@type/payment';
 import type { ListRenderItem } from 'react-native';
 
 import { EmptyView, HeaderDetail, OrderHistoriesLoading } from '@components';
@@ -10,7 +10,7 @@ import imageNames from '@assets/images/names';
 import { useTranslation } from 'react-i18next';
 const SCREEN_BG = '#F7F7F7';
 
-function keyExtractor(item: OrderHistoryItem) {
+function keyExtractor(item: IOrderHistoryItem) {
   return item.id;
 }
 
@@ -24,7 +24,7 @@ function OrderHistories() {
 
   const { t } = useTranslation();
 
-  const renderItem: ListRenderItem<OrderHistoryItem> = ({ item }) => (
+  const renderItem: ListRenderItem<IOrderHistoryItem> = ({ item }) => (
     <OrderHistoryRow
       price={item.totalAmount}
       storeName={item.storeName}

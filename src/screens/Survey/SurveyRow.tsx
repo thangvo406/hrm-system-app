@@ -1,4 +1,4 @@
-import type { Survey } from '@hooks';
+import type { ISurvey } from '@type/survey';
 
 import { Button } from '@components';
 import { ScaleSize } from '@kits/core';
@@ -9,9 +9,9 @@ import { useTranslation } from 'react-i18next';
 const TEXT_DARK = '#1A1A1A';
 
 type Properties = {
-  readonly item: Survey;
-  readonly onPressViewResult: (item: Survey) => void;
-  readonly onPressStart: (item: Survey) => void;
+  readonly item: ISurvey;
+  readonly onPressViewResult: (item: ISurvey) => void;
+  readonly onPressStart: (item: ISurvey) => void;
 };
 
 function SurveyRow({ item, onPressViewResult, onPressStart }: Properties) {

@@ -1,4 +1,4 @@
-import type { Product } from '@type/store';
+import type { IProduct } from '@type/products';
 
 import { ProgressiveImage } from '@components';
 import { Globals, ProductUtils } from '@utils';
@@ -21,7 +21,7 @@ const BANNER_OVERLAY_COLORS = ['rgba(0,0,0,0.4)', 'rgba(0,0,0,0.05)'];
 
 type Properties = {
   readonly onPressProduct: (productId: number) => void;
-  readonly products: Product[];
+  readonly products: IProduct[];
   readonly storeId: number;
   readonly style?: ViewStyle | ViewStyle[];
 };
@@ -43,7 +43,7 @@ function ProductList({ onPressProduct, style, products, storeId }: Properties) {
       }}
       showsHorizontalScrollIndicator={false}
     >
-      {(products || []).map((product: Product) => {
+      {(products || []).map((product: IProduct) => {
         const thumbUri = product.thumbnail?.fileUrl;
         const originalPrice = isNumber(product.discountPrice)
           ? product.discountPrice

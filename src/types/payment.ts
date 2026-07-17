@@ -1,65 +1,64 @@
 import type { AppCallback, IImage, ListApiResponse } from './common';
-import type { IRequestCheckout, Product } from './products';
-import { IDividendHistory } from './wallet';
+import type { IRequestCheckout, IProduct } from './products';
 
-export interface CheckoutInfoItem {
+export interface ICheckoutInfoItem {
   readonly attributeItemId: number;
 }
 
-export interface CheckoutInfo {
+export interface ICheckoutInfo {
   readonly quantity: number;
   readonly finalPrice: number;
-  readonly selectedAttributes: CheckoutInfoItem[];
+  readonly selectedAttributes: ICheckoutInfoItem[];
   readonly subTotal: number;
   readonly cartItemId: number;
 }
 
-export interface TotalItemCart {
+export interface ITotalItemCart {
   readonly totalCart: number;
 }
 
-export interface PaymentRequest {
+export interface IPaymentRequest {
   paymentType: string;
   paymentMethodId?: number;
   easyPayMethod?: string;
   vaBankCode?: string;
 }
 
-export interface StoreCartItem {
+export interface IStoreCartItem {
   id: number;
   userId: number;
   storeId: number;
   storeName: string;
-  storeAddress: StoreAddress;
+  storeAddress: IStoreAddress;
   subTotal: number;
   totalQuantity: number;
-  items: ProductCart[];
+  items: IProductCart[];
   storeLogo: IImage;
   storeReceiveMethod: string[];
 }
 
-export interface ProductCreateOrder {
+export interface IProductCreateOrder {
   id: number;
   quantity: number;
-  selectedAttributes: AttributeCart[];
+  selectedAttributes: IAttributeCart[];
 }
-export interface VoucherOrder {
+export interface IVoucherOrder {
   id: number;
   quantity: number;
 }
-export interface StoreAddress {
+export interface IStoreAddress {
   addressText: string;
   latitude: string;
   longitude: string;
 }
 
 export interface IRequestGetListCart
-  extends AppCallback<ListApiResponse<StoreCartItem[]>> {
+  extends AppCallback<ListApiResponse<IStoreCartItem[]>> {
   page: number;
   size: number;
 }
 
-export interface ProductCart {
+export interface IProductCart {
   id: number;
   productId: number;
   productCode: string;
@@ -69,13 +68,13 @@ export interface ProductCart {
   quantity: number;
   totalAmount: number;
   selected: boolean;
-  selectedAttributes: AttributeCart[];
+  selectedAttributes: IAttributeCart[];
   productDeleted: boolean;
   productStatus: string;
   productStockQuantity: number;
 }
 
-export interface AttributeCart {
+export interface IAttributeCart {
   attributeId: number;
   attributeName: string;
   attributeType: string;
@@ -84,12 +83,12 @@ export interface AttributeCart {
   price: number;
 }
 
-export interface IRequestGetCartDetail extends AppCallback<StoreCartItem> {
+export interface IRequestGetCartDetail extends AppCallback<IStoreCartItem> {
   readonly cartId: number;
 }
 
 export interface IRequestGetInfoProductCheckout
-  extends AppCallback<CheckoutInfo> {
+  extends AppCallback<ICheckoutInfo> {
   readonly productId: number;
 }
 
@@ -102,17 +101,17 @@ export interface IRequestRemoveCartItem extends AppCallback {
 }
 
 export interface ICallbackCreateOrder {
-  responseCreateOrder: CreateOrderResponse;
+  responseCreateOrder: ICreateOrderResponse;
   responsePayment: IResponseInitPayment;
 }
 
 export interface IRequestCreateOrder extends AppCallback<ICallbackCreateOrder> {
   address: string;
-  createLinkRequest: CreateLinkPaymentOrderRequest;
+  createLinkRequest: ICreateLinkPaymentOrderRequest;
   note: string;
-  products: ProductCreateOrder[];
+  products: IProductCreateOrder[];
   storeId: number;
-  vouchers: VoucherOrder[];
+  vouchers: IVoucherOrder[];
 }
 
 export interface IResponseInitPayment {
@@ -131,10 +130,10 @@ export interface IKcpInitParams {
   reqAmt: string;
   kcpWebViewUrl: string;
 }
-export interface CreateLinkPaymentOrderRequest extends PaymentRequest {
+export interface ICreateLinkPaymentOrderRequest extends IPaymentRequest {
   orderId: number;
 }
-export interface CreateOrderResponse {
+export interface ICreateOrderResponse {
   id: number;
   userId: number;
   storeId: number;
@@ -142,31 +141,20 @@ export interface CreateOrderResponse {
   createdBy: any;
   status: string;
   note: string;
-  address: OrderAddress;
-  summary: OrderSummary;
+  address: IOrderAddress;
+  summary: IOrderSummary;
   paymentDueAt: string;
   createdTime: string;
   updatedTime: string;
 }
 
-export interface OrderAddress {
+export interface IOrderAddress {
   addressText: string;
   latitude: any;
   longitude: any;
 }
 
-export interface OrderSummary {
-  productPrice: number;
-  attributePrice: number;
-  voucherPrice: number;
-  totalPrice: number;
-  discountPrice: number;
-  finalPrice: number;
-}
-
-export type OrderHistoryAction = 'rate' | 'reorder';
-
-export interface OrderHistoryItem {
+export interface IOrderHistoryItem {
   readonly id: string;
   readonly storeLogo: IImage;
   readonly totalAmount: number;
@@ -176,12 +164,12 @@ export interface OrderHistoryItem {
 }
 
 export interface IRequestGetOrderHistories
-  extends AppCallback<ListApiResponse<OrderHistoryItem[]>> {
+  extends AppCallback<ListApiResponse<IOrderHistoryItem[]>> {
   readonly page: number;
   readonly size: number;
 }
 
-export interface OrderHistoryDetailItem {
+export interface IOrderHistoryDetailItem {
   id: number;
   orderNumber: string;
   orderedAt: string;
@@ -191,21 +179,21 @@ export interface OrderHistoryDetailItem {
   userPhone: string;
   storeId: number;
   storeName: string;
-  storeAddress: StoreAddress;
+  storeAddress: IStoreAddress;
   storeLogo: IImage;
   status: string;
   note: any;
-  products: Product[];
+  products: IProduct[];
   totalAmount: number;
   address: any;
   addressDetail: any;
-  summary: OrderSummary;
+  summary: IOrderSummary;
   paymentDueAt: string;
   createdDate: string;
   updatedDate: string;
 }
 
-export interface OrderSummary {
+export interface IOrderSummary {
   productPrice: number;
   attributePrice: number;
   voucherPrice: number;
@@ -214,80 +202,27 @@ export interface OrderSummary {
   finalPrice: number;
 }
 
-export interface OrderHistoryDetailProduct {
-  readonly id: string;
-  readonly name: string;
-  readonly attributes: string;
-  readonly quantity: number;
-  readonly price: number;
-  readonly imageUrl: string;
-}
-
 export interface IRequestGetOrderHistoryDetail
-  extends AppCallback<OrderHistoryDetailItem> {
+  extends AppCallback<IOrderHistoryDetailItem> {
   readonly orderId: string;
 }
 
-export interface GenerateQRCodeResponse {
+export interface IGenerateQRCodeResponse {
   readonly expiresIn: number;
   readonly qrData: string;
 }
 
 export interface IRequestInitCharge extends AppCallback<IKcpInitParams> {
   amount: number;
-  payment: PaymentRequest;
+  payment: IPaymentRequest;
 }
 
 export interface IRequestGenerateQRCode
-  extends AppCallback<GenerateQRCodeResponse> {
+  extends AppCallback<IGenerateQRCodeResponse> {
   readonly orderId?: string;
 }
 
 export interface IRequestIncreaseContribute extends AppCallback {
   amount: number;
-  payment: PaymentRequest;
-}
-
-export interface ContributeSummary {
-  readonly currentContribution: number;
-  readonly totalDividend: number;
-  readonly expectedDividend: number;
-  readonly expectedDividendDate: string;
-}
-
-export interface ContributeHistoryDetail {
-  id: number;
-  type: string;
-  displayType: string;
-  amount: number;
-  contributionDividend?: number;
-  paidAt?: number;
-  totalDividend?: number;
-  usageDividend?: number;
-  status: string;
-  paymentCompleted: boolean;
-  adminApproved: boolean;
-  paymentMethod: string;
-  paymentType?: string;
-  requestedAt: string;
-  processedAt: string;
-  adminNote: string;
-  kcpSessionData: string;
-  virtualAccount: string;
-}
-
-export interface IRequestGetContributeHistoryDetail
-  extends AppCallback<ContributeHistoryDetail> {
-  readonly historyId: number | string;
-}
-
-export interface IRequestGetHistoriesDividend
-  extends AppCallback<ListApiResponse<IDividendHistory[]>> {
-  readonly page: number;
-  readonly size: number;
-}
-
-export interface IRequestGetDividendDetail
-  extends AppCallback<ContributeHistoryDetail> {
-  readonly dividendId: number;
+  payment: IPaymentRequest;
 }

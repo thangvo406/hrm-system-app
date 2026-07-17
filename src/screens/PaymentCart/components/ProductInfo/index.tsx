@@ -2,7 +2,7 @@ import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { LayoutChangeEvent, StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from '@utils/product';
-import type { AttributeCart, ProductCart } from '@type';
+import type { IAttributeCart, IProductCart } from '@type';
 import React, { useEffect, useRef, useState } from 'react';
 import Animated, {
   useAnimatedStyle,
@@ -27,8 +27,8 @@ const STEPPER_ICON_COLOR = '#AAAAAA';
 const DEBOUNCE_REMOVE_MS = 250;
 
 type ProductInfoProperties = {
-  readonly items: readonly ProductCart[] | undefined;
-  readonly onChangeQuantity: (item: ProductCart) => void;
+  readonly items: readonly IProductCart[] | undefined;
+  readonly onChangeQuantity: (item: IProductCart) => void;
 };
 
 function ChevronIcon({ expanded }: { readonly expanded: boolean }) {
@@ -47,7 +47,7 @@ function ProductInfo({ onChangeQuantity, items }: ProductInfoProperties) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(true);
   const hasItems = (items?.length ?? 0) > 0;
-  const [products, setProducts] = useState<ProductCart[]>(
+  const [products, setProducts] = useState<IProductCart[]>(
     items ? [...items] : [],
   );
   const [errorQuality, setErrorQuality] = useState({})
@@ -142,7 +142,7 @@ function ProductInfo({ onChangeQuantity, items }: ProductInfoProperties) {
       {hasItems ? (
         <Animated.View style={[styles.animatedContainer, containerStyle]}>
           <View onLayout={handleLayout} style={styles.measureContainer}>
-            {products.map((item: ProductCart, index: number) => (
+            {products.map((item: IProductCart, index: number) => (
               <View style={styles.itemRow} key={item.id}>
                 <Image
                   height={IMAGE_SIZE}
@@ -180,7 +180,7 @@ function ProductInfo({ onChangeQuantity, items }: ProductInfoProperties) {
                     !!errorQuality?.[item.id] && 
                       <Text style={styles.errorQuality}>{errorQuality[item.id]}</Text>
                   }
-                  {item.selectedAttributes?.map((attribute: AttributeCart) => (
+                  {item.selectedAttributes?.map((attribute: IAttributeCart) => (
                     <Text
                       style={styles.itemDescription}
                       key={attribute.attributeId}

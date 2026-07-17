@@ -3,7 +3,7 @@ import type {
   IRequestGetSurveyList,
   IRequestSubmitSurvey,
   IResponseSurveyDetail,
-  Survey,
+  ISurvey,
 } from '@type/survey';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -13,11 +13,11 @@ import { CommonUtils } from '@utils';
 
 export const getSurveyList = async (
   request: IRequestGetSurveyList,
-): Promise<ListApiResponse<Survey[]>> => {
+): Promise<ListApiResponse<ISurvey[]>> => {
   const _request = CommonUtils.removeEmptyFieldObject(request, true);
   const params = CommonUtils.objectToQueryParams(_request);
   const response = await httpRequest.get<
-    SingleApiResponse<ListApiResponse<Survey[]>>
+    SingleApiResponse<ListApiResponse<ISurvey[]>>
   >(EndPoints.SURVEY.list(params), { loading: false });
   return response.data;
 };

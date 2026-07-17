@@ -10,14 +10,14 @@ import type {
   IUpdateProfileInfoRequest,
 } from '@type/account';
 import type {
-  ContributeHistory,
+  IContributeHistory,
   IRequestGetTransactionHistories,
   IRequestTopUpWallet,
-  Wallet,
+  IWallet,
 } from '@type/wallet';
 import type { AppCallback, IImage, ListApiResponse } from '@type/common';
 import type { TransactionHistory } from '@type/wallet';
-import type { TotalItemCart } from '@type/payment';
+import type { ITotalItemCart } from '@type/payment';
 import type { AuthCallback, IRequestDeleteAccount } from '@type/auth';
 
 import {
@@ -63,11 +63,11 @@ import { AccountSelector } from '@services/selectors';
 import { refreshTokenRequest } from '../auth/authSlice';
 
 function* getTotalItemCartWorker(
-  action: PayloadAction<AppCallback<TotalItemCart>>,
-): Generator<unknown, void, TotalItemCart> {
+  action: PayloadAction<AppCallback<ITotalItemCart>>,
+): Generator<unknown, void, ITotalItemCart> {
   const { onSuccess, onFailure } = action.payload || {};
   try {
-    const data: TotalItemCart = yield call(getTotalItemCart);
+    const data: ITotalItemCart = yield call(getTotalItemCart);
     yield put(getTotalItemCartSuccess(data));
     onSuccess?.(data);
   } catch (error_) {
@@ -180,11 +180,11 @@ function* updateProfileInfoWorker(
 }
 
 function* getCurrentWalletWorker(
-  action: PayloadAction<AppCallback<Wallet>>,
-): Generator<unknown, void, Wallet> {
+  action: PayloadAction<AppCallback<IWallet>>,
+): Generator<unknown, void, IWallet> {
   const { onSuccess, onFailure } = action.payload || {};
   try {
-    const wallet: Wallet = yield call(getCurrentWallet);
+    const wallet: IWallet = yield call(getCurrentWallet);
     yield put(getCurrentWalletSuccess(wallet));
     onSuccess?.(wallet);
   } catch (error_) {
@@ -195,10 +195,10 @@ function* getCurrentWalletWorker(
 
 function* getContributeHistoriesWorker(
   action: PayloadAction<IRequestGetTransactionHistories>,
-): Generator<unknown, void, ListApiResponse<ContributeHistory[]>> {
+): Generator<unknown, void, ListApiResponse<IContributeHistory[]>> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const data: ListApiResponse<ContributeHistory[]> = yield call(
+    const data: ListApiResponse<IContributeHistory[]> = yield call(
       getContributeHistories,
       request,
     );

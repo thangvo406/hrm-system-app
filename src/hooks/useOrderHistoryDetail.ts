@@ -2,7 +2,7 @@ import AppNavigator from '@navigation/AppNavigator';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getOrderHistoryDetailRequest } from '@services/slices/payment/paymentSlice';
-import { OrderHistoryDetailItem } from '@type';
+import { IOrderHistoryDetailItem } from '@type';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,7 +10,7 @@ export function useOrderHistoryDetail(props: any) {
   const { data: orderItem } = AppNavigator.getParams(props);
   const { t } = useTranslation();
   const [showAllProducts, setShowAllProducts] = useState(false);
-  const [data, setData] = useState<OrderHistoryDetailItem>();
+  const [data, setData] = useState<IOrderHistoryDetailItem>();
   const dispatch = useAppDispatch();
   const toggleShowAllProducts = () => setShowAllProducts(prev => !prev);
 

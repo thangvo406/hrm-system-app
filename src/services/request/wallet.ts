@@ -1,6 +1,6 @@
 import type {
-  Wallet,
-  ContributeHistory,
+  IWallet,
+  IContributeHistory,
   IRequestGetTransactionHistories,
 } from '@type/wallet';
 import type { IRequestTopUpWallet } from '@type/wallet';
@@ -10,8 +10,8 @@ import { EndPoints } from '@constants';
 import { ListApiResponse, SingleApiResponse } from '@type/common';
 import { CommonUtils } from '@utils';
 
-export const getCurrentWallet = async (): Promise<Wallet> => {
-  const response = await httpRequest.get<SingleApiResponse<Wallet>>(
+export const getCurrentWallet = async (): Promise<IWallet> => {
+  const response = await httpRequest.get<SingleApiResponse<IWallet>>(
     EndPoints.WALLET.currentWallet,
     { loading: false },
   );
@@ -20,19 +20,19 @@ export const getCurrentWallet = async (): Promise<Wallet> => {
 
 export const getContributeHistories = async (
   request: IRequestGetTransactionHistories,
-): Promise<ListApiResponse<ContributeHistory[]>> => {
+): Promise<ListApiResponse<IContributeHistory[]>> => {
   const _request = CommonUtils.removeEmptyFieldObject(request, true);
   const params = CommonUtils.objectToQueryParams(_request);
   const response = await httpRequest.get<
-    SingleApiResponse<ListApiResponse<ContributeHistory[]>>
+    SingleApiResponse<ListApiResponse<IContributeHistory[]>>
   >(EndPoints.CONTRIBUTION.histories(params), { loading: false });
   return response?.data;
 };
 
 export const topUpWallet = async (
   request: IRequestTopUpWallet,
-): Promise<Wallet> => {
-  const response = await httpRequest.post<SingleApiResponse<Wallet>>(
+): Promise<IWallet> => {
+  const response = await httpRequest.post<SingleApiResponse<IWallet>>(
     EndPoints.WALLET.topUpWallet,
     request,
   );

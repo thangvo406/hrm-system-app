@@ -1,4 +1,4 @@
-import type { IResponseSurveyDetail } from '@hooks';
+import type { IResponseSurveyDetail } from '@type/survey';
 
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';

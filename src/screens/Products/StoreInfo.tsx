@@ -12,7 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import type { StoreItem } from '@type/store';
+import type { IStoreItem } from '@type/store';
 import isNumber from 'lodash/isNumber';
 
 const CARD_OVERLAP = ScaleSize(68);
@@ -29,7 +29,7 @@ const COLLAPSE_TITLE_START = 0.8;
 type Properties = {
   readonly collapseScroll?: number;
   readonly scrollY?: SharedValue<number>;
-  readonly storeInfo?: StoreItem;
+  readonly storeInfo?: IStoreItem;
 };
 
 function StoreInfo({

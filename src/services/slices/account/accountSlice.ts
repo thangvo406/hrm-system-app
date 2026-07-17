@@ -4,9 +4,9 @@ import type { Profile } from '@services/request/account';
 import type {
   IRequestGetTransactionHistories,
   IRequestTopUpWallet,
-  Wallet,
+  IWallet,
 } from '@type/wallet';
-import type { TotalItemCart } from '@type/payment';
+import type { ITotalItemCart } from '@type/payment';
 import type {
   IRequestAutoCompleteAddress,
   IRequestUpdateMembership,
@@ -22,7 +22,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { logoutSuccess } from '@services/slices/auth/authSlice';
 
 export interface AccountState {
-  currentWallet: Wallet | undefined;
+  currentWallet: IWallet | undefined;
   profile: Profile | undefined;
   pushId: string | undefined;
   totalItemCart: number;
@@ -56,17 +56,17 @@ const accountSlice = createSlice({
       reducer: () => {},
     },
     getTotalItemCartRequest: {
-      prepare: (payload: AppCallback<TotalItemCart> = {}) => ({ payload }),
+      prepare: (payload: AppCallback<ITotalItemCart> = {}) => ({ payload }),
       reducer: () => {},
     },
-    getTotalItemCartSuccess: (state, action: PayloadAction<TotalItemCart>) => {
+    getTotalItemCartSuccess: (state, action: PayloadAction<ITotalItemCart>) => {
       state.totalItemCart = action.payload.totalCart;
     },
     getCurrentWalletRequest: {
-      prepare: (payload: AppCallback<Wallet> = {}) => ({ payload }),
+      prepare: (payload: AppCallback<IWallet> = {}) => ({ payload }),
       reducer: () => {},
     },
-    getCurrentWalletSuccess: (state, action: PayloadAction<Wallet>) => {
+    getCurrentWalletSuccess: (state, action: PayloadAction<IWallet>) => {
       state.currentWallet = action.payload;
     },
     getProfileRequest: {

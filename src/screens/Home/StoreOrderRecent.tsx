@@ -1,6 +1,6 @@
 import { AppButton, Image, ProductList } from '@components';
 import { ScaleSize } from '@kits/core';
-import { StoreItem } from '@type/store';
+import { IStoreItem } from '@type/store';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import imageNames from '@assets/images/names';
@@ -18,7 +18,7 @@ type dataProps = {
   readonly onPressProduct: (productId: number) => void;
   readonly onPressStore: () => void;
   readonly onPressEmptyStore: () => void;
-  readonly data?: StoreItem;
+  readonly data?: IStoreItem;
 };
 
 function EmptyStoreView() {

@@ -1,4 +1,4 @@
-import type { StoreCartItem } from '@type/payment';
+import type { IStoreCartItem } from '@type/payment';
 import type { ListApiResponse } from '@type/common';
 
 import { useAppDispatch } from '@services/common/storeHooks';
@@ -17,7 +17,7 @@ const PAGE_SIZE = 20;
 
 export const useCart = () => {
   const dispatch = useAppDispatch();
-  const [items, setItems] = useState<StoreCartItem[]>([]);
+  const [items, setItems] = useState<IStoreCartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isManaging, setIsManaging] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
@@ -32,7 +32,7 @@ export const useCart = () => {
     return isManaging ? t('carts.done') : t('carts.manage');
   }, [isManaging, items]);
 
-  const handleSuccess = (data: ListApiResponse<StoreCartItem[]>) => {
+  const handleSuccess = (data: ListApiResponse<IStoreCartItem[]>) => {
     isLast.current = data.last;
     setLoading(false);
     setItems(prev => {
@@ -96,7 +96,7 @@ export const useCart = () => {
     );
   };
 
-  const onPressItem = (item: StoreCartItem) => {
+  const onPressItem = (item: IStoreCartItem) => {
     AppNavigator.navigate(Paths.PaymentCart, {
       data: item,
     });

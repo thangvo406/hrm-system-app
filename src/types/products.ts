@@ -1,11 +1,8 @@
 import type { AppCallback, IImage, ListApiResponse } from './common';
-import { AttributeCart } from './payment';
+import { IAttributeCart } from './payment';
 
-export interface ProductImage {
-  readonly fileUrl: string;
-}
 
-export interface Product {
+export interface IProduct {
   id: number;
   storeId: number;
   categoryId: number;
@@ -17,9 +14,9 @@ export interface Product {
   stockQuantity: number;
   status: string;
   sortOrder: number;
-  thumbnail: ProductImage;
-  images: ProductImage[];
-  selectedAttributes?: AttributeCart[];
+  thumbnail: IImage;
+  images: IImage[];
+  selectedAttributes?: IAttributeCart[];
   quantity?: number;
   productThumbnail: IImage;
   cartItemInfo: IProductCartItemInfo;
@@ -28,7 +25,7 @@ export interface Product {
 export interface IProductCartItemInfo {
   cartItemId: number;
   quantity: number;
-  selectedAttributes: AttributeCart;
+  selectedAttributes: IAttributeCart;
 }
 export interface IResponseProductDetail {
   id: number;
@@ -42,13 +39,13 @@ export interface IResponseProductDetail {
   stockQuantity: number;
   status: string;
   sortOrder: number;
-  thumbnail: ProductImage;
-  images: ProductImage[];
-  attributes: AttributeDetail[];
+  thumbnail: IImage;
+  images: IImage[];
+  attributes: IAttributeDetail[];
 }
 
 export interface IRequestGetProducts
-  extends AppCallback<ListApiResponse<Product[]>> {
+  extends AppCallback<ListApiResponse<IProduct[]>> {
   storeId: number;
   sortBy?: 'price' | 'name' | 'sortOrder';
   sortDirection?: 'asc' | 'desc';
@@ -66,15 +63,15 @@ export interface IRequestCheckoutProduct
   extends AppCallback,
     IRequestCheckout {}
 
-export interface AttributeDetail {
+export interface IAttributeDetail {
   id: number;
   name: string;
   type: any;
   sortOrder: number;
-  items: AttributeItem[];
+  items: IAttributeItem[];
 }
 
-export interface AttributeItem {
+export interface IAttributeItem {
   id: number;
   name: string;
   price: number;
@@ -94,14 +91,4 @@ export interface AttributeCheckout {
   attributeType: string;
   attributeItemName: string;
   price: number;
-}
-
-export interface ProductCheckout {
-  id: number;
-  quantity: number;
-}
-
-export interface VoucherCheckout {
-  id: number;
-  quantity: number;
 }

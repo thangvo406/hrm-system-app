@@ -1,4 +1,3 @@
-import type { ProductImage } from '@type/products';
 import type { SharedValue } from 'react-native-reanimated';
 
 import {
@@ -29,6 +28,7 @@ import ProductAttributes from './ProductAttributes';
 import ProductQuantity from './ProductQuanlity';
 import isNumber from 'lodash/isNumber';
 import { DeviceUtils } from '@kits/core/utils';
+import { IImage } from '@type';
 const { ifAndroid } = DeviceUtils;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = ScaleSize(300);
@@ -161,7 +161,7 @@ function StickyHeader({ onPressBack, scrollY, title }: StickyHeaderProps) {
   );
 }
 
-function ProductHero({ images }: { readonly images: ProductImage[] }) {
+function ProductHero({ images }: { readonly images: IImage[] }) {
   const items =
     images.length > 0 ? images : [{ name: imageNames.img_product_default }];
   return (

@@ -1,4 +1,4 @@
-import type { ContributeHistoryDetail } from '@type';
+import type { IContributeHistoryDetail } from '@type';
 
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
@@ -45,7 +45,7 @@ function Status({ status }: StatusProps) {
 }
 
 type ContributionDetailProps = {
-  readonly data?: ContributeHistoryDetail;
+  readonly data?: IContributeHistoryDetail;
   readonly title?: string;
 };
 
@@ -99,7 +99,7 @@ function ContributionDetail({ data, title }: ContributionDetailProps) {
 }
 
 type DividendDetailProps = {
-  readonly data?: ContributeHistoryDetail;
+  readonly data?: IContributeHistoryDetail;
 };
 
 function DividendDetail({ data }: DividendDetailProps) {

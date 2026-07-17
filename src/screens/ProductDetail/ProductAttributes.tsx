@@ -1,7 +1,7 @@
 import CheckBox from '@components/CheckBox';
 import RadioButton from '@components/RadioButton';
 import { ScaleSize } from '@kits/core';
-import { AttributeDetail } from '@type';
+import { IAttributeDetail } from '@type';
 import { formatCurrency } from '@utils/product';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -11,8 +11,8 @@ const SECTION_BG = '#F2F2F2';
 const TITLE_COLOR = '#1A1A1A';
 
 type ProductAttributesProps = {
-  readonly data: AttributeDetail[];
-  readonly onSelect: (attribute: AttributeDetail, itemId: number) => void;
+  readonly data: IAttributeDetail[];
+  readonly onSelect: (attribute: IAttributeDetail, itemId: number) => void;
   readonly selected: Record<number, number[]>;
 };
 

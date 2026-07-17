@@ -1,13 +1,11 @@
 import type { AppCallback } from '@type/common';
 import type {
-  CheckoutInfo,
-  ContributeSummary,
+  ICheckoutInfo,
+
   IRequestCreateOrder,
   IRequestGenerateQRCode,
   IRequestGetCartDetail,
-  IRequestGetContributeHistoryDetail,
-  IRequestGetDividendDetail,
-  IRequestGetHistoriesDividend,
+
   IRequestGetInfoProductCheckout,
   IRequestGetListCart,
   IRequestGetOrderHistories,
@@ -17,11 +15,17 @@ import type {
   IRequestRemoveCartItem,
   IRequestUpdateCartItem,
 } from '@type/payment';
+import {
+  IContributeSummary,
+  IRequestGetContributeHistoryDetail,
+  IRequestGetDividendDetail,
+  IRequestGetHistoriesDividend,
+} from '@type/wallet';
 
 import { createSlice } from '@reduxjs/toolkit';
 
 export interface PaymentState {
-  checkoutInfo: CheckoutInfo | undefined;
+  checkoutInfo: ICheckoutInfo | undefined;
 }
 
 const initialState: PaymentState = {
@@ -77,7 +81,7 @@ const paymentSlice = createSlice({
       reducer: () => {},
     },
     getContributeSummaryRequest: {
-      prepare: (payload: AppCallback<ContributeSummary>) => ({ payload }),
+      prepare: (payload: AppCallback<IContributeSummary>) => ({ payload }),
       reducer: () => {},
     },
     getContributeHistoryDetailRequest: {
