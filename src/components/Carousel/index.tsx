@@ -63,8 +63,8 @@ function CarouselInner<T extends ItemWithId>(
     itemWidth,
     keyExtractor,
     renderItem,
-    style = undefined,
-    testID = undefined,
+    style,
+    testID,
   }: Properties<T>,
   ref: React.Ref<CarouselHandle>,
 ) {

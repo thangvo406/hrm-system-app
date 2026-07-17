@@ -10,8 +10,6 @@ const PRIMARY_COLOR = '#5BB85C';
 const UNSELECTED_COLOR = '#9E9E9E';
 const TEXT_COLOR = '#1A1A1A';
 
-const NOOP = (): void => undefined;
-
 type RadioButtonProps = {
   readonly disabled?: boolean;
   readonly iconColor?: string;
@@ -25,15 +23,15 @@ type RadioButtonProps = {
 };
 
 function RadioButton({
-  disabled = false,
-  iconColor = undefined,
-  label = undefined,
-  labelStyle = undefined,
-  onPress = NOOP,
+  disabled,
+  iconColor,
+  label,
+  labelStyle,
+  onPress,
   selected,
-  style = undefined,
-  testID = undefined,
-  rightLabel = undefined,
+  style,
+  testID,
+  rightLabel,
 }: RadioButtonProps) {
   return (
     <TouchableOpacity

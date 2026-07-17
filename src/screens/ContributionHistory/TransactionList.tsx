@@ -82,7 +82,7 @@ type TransactionListProps = {
 
 function TransactionList({
   data,
-  onLoadMore = undefined,
+  onLoadMore,
   onPressItem,
   loading,
 }: TransactionListProps) {

@@ -6,9 +6,8 @@ import imageNames from '@assets/images/names';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import AppButton from './AppButton';
+import AppButton from '../AppButton';
 import { DeviceUtils } from '@kits/core/utils';
-import { NOOP } from '@utils/common';
 const { ifIphoneX } = DeviceUtils;
 const ICON_SIZE = ScaleSize(24);
 const ACCENT_COLOR = '#5BB85C';
@@ -39,17 +38,17 @@ const onPressNotification = () => {
 };
 
 function HeaderDetail({
-  transparent = false,
-  hideNotify = false,
-  onPressBack = undefined,
-  onPressReadAll = undefined,
-  style = undefined,
-  disabledBtnReadAll = false,
+  transparent,
+  hideNotify,
+  onPressBack,
+  onPressReadAll,
+  style,
+  disabledBtnReadAll,
   title,
-  showIconReadAll = false,
-  showCartManage = false,
-  onPressCartManage = NOOP,
-  titleManage = '',
+  showIconReadAll,
+  showCartManage,
+  onPressCartManage,
+  titleManage,
   usePaddingTop = true,
   hideBtnBack = false,
 }: Properties) {

@@ -1,6 +1,10 @@
 import { AppConstants } from '@constants';
 import React from 'react';
-import { TouchableOpacity, TouchableOpacityProps, ViewStyle } from 'react-native';
+import {
+  TouchableOpacity,
+  TouchableOpacityProps,
+  ViewStyle,
+} from 'react-native';
 
 type Properties = {
   readonly children: React.ReactNode;
@@ -9,13 +13,7 @@ type Properties = {
   readonly testID?: string;
 } & TouchableOpacityProps;
 
-function AppButton({
-  testID = '',
-  children,
-  style = undefined,
-  onPress = undefined,
-  ...rest
-}: Properties) {
+function AppButton({ testID, children, style, onPress, ...rest }: Properties) {
   return (
     <TouchableOpacity
       {...rest}

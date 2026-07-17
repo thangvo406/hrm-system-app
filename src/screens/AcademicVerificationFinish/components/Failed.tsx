@@ -20,9 +20,7 @@ type AcademicVerifyFailedProps = {
   readonly reason?: string;
 };
 
-function AcademicVerifyFailed({
-  reason = undefined,
-}: AcademicVerifyFailedProps) {
+function AcademicVerifyFailed({ reason }: AcademicVerifyFailedProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   return (

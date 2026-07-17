@@ -22,10 +22,10 @@ const PRIMARY_COLOR = '#5BB85C';
 
 function Header({
   onOpenMenu,
-  onPressNotification = undefined,
-  profile = undefined,
-  isShowLabelMember = false,
-  hideIconNotify = false,
+  onPressNotification,
+  profile,
+  isShowLabelMember,
+  hideIconNotify,
 }: HeaderProps) {
   const { t } = useTranslation();
   return (

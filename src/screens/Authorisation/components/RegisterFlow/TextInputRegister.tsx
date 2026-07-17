@@ -47,20 +47,20 @@ type TextInputRegisterProps = {
  * border otherwise).
  */
 function TextInputRegister({
-  error = undefined,
+  error,
   keyboardType = 'default',
-  maxLength = undefined,
+  maxLength,
   onChangeText,
-  onSubmitEditing = undefined,
+  onSubmitEditing,
   placeholder,
-  ref: reference = undefined,
-  returnKeyType = undefined,
+  ref: reference,
+  returnKeyType,
   secureTextEntry = false,
-  style = undefined,
-  submitBehavior = undefined,
+  style,
+  submitBehavior,
   testID,
   textAlign = 'left',
-  textContentType = undefined,
+  textContentType,
   value,
 }: TextInputRegisterProps) {
   const hasError = error !== undefined;

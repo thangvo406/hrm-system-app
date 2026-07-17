@@ -25,16 +25,16 @@ type Properties = {
 };
 
 function ProgressiveImage({
-  containerStyle = undefined,
+  containerStyle,
   height,
-  imageStyle = undefined,
+  imageStyle,
   resizeMode = 'cover',
   skeletonBoneColor = DEFAULT_BONE_COLOR,
   skeletonDuration = DEFAULT_DURATION,
   skeletonHighlightColor = DEFAULT_HIGHLIGHT_COLOR,
   url,
   width,
-  onError = undefined,
+  onError,
   name = '',
 }: Properties) {
   const [isLoading, setIsLoading] = useState(true);

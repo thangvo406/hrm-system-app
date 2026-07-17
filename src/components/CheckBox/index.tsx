@@ -13,8 +13,6 @@ const UNSELECTED_COLOR = '#9E9E9E';
 const TEXT_COLOR = '#1A1A1A';
 const CHECK_COLOR = '#FFFFFF';
 
-const NOOP = (): void => undefined;
-
 type CheckBoxProps = {
   readonly disabled?: boolean;
   readonly label?: string;
@@ -26,13 +24,13 @@ type CheckBoxProps = {
 };
 
 function CheckBox({
-  disabled = false,
-  label = undefined,
-  onPress = NOOP,
-  rightLabel = undefined,
+  disabled,
+  label,
+  onPress,
+  rightLabel,
   selected,
-  style = undefined,
-  testID = undefined,
+  style,
+  testID,
 }: CheckBoxProps) {
   return (
     <TouchableOpacity

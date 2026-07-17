@@ -2,7 +2,7 @@ import type { ICustomViewStyle } from 'react-native-reanimated-skeleton';
 
 import Skeleton from 'react-native-reanimated-skeleton';
 import { ScaleSize } from '@kits/core';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import React from 'react';
 
 const SKELETON_ROW_COUNT = 10;
@@ -42,8 +42,12 @@ const SKELETON_LAYOUT: ICustomViewStyle[] = Array.from(
 
 function AnnouncementLoading() {
   return (
-      <Skeleton animationType="shiver" isLoading layout={SKELETON_LAYOUT}
-        containerStyle={styles.container} />
+    <Skeleton
+      animationType="shiver"
+      isLoading
+      layout={SKELETON_LAYOUT}
+      containerStyle={styles.container}
+    />
   );
 }
 

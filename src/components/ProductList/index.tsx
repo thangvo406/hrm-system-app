@@ -26,12 +26,7 @@ type Properties = {
   readonly style?: ViewStyle | ViewStyle[];
 };
 
-function ProductList({
-  onPressProduct,
-  style = undefined,
-  products,
-  storeId,
-}: Properties) {
+function ProductList({ onPressProduct, style, products, storeId }: Properties) {
   return (
     <ScrollView
       contentContainerStyle={[styles.productList, style]}

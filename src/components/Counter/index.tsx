@@ -22,7 +22,7 @@ function Counter({
   expiresIn,
   onOTPExpired,
   desc = 'qr_code_payment.expires_in',
-  ref = undefined,
+  ref,
 }: CounterProps) {
   const { t } = useTranslation();
   const [remainingSeconds, setRemainingSeconds] = useState(expiresIn);

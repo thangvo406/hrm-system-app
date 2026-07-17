@@ -41,7 +41,7 @@ const TabContentInner = React.memo(function TabContentInner({
 function SegmentedTab<T extends string>({
   activeTab,
   onTabChange,
-  style = undefined,
+  style,
   tabs,
 }: SegmentedTabProps<T>) {
   const [tabsWidth, setTabsWidth] = useState(0);
