@@ -26,6 +26,7 @@ export type DialogScreenHandle = {
 export type DialogOptions = {
   readonly cancelable?: boolean;
   readonly isFullScreen?: boolean;
+  readonly overlayColor?: string;
   readonly onDidAppear?: () => void;
   readonly onDismiss?: () => void;
   readonly screen: ComponentType<Record<string, unknown>>;

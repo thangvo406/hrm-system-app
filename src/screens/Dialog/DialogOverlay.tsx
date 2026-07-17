@@ -52,8 +52,15 @@ function DialogOverlay({
     screen: Screen,
     onDidAppear,
     onDismiss: dismissCallback,
+    overlayColor,
     ...screenProps
   } = options;
+
+  // Khi caller truyền `overlayColor`, dùng làm màu nền backdrop và cho hiện ở
+  // full opacity (màu tự quyết alpha). Không truyền thì giữ backdrop mặc định
+  // với độ mờ dim sẵn có.
+  const backdropColor = overlayColor ?? DIALOG_COLORS.backdrop;
+  const backdropMaxOpacity = overlayColor ? 1 : BACKDROP_OPACITY;
 
   useEffect(() => {
     opacity.value = withTiming(1, {
@@ -72,7 +79,7 @@ function DialogOverlay({
   }, [onDidAppear, opacity, scale]);
 
   const backdropStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value * BACKDROP_OPACITY,
+    opacity: opacity.value * backdropMaxOpacity,
   }));
 
   const cardStyle = useAnimatedStyle(() => ({
@@ -107,7 +114,9 @@ function DialogOverlay({
       style={[styles.overlay, { zIndex }]}
       testID="dialog-overlay"
     >
-      <Animated.View style={[styles.backdrop, backdropStyle]}>
+      <Animated.View
+        style={[styles.backdrop, { backgroundColor: backdropColor }, backdropStyle]}
+      >
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="dialog-dismiss"

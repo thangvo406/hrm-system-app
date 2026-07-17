@@ -23,6 +23,7 @@ const imageNames = {
   ic_package: 'ic_package',
   ic_phone: 'ic_phone',
   ic_protect_green: 'ic_protect_green',
+  ic_remove: 'ic_remove',
   ic_right_topup: 'ic_right_topup',
   ic_shopping_error: 'ic_shopping_error',
   ic_sort_gray: 'ic_sort_gray',

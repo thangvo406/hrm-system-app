@@ -74,7 +74,6 @@ def postNotifyMessage(type, branch_name, version_num, build_num)
   end
 
   base_payload = { "Platform" => "Android" }
-  base_payload["Branch"] = branch_name unless branch_name.nil?
   base_payload["Version"] = version_num unless version_num.nil?
   base_payload["Build Number"] = build_num unless build_num.nil?
 

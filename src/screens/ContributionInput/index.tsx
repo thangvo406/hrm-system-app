@@ -29,6 +29,9 @@ function ContributionInput() {
   };
 
   const onNext = () => {
+    if (!isEnabled) {
+      return;
+    }
     AppNavigator.navigate(Paths.ConfirmPaymentContribution, {
       amount: Number(amount),
     });
@@ -45,6 +48,9 @@ function ContributionInput() {
           onChangeText={onAmountChange}
           placeholder={t('contribution_input.amount_placeholder')}
           placeholderTextColor={PLACEHOLDER_COLOR}
+          onSubmitEditing={onNext}
+          submitBehavior="blurAndSubmit"
+          returnKeyType="next"
           style={styles.input}
           testID="contribution-input-amount"
           value={formatCurrency(amount)}

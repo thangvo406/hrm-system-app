@@ -16,27 +16,35 @@ const TEXT_COLOR = '#1A1A1A';
 const MASCOT_SIZE = ScaleSize(300);
 const SEPARATOR_HEIGHT = ScaleSize(10);
 
-const onSubmit = () => {
-  AppNavigator.reset(Paths.Authorization);
-};
-
 const onContribution = () => {
   AppStorage.set(AppConstants.NEED_CONTRIBUTION_KEY, true);
   AppNavigator.reset(Paths.Authorization);
 };
 
+const DESC = {
+  forgot_pass: 'forgot_password.desc_success',
+  update_pass: 'update_pass.desc_success',
+  default: 'register_completed.desc',
+};
 function RegisterCompleted() {
   const { t } = useTranslation();
   const { params } = useRoute();
   const insets = useSafeAreaInsets();
-  const { goFrom, isHideContribution } = params as {
+  const { goFrom, isHideContribution, onSubmit } = params as {
     goFrom: string;
     isHideContribution: boolean;
   };
-  const desc =
-    goFrom == 'forgot_pass'
-      ? 'forgot_password.desc_success'
-      : 'register_completed.desc';
+  const desc = DESC[goFrom] || DESC.default;
+
+  const _onSubmit = () => {
+    if (onSubmit) {
+      AppNavigator.goBack();
+      onSubmit();
+    } else {
+      AppNavigator.reset(Paths.Authorization);
+    }
+  };
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <RegisterHeader />
@@ -54,7 +62,7 @@ function RegisterCompleted() {
       <View style={styles.footer}>
         <View style={styles.footerSeparator} />
         <Button
-          onPress={onSubmit}
+          onPress={_onSubmit}
           style={styles.nextButton}
           testID="register-completed-next"
           title={t('register_completed.complete')}

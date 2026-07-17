@@ -18,7 +18,7 @@ import { Paths } from '@navigation/paths';
 import { DeviceUtils } from '@kits/core/utils';
 import CartTabIcon from './CartTabIcon';
 
-const { ifAndroid } = DeviceUtils;
+const { ifAndroid, ifIphoneX } = DeviceUtils;
 
 const TAB_ICON_SIZE = ScaleSize(32);
 const TAB_PAY_BUTTON_SIZE = ScaleSize(56);
@@ -141,7 +141,7 @@ function BottomTabBar({ insets, navigation, state }: BottomTabBarProps) {
             onPress={() => handlePress(tab.key)}
             style={[
               styles.tabItem,
-              { paddingBottom: ifAndroid(16, insets.bottom + 8) },
+              { paddingBottom: ifAndroid(16, ifIphoneX(insets.bottom, 10)) },
             ]}
             testID={`bottom-tab-${tab.key}`}
           >
@@ -234,7 +234,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: ScaleSize(11),
-    marginTop: ScaleSize(2),
     textAlign: 'center',
   },
   tabItem: {

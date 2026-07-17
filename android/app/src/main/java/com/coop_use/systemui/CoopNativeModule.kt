@@ -33,14 +33,19 @@ class CoopNativeModule(
         WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
 
       // API 28 (Android 9) và thấp hơn: WindowInsetsControllerCompat không đủ,
-      // phải set trực tiếp các cờ systemUiVisibility.
+      // phải set trực tiếp các cờ systemUiVisibility. Giữ LIGHT_STATUS_BAR để
+      // status bar luôn là dark-content (khớp MainActivity.applyImmersiveSafely).
       @Suppress("DEPRECATION")
       decorView.systemUiVisibility = (
         View.SYSTEM_UI_FLAG_LAYOUT_STABLE
           or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
           or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
           or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+          or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
       )
+
+      // API 30+: đường systemUiVisibility đã deprecated, dùng controller.
+      controller.isAppearanceLightStatusBars = true
     }
   }
 
@@ -52,8 +57,14 @@ class CoopNativeModule(
     runOnUi(promise) { decorView, controller ->
       controller.show(WindowInsetsCompat.Type.navigationBars())
 
+      // Giữ LIGHT_STATUS_BAR để status bar luôn là dark-content.
       @Suppress("DEPRECATION")
-      decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+      decorView.systemUiVisibility = (
+        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+          or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+      )
+
+      controller.isAppearanceLightStatusBars = true
     }
   }
 

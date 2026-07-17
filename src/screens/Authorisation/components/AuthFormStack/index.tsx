@@ -6,12 +6,10 @@ import { SegmentedTab, Image } from '@components';
 import {
   Animated,
   Easing,
-  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -122,62 +120,61 @@ function AuthFormStack({
   );
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.flex}
-      >
-        <View style={styles.header}>
-          <View style={styles.bannerWrapper}>
-            <Image
-              height={BANNER_HEIGHT}
-              name="ic_logo_banner"
-              width={BANNER_WIDTH}
-            />
-          </View>
-
-          <SegmentedTab
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            style={styles.tabs}
-            tabs={authTabs}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.flex}
+    >
+      <View style={styles.header}>
+        <View style={styles.bannerWrapper}>
+          <Image
+            height={BANNER_HEIGHT}
+            name="ic_logo_banner"
+            width={BANNER_WIDTH}
           />
         </View>
 
-        <ScrollView
-          bounces={false}
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="always"
-          showsHorizontalScrollIndicator={false}
-          showsVerticalScrollIndicator={false}
-        >
-          {isRegister ? (
-            <Animated.View key="register" style={formStyle}>
-              <RegisterForm
-                errors={registerErrors}
-                loading={loading}
-                onChange={onRegisterChange}
-                onSubmit={onGoRegisterForm}
-                valid={validRegister}
-              />
-            </Animated.View>
-          ) : (
-            <Animated.View key="login" style={formStyle}>
-              <LoginForm
-                errors={loginErrors}
-                loading={loading}
-                onChange={onLoginChange}
-                onForgotPassword={onForgotPassword}
-                onSubmit={submitLogin}
-                valid={validLogin}
-              />
-            </Animated.View>
-          )}
+        <SegmentedTab
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          style={styles.tabs}
+          tabs={authTabs}
+        />
+      </View>
 
-          <SocialButtons onPress={loginWithSocial} />
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardDismissMode="on-drag"
+        keyboardShouldPersistTaps="handled"
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        style={styles.scroll}
+      >
+        {isRegister ? (
+          <Animated.View key="register" style={formStyle}>
+            <RegisterForm
+              errors={registerErrors}
+              loading={loading}
+              onChange={onRegisterChange}
+              onSubmit={onGoRegisterForm}
+              valid={validRegister}
+            />
+          </Animated.View>
+        ) : (
+          <Animated.View key="login" style={formStyle}>
+            <LoginForm
+              errors={loginErrors}
+              loading={loading}
+              onChange={onLoginChange}
+              onForgotPassword={onForgotPassword}
+              onSubmit={submitLogin}
+              valid={validLogin}
+            />
+          </Animated.View>
+        )}
+
+        <SocialButtons onPress={loginWithSocial} />
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -194,6 +191,12 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 24,
     paddingTop: 12,
+    zIndex: 99,
+    backgroundColor: 'white',
+  },
+  scroll: {
+    flex: 1,
+    overflow: 'hidden',
   },
   scrollContent: {
     // alignItems: 'center',

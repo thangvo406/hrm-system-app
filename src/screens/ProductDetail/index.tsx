@@ -350,7 +350,7 @@ export default ProductDetail;
 const styles = StyleSheet.create({
   backButton: {
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    backgroundColor: 'rgba(255,255,255,0.3)',
     borderRadius: BACK_BUTTON_SIZE / 2,
     height: BACK_BUTTON_SIZE,
     justifyContent: 'center',

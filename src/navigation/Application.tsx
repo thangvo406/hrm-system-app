@@ -16,6 +16,7 @@ import {
   Platform,
   View,
   Linking,
+  StatusBar,
 } from 'react-native';
 import { Globals } from '@utils';
 import AppNativeModules from '@services/native/AppNativeModules';
@@ -100,7 +101,6 @@ function ApplicationNavigator() {
   // The `react-hooks/refs` rule cannot see across PanResponder.create's boundary,
   // so we disable it for the standard React Native PanResponder-with-useRef pattern.
   const panResponder = useRef(
-    // eslint-disable-next-line react-hooks/refs
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponder: (evt, gestureState) => {
@@ -245,6 +245,7 @@ function ApplicationNavigator() {
         //  backgroundColor: navigationTheme.colors.background,
       }}
     >
+      <StatusBar barStyle="dark-content" />
       <NavigationContainer
         linking={linking}
         onReady={() => {

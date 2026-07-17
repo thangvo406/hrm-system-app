@@ -13,6 +13,7 @@ import {
   AnnouncementLoading,
   AppButton,
   EmptyView,
+  Image,
   ProgressiveImage,
 } from '@components';
 import { useCart } from '@hooks';
@@ -37,51 +38,59 @@ type CartRowProps = {
   readonly onPressItem: (item: StoreCartItem) => void;
 };
 
-const CartRow = React.memo(({ isManaging, item, onRemove, onPressItem }: CartRowProps) => {
-  const { t } = useTranslation();
-  const handleRemove = () => {
-    onRemove(item.id);
-  };
+const CartRow = React.memo(
+  ({ isManaging, item, onRemove, onPressItem }: CartRowProps) => {
+    const { t } = useTranslation();
+    const handleRemove = () => {
+      onRemove(item.id);
+    };
 
-  return (
-    <AppButton
-      style={styles.row}
-      testID={`cart-item-${item.id}`}
-      onPress={() => onPressItem?.(item)}
-    >
-      <View style={styles.rowContent}>
-        <ProgressiveImage
-          containerStyle={styles.thumbnail}
-          height={THUMBNAIL_SIZE}
-          url={item.storeLogo?.fileUrl ?? ''}
-          width={THUMBNAIL_SIZE}
-          name={imageNames.img_store_recent_default}
-        />
-        <View style={styles.info}>
-          <Text numberOfLines={2} style={styles.productName}>
-            {item.storeName}
-          </Text>
-          <Text style={styles.metaText}>
-            {t('carts.item_count', { count: item.totalQuantity })}
-          </Text>
-          <Text style={styles.totalPrice}>
-            {t('common.display_price', {amount: ProductUtils.formatCurrency(item.subTotal)})}
-          </Text>
+    return (
+      <AppButton
+        style={styles.row}
+        testID={`cart-item-${item.id}`}
+        onPress={() => onPressItem?.(item)}
+      >
+        <View style={styles.rowContent}>
+          <ProgressiveImage
+            containerStyle={styles.thumbnail}
+            height={THUMBNAIL_SIZE}
+            url={item.storeLogo?.fileUrl ?? ''}
+            width={THUMBNAIL_SIZE}
+            name={imageNames.img_store_recent_default}
+          />
+          <View style={styles.info}>
+            <Text numberOfLines={2} style={styles.productName}>
+              {item.storeName}
+            </Text>
+            <Text style={styles.metaText}>
+              {t('carts.item_count', { count: item.totalQuantity })}
+            </Text>
+            <Text style={styles.totalPrice}>
+              {t('common.display_price', {
+                amount: ProductUtils.formatCurrency(item.subTotal),
+              })}
+            </Text>
+          </View>
         </View>
-      </View>
-      {isManaging ? (
-        <TouchableOpacity
-          hitSlop={{ bottom: 8, left: 8, right: 8, top: 8 }}
-          onPress={handleRemove}
-          style={styles.removeButton}
-          testID={`cart-remove-${item.id}`}
-        >
-          <Text style={styles.removeText}>{t('carts.remove')}</Text>
-        </TouchableOpacity>
-      ) : undefined}
-    </AppButton>
-  );
-})
+        {isManaging ? (
+          <TouchableOpacity
+            hitSlop={{ bottom: 8, left: 8, right: 8, top: 8 }}
+            onPress={handleRemove}
+            style={styles.removeButton}
+            testID={`cart-remove-${item.id}`}
+          >
+            <Image
+              name={imageNames.ic_remove}
+              width={ScaleSize(24)}
+              height={ScaleSize(24)}
+            />
+          </TouchableOpacity>
+        ) : undefined}
+      </AppButton>
+    );
+  },
+);
 
 function ItemSeparator() {
   return <View style={styles.separator} />;
@@ -182,12 +191,9 @@ const styles = StyleSheet.create({
   removeButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingLeft: ScaleSize(12),
-  },
-  removeText: {
-    color: '#E53935',
-    fontSize: ScaleSize(13),
-    fontWeight: '500',
+    paddingHorizontal: ScaleSize(12),
+    backgroundColor: '#E53935',
+    height: '100%',
   },
   row: {
     alignItems: 'center',

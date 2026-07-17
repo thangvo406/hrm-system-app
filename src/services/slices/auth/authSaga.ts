@@ -90,7 +90,7 @@ function* loginSocialWorker(action: PayloadAction<IRequestLoginSocial>) {
   try {
     const response: IResponseLogin = yield call(loginSocial, request);
     yield put(authSuccess(response));
-    onSuccess?.();
+    onSuccess?.(response);
   } catch (error: any) {
     onFailure?.(error?.response?.data);
     // yield put(authFailure(toErrorMessage(error)));

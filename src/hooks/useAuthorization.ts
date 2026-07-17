@@ -203,7 +203,6 @@ export const useAuthorization = () => {
       });
     } else if (response?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER) {
       AppNavigator.navigate(Paths.SchoolSelection);
-      return;
     } else {
       AppNavigator.replace(AppStacks.App);
       dispatch(getTotalItemCartRequest());

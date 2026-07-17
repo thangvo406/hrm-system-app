@@ -24,6 +24,7 @@ const showQRCodeViewer = (mode: QRCodeViewerMode, value?: string) => {
   AppNavigator.showDialog({
     screen: QRCodeViewer as never,
     isFullScreen: true,
+    overlayColor: 'rgba(0,0,0,0.7)',
     mode,
     transparent: true,
     value,

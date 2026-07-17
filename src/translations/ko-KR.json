@@ -155,7 +155,7 @@
       "error_current_required": "현재 비밀번호를 입력해 주세요",
       "error_confirm_required": "비밀번호를 확인해 주세요",
       "error_password_mismatch": "비밀번호가 일치하지 않습니다",
-      "success": "비밀번호가 변경되었습니다.",
+      "desc_success": "비밀번호 변경이 완료되었습니다. 새 비밀번호로 로그인해 주세요.",
       "next": "다음"
     },
     "bank_information": {

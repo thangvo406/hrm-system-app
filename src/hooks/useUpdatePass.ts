@@ -1,4 +1,5 @@
 import AppNavigator from '@navigation/AppNavigator';
+import { Paths } from '@navigation/paths';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { updatePasswordRequest } from '@services/slices/account/accountSlice';
 import { CommonUtils } from '@utils';
@@ -91,11 +92,13 @@ export function useUpdatePass() {
         currentPassword,
         newPassword,
         onSuccess: () => {
-          AppNavigator.showSnackBar({
-            message: t('update_pass.success'),
-            type: 'success',
+          AppNavigator.navigate(Paths.RegisterCompleted, {
+            goFrom: 'update_pass',
+            isHideContribution: true,
+            onSubmit: () => {
+              AppNavigator.goBack();
+            },
           });
-          AppNavigator.goBack();
         },
         onFailure: message =>
           AppNavigator.showSnackBar({ message, type: 'failed' }),

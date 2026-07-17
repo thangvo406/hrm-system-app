@@ -27,8 +27,8 @@
       "point_title": "Point",
       "point_balance": "Remaining point: {{amount}} point",
       "history_title": "History",
-      "tab_pay": "출자 이력",
-      "tab_point": "배당 이력",
+      "tab_pay": "Investment History",
+      "tab_point": "Dividend History",
       "balance_after": "Balance: {{amount}} KRW",
       "empty": "No history to display.",
       "transaction_failed": "Transaction failed",
@@ -222,7 +222,7 @@
       "error_current_required": "Please enter your current password",
       "error_confirm_required": "Please confirm your password",
       "error_password_mismatch": "Passwords do not match",
-      "success": "Password changed successfully.",
+      "desc_success": "Password changed successfully. Please log in using your new password.",
       "next": "Next"
     },
     "bank_information": {
