@@ -1,8 +1,9 @@
 import { Button, TextField } from '@components';
 import { useUpdatePass } from '@hooks';
 import { ScaleSize } from '@kits/core';
+import { DeviceUtils } from '@kits/core/utils';
 import RegisterHeader from '@screens/Authorisation/components/RegisterFlow/Header';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Keyboard,
@@ -11,9 +12,10 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Animated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
+const { isIPadOrTablet, isIOS } = DeviceUtils;
 const TEXT_COLOR = '#1A1A1A';
 const DIVIDER_COLOR = '#E0E0E0';
 const SEPARATOR_COLOR = '#F0F0F0';
@@ -41,68 +43,112 @@ function UpdatePass() {
 
   const newPasswordRef = useRef<TextInput>(null);
   const confirmPasswordRef = useRef<TextInput>(null);
+  const keyboardOffset = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (isIPadOrTablet()) {
+      return;
+    }
+    const showEvent = isIOS() ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = isIOS() ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const onShow = () => {
+      Animated.timing(keyboardOffset, {
+        toValue: -ScaleSize(100),
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const onHide = () => {
+      Animated.timing(keyboardOffset, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const showSub = Keyboard.addListener(showEvent, onShow);
+    const hideSub = Keyboard.addListener(hideEvent, onHide);
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   return (
     <TouchableOpacity
       activeOpacity={1}
       onPress={handleDismissKeyboard}
-      style={[styles.container, { paddingTop: insets.top }]}
+      style={styles.container}
     >
-      <RegisterHeader onBack={onBack} showBtnBack />
-
-      <View style={styles.titleBlock}>
-        <Text style={styles.title}>{t('update_pass.title')}</Text>
+      <View style={[styles.headerWrapper, { paddingTop: insets.top }]}>
+        <RegisterHeader onBack={onBack} showBtnBack />
       </View>
+      <Animated.View
+        style={[
+          {
+            flex: 1,
+            overflow: 'hidden',
+            transform: [{ translateY: keyboardOffset }],
+          },
+        ]}
+      >
+        <View style={styles.titleBlock}>
+          <Text style={styles.title}>{t('update_pass.title')}</Text>
+        </View>
 
-      <View style={styles.divider} />
+        <View style={styles.divider} />
 
-      <View style={styles.formBlock}>
-        <TextField
-          autoCapitalize="none"
-          error={errors.currentPassword}
-          iconName="lock"
-          label={t('update_pass.current_label')}
-          onChangeText={onChangeCurrentPassword}
-          onSubmitEditing={() => newPasswordRef.current?.focus()}
-          placeholder={t('update_pass.current_placeholder')}
-          returnKeyType="next"
-          secureTextEntry
-          submitBehavior="submit"
-          testID="update-pass-current"
-          value={currentPassword}
-        />
+        <View style={styles.formBlock}>
+          <TextField
+            autoCapitalize="none"
+            error={errors.currentPassword}
+            iconName="lock"
+            label={t('update_pass.current_label')}
+            onChangeText={onChangeCurrentPassword}
+            onSubmitEditing={() => newPasswordRef.current?.focus()}
+            placeholder={t('update_pass.current_placeholder')}
+            returnKeyType="next"
+            secureTextEntry
+            submitBehavior="submit"
+            testID="update-pass-current"
+            value={currentPassword}
+          />
 
-        <TextField
-          autoCapitalize="none"
-          error={errors.newPassword}
-          iconName="lock"
-          label={t('update_pass.new_label')}
-          onChangeText={onChangeNewPassword}
-          onSubmitEditing={() => confirmPasswordRef.current?.focus()}
-          placeholder={t('update_pass.new_placeholder')}
-          ref={newPasswordRef}
-          returnKeyType="next"
-          secureTextEntry
-          submitBehavior="submit"
-          testID="update-pass-new"
-          value={newPassword}
-        />
+          <TextField
+            autoCapitalize="none"
+            error={errors.newPassword}
+            iconName="lock"
+            label={t('update_pass.new_label')}
+            onChangeText={onChangeNewPassword}
+            onSubmitEditing={() => confirmPasswordRef.current?.focus()}
+            placeholder={t('update_pass.new_placeholder')}
+            ref={newPasswordRef}
+            returnKeyType="next"
+            secureTextEntry
+            submitBehavior="submit"
+            testID="update-pass-new"
+            value={newPassword}
+          />
 
-        <TextField
-          autoCapitalize="none"
-          error={errors.confirmPassword}
-          iconName="lock"
-          label={t('update_pass.confirm_label')}
-          onChangeText={onChangeConfirmPassword}
-          onSubmitEditing={onSubmit}
-          placeholder={t('update_pass.confirm_placeholder')}
-          ref={confirmPasswordRef}
-          returnKeyType="done"
-          secureTextEntry
-          testID="update-pass-confirm"
-          value={confirmPassword}
-        />
-      </View>
+          <TextField
+            autoCapitalize="none"
+            error={errors.confirmPassword}
+            iconName="lock"
+            label={t('update_pass.confirm_label')}
+            onChangeText={onChangeConfirmPassword}
+            onSubmitEditing={onSubmit}
+            placeholder={t('update_pass.confirm_placeholder')}
+            ref={confirmPasswordRef}
+            returnKeyType="done"
+            secureTextEntry
+            testID="update-pass-confirm"
+            value={confirmPassword}
+          />
+        </View>
+      </Animated.View>
 
       <View style={styles.footer}>
         <View style={styles.footerSeparator} />
@@ -144,6 +190,10 @@ const styles = StyleSheet.create({
   },
   formBlock: {
     paddingHorizontal: ScaleSize(24),
+  },
+  headerWrapper: {
+    zIndex: 10,
+    backgroundColor: 'white',
   },
   nextButton: {
     alignSelf: 'center',

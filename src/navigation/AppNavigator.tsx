@@ -1,13 +1,12 @@
 /* eslint-disable unicorn/no-useless-fallback-in-spread */
-/* eslint-disable unicorn/no-immediate-mutation */
-/* eslint-disable unicorn/prevent-abbreviations */
 // import { DeviceUtils } from '@kits/core/utils';
 import { CommonActions, StackActions } from '@react-navigation/native';
 // import Information from '@dialogs/Information';
 // import { CrashlyticsUtils } from '@utils';
 import type { DialogHandle } from '@screens/Dialog/types';
 import NetworkError from '@dialogs/NetworkError';
-import { Keyboard } from 'react-native';
+import { Keyboard, Linking } from 'react-native';
+import Information from '@dialogs/Information';
 // import analytics from '@react-native-firebase/analytics';
 // import ForceUpdate from '@dialogs/ForceUpdate';
 // import { AppNativeModules } from '@config/AppNativeModules';
@@ -83,7 +82,8 @@ function getCurrentRoute() {
 function getInnermostActiveStackState(state: any): any {
   if (!state?.routes?.length) return state;
   const active = state.routes[state.index ?? state.routes.length - 1];
-  if (active?.state?.routes?.length) return getInnermostActiveStackState(active.state);
+  if (active?.state?.routes?.length)
+    return getInnermostActiveStackState(active.state);
   return state;
 }
 
@@ -162,13 +162,13 @@ function reset(name: string, params = {}) {
   );
 }
 
-let debounceHideLoading: ReturnType<typeof setTimeout> | null = null;
+let debounceHideLoading: ReturnType<typeof setTimeout> | undefined = undefined;
 function hideLoading(): Promise<unknown> {
   return new Promise(resolve => {
     clearTimeout(debounceHideLoading);
     debounceHideLoading = setTimeout(() => {
       dialogReference?.hideLoading?.();
-      debounceHideLoading = null;
+      debounceHideLoading = undefined;
       resolve({});
     }, 200);
   });
@@ -182,26 +182,19 @@ function popToTop() {
   navigator?.dispatch(StackActions.popToTop());
 }
 function showDialogErrorOpenCamera() {
-  //   showDialog({
-  //     screen: Information,
-  //     popupType: 'dialog',
-  //     isFullScreen: true,
-  //     title: 'Ops!',
-  //     desc: 'common.popup.desc_camera_error',
-  //     needTranslate: true,
-  //     buttons: [
-  //       {
-  //         title: 'common.popup.btn_close',
-  //         outlet: true,
-  //       },
-  //       {
-  //         title: 'common.popup.btn_open_setting',
-  //         onPress: () => {
-  //           Linking.openSettings();
-  //         },
-  //       },
-  //     ],
-  //   });
+  showDialog({
+    screen: Information,
+    title: 'common.popup.title_error',
+    desc: 'common.popup.desc_camera_error',
+    confirmTitle: 'common.popup.btn_open_setting',
+    cancelTitle: 'common.popup.btn_close',
+    needTranslate: true,
+    onConfirm: () => {
+      Linking.openSettings()
+        .then(() => undefined)
+        .catch(() => undefined);
+    },
+  });
 }
 
 function showForceUpdate() {
@@ -214,26 +207,19 @@ function showForceUpdate() {
 }
 
 function showDialogErrorOpenPhoto() {
-  //   showDialog({
-  //     screen: Information,
-  //     popupType: 'dialog',
-  //     isFullScreen: true,
-  //     title: 'Ops!',
-  //     desc: 'common.popup.desc_photo_error',
-  //     needTranslate: true,
-  //     buttons: [
-  //       {
-  //         title: 'common.popup.btn_close',
-  //         outlet: true,
-  //       },
-  //       {
-  //         title: 'common.popup.btn_open_setting',
-  //         onPress: () => {
-  //           Linking.openSettings();
-  //         },
-  //       },
-  //     ],
-  //   });
+  showDialog({
+    screen: Information,
+    title: 'common.popup.title_error',
+    desc: 'common.popup.desc_photo_error',
+    confirmTitle: 'common.popup.btn_open_setting',
+    cancelTitle: 'common.popup.btn_close',
+    needTranslate: true,
+    onConfirm: () => {
+      Linking.openSettings()
+        .then(() => undefined)
+        .catch(() => undefined);
+    },
+  });
 }
 function showDialogNetworkError({ callback, onDismiss }: any = {}) {
   showDialog({

@@ -5,7 +5,14 @@
       "cancel": "취소",
       "no_data": "데이터 없음",
       "payment": "지불",
-      "display_price": "{{amount}} 원"
+      "display_price": "{{amount}} 원",
+      "popup": {
+        "title_error": "알림",
+        "desc_camera_error": "카메라에 접근할 수 없습니다. 설정에서 카메라 권한을 허용해 주세요.",
+        "desc_photo_error": "사진에 접근할 수 없습니다. 설정에서 사진 권한을 허용해 주세요.",
+        "btn_open_setting": "설정 열기",
+        "btn_close": "닫기"
+      }
     },
     "welcome": {
       "login": "로그인",

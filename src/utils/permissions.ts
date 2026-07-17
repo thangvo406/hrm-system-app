@@ -1,40 +1,21 @@
-import {
+import { check, request, RESULTS, type Permission } from 'react-native-permissions';
+
+export {
+  check,
+  checkNotifications,
+  PERMISSIONS,
   requestMultiple,
   requestNotifications,
-  checkNotifications,
-  check,
-  request,
-  PERMISSIONS,
   RESULTS,
 } from 'react-native-permissions';
 
-const checkPermissions = (permission: any) => {
-  return new Promise(resolve => {
-    check(permission).then(result => {
-      resolve(result == RESULTS.GRANTED);
-    });
-  });
+export const checkPermissions = async (
+  permission: Permission,
+): Promise<boolean> => {
+  const result = await check(permission);
+  return result === RESULTS.GRANTED;
 };
 
-const requestPermission = (permission: any) => {
-  return new Promise((resolve, reject) => {
-    request(permission)
-      .then(result => {
-        resolve(result);
-      })
-      .catch(error => {
-        reject(error);
-      });
-  });
-};
-
-export {
-  checkPermissions,
-  checkNotifications,
-  requestNotifications,
-  requestMultiple,
-  check,
-  PERMISSIONS,
-  requestPermission,
-  RESULTS,
+export const requestPermission = async (permission: Permission) => {
+  return request(permission);
 };

@@ -5,7 +5,14 @@
       "cancel": "Cancel",
       "no_data": "No data",
       "payment": "Payment",
-      "display_price": "{{amount}} KRW"
+      "display_price": "{{amount}} KRW",
+      "popup": {
+        "title_error": "Notice",
+        "desc_camera_error": "Unable to access the camera. Please enable camera permission in Settings.",
+        "desc_photo_error": "Unable to access photos. Please enable photo permission in Settings.",
+        "btn_open_setting": "Open Settings",
+        "btn_close": "Close"
+      }
     },
     "notifications": {
       "title": "Notifications",
