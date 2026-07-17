@@ -22,8 +22,14 @@ export interface Product {
   selectedAttributes?: AttributeCart[];
   quantity?: number;
   productThumbnail: IImage;
+  cartItemInfo: IProductCartItemInfo;
 }
 
+export interface IProductCartItemInfo {
+  cartItemId: number;
+  quantity: number;
+  selectedAttributes: AttributeCart;
+}
 export interface IResponseProductDetail {
   id: number;
   storeId: number;
