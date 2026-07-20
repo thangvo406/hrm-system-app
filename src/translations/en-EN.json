@@ -590,7 +590,8 @@
       "reason_privacy": "Privacy Protection",
       "reason_other": "Other",
       "reason_other_placeholder": "Please enter your reason",
-      "delete_button": "Delete Account"
+      "delete_button": "Delete Account",
+      "empty_reason_error": "Please enter other reason"
     },
     "network_error": {
       "title": "Network Error",

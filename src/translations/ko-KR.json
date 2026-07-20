@@ -591,7 +591,8 @@
       "reason_privacy": "개인정보 보호",
       "reason_other": "기타",
       "reason_other_placeholder": "사유를 입력해 주세요",
-      "delete_button": "회원 탈퇴"
+      "delete_button": "회원 탈퇴",
+      "empty_reason_error": "기타 사유를 입력해주세요."
     },
     "network_error": {
       "title": "네트워크 오류",
