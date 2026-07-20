@@ -1,7 +1,6 @@
 import type { AppCallback, IImage, ListApiResponse } from './common';
 import { IAttributeCart } from './payment';
 
-
 export interface IProduct {
   id: number;
   storeId: number;
@@ -25,7 +24,7 @@ export interface IProduct {
 export interface IProductCartItemInfo {
   cartItemId: number;
   quantity: number;
-  selectedAttributes: IAttributeCart;
+  selectedAttributes: IAttributeCart[];
 }
 export interface IResponseProductDetail {
   id: number;

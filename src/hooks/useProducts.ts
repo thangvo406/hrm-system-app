@@ -64,11 +64,8 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
 
   const onChangeQuantity = (item: any, index: number) => {
     if (
-      !(
-        data[index]?.cartItemInfo &&
-        item.cartItemId &&
-        data[index]?.cartItemInfo?.quantity != item?.cartItemInfo?.quantity
-      )
+      data[index]?.cartItemInfo &&
+      data[index]?.cartItemInfo?.quantity == item?.cartItemInfo?.quantity
     ) {
       return;
     }
@@ -76,7 +73,9 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
       item.cartItemInfo || {};
     const flatAttributes = Object.values(selectedAttributes || [])
       .flat()
-      .map(attributeItemId => ({ attributeItemId })) as AttributeCheckout[];
+      .map(attribute => ({
+        attributeItemId: attribute?.attributeItemId,
+      })) as AttributeCheckout[];
     dispatch(
       updateCartItemRequest({
         quantity,

@@ -50,6 +50,9 @@ function ProductRow({
   }, [item?.cartItemInfo?.quantity]);
 
   useEffect(() => {
+    if (!item.cartItemInfo || item.cartItemInfo?.quantity == quantity) {
+      return;
+    }
     const debounceId = debounce(() => {
       onChangeQuantity?.(
         {
