@@ -11,7 +11,8 @@
         "desc_camera_error": "Unable to access the camera. Please enable camera permission in Settings.",
         "desc_photo_error": "Unable to access photos. Please enable photo permission in Settings.",
         "btn_open_setting": "Open Settings",
-        "btn_close": "Close"
+        "btn_close": "Close",
+        "error_limit_size_file": "File size must be less than 50MB"
       }
     },
     "notifications": {
@@ -252,6 +253,7 @@
       "save": "Save",
       "change_pass": "Change password",
       "update_success": "Profile updated successfully.",
+      "error_name_required": "Please enter your name",
       "image_picker": {
         "title": "Select avatar",
         "take_photo": "Take a photo",

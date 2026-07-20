@@ -11,7 +11,8 @@
         "desc_camera_error": "카메라에 접근할 수 없습니다. 설정에서 카메라 권한을 허용해 주세요.",
         "desc_photo_error": "사진에 접근할 수 없습니다. 설정에서 사진 권한을 허용해 주세요.",
         "btn_open_setting": "설정 열기",
-        "btn_close": "닫기"
+        "btn_close": "닫기",
+        "error_limit_size_file": "파일 크기는 50MB 미만이어야 합니다"
       }
     },
     "welcome": {
@@ -177,6 +178,7 @@
       "save": "저장하기",
       "change_pass": "비밀번호 변경",
       "update_success": "정보가 수정되었습니다.",
+      "error_name_required": "이름을 입력해 주세요",
       "image_picker": {
         "title": "프로필 사진 선택",
         "take_photo": "사진 촬영",

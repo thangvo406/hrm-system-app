@@ -43,6 +43,24 @@ export const removeEmptyFieldObject = (
   );
 };
 
+export const bytesToSize = (bytes: number) => {
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes == 0) {
+    return 'n/a';
+  }
+  const i = Number.parseInt(
+    Math.floor(Math.log(bytes) / Math.log(1e6)).toString(),
+    10,
+  );
+  // if (i == 0) {
+  //    return bytes + ' ' + sizes[i];
+  // }
+  return {
+    value: (bytes / Math.pow(1e6, i)).toFixed(1),
+    unit: sizes[i],
+  };
+};
+
 export const formatPhoneNumber = (input: string): string => {
   input = input || '';
   const digits = input.replaceAll?.(/\D/g, '')?.slice(0, PHONE_MAX_DIGITS);

@@ -19,6 +19,7 @@ export function useProfile() {
   const [phone, setPhone] = useState(
     (profile?.phone ?? '').replaceAll(/\D/g, ''),
   );
+  const [errors, setErrors] = useState<{ fullName?: string }>({});
 
   const dispatch = useAppDispatch();
 
@@ -26,8 +27,27 @@ export function useProfile() {
     setPhone(text.replaceAll(/\D/g, ''));
   }, []);
 
+  const onChangeFullName = useCallback(
+    (text: string) => {
+      setFullName(text);
+      const fullNameError =
+        text.trim().length === 0 ? t('profile.error_name_required') : undefined;
+      setErrors(prev =>
+        prev.fullName === fullNameError ? prev : { fullName: fullNameError },
+      );
+    },
+    [t],
+  );
+
   const onChangeAvatar = useCallback(() => {
-    ImagePicker.showImagePicker((data: any) => {
+    ImagePicker.showImagePicker((isSuccess: boolean, data: any) => {
+      if (!isSuccess) {
+        AppNavigator.showSnackBar({
+          message: t(data),
+          type: 'failed',
+        });
+        return;
+      }
       const uri = data?.sourceURL || data?.path;
       dispatch(
         uploadAvatarRequest({
@@ -45,6 +65,11 @@ export function useProfile() {
   }, []);
 
   const onPressSave = useCallback(() => {
+    const isInValid = Object.values(errors || {})?.some(it => !!it);
+    if (isInValid) {
+      return;
+    }
+    setErrors({});
     dispatch(
       updateProfileInfoRequest({
         fullName,
@@ -61,17 +86,18 @@ export function useProfile() {
 
   const onPressChangePass = useCallback(() => {
     AppNavigator.navigate(Paths.UpdatePass);
-  }, []);
+  }, [errors]);
 
   return {
     displayPhone: formatPhoneNumber(phone),
     email,
+    errors,
     fullName,
     avatar: profile?.avatar,
     membershipType: profile?.membershipType ?? '',
     onChangeAvatar,
     onChangeEmail: setEmail,
-    onChangeFullName: setFullName,
+    onChangeFullName,
     onChangePhone,
     onPressChangePass,
     onPressSave,

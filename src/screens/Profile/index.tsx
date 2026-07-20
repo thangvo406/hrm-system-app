@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {
@@ -27,6 +27,7 @@ function Profile() {
     email,
     fullName,
     avatar,
+    errors,
     membershipType,
     onChangeAvatar,
     onChangeEmail,
@@ -37,6 +38,9 @@ function Profile() {
   } = useProfile();
 
   const [isAvatarError, setAvatarError] = useState(false);
+  useEffect(() => {
+    setAvatarError(false);
+  }, [avatar?.fileUrl]);
 
   return (
     <View style={styles.container}>
@@ -81,6 +85,7 @@ function Profile() {
           <TextField
             iconName="user"
             label={t('profile.field_name')}
+            error={errors.fullName}
             onChangeText={onChangeFullName}
             placeholder={t('profile.placeholder_name')}
             value={fullName}

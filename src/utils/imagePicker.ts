@@ -5,6 +5,7 @@ import ImagePickerPopup from '@dialogs/ImagePicker';
 import { PermissionUtils } from '@utils';
 // import { AppNavigator } from '@navigation';
 import { openPicker, openCamera } from 'react-native-image-crop-picker';
+import { bytesToSize } from './common';
 const { isIOS } = DeviceUtils;
 
 const openCameraDevice = async (): Promise<any> => {
@@ -71,14 +72,27 @@ const getFileName = (url: string) => {
   return '';
 };
 const showImagePicker = (callback: any) => {
+  const onCheckValidFile = (data: any) => {
+    const size = bytesToSize(data?.size);
+    let isLimitSize = false;
+    if (size != 'n/a' && typeof size == 'object' && 'unit' in size) {
+      isLimitSize =
+        size.unit == 'KB' ? Number.parseFloat(size.value) > 50 : false; // limit 50MB
+    }
+    if (isLimitSize) {
+      callback(false, 'common.popup.error_limit_size_file');
+    } else {
+      callback?.(true, data);
+    }
+  };
   const handleSubmit = (item: any) => {
     if (item?.type == 'camera') {
       openCameraDevice()
-        .then(callback)
+        .then(onCheckValidFile)
         .catch(() => undefined);
     } else {
       openLibrary()
-        .then(callback)
+        .then(onCheckValidFile)
         .catch(() => undefined);
     }
   };
