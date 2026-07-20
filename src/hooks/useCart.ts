@@ -82,7 +82,7 @@ export const useCart = () => {
           setItems(prev => {
             const newData = prev.filter(item => item.id !== cartItemId);
             dispatch(getTotalItemCartRequest());
-            setItems(newData);
+            return newData;
           });
           AppNavigator.showSnackBar({
             message: t('carts.remove_success'),

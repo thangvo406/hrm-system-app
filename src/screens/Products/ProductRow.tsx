@@ -32,7 +32,7 @@ function ProductRow({
   onPress,
 }: Properties) {
   const thumbUri = item.thumbnail?.fileUrl;
-  const [quantity, setQuantity] = useState(item?.cartItemInfo?.quantity);
+  const [quantity, setQuantity] = useState(0);
   const [errorMaxQuantity, setErrorMaxQuantity] = useState('');
   const { t } = useTranslation();
   const originalPrice = isNumber(item.discountPrice)
@@ -42,6 +42,10 @@ function ProductRow({
   const handlePress = () => {
     onPress(item);
   };
+
+  useEffect(() => {
+    setQuantity(item?.cartItemInfo?.quantity || 0);
+  }, [item?.cartItemInfo?.quantity]);
 
   useEffect(() => {
     const debounceId = debounce(() => {

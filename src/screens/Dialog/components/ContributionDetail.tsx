@@ -49,7 +49,7 @@ type ContributionDetailProps = {
   readonly title?: string;
 };
 
-function ContributionDetail({ data, title }: ContributionDetailProps) {
+function ContributionDetailComponent({ data, title }: ContributionDetailProps) {
   const { t } = useTranslation();
 
   return (
@@ -161,14 +161,14 @@ function DividendDetail({ data }: DividendDetailProps) {
   );
 }
 
-const Index = (props: any) => {
+const ContributionDetail = (props: any) => {
   const { isContribute } = props || {};
 
-  const Component = isContribute ? ContributionDetail : DividendDetail;
+  const Component = isContribute ? ContributionDetailComponent : DividendDetail;
   return <Component {...props} />;
 };
 
-export default React.memo(Index);
+export default React.memo(ContributionDetail);
 
 const styles = StyleSheet.create({
   amount: {

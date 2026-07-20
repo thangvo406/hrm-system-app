@@ -146,7 +146,7 @@ function BottomSheetOverlay({
             styles.card,
             {
               maxHeight: screenHeight * BOTTOM_SHEET_SIZES.maxHeightRatio,
-              paddingBottom: insets.bottom,
+              paddingBottom: insets.bottom || 20,
             },
             cardStyle,
           ]}

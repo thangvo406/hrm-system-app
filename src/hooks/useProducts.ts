@@ -11,6 +11,7 @@ import type { AttributeCheckout } from '@type/products';
 import { IProduct } from '@type';
 import { updateCartItemRequest } from '@services/slices/payment/paymentSlice';
 import set from 'lodash/set';
+import { useFocusEffect } from '@react-navigation/native';
 
 export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   const dispatch = useAppDispatch();
@@ -97,22 +98,6 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
 
   useEffect(() => {
     dispatch(
-      getStoreDetailRequest({
-        storeId: storeId || store?.id,
-        // onFailure: handleFailure,
-        onSuccess: (data: IStoreItem) => {
-          setStoreInfo(data);
-        },
-        onFailure: () => {
-          setLoading(false);
-          setData([]);
-        },
-      }),
-    );
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(
       getProductsRequest({
         storeId: storeInfo?.id || 1,
         page: currentPage,
@@ -123,6 +108,30 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
       }),
     );
   }, [dispatch, storeInfo?.id, searchKey, currentPage]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setCurrentPage(0);
+    }, []),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(
+        getStoreDetailRequest({
+          storeId: storeId || store?.id,
+          // onFailure: handleFailure,
+          onSuccess: (data: IStoreItem) => {
+            setStoreInfo(data);
+          },
+          onFailure: () => {
+            setLoading(false);
+            setData([]);
+          },
+        }),
+      );
+    }, [dispatch]),
+  );
 
   return {
     data,

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import type { IAttributeDetail, IResponseProductDetail } from '@type/products';
 
 import { useAppDispatch } from '@services/common/storeHooks';
@@ -213,10 +214,14 @@ export const useProductDetail = (props: any) => {
             message: t('product_detail.add_cart_success'),
             type: 'success',
           });
-          dispatch(getTotalItemCartRequest())
-          AppNavigator.replace(Paths.Products, {
-            storeId: data?.storeId,
-          });
+          dispatch(getTotalItemCartRequest());
+          if (AppNavigator.getPreviousRoute().name == Paths.Products) {
+            AppNavigator.goBack();
+          } else {
+            AppNavigator.replace(Paths.Products, {
+              storeId: data?.storeId,
+            });
+          }
         },
         onFailure: (message: string) => {
           AppNavigator.showSnackBar({
