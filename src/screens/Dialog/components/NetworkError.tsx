@@ -69,9 +69,9 @@ const styles = StyleSheet.create({
     marginTop: ScaleSize(8),
   },
   retryButton: {
-    backgroundColor: RETRY_COLOR,
+    // backgroundColor: RETRY_COLOR,
     marginTop: ScaleSize(24),
-    shadowColor: RETRY_COLOR,
+    // shadowColor: RETRY_COLOR,
   },
   title: {
     color: TITLE_COLOR,

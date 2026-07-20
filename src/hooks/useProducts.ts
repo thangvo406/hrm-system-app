@@ -21,6 +21,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [storeInfo, setStoreInfo] = useState<IStoreItem | undefined>(store);
   const [searchKey, setSearchKey] = useState('');
+  const [keyRefreshList, setKeyRefreshList] = useState(false);
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
 
@@ -62,7 +63,13 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   }, []);
 
   const onChangeQuantity = (item: any, index: number) => {
-    if (data[index]?.cartItemInfo?.quantity == item?.cartItemInfo?.quantity) {
+    if (
+      !(
+        data[index]?.cartItemInfo &&
+        item.cartItemId &&
+        data[index]?.cartItemInfo?.quantity != item?.cartItemInfo?.quantity
+      )
+    ) {
       return;
     }
     const { quantity, selectedAttributes, cartItemId } =
@@ -107,11 +114,16 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
         onSuccess: handleSuccess,
       }),
     );
-  }, [dispatch, storeInfo?.id, searchKey, currentPage]);
+  }, [dispatch, storeInfo?.id, searchKey, currentPage, keyRefreshList]);
 
   useFocusEffect(
     useCallback(() => {
-      setCurrentPage(0);
+      setCurrentPage(prev => {
+        if (prev == 0) {
+          setKeyRefreshList(_p => !_p);
+        }
+        return 0;
+      });
     }, []),
   );
 

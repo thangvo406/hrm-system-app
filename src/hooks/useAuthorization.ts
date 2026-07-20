@@ -254,7 +254,7 @@ export const useAuthorization = () => {
   const onDeleteAccount = (selectedReason: string) => {
     dispatch(
       deleteAccountRequest({
-        deletedReason: selectedReason,
+        deletedReason: selectedReason || '',
         onSuccess: () => {
           dispatch(logout());
           AppNavigator.reset(AppStacks.Auth);

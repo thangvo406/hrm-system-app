@@ -3,13 +3,7 @@ import { AppButton, Button, Image, RadioButton, TextField } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { DeviceUtils } from '@kits/core/utils';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Animated,
@@ -50,33 +44,14 @@ function DeletionAccount({ onSubmit, onRequestClose }: Properties) {
   const { t } = useTranslation();
   const [selectedReason, setSelectedReason] = useState<
     TReasonSelected | undefined
-  >({
-    id: DELETE_REASONS[0],
-    value: t(`deletion_account.${DELETE_REASONS[0]}`),
-  });
+  >(undefined);
   const [reasonOther, setReasonOther] = useState('');
-  const [errorOtherReason, setErrorOtherReason] = useState<string>();
   const keyboardOffset = useRef(new Animated.Value(0)).current;
   const isOtherReason = selectedReason?.id === OTHER_REASON;
 
-  const enableBtnSubmit = useMemo(() => {
-    if (isOtherReason) {
-      return !!reasonOther;
-    }
-    return true;
-  }, [reasonOther, isOtherReason]);
-
-  const onChangeReasonOther = useCallback(
-    (text: string) => {
-      setReasonOther(text);
-      setErrorOtherReason(
-        text.trim().length === 0
-          ? t('deletion_account.empty_reason_error')
-          : undefined,
-      );
-    },
-    [t],
-  );
+  const onChangeReasonOther = useCallback((text: string) => {
+    setReasonOther(text);
+  }, []);
 
   useEffect(() => {
     if (isIPadOrTablet()) {
@@ -198,7 +173,6 @@ function DeletionAccount({ onSubmit, onRequestClose }: Properties) {
                   id: reason,
                   value: t(`deletion_account.${reason}`),
                 });
-                setErrorOtherReason(undefined);
               }}
               selected={selectedReason?.id === reason}
               style={styles.reasonCard}
@@ -210,7 +184,6 @@ function DeletionAccount({ onSubmit, onRequestClose }: Properties) {
             <TextField
               containerStyle={styles.reasonOtherInput}
               onChangeText={onChangeReasonOther}
-              error={errorOtherReason}
               multiLine
               autoFocus
               placeholder={t('deletion_account.reason_other_placeholder')}
@@ -221,8 +194,7 @@ function DeletionAccount({ onSubmit, onRequestClose }: Properties) {
         </Animated.View>
         <Button
           onPress={handleDelete}
-          style={enableBtnSubmit ? styles.deleteButton : undefined}
-          disabled={!enableBtnSubmit}
+          style={styles.deleteButton}
           testID="deletion-account-delete"
           title={t('deletion_account.delete_button')}
           type="rounded"
