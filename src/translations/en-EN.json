@@ -589,6 +589,7 @@
       "reason_rarely_use": "Rarely Use the Service",
       "reason_privacy": "Privacy Protection",
       "reason_other": "Other",
+      "reason_other_placeholder": "Please enter your reason",
       "delete_button": "Delete Account"
     },
     "network_error": {

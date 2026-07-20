@@ -590,6 +590,7 @@
       "reason_rarely_use": "서비스를 거의 이용하지 않음",
       "reason_privacy": "개인정보 보호",
       "reason_other": "기타",
+      "reason_other_placeholder": "사유를 입력해 주세요",
       "delete_button": "회원 탈퇴"
     },
     "network_error": {

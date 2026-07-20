@@ -1,12 +1,19 @@
 import imageNames from '@assets/images/names';
-import { AppButton, Button, Image, RadioButton } from '@components';
+import { AppButton, Button, Image, RadioButton, TextField } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import { NOOP } from '@utils/common';
-import React, { useState } from 'react';
+import { DeviceUtils } from '@kits/core/utils';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-
+import {
+  Animated,
+  Keyboard,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+const { isIOS, isIPadOrTablet } = DeviceUtils;
 const BG_COLOR = '#F5F5F5';
 const CARD_BG = '#FFFFFF';
 const DANGER_COLOR = '#D0342C';
@@ -21,6 +28,8 @@ const DELETE_REASONS = [
   'reason_privacy',
   'reason_other',
 ] as const;
+
+const OTHER_REASON = DELETE_REASONS.at(-1);
 
 type Properties = {
   readonly onSubmit?: (reason?: string) => void;
@@ -37,14 +46,47 @@ type TReasonSelected = {
  * contribution refund / re-register cooldown, and collects a delete reason
  * before confirming.
  */
-function DeletionAccount({
-  onSubmit = NOOP,
-  onRequestClose = NOOP,
-}: Properties) {
+function DeletionAccount({ onSubmit, onRequestClose }: Properties) {
   const { t } = useTranslation();
   const [selectedReason, setSelectedReason] = useState<
     TReasonSelected | undefined
   >(undefined);
+  const [reasonOther, setReasonOther] = useState('');
+  const keyboardOffset = useRef(new Animated.Value(0)).current;
+
+  const isOtherReason = selectedReason?.id === OTHER_REASON;
+
+  useEffect(() => {
+    if (isIPadOrTablet()) {
+      return;
+    }
+    const showEvent = isIOS() ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = isIOS() ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const onShow = () => {
+      Animated.timing(keyboardOffset, {
+        toValue: -ScaleSize(270),
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const onHide = () => {
+      Animated.timing(keyboardOffset, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const showSub = Keyboard.addListener(showEvent, onShow);
+    const hideSub = Keyboard.addListener(hideEvent, onHide);
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const infoLines = [
     t('deletion_account.info_account'),
@@ -55,7 +97,7 @@ function DeletionAccount({
 
   const handleDelete = () => {
     onRequestClose?.();
-    onSubmit?.(selectedReason?.value);
+    onSubmit?.(isOtherReason ? reasonOther : selectedReason?.value);
   };
 
   return (
@@ -83,61 +125,76 @@ function DeletionAccount({
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <Image
-          height={ScaleSize(88)}
-          name={imageNames.ic_logo_welcome}
-          style={styles.mascot}
-          width={ScaleSize(55)}
-        />
-        <Text style={styles.confirmQuestion}>
-          {t('deletion_account.confirm_question')}
-        </Text>
-
-        <View style={styles.infoCard}>
-          <Text style={styles.infoTitle}>
-            {t('deletion_account.info_title')}
-          </Text>
-          <View style={styles.divider} />
-          {infoLines.map(line => (
-            <View key={line} style={styles.infoRow}>
-              <Text style={styles.infoBullet}>•</Text>
-              <Text style={styles.infoText}>{line}</Text>
-            </View>
-          ))}
-        </View>
-
-        <View style={styles.noticeBox}>
-          <Text style={styles.noticeTitle}>
-            {t('deletion_account.notice_title')}
-          </Text>
-          <Text style={styles.noticeDesc}>
-            {t('deletion_account.notice_line1')}
-          </Text>
-          <Text style={styles.noticeNote}>
-            {t('deletion_account.notice_line2')}
-          </Text>
-        </View>
-
-        <Text style={styles.reasonTitle}>
-          {t('deletion_account.reason_title')}
-        </Text>
-        {DELETE_REASONS.map(reason => (
-          <RadioButton
-            key={reason}
-            label={t(`deletion_account.${reason}`)}
-            labelStyle={styles.reasonLabel}
-            onPress={() => {
-              setSelectedReason({
-                id: reason,
-                value: t(`deletion_account.${reason}`),
-              });
-            }}
-            selected={selectedReason?.id === reason}
-            style={styles.reasonCard}
-            testID={`deletion-account-${reason}`}
+        <Animated.View
+          style={[{ flex: 1, transform: [{ translateY: keyboardOffset }] }]}
+        >
+          <Image
+            height={ScaleSize(88)}
+            name={imageNames.ic_logo_welcome}
+            style={styles.mascot}
+            width={ScaleSize(55)}
           />
-        ))}
+          <Text style={styles.confirmQuestion}>
+            {t('deletion_account.confirm_question')}
+          </Text>
 
+          <View style={styles.infoCard}>
+            <Text style={styles.infoTitle}>
+              {t('deletion_account.info_title')}
+            </Text>
+            <View style={styles.divider} />
+            {infoLines.map(line => (
+              <View key={line} style={styles.infoRow}>
+                <Text style={styles.infoBullet}>•</Text>
+                <Text style={styles.infoText}>{line}</Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={styles.noticeBox}>
+            <Text style={styles.noticeTitle}>
+              {t('deletion_account.notice_title')}
+            </Text>
+            <Text style={styles.noticeDesc}>
+              {t('deletion_account.notice_line1')}
+            </Text>
+            <Text style={styles.noticeNote}>
+              {t('deletion_account.notice_line2')}
+            </Text>
+          </View>
+
+          <Text style={styles.reasonTitle}>
+            {t('deletion_account.reason_title')}
+          </Text>
+          {DELETE_REASONS.map(reason => (
+            <RadioButton
+              key={reason}
+              label={t(`deletion_account.${reason}`)}
+              labelStyle={styles.reasonLabel}
+              onPress={() => {
+                setSelectedReason({
+                  id: reason,
+                  value: t(`deletion_account.${reason}`),
+                });
+              }}
+              selected={selectedReason?.id === reason}
+              style={styles.reasonCard}
+              testID={`deletion-account-${reason}`}
+            />
+          ))}
+
+          {isOtherReason ? (
+            <TextField
+              containerStyle={styles.reasonOtherInput}
+              onChangeText={setReasonOther}
+              multiLine
+              autoFocus
+              placeholder={t('deletion_account.reason_other_placeholder')}
+              testID="deletion-account-reason-other"
+              value={reasonOther}
+            />
+          ) : undefined}
+        </Animated.View>
         <Button
           onPress={handleDelete}
           style={styles.deleteButton}
@@ -270,6 +327,9 @@ const styles = StyleSheet.create({
   reasonLabel: {
     color: HEADER_TITLE_COLOR,
     fontSize: ScaleSize(14),
+  },
+  reasonOtherInput: {
+    marginTop: ScaleSize(12),
   },
   reasonTitle: {
     color: Colors.gray06,

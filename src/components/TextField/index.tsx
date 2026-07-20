@@ -27,9 +27,10 @@ type TextFieldProps = {
   readonly autoCapitalize?: TextInputProps['autoCapitalize'];
   readonly defaultValue?: string;
   readonly error?: string;
-  readonly iconName: IconName;
+  readonly iconName?: IconName;
   readonly keyboardType?: KeyboardTypeOptions;
   readonly label?: string;
+  readonly multiLine?: boolean;
   readonly onChangeText: (text: string) => void;
   readonly renderRightComponent?: () => JSX.Element;
   readonly onSubmitEditing?: TextInputProps['onSubmitEditing'];
@@ -52,6 +53,7 @@ function TextField({
   iconName,
   keyboardType = 'default',
   label = '',
+  multiLine = false,
   onChangeText,
   onSubmitEditing,
   placeholder,
@@ -87,6 +89,7 @@ function TextField({
           styles.inputWrapper,
           !editable && styles.inputWrapperEditable,
           hasError && styles.inputWrapperError,
+          multiLine && styles.inputWrapperMultiline,
         ]}
       >
         {!!iconName && (
@@ -104,6 +107,7 @@ function TextField({
           defaultValue={defaultValue}
           editable={editable}
           keyboardType={keyboardType}
+          multiline={multiLine}
           onChangeText={_onChangeText}
           onSubmitEditing={onSubmitEditing}
           placeholder={placeholder}
@@ -111,7 +115,7 @@ function TextField({
           ref={reference || textInputRef}
           returnKeyType={returnKeyType}
           secureTextEntry={secure}
-          style={styles.input}
+          style={[styles.input, multiLine && styles.inputMultiline]}
           submitBehavior={submitBehavior}
           testID={testID}
           value={value}
@@ -175,6 +179,10 @@ const styles = StyleSheet.create({
     fontSize: ScaleSize(15),
     paddingVertical: ScaleSize(11),
   },
+  inputMultiline: {
+    height: ScaleSize(100),
+    textAlignVertical: 'top',
+  },
   inputWrapper: {
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
@@ -191,6 +199,9 @@ const styles = StyleSheet.create({
   },
   inputWrapperError: {
     borderColor: '#D32F2F',
+  },
+  inputWrapperMultiline: {
+    alignItems: 'flex-start',
   },
   clearButton: {
     color: '#9E9E9E',
