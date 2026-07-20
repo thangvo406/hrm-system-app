@@ -7,8 +7,10 @@ import { Paths } from '@navigation/paths';
 import AppNavigator from '@navigation/AppNavigator';
 import { getStoreDetailRequest } from '@services/slices/stores/storesSlice';
 import { IStoreItem } from '@type/store';
+import type { AttributeCheckout } from '@type/products';
 import { IProduct } from '@type';
-
+import { updateCartItemRequest } from '@services/slices/payment/paymentSlice';
+import set from 'lodash/set';
 
 export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   const dispatch = useAppDispatch();
@@ -47,7 +49,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   }, []);
 
   const isShowBtnCart = useMemo(() => {
-    return storeInfo?.cartId > 0;
+    return (storeInfo?.cartId ?? 0) > 0;
   }, [storeInfo]);
 
   const onLoadMore = useCallback(() => {
@@ -58,6 +60,36 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
     setCurrentPage(prev => prev + 1);
   }, []);
 
+  const onChangeQuantity = (item: any, index: number) => {
+    if (data[index]?.cartItemInfo?.quantity == item?.cartItemInfo?.quantity) {
+      return;
+    }
+    const { quantity, selectedAttributes, cartItemId } =
+      item.cartItemInfo || {};
+    const flatAttributes = Object.values(selectedAttributes || [])
+      .flat()
+      .map(attributeItemId => ({ attributeItemId })) as AttributeCheckout[];
+    dispatch(
+      updateCartItemRequest({
+        quantity,
+        productId: item?.id,
+        selectedAttributes: flatAttributes,
+        cartItemId,
+        onSuccess: (response: any) => {
+          set(data, `[${index}].cartItemInfo`, item.cartItemInfo);
+          setStoreInfo(prev =>
+            prev ? { ...prev, totalAmountCart: response?.subTotal } : prev,
+          );
+        },
+        onFailure: (message: string) => {
+          AppNavigator.showSnackBar({
+            message: message || '',
+            type: 'failed',
+          });
+        },
+      }),
+    );
+  };
   const handleFailure = () => {
     setLoading(false);
     setData([]);
@@ -90,13 +122,14 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
         onSuccess: handleSuccess,
       }),
     );
-  }, [dispatch, storeInfo, searchKey, currentPage]);
+  }, [dispatch, storeInfo?.id, searchKey, currentPage]);
 
   return {
     data,
     loading,
     onSearchChange,
     goToCart,
+    onChangeQuantity,
     isShowBtnCart,
     storeInfo,
     onLoadMore,

@@ -3,7 +3,7 @@ import { useAppDispatch } from '@services/common/storeHooks';
 import { autoCompleteAddressRequest } from '@services/slices/account/accountSlice';
 import type { SearchAddressItem } from '@type/common';
 import { mapKakaoAddress } from '@utils/common';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { DeviceEventEmitter } from 'react-native';
 import { AppConstants } from '@constants';
 import AppNavigator from '@navigation/AppNavigator';

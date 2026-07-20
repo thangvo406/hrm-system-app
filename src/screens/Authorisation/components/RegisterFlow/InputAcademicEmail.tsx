@@ -4,7 +4,7 @@ import RegisterHeader from './Header';
 import { useTranslation } from 'react-i18next';
 import { ScaleSize } from '@kits/core';
 import TextField from '@components/TextField';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { ValidateUtils } from '@kits/core/utils';
 import Button from '@components/Button';
 import { Colors } from '@constants';

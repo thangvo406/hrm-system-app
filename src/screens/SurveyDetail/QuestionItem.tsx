@@ -3,7 +3,7 @@ import { RadioButton } from '@components';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useMemo } from 'react';
-import { sortBy } from 'lodash';
+import sortBy from 'lodash/sortBy';
 import { useTranslation } from 'react-i18next';
 
 const PLACEHOLDER_COLOR = '#9E9E9E';

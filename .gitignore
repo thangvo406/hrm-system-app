@@ -82,4 +82,4 @@ env/.*
 !env/.example
 android/coop-dev-firebase.json
 .claude
-yarn.lock
+*.lock

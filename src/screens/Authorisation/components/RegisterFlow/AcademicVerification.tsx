@@ -12,7 +12,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import React, { useRef, useState } from 'react';
 import { Colors } from '@constants';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 
 const RESEND_COLOR = '#0A7340';
 

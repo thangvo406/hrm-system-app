@@ -45,6 +45,7 @@ function Products(props: RootScreenProps<Paths.Products>) {
     isShowBtnCart,
     loading,
     goToCart,
+    onChangeQuantity,
     onLoadMore,
     onSearchChange,
   } = useProducts(props);
@@ -102,10 +103,12 @@ function Products(props: RootScreenProps<Paths.Products>) {
             isFirst={index == 0}
             item={item}
             onPress={onPressProduct}
+            index={index}
+            onChangeQuantity={onChangeQuantity}
           />
         );
       },
-    [onPressProduct],
+    [onPressProduct, data],
   );
 
   return (

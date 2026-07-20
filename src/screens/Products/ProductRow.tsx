@@ -3,43 +3,77 @@ import type { IProduct } from '@type/products';
 import { AppButton, Image } from '@components';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import imageNames from '@assets/images/names';
 import { ProductUtils } from '@utils';
 import isNumber from 'lodash/isNumber';
-
+import debounce from 'lodash/debounce';
+import { useTranslation } from 'react-i18next';
+import { Colors } from '@constants';
 const PRODUCT_THUMB_SIZE = ScaleSize(96);
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_PRICE = '#1A1A1A';
 const PRIMARY_COLOR = '#5BB85C';
-const STEPPER_BORDER = '#E5E5E5';
 
 type Properties = {
   readonly item: IProduct;
   readonly isFirst: boolean;
+  readonly index: number;
   readonly onPress: (item: any) => void;
+  readonly onChangeQuantity: (item: any, index: number) => void;
 };
 
-function ProductRow({ item, isFirst, onPress }: Properties) {
+function ProductRow({
+  item,
+  index,
+  isFirst,
+  onChangeQuantity,
+  onPress,
+}: Properties) {
   const thumbUri = item.thumbnail?.fileUrl;
   const [quantity, setQuantity] = useState(item?.cartItemInfo?.quantity);
+  const [errorMaxQuantity, setErrorMaxQuantity] = useState('');
+  const { t } = useTranslation();
   const originalPrice = isNumber(item.discountPrice)
     ? item.discountPrice
     : item.sellingPrice || 0;
+
   const handlePress = () => {
     onPress(item);
   };
 
-  const _onChangeQuantity = (delta: number) => () => {
-    if (quantity + delta > item.stockQuantity) {
-      // setError(
-      //   t('product_detail.max_quantity_error', { count: maxQuantity }),
-      // );
+  useEffect(() => {
+    const debounceId = debounce(() => {
+      onChangeQuantity?.(
+        {
+          ...item,
+          cartItemInfo: {
+            ...item.cartItemInfo,
+            quantity,
+          },
+        },
+        index,
+      );
+    }, 350);
+    debounceId();
+    return () => debounceId.cancel();
+  }, [quantity, index]);
+
+  const _onChangeQuantity = (type: string) => () => {
+    const newQuantity = Math.max(
+      0,
+      type === 'plus' ? quantity + 1 : quantity - 1,
+    );
+
+    if (newQuantity > item.stockQuantity) {
+      setErrorMaxQuantity(
+        t('product_detail.max_quantity_error', { count: item.stockQuantity }),
+      );
       return;
     }
-    setQuantity(quantity + delta);
-    // setError('');
+    setQuantity(newQuantity);
+    setErrorMaxQuantity('');
   };
 
   return (
@@ -59,20 +93,23 @@ function ProductRow({ item, isFirst, onPress }: Properties) {
           <View style={styles.stepper}>
             <AppButton
               style={styles.stepperIcon}
-              onPress={_onChangeQuantity(-1)}
+              onPress={_onChangeQuantity('')}
             >
               <View style={styles.stepperBar} />
             </AppButton>
             <Text style={styles.stepperValue}>{quantity}</Text>
             <AppButton
               style={styles.stepperIcon}
-              onPress={_onChangeQuantity(1)}
+              onPress={_onChangeQuantity('plus')}
             >
               <View style={styles.stepperBar} />
               <View style={[styles.stepperBar, styles.stepperBarVertical]} />
             </AppButton>
           </View>
         ) : undefined}
+        {!!errorMaxQuantity && (
+          <Text style={styles.errorMaxQuantity}>{errorMaxQuantity}</Text>
+        )}
       </View>
       {thumbUri ? (
         <Image
@@ -107,6 +144,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingRight: ScaleSize(12),
   },
+  errorMaxQuantity: {
+    color: 'red',
+    fontSize: ScaleSize(14),
+    fontWeight: '400',
+    marginTop: ScaleSize(8),
+  },
   productName: {
     color: TEXT_DARK,
     fontSize: ScaleSize(16),
@@ -133,7 +176,7 @@ const styles = StyleSheet.create({
   stepper: {
     alignItems: 'center',
     alignSelf: 'stretch',
-    borderColor: STEPPER_BORDER,
+    borderColor: Colors.primary,
     borderRadius: ScaleSize(24),
     borderWidth: 1,
     flexDirection: 'row',
