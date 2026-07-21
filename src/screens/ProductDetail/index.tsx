@@ -7,16 +7,20 @@ import {
   ProductDetailLoading,
   ProgressiveImage,
 } from '@components';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StatusBar, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   Extrapolation,
   interpolate,
+  useAnimatedReaction,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
+import { useCallback } from 'react';
 import { ScaleSize } from '@kits/core';
 import { ProductUtils } from '@utils';
+import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useProductDetail } from '@hooks';
 import AppNavigator from '@navigation/AppNavigator';
@@ -40,6 +44,9 @@ const STICKY_HEADER_HEIGHT = ScaleSize(56);
 const STICKY_FADE_START = HERO_HEIGHT - STICKY_HEADER_HEIGHT - ScaleSize(40);
 const STICKY_FADE_END = HERO_HEIGHT - STICKY_HEADER_HEIGHT;
 const STICKY_TITLE_TRANSLATE_FROM = ScaleSize(20);
+// Flip the status bar to dark at the midpoint of the sticky-header fade — the
+// white header fades in over STICKY_FADE_START → STICKY_FADE_END.
+const STATUS_BAR_FLIP_OFFSET = (STICKY_FADE_START + STICKY_FADE_END) / 2;
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#7A7A7A';
@@ -285,6 +292,30 @@ function ProductDetail(props: any) {
     totalAmount,
   } = useProductDetail(props);
   const { t } = useTranslation();
+
+  // Entering the screen the hero image is visible → light status bar; leaving
+  // it we hand back the app-wide default (dark).
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBarStyle('light-content');
+      return () => {
+        StatusBar.setBarStyle('dark-content');
+      };
+    }, []),
+  );
+
+  const applyBarStyle = useCallback((isHeaderVisible: boolean) => {
+    StatusBar.setBarStyle(isHeaderVisible ? 'dark-content' : 'light-content');
+  }, []);
+
+  useAnimatedReaction(
+    () => scrollY.value >= STATUS_BAR_FLIP_OFFSET,
+    (isHeaderVisible, previous) => {
+      if (isHeaderVisible !== previous) {
+        scheduleOnRN(applyBarStyle, isHeaderVisible);
+      }
+    },
+  );
 
   const onScroll = useAnimatedScrollHandler(event => {
     scrollY.value = event.contentOffset.y;

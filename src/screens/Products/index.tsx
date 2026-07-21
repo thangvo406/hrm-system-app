@@ -4,11 +4,13 @@ import type { IProduct } from '@type/products';
 
 import { Button, EmptyView, ProductsLoading } from '@components';
 import { Paths } from '@navigation/paths';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StatusBar, StyleSheet, View } from 'react-native';
 import Animated, {
+  useAnimatedReaction,
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 import React, { useCallback, useMemo } from 'react';
 import { ScaleSize } from '@kits/core';
 import { useProducts } from '@hooks';
@@ -24,10 +26,15 @@ import imageNames from '@assets/images/names';
 import { useTranslation } from 'react-i18next';
 import { DeviceUtils } from '@kits/core/utils';
 import { formatCurrency } from '@utils/product';
+import { useFocusEffect } from '@react-navigation/native';
 const { ifAndroid } = DeviceUtils;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const HERO_HEIGHT = ScaleSize(220);
 const DIVIDER_COLOR = '#F0F0F0';
+// Flip the status bar to dark once the white header is (mostly) opaque — the
+// header background fades in over collapseScroll * 0.8 → collapseScroll, so
+// 0.9 is the midpoint of that fade.
+const STATUS_BAR_FLIP_RATIO = 0.9;
 
 const keyExtractor = (item: IProduct) => String(item.id);
 const onPressBack = () => {
@@ -59,11 +66,37 @@ function Products(props: RootScreenProps<Paths.Products>) {
   const frozenScrollY = useSharedValue(0);
   const isSearchActive = useSharedValue(false);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (scrollY.value == 0) {
+        StatusBar.setBarStyle('light-content');
+      }
+      return () => {
+        StatusBar.setBarStyle('dark-content');
+      };
+    }, []),
+  );
+
   const HERO_COLLAPSED_HEIGHT = useMemo(() => {
     return ScaleSize(54) + insets.top;
   }, [insets.top]);
 
   const collapseScroll = HERO_HEIGHT - HERO_COLLAPSED_HEIGHT;
+
+  const applyBarStyle = useCallback((isHeaderVisible: boolean) => {
+    StatusBar.setBarStyle(isHeaderVisible ? 'dark-content' : 'light-content');
+  }, []);
+
+  // Drive the status bar off the same (frozen) scroll value the header reads,
+  // so opening search doesn't desync the bar from the visible header.
+  useAnimatedReaction(
+    () => frozenScrollY.value >= collapseScroll * STATUS_BAR_FLIP_RATIO,
+    (isHeaderVisible, previous) => {
+      if (isHeaderVisible !== previous) {
+        scheduleOnRN(applyBarStyle, isHeaderVisible);
+      }
+    },
+  );
 
   const onScroll = useAnimatedScrollHandler(event => {
     scrollY.value = event.contentOffset.y;

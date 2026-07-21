@@ -41,6 +41,16 @@ function ProductList({ onPressProduct, style, products, storeId }: Properties) {
           Globals.isScrollingRef.current = false;
         }
       }}
+      onTouchCancel={() => {
+        if (Globals.isScrollingRef) {
+          Globals.isScrollingRef.current = false;
+        }
+      }}
+      onTouchEnd={() => {
+        if (Globals.isScrollingRef) {
+          Globals.isScrollingRef.current = false;
+        }
+      }}
       showsHorizontalScrollIndicator={false}
     >
       {(products || []).map((product: IProduct) => {
