@@ -53,7 +53,7 @@ export type RootStackParamList = {
     | undefined;
   [Paths.OrderHistories]: undefined;
   [Paths.ContributionHistory]: undefined;
-  [Paths.PaymentCart]: undefined;
+  [Paths.CartDetail]: undefined;
   [Paths.QRCodePayment]: undefined;
   [Paths.RegisterCompleted]: { goFrom: 'forgot_pass' } | undefined;
   [Paths.ProductDetail]: { id: number; storeId: number } | undefined;

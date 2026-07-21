@@ -97,7 +97,7 @@ export const useCart = () => {
   };
 
   const onPressItem = (item: IStoreCartItem) => {
-    AppNavigator.navigate(Paths.PaymentCart, {
+    AppNavigator.navigate(Paths.CartDetail, {
       data: item,
     });
   };

@@ -13,7 +13,7 @@ export { useForgotPass } from './useForgotPass';
 export { useI18n } from './language/useI18n';
 export { useNotifications } from './useNotifications';
 export { useContributeHistory } from './useContributeHistory';
-export { usePaymentCart } from './usePaymentCart';
+export { useCartDetail } from './useCartDetail';
 export { useProductDetail } from './useProductDetail';
 export { useProducts } from './useProducts';
 export { useReturnParams } from './useReturnParams';

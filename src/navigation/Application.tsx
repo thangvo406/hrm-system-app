@@ -27,21 +27,21 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 const IS_PAN_RESPONDER_ENABLED = true;
 
-const HIDDEN_CART_PATHS = new Set<string>([
-  Paths.Carts,
-  Paths.PaymentCart,
-  Paths.OrderCompleted,
-  Paths.InputAddress,
-]);
+// const HIDDEN_CART_PATHS = new Set<string>([
+//   Paths.Carts,
+//   Paths.CartDetail,
+//   Paths.OrderCompleted,
+//   Paths.InputAddress,
+// ]);
 
 const handleNavigationStateChange = () => {
   console.log('currentRoute', AppNavigator.getCurrentRoute());
-  const currentName = AppNavigator.getCurrentRoute()?.name ?? '';
-  if (HIDDEN_CART_PATHS.has(currentName)) {
-    Globals.cartBtnRef?.hide?.();
-  } else {
-    Globals.cartBtnRef?.show?.();
-  }
+  // const currentName = AppNavigator.getCurrentRoute()?.name ?? '';
+  // if (HIDDEN_CART_PATHS.has(currentName)) {
+  //   Globals.cartBtnRef?.hide?.();
+  // } else {
+  //   Globals.cartBtnRef?.show?.();
+  // }
 };
 
 function ApplicationNavigator() {

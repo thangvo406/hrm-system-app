@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { formatCurrency } from '@utils/product';
-import { usePaymentCart } from '@hooks';
+import { useCartDetail } from '@hooks';
 import PaymentMethod from './components/PaymentMethod';
 import ProductInfo from './components/ProductInfo';
 import Shipping from './components/Shipping';
@@ -18,7 +18,7 @@ import imageNames from '@assets/images/names';
 const TEXT_DARK = '#1A1A1A';
 const SCREEN_BG = '#F2F2F2';
 
-function PaymentCart(props: any) {
+function CartDetail(props: any) {
   const {
     deliveryTab,
     paymentMethod,
@@ -35,7 +35,7 @@ function PaymentCart(props: any) {
     onPressOrder,
     onChangeQuantity,
     onPressSelectAddress,
-  } = usePaymentCart(props);
+  } = useCartDetail(props);
 
   return (
     <View style={styles.safeArea}>
@@ -101,7 +101,7 @@ function PaymentCart(props: any) {
   );
 }
 
-export default PaymentCart;
+export default CartDetail;
 
 const styles = StyleSheet.create({
   bottomBar: {

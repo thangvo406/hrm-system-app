@@ -19,7 +19,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter } from 'react-native';
 
-export type UsePaymentCart = ReturnType<typeof usePaymentCart>;
+export type UseCartDetail = ReturnType<typeof useCartDetail>;
 
 const DATA_PICKUP_TIME = [
   {
@@ -47,7 +47,7 @@ interface AddressDelivery {
   address_name: string;
 }
 
-export const usePaymentCart = (props: any) => {
+export const useCartDetail = (props: any) => {
   const { cartId, data: dataCart } = AppNavigator.getParams(props);
   const { t } = useTranslation();
   const [data, setData] = useState(dataCart);
@@ -222,7 +222,7 @@ export const usePaymentCart = (props: any) => {
         addressDetail: addressDelivery?.detail,
         createLinkRequest: {
           paymentType: paymentMethod,
-          vaBankCode: '1234',
+          // vaBankCode: '1234',
         },
         receiveMethod: deliveryTab,
         products: items,
@@ -242,12 +242,12 @@ export const usePaymentCart = (props: any) => {
           }
         },
         onFailure: (type: string, error: any) => {
-          if(typeof error == "string") {
+          if (typeof error == 'string') {
             AppNavigator.showSnackBar({
               message: error,
-              type: 'failed'
-            })
-          }else {
+              type: 'failed',
+            });
+          } else {
             AppNavigator.navigate(Paths.OrderCompleted, {
               data: error,
               status: 'pending',

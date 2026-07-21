@@ -44,7 +44,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   );
 
   const goToCart = () => {
-    AppNavigator.navigate(Paths.PaymentCart, {
+    AppNavigator.navigate(Paths.CartDetail, {
       cartId: storeInfo?.cartId,
     });
   };
