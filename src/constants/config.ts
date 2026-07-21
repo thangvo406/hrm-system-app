@@ -102,3 +102,9 @@ export const PaymentTypes = {
   EASY_PAY: 'EASY_PAY',
   VIRTUAL_ACCOUNT: 'VIRTUAL_ACCOUNT',
 };
+
+export const AttributeType = {
+  SINGLE: 'SINGLE',
+  MULTIPLE_ONCE: 'MULTIPLE',
+  MULTIPLE_CHOICE: 'QUANTITY',
+};

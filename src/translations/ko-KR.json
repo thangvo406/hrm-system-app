@@ -380,7 +380,11 @@
       "min_order_label": "배달 최소 주문 금액",
       "add_cart_success": "장바구니에 성공적으로 추가되었습니다.",
       "max_quantity": "최대 수량: {{count}}개",
-      "max_quantity_error": "최대 수량은 {{count}}개입니다"
+      "max_quantity_error": "최대 수량은 {{count}}개입니다",
+      "update_cart": "장바구니 업데이트",
+      "remove_cart": "장바구니에서 삭제",
+      "remove_cart_success": "상품이 삭제되었습니다",
+      "missing_product_id": "상품 ID가 없습니다"
     },
     "products": {
       "cart_button": "장바구니 {{amount}}원",

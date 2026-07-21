@@ -16,6 +16,7 @@ export { useContributeHistory } from './useContributeHistory';
 export { usePaymentCart } from './usePaymentCart';
 export { useProductDetail } from './useProductDetail';
 export { useProducts } from './useProducts';
+export { useReturnParams } from './useReturnParams';
 export { useSurvey } from './useSurvey';
 export { useSurveyDetail } from './useSurveyDetail';
 export { useStore } from './useStore';

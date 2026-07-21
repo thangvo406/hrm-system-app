@@ -88,7 +88,11 @@
       "min_order_label": "Minimum delivery order",
       "add_cart_success": "Add to cart Successfully",
       "max_quantity": "Max quantity: {{count}}",
-      "max_quantity_error": "Maximum quantity is {{count}}"
+      "max_quantity_error": "Maximum quantity is {{count}}",
+      "update_cart": "Update cart",
+      "remove_cart": "Remove from cart",
+      "remove_cart_success": "Item removed successfully",
+      "missing_product_id": "Missing product id"
     },
     "products": {
       "cart_button": "Checkout {{amount}} KRW",

@@ -144,11 +144,23 @@ function getParams(props: any) {
 function replace(nameStack: string, params?: any) {
   navigator.dispatch(StackActions.replace(nameStack, params));
 }
-function goBack() {
+function goBack(params?: object) {
   if (navigator?.canGoBack?.()) {
-    navigator?.goBack?.();
+    if (params) {
+      const previous = getPreviousRoute();
+      if (previous?.key) {
+        navigator?.dispatch({
+          ...CommonActions.setParams({
+            dataGoBack: params,
+          }),
+          source: previous.key,
+        });
+      }
+    }
+    navigator?.goBack();
   }
 }
+
 function canGoBack() {
   return navigator?.canGoBack?.();
 }

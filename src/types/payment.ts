@@ -92,7 +92,9 @@ export interface IRequestGetInfoProductCheckout
   readonly productId: number;
 }
 
-export interface IRequestUpdateCartItem extends AppCallback, IRequestCheckout {
+export interface IRequestUpdateCartItem
+  extends AppCallback<IStoreCartItem>,
+    IRequestCheckout {
   readonly cartItemId: number;
 }
 

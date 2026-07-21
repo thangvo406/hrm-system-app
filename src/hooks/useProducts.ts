@@ -12,6 +12,7 @@ import { IProduct } from '@type';
 import { updateCartItemRequest } from '@services/slices/payment/paymentSlice';
 import set from 'lodash/set';
 import { useFocusEffect } from '@react-navigation/native';
+import { useReturnParams } from '@hooks/useReturnParams';
 
 export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   const dispatch = useAppDispatch();
@@ -21,9 +22,26 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [storeInfo, setStoreInfo] = useState<IStoreItem | undefined>(store);
   const [searchKey, setSearchKey] = useState('');
-  const [keyRefreshList, setKeyRefreshList] = useState(false);
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
+  useReturnParams<{ dataGoBack: any }>(
+    props,
+    ['dataGoBack'],
+    ({ dataGoBack }) => {
+      if (dataGoBack) {
+        const { productId, cartInfo } = dataGoBack;
+        const index = data?.findIndex(it => it.id == productId);
+        if (index != -1) {
+          const newData = [...data];
+          newData[index] = {
+            ...newData[index],
+            cartItemInfo: cartInfo,
+          };
+          setData(newData);
+        }
+      }
+    },
+  );
 
   const goToCart = () => {
     AppNavigator.navigate(Paths.PaymentCart, {
@@ -113,18 +131,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
         onSuccess: handleSuccess,
       }),
     );
-  }, [dispatch, storeInfo?.id, searchKey, currentPage, keyRefreshList]);
-
-  useFocusEffect(
-    useCallback(() => {
-      setCurrentPage(prev => {
-        if (prev == 0) {
-          setKeyRefreshList(_p => !_p);
-        }
-        return 0;
-      });
-    }, []),
-  );
+  }, [dispatch, storeInfo?.id, searchKey, currentPage]);
 
   useFocusEffect(
     useCallback(() => {

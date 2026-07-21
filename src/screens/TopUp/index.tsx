@@ -160,7 +160,9 @@ function TopUp() {
         </View>
       </ScrollView>
 
-      <View style={[styles.footer, { bottom: ifAndroid(16, insets.bottom) }]}>
+      <View
+        style={[styles.footer, { bottom: ifAndroid(16, insets.bottom || 20) }]}
+      >
         <AppButton
           style={[styles.nextBtn, !enabledBtnSubmit && styles.nextBtnDisabled]}
           testID="top-up-next"

@@ -1,5 +1,5 @@
 import type { AppCallback, IImage, ListApiResponse } from './common';
-import { IAttributeCart } from './payment';
+import { IAttributeCart, IStoreCartItem } from './payment';
 
 export interface IProduct {
   id: number;
@@ -59,7 +59,7 @@ export interface IRequestGetProductById
 }
 
 export interface IRequestCheckoutProduct
-  extends AppCallback,
+  extends AppCallback<IStoreCartItem>,
     IRequestCheckout {}
 
 export interface IAttributeDetail {
@@ -68,6 +68,12 @@ export interface IAttributeDetail {
   type: any;
   sortOrder: number;
   items: IAttributeItem[];
+  maxQuantity: number;
+}
+
+export interface ISelectedAttributeItem {
+  itemId: number;
+  quantity: number;
 }
 
 export interface IAttributeItem {
@@ -85,9 +91,10 @@ export interface IRequestCheckout {
 
 export interface AttributeCheckout {
   attributeItemId: number;
-  attributeId: number;
-  attributeName: string;
-  attributeType: string;
-  attributeItemName: string;
-  price: number;
+  attributeId?: number;
+  attributeName?: string;
+  attributeType?: string;
+  attributeItemName?: string;
+  price?: number;
+  quantity?: number;
 }

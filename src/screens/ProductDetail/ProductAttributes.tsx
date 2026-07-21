@@ -1,10 +1,11 @@
 import CheckBox from '@components/CheckBox';
 import RadioButton from '@components/RadioButton';
+import { AttributeType } from '@constants/config';
 import { ScaleSize } from '@kits/core';
-import { IAttributeDetail } from '@type';
+import { IAttributeDetail, ISelectedAttributeItem } from '@type';
 import { formatCurrency } from '@utils/product';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-
 const CARD_BG = '#FFFFFF';
 const CARD_RADIUS = ScaleSize(12);
 const SECTION_BG = '#F2F2F2';
@@ -12,8 +13,12 @@ const TITLE_COLOR = '#1A1A1A';
 
 type ProductAttributesProps = {
   readonly data: IAttributeDetail[];
-  readonly onSelect: (attribute: IAttributeDetail, itemId: number) => void;
-  readonly selected: Record<number, number[]>;
+  readonly onSelect: (
+    attribute: IAttributeDetail,
+    itemId: number,
+    quantity: number,
+  ) => void;
+  readonly selected: Record<number, ISelectedAttributeItem[]>;
 };
 
 function ProductAttributes({
@@ -24,7 +29,8 @@ function ProductAttributes({
   return (
     <View style={styles.container}>
       {data?.map(attribute => {
-        const Component = attribute.type === 'RADIO' ? RadioButton : CheckBox;
+        const Component =
+          attribute.type === AttributeType.SINGLE ? RadioButton : CheckBox;
         const selectedIds = selected[attribute.id] ?? [];
         return (
           <View key={attribute.id} style={styles.card}>
@@ -34,9 +40,9 @@ function ProductAttributes({
                 <Component
                   key={item.id}
                   label={item.name}
-                  onPress={() => onSelect(attribute, item.id)}
+                  onPress={() => onSelect(attribute, item.id, 1)}
                   rightLabel={formatCurrency(item.price)}
-                  selected={selectedIds.includes(item.id)}
+                  selected={selectedIds.some(entry => entry.itemId === item.id)}
                   style={styles.radioItem}
                 />
               ))}
@@ -76,4 +82,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProductAttributes;
+export default React.memo(ProductAttributes);

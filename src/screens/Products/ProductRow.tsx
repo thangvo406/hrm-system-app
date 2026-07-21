@@ -46,8 +46,10 @@ function ProductRow({
   useEffect(() => {
     if (item?.cartItemInfo) {
       setQuantity(item?.cartItemInfo?.quantity);
+    } else {
+      setQuantity(0);
     }
-  }, [item?.cartItemInfo?.quantity]);
+  }, [item?.cartItemInfo]);
 
   useEffect(() => {
     if (!item.cartItemInfo || item.cartItemInfo?.quantity == quantity) {

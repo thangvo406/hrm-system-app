@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { EndPoints } from '@constants';
 import { CommonUtils } from '@utils';
 import { SingleApiResponse, ListApiResponse } from '@type/common';
+import { IStoreCartItem } from '@type';
 
 export const productItemSchema = z.object({
   description: z.string(),
@@ -48,9 +49,10 @@ export const getProductById = async (
 
 export const checkoutProduct = async (
   request: IRequestCheckoutProduct,
-): Promise<IResponseProductDetail> => {
-  const response = await httpRequest.post<SingleApiResponse<IProduct>>(
-    EndPoints.PAYMENT.checkout, request
+): Promise<IStoreCartItem> => {
+  const response = await httpRequest.post<SingleApiResponse<IStoreCartItem>>(
+    EndPoints.PAYMENT.checkout,
+    request,
   );
   return response?.data;
 };
