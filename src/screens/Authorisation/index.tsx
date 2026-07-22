@@ -1,5 +1,5 @@
 import type { RootScreenProps } from '@navigation/types';
-import type { AuthStep } from '@hooks';
+import type { AuthStep } from '@type/auth';
 import type { ComponentType } from 'react';
 import ChooseMemberShipType from './components/RegisterFlow/ChooseMemberShipType';
 import { Paths } from '@navigation/paths';

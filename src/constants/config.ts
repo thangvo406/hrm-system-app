@@ -1,4 +1,4 @@
-import type { AuthStep } from '@hooks/useRegister';
+import { RegisterMembershipStep, AuthStep } from '@type/auth';
 
 export const initialLoginForm = {
   email: '',
@@ -13,7 +13,15 @@ export const NEED_INFO_LOGIN_CODE = {
   VERIFY_UNIVERSITY_EMAIL: 'AUTH_003',
 };
 
-export const STEP = {
+export const REGISTER_MEMBER_SHIP_STEP = {
+  CHOOSE_MEMBERSHIP: 'choose_membership' as RegisterMembershipStep,
+  INPUT_ACADEMIC_EMAIL: 'input_academic_email' as RegisterMembershipStep,
+  ACADEMIC_VERIFICATION: 'academic_verification' as RegisterMembershipStep,
+  ACADEMIC_VERIFICATION_COMPLETED:
+    'academic_verification_completed' as RegisterMembershipStep,
+  REGISTER_COMPLETED: 'register_completed' as RegisterMembershipStep,
+};
+export const REGISTER_FLOW_STEP = {
   CHOOSE_MEMBERSHIP: 'choose_membership' as AuthStep,
   ACADEMIC_VERIFICATION_COMPLETED:
     'academic_verification_completed' as AuthStep,

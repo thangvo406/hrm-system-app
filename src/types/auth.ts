@@ -11,6 +11,25 @@ export interface IResponseRegisterVerifyOtp {
   signupToken: string;
 }
 
+export type AuthStep =
+  | 'choose_membership'
+  | 'input_academic_email'
+  | 'academic_verification'
+  | 'academic_verification_completed'
+  | 'choose_role'
+  | 'form'
+  | 'bank_information'
+  | 'verified_info'
+  | 'register_input'
+  | 'choose_school';
+
+export type RegisterMembershipStep =
+  | 'choose_membership'
+  | 'input_academic_email'
+  | 'academic_verification'
+  | 'academic_verification_completed'
+  | 'register_completed';
+
 export interface ISelectSchoolRequest extends AppCallback {
   universityId: number;
 }
@@ -96,7 +115,8 @@ export interface IRequestLoginSocial extends AppCallback<IResponseLogin> {
   state?: string;
 }
 
-export interface IRequestRegisterUser extends AppCallback<IResponseRegisterUser> {
+export interface IRequestRegisterUser
+  extends AppCallback<IResponseRegisterUser> {
   email: string;
   name: string;
   password: string;

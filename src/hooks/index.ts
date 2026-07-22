@@ -1,5 +1,4 @@
 export type {
-  AuthStep,
   TLoginErrors,
   RegisterErrors,
   SocialProvider,

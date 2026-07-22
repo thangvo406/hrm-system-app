@@ -36,8 +36,9 @@ import { IResponseLogin } from '@type';
 // import InActiveAccount from '@dialogs/InActiveAccount';
 // import DeletionAccount from '@dialogs/DeletionAccount';
 
-const { STEP, NEED_INFO_LOGIN_CODE, initialLoginForm } = AppConstants;
-export type { AuthStep, RegisterErrors } from './useRegister';
+const { REGISTER_FLOW_STEP, NEED_INFO_LOGIN_CODE, initialLoginForm } =
+  AppConstants;
+export type { RegisterErrors } from './useRegister';
 
 export type SocialProvider = 'google' | 'kakao' | 'naver';
 
@@ -219,9 +220,12 @@ export const useAuthorization = () => {
       ].includes(error?.code)
     ) {
       const stepMapping = {
-        [NEED_INFO_LOGIN_CODE.MEMBERSHIP_INCOMPLETE]: STEP.CHOOSE_MEMBERSHIP,
-        [NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED]: STEP.REGISTER_INPUT,
-        [NEED_INFO_LOGIN_CODE.VERIFY_UNIVERSITY_EMAIL]: STEP.CHOOSE_MEMBERSHIP,
+        [NEED_INFO_LOGIN_CODE.MEMBERSHIP_INCOMPLETE]:
+          REGISTER_FLOW_STEP.CHOOSE_MEMBERSHIP,
+        [NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED]:
+          REGISTER_FLOW_STEP.REGISTER_INPUT,
+        [NEED_INFO_LOGIN_CODE.VERIFY_UNIVERSITY_EMAIL]:
+          REGISTER_FLOW_STEP.CHOOSE_MEMBERSHIP,
       };
       const step = stepMapping[error?.code];
       register.goToStep(step, true);
