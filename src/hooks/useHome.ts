@@ -32,7 +32,7 @@ const openMenu = () => {
 };
 
 const goToPayCard = () => {
-  AppNavigator.navigate(Paths.ContributionHistory);
+  AppNavigator.navigate(Paths.SourceOfFund);
 };
 
 const onPressStore = () => {

@@ -59,6 +59,7 @@ export type RootStackParamList = {
   [Paths.ProductDetail]: { id: number; storeId: number } | undefined;
   [Paths.Products]: { data: IStoreItem } | undefined;
   [Paths.Profile]: undefined;
+  [Paths.SourceOfFund]: undefined;
   [Paths.Startup]: undefined;
   [Paths.Stores]: undefined;
   [Paths.Survey]: undefined;

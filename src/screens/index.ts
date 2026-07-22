@@ -21,6 +21,7 @@ export { default as CartDetail } from './CartDetail';
 export { default as QRCodePayment } from './QRCodePayment/index';
 export { default as ProductDetail } from './ProductDetail';
 export { default as Products } from './Products';
+export { default as SourceOfFund } from './SourceOfFund';
 export { default as Startup } from './Startup/Startup';
 export { default as Stores } from './Stores';
 export { default as Survey } from './Survey';

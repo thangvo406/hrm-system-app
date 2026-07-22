@@ -25,6 +25,7 @@ export enum Paths {
   ProductDetail = 'product_detail',
   Products = 'products',
   Profile = 'profile',
+  SourceOfFund = 'source_of_fund',
   Startup = 'startup',
   Stores = 'stores',
   Survey = 'survey',

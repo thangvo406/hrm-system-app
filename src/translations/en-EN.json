@@ -455,6 +455,23 @@
       "security_note": "For safe payment, all information is encrypted and protected.",
       "next": "Next"
     },
+    "source_of_fund": {
+      "title": "Coop Pay",
+      "wallet_name": "Coop Pay Money",
+      "point_held": "🌱 {{point}}P held",
+      "balance": "Balance",
+      "currency": "KRW",
+      "use": "Use",
+      "charge": "Charge",
+      "charge_history": "Charge history",
+      "payment_methods": "My payment methods",
+      "manage": "Manage",
+      "card": "Card",
+      "card_alias": "Card alias",
+      "account": "Account",
+      "recent_history": "Recent history",
+      "view_all": "View all"
+    },
     "order_completed": {
       "order_code": "Order Code",
       "copy": "Copy",

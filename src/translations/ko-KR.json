@@ -456,6 +456,23 @@
       "security_note": "안전한 결제를 위해 모든 정보는 암호화되어 보호됩니다.",
       "next": "다음"
     },
+    "source_of_fund": {
+      "title": "생협페이",
+      "wallet_name": "생협페이머니",
+      "point_held": "🌱 {{point}}P 보유",
+      "balance": "잔액",
+      "currency": "원",
+      "use": "사용하기",
+      "charge": "충전하기",
+      "charge_history": "충전내역",
+      "payment_methods": "내 결제수단",
+      "manage": "관리",
+      "card": "카드",
+      "card_alias": "카드별명",
+      "account": "계좌",
+      "recent_history": "최근 이용 내역",
+      "view_all": "전체보기"
+    },
     "order_completed": {
       "order_code": "주문 코드",
       "copy": "복사",

@@ -4,12 +4,18 @@ import {
   REGISTER_MEMBER_SHIP_STEP,
 } from '@constants/config';
 import { AppStorage } from '@services/common/storage';
-import { RegisterMembershipStep } from '@type';
+import { IResponseUniversity, RegisterMembershipStep } from '@type';
 import { useMemo, useRef, useState } from 'react';
 
 const membershipOptions = MEMBERSHIP_OPTIONS.filter(
   it => it.id != 'NON_MEMBER',
 );
+
+type TFormData = {
+  academicEmail?: string;
+  school?: IResponseUniversity;
+  membership?: string;
+}
 
 const STEP_SHOW_BTN_BACK = new Set<string>([
   REGISTER_MEMBER_SHIP_STEP.CHOOSE_SCHOOL,
@@ -23,6 +29,7 @@ const useRegisterMembership = (props: any) => {
     REGISTER_MEMBER_SHIP_STEP.CHOOSE_SCHOOL,
   );
   const stepStack = useRef<RegisterMembershipStep[]>([]);
+  const formData = useRef<TFormData>({});
 
   const showBtnBack = useMemo(() => {
     const isValid = STEP_SHOW_BTN_BACK.has(step);
@@ -34,9 +41,6 @@ const useRegisterMembership = (props: any) => {
     setStep(nextStep);
   };
 
-  const [selectedMembershipId, setSelectedMembershipId] = useState<
-    string | undefined
-  >();
 
   const onVerifyEmail = () => {};
   const onSendOtpVerifyEmail = () => {};
@@ -44,14 +48,17 @@ const useRegisterMembership = (props: any) => {
   const onSubmit = (data?: any) => {
     switch (step) {
       case REGISTER_MEMBER_SHIP_STEP.CHOOSE_MEMBERSHIP: {
+        formData.current.membership = data;
         navigateToStep(REGISTER_MEMBER_SHIP_STEP.INPUT_ACADEMIC_EMAIL);
         break;
       }
       case REGISTER_MEMBER_SHIP_STEP.CHOOSE_SCHOOL: {
+        formData.current.school = data;
         navigateToStep(REGISTER_MEMBER_SHIP_STEP.CHOOSE_MEMBERSHIP);
         break;
       }
       case REGISTER_MEMBER_SHIP_STEP.INPUT_ACADEMIC_EMAIL: {
+        formData.current.academicEmail = data;
         onSendOtpVerifyEmail();
         break;
       }
