@@ -110,7 +110,8 @@ export interface ICallbackCreateOrder {
 export interface IRequestCreateOrder extends AppCallback<ICallbackCreateOrder> {
   address: string;
   createLinkRequest: ICreateLinkPaymentOrderRequest;
-  note: string;
+  addressDetail: string;
+  receiveMethod?: string;
   products: IProductCreateOrder[];
   storeId: number;
   vouchers: IVoucherOrder[];
@@ -132,8 +133,9 @@ export interface IKcpInitParams {
   reqAmt: string;
   kcpWebViewUrl: string;
 }
-export interface ICreateLinkPaymentOrderRequest extends IPaymentRequest {
-  orderId: number;
+export interface ICreateLinkPaymentOrderRequest {
+  orderId?: number;
+  payment: IPaymentRequest;
 }
 export interface ICreateOrderResponse {
   id: number;
@@ -188,7 +190,7 @@ export interface IOrderHistoryDetailItem {
   products: IProduct[];
   totalAmount: number;
   address: any;
-  addressDetail: any;
+  addressDetail?: any;
   summary: IOrderSummary;
   paymentDueAt: string;
   createdDate: string;

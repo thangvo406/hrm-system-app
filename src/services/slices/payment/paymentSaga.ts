@@ -118,10 +118,10 @@ function* removeCartItemWorker(
 
 function* updateCartItemWorker(
   action: PayloadAction<IRequestUpdateCartItem>,
-): Generator<unknown, void, void> {
+): Generator<unknown, void, IStoreCartItem> {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
-    const response = yield call(updateCartItem, request);
+    const response: IStoreCartItem = yield call(updateCartItem, request);
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -131,23 +131,19 @@ function* updateCartItemWorker(
 
 function* createOrderWorker(
   action: PayloadAction<IRequestCreateOrder>,
-): Generator<unknown, void, ICreateOrderResponse> {
+): Generator<unknown, void, unknown> {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
-    const createLinkRequest = request.createLinkRequest;
-    delete request.createLinkRequest;
-    const responseCreateOrder: ICreateOrderResponse = yield call(
+    const { createLinkRequest, ...orderRequest } = request;
+    const responseCreateOrder = (yield call(
       createOrder,
-      request,
-    );
+      orderRequest as Parameters<typeof createOrder>[0],
+    )) as ICreateOrderResponse;
     try {
-      const responsePayment: IResponseInitPayment = yield call(
-        createLinkPaymentOrder,
-        {
-          orderId: responseCreateOrder.id,
-          payment: createLinkRequest,
-        },
-      );
+      const responsePayment = (yield call(createLinkPaymentOrder, {
+        ...createLinkRequest,
+        orderId: responseCreateOrder.id,
+      })) as IResponseInitPayment;
       onSuccess?.({
         responseCreateOrder,
         responsePayment,

@@ -14,6 +14,7 @@ import {
 } from '@services/slices/payment/paymentSlice';
 import type { SearchAddressItem } from '@type';
 import { upperCaseFirstChar } from '@utils/common';
+import type { DebouncedFunc } from 'lodash';
 import debounce from 'lodash/debounce';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -60,7 +61,9 @@ export const useCartDetail = (props: any) => {
   const [error, setError] = useState('');
   const [addressOrderRecent, setAddressOrderRecent] = useState();
   const dispatch = useAppDispatch();
-  const debounceIdChangeQuanlity = useRef(undefined);
+  const debounceIdChangeQuanlity = useRef<
+    DebouncedFunc<() => void> | undefined
+  >(undefined);
 
   const [paymentMethod, setPaymentMethod] = useState<string>(
     AppConstants.PaymentTypes.BALANCE,
@@ -70,7 +73,7 @@ export const useCartDetail = (props: any) => {
 
   const shippingTabs = useMemo(() => {
     return (
-      data?.storeReceiveMethod?.map(item => {
+      data?.storeReceiveMethod?.map((item: string) => {
         return {
           id: item,
           label: upperCaseFirstChar(item.toLowerCase()),
@@ -81,14 +84,14 @@ export const useCartDetail = (props: any) => {
 
   const products = useMemo(() => {
     return data?.items?.filter(
-      it => !it.productDeleted || it.productStatus == 'ACTIVE',
+      (it: any) => !it.productDeleted || it.productStatus == 'ACTIVE',
     );
   }, [data]);
 
   useEffect(() => {
     dispatch(
       getAddressOrderRecentRequest({
-        onSuccess(data) {
+        onSuccess(data: any) {
           setAddressDelivery(data);
           setAddressOrderRecent(data);
         },
@@ -163,7 +166,7 @@ export const useCartDetail = (props: any) => {
         }),
       );
     }, 350);
-    debounceIdChangeQuanlity.current();
+    debounceIdChangeQuanlity.current?.();
   };
 
   const onRemoveProduct = (cartItemId: number) => {
@@ -190,7 +193,9 @@ export const useCartDetail = (props: any) => {
       selectedId: pickupTime.id,
       onSelect: (id: number) => {
         const item = DATA_PICKUP_TIME.find(it => it.id === id);
-        setPickupTime(item);
+        if (item) {
+          setPickupTime(item);
+        }
       },
     });
   };
@@ -210,7 +215,7 @@ export const useCartDetail = (props: any) => {
     });
   };
   const onPressOrder = () => {
-    const items = products?.map(it => ({
+    const items = products?.map((it: any) => ({
       id: it.productId,
       quantity: it.quantity,
       selectedAttributes: it.selectedAttributes,
@@ -219,10 +224,11 @@ export const useCartDetail = (props: any) => {
       createOrderRequest({
         storeId: data?.storeId,
         address: JSON.stringify(addressDelivery?.address?.detail),
-        addressDetail: addressDelivery?.detail,
+        addressDetail: addressDelivery?.detail || '',
         createLinkRequest: {
-          paymentType: paymentMethod,
-          // vaBankCode: '1234',
+          payment: {
+            paymentType: paymentMethod,
+          },
         },
         receiveMethod: deliveryTab,
         products: items,
