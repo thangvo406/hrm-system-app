@@ -16,17 +16,25 @@ import type {
   ICredentials,
   ISelectSchoolRequest,
   ISelectSchoolSuccessPayload,
+  ISetUniversitiesPayload,
+  IUniversityData,
 } from '@type/auth';
 
 export interface AuthState {
   accessToken: string | undefined;
   refreshToken: string | undefined;
+  universityData: IUniversityData;
   universityId: number | undefined;
 }
 
 const initialState: AuthState = {
   accessToken: undefined,
   refreshToken: undefined,
+  universityData: {
+    content: [],
+    isLast: false,
+    page: 0,
+  },
   universityId: undefined,
 };
 
@@ -123,6 +131,24 @@ const authSlice = createSlice({
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
     },
+    // Cache the default (no-keyword) universities list in the store. Page 0
+    // replaces the list; later pages append, so re-entering the school picker
+    // shows the previously loaded pages without refetching.
+    getUniversitiesSuccess: (
+      state,
+      action: PayloadAction<ISetUniversitiesPayload>,
+    ) => {
+      const { content, last, page } = action.payload || {};
+
+      state.universityData = {
+        content:
+          page === 0
+            ? content
+            : [...(state.universityData?.content || []), ...content],
+        isLast: last,
+        page,
+      };
+    },
     setCredentials: (state, action: PayloadAction<ICredentials>) => {
       state.accessToken = action.payload.accessToken;
       if (action.payload.refreshToken !== undefined) {
@@ -149,6 +175,7 @@ export const {
   selectSchoolSuccess,
   sendOTPRequest,
   sendOtpForgotPassRequest,
+  getUniversitiesSuccess,
   setAccessToken,
   setCredentials,
   submitForgotPassRequest,

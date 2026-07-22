@@ -40,6 +40,7 @@ import {
   authSuccess,
   confirmMemberShipVerifyRequest,
   getUniversitiesRequest,
+  getUniversitiesSuccess,
   loginRequest,
   loginSocialRequest,
   logout,
@@ -158,6 +159,17 @@ function* getUniversitiesWorker(
       getUniversities,
       request,
     );
+    // Cache only the default (no-keyword) list in the store; search results
+    // stay in the screen's local state.
+    if (!request.keyword) {
+      yield put(
+        getUniversitiesSuccess({
+          content: response.content,
+          last: response.last,
+          page: request.page ?? 0,
+        }),
+      );
+    }
     onSuccess?.(response);
   } catch {
     onFailure?.('');

@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppNavigator from '@navigation/AppNavigator';
 import { DeviceUtils } from '@kits/core/utils';
 import debounce from 'lodash/debounce';
+import isNumber from 'lodash/isNumber';
 const { ifIPadOrTablet } = DeviceUtils;
 const LOGO_SIZE = ScaleSize(56);
 const NUM_COLUMNS = 3;
@@ -122,7 +123,10 @@ function SchoolSelection(props: any) {
 
   return (
     <AppButton
-      style={[styles.container, { paddingTop: topHeader || insets.top }]}
+      style={[
+        styles.container,
+        { paddingTop: isNumber(topHeader) ? topHeader : insets.top },
+      ]}
       onPress={handleDismissKeyboard}
     >
       <RegisterHeader showBtnBack onBack={onPressBack} />

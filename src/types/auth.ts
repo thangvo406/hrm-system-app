@@ -24,6 +24,7 @@ export type AuthStep =
   | 'choose_school';
 
 export type RegisterMembershipStep =
+  | 'choose_school'
   | 'choose_membership'
   | 'input_academic_email'
   | 'academic_verification'
@@ -36,6 +37,18 @@ export interface ISelectSchoolRequest extends AppCallback {
 
 export interface ISelectSchoolSuccessPayload {
   universityId: number;
+}
+
+export interface ISetUniversitiesPayload {
+  content: IResponseUniversity[];
+  last: boolean;
+  page: number;
+}
+
+export interface IUniversityData {
+  content: IResponseUniversity[];
+  isLast: boolean;
+  page: number;
 }
 
 export interface ICredentials {

@@ -129,7 +129,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
         submitLogin={submitLogin}
         titleBtnPrimary={titleRegisterCompletedBtnPrimary}
         titleBtnSecondary={titleRegisterCompletedBtnSecondary}
-        topHeader={1}
+        topHeader={0}
         validLogin={isLoginValid}
         validRegister={isRegisterValid}
       />

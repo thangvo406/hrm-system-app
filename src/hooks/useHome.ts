@@ -13,9 +13,8 @@ import {
 } from '@services/slices/account/accountSlice';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MEMBERSHIP_OPTIONS, MEMBERSHIP_TYPE } from '@constants/config';
+import { MEMBERSHIP_TYPE } from '@constants/config';
 import Information from '@screens/Dialog/components/Information';
-import ChooseMemberShipType from '../screens/Authorisation/components/RegisterFlow/ChooseMemberShipType';
 import BankInformation from '../screens/Authorisation/components/RegisterFlow/BankInformation';
 import { useFocusEffect } from '@react-navigation/native';
 import { getCurrentWalletRequest } from '@services/slices/account/accountSlice';
@@ -24,12 +23,10 @@ import { AppStorage } from '@services/common/storage';
 import { AppConstants } from '@constants';
 import SocketService from '@services/common/webSocket';
 import imageNames from '@assets/images/names';
+import RegisterMembership from '@dialogs/RegisterMembership';
 
 export type UseHome = ReturnType<typeof useHome>;
 
-const membershipOptions = MEMBERSHIP_OPTIONS.filter(
-  it => it.id != 'NON_MEMBER',
-);
 const openMenu = () => {
   AppNavigator.showMenu();
 };
@@ -150,12 +147,10 @@ export const useHome = () => {
     AppNavigator.showDialog({
       isFullScreen: true,
       cancelable: false,
-      showBtnBack: true,
       onBack: () => {
         AppNavigator.hideAllPopup();
       },
-      screen: ChooseMemberShipType,
-      options: membershipOptions,
+      screen: RegisterMembership,
       onSubmit: onSubmitMemberShip,
     });
   };

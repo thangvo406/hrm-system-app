@@ -14,6 +14,7 @@ export const NEED_INFO_LOGIN_CODE = {
 };
 
 export const REGISTER_MEMBER_SHIP_STEP = {
+  CHOOSE_SCHOOL: 'choose_school' as RegisterMembershipStep,
   CHOOSE_MEMBERSHIP: 'choose_membership' as RegisterMembershipStep,
   INPUT_ACADEMIC_EMAIL: 'input_academic_email' as RegisterMembershipStep,
   ACADEMIC_VERIFICATION: 'academic_verification' as RegisterMembershipStep,
