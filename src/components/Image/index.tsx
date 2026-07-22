@@ -37,7 +37,7 @@ type ImageUrlProps = {
   readonly resizeMode?: ResizeMode;
   readonly style?: ImageStyle;
   readonly type?: 'image';
-  readonly url: string;
+  readonly url?: string;
   readonly width?: number | string;
   readonly onError?: () => void;
 } & Omit<FastImageProps, 'resizeMode' | 'source'>;

@@ -1,4 +1,4 @@
-import { Button } from '@components';
+import { Button, Image } from '@components';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
@@ -11,7 +11,10 @@ const TITLE_FONT_SIZE = ScaleSize(20);
 const DESC_FONT_SIZE = ScaleSize(13);
 const CONTENT_GAP = ScaleSize(10);
 
-const NOOP = (): void => undefined;
+type IIconInfo = {
+  name: never;
+  type?: 'image' | 'svg';
+};
 
 type InformationProps = {
   readonly cancelTitle?: string;
@@ -22,6 +25,7 @@ type InformationProps = {
   readonly onConfirm?: () => void;
   readonly onRequestClose?: () => void;
   readonly title?: string;
+  readonly iconInfo?: IIconInfo;
 };
 
 /**
@@ -33,14 +37,15 @@ type InformationProps = {
  * they are treated as i18n keys; otherwise they are shown verbatim.
  */
 function Information({
-  cancelTitle = undefined,
-  confirmTitle = undefined,
-  desc = undefined,
-  needTranslate = false,
-  onCancel = NOOP,
-  onConfirm = NOOP,
-  onRequestClose = NOOP,
-  title = undefined,
+  cancelTitle,
+  confirmTitle,
+  desc,
+  needTranslate,
+  onCancel,
+  onConfirm,
+  onRequestClose,
+  title,
+  iconInfo,
 }: InformationProps) {
   const { t } = useTranslation();
 
@@ -50,18 +55,29 @@ function Information({
   };
 
   const handleConfirm = () => {
-    onConfirm();
-    onRequestClose();
+    onConfirm?.();
+    onRequestClose?.();
   };
 
   const handleCancel = () => {
-    onCancel();
-    onRequestClose();
+    onCancel?.();
+    onRequestClose?.();
   };
 
   return (
     <View style={styles.container} testID="information-dialog">
       <View style={styles.content}>
+        {!!iconInfo && (
+          <Image
+            name={iconInfo?.name}
+            type={iconInfo?.type}
+            width={ScaleSize(66)}
+            height={ScaleSize(66)}
+            style={{
+              alignSelf: 'center',
+            }}
+          />
+        )}
         {title === undefined ? undefined : (
           <Text style={styles.title} testID="information-title">
             {translate(title)}

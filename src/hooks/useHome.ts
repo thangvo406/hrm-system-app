@@ -23,6 +23,7 @@ import { getStoreOrderRecentRequest } from '@services/slices/stores/storesSlice'
 import { AppStorage } from '@services/common/storage';
 import { AppConstants } from '@constants';
 import SocketService from '@services/common/webSocket';
+import imageNames from '@assets/images/names';
 
 export type UseHome = ReturnType<typeof useHome>;
 
@@ -137,10 +138,17 @@ export const useHome = () => {
   };
 
   const onPressContribution = () => {
-    if (profile?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER) {
+    if (
+      !profile?.membershipType ||
+      profile?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER
+    ) {
       AppNavigator.showDialog({
         screen: Information,
+        iconInfo: {
+          name: imageNames.ic_bank_info,
+        },
         title: t('home.non_member_dialog.title'),
+        desc: t('home.non_member_dialog.desc'),
         cancelTitle: t('home.non_member_dialog.cancel'),
         confirmTitle: t('home.non_member_dialog.confirm'),
         onConfirm: () => {

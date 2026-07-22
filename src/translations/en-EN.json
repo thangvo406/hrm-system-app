@@ -329,9 +329,10 @@
         "button_cancel": "No"
       },
       "non_member_dialog": {
-        "title": "This feature is only available to members. Would you like to join the cooperative?",
-        "confirm": "Yes",
-        "cancel": "No"
+        "title": "Co-op Pay Account Registration Is Required",
+        "desc": "You need to register a Co-op Pay account before topping up Gift Card (Co-op Pay Money).",
+        "confirm": "Register Account",
+        "cancel": "Close"
       },
       "pending_dialog": {
         "title": "Your registration is pending. Registration takes up to 1–2 days.",

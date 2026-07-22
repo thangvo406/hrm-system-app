@@ -3,6 +3,7 @@ import type { ImageName } from './index';
 const imageNames = {
   ic_arrow_left_gray: 'ic_arrow_left_gray',
   ic_bank_green: 'ic_bank_green',
+  ic_bank_info: 'ic_bank_info',
   ic_bell_green: 'ic_bell_green',
   ic_camera: 'ic_camera',
   ic_camera_gray: 'ic_camera_gray',
