@@ -1,6 +1,7 @@
 import { AppButton, Image, ProgressiveImage } from '@components';
 import { useTranslation } from 'react-i18next';
 import {
+  Linking,
   ScrollView,
   StyleSheet,
   Text,
@@ -73,12 +74,12 @@ const NAV_TARGETS: Readonly<Record<string, Paths>> = {
   pay_balance: Paths.ContributionHistory,
   survey: Paths.Survey,
   store_search: Paths.Stores,
-  notification: Paths.Notifications,
   order: Paths.OrderHistories,
   pay: Paths.QRCodePayment,
   deposit_inquiry: Paths.ContributionHistory,
   deposit_pay: Paths.ContributionInput,
   profile: Paths.Profile,
+  coupon: Paths.Vouchers,
 };
 
 const sections: readonly MenuSection[] = [
@@ -86,23 +87,21 @@ const sections: readonly MenuSection[] = [
     items: [
       { key: 'deposit_inquiry', labelKey: 'home.menu.deposit_inquiry' },
       { key: 'deposit_pay', labelKey: 'home.menu.deposit_pay' },
-      { key: 'dividend_inquiry', labelKey: 'home.menu.dividend_inquiry' },
+      { key: 'coupon', labelKey: 'home.menu.coupon' },
+      { key: 'meal_ticket', labelKey: 'home.menu.meal_ticket' },
     ],
     titleKey: 'home.menu.section_life',
   },
   {
     items: [
-      { key: 'payment_method', labelKey: 'home.menu.payment_method' },
+      { key: 'pay_point', labelKey: 'home.menu.pay_point' },
+      { key: 'pay_topup', labelKey: 'home.menu.pay_topup' },
       { key: 'pay', labelKey: 'home.menu.pay' },
-      { key: 'pay_balance', labelKey: 'home.menu.pay_balance' },
     ],
     titleKey: 'home.menu.section_pay',
   },
   {
-    items: [
-      { key: 'order', labelKey: 'home.menu.order' },
-      { key: 'store_search', labelKey: 'home.menu.store_search' },
-    ],
+    items: [{ key: 'order', labelKey: 'home.menu.order' }],
     titleKey: 'home.menu.section_order',
   },
   {
@@ -115,7 +114,14 @@ const sections: readonly MenuSection[] = [
   {
     items: [
       { key: 'profile', labelKey: 'home.menu.profile' },
-      { key: 'security', labelKey: 'home.menu.security' },
+      {
+        key: 'academy_verification',
+        labelKey: 'home.menu.academy_verification',
+      },
+      {
+        key: 'organization_request',
+        labelKey: 'home.menu.organization_request',
+      },
       { key: 'notification', labelKey: 'home.menu.notification' },
     ],
     titleKey: 'home.menu.section_mypage',
@@ -186,11 +192,14 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
       if (target !== undefined) {
         AppNavigator.navigate(target, { menuKey: itemKey });
         return;
+      } else if (itemKey == 'notification') {
+        Linking.openSettings().catch(() => undefined);
+      } else {
+        AppNavigator.showSnackBar({
+          message: `menu.${itemKey}`,
+          type: 'info',
+        });
       }
-      AppNavigator.showSnackBar({
-        message: `menu.${itemKey}`,
-        type: 'info',
-      });
     });
   };
 
@@ -242,10 +251,8 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
             <View style={styles.header}>
               <AppButton
                 style={styles.logoBadge}
-                onPress={() => {
-                  if (__DEV__) {
-                    toggleLanguage();
-                  }
+                onLongPress={() => {
+                  toggleLanguage();
                 }}
               >
                 {showAvatar ? (
