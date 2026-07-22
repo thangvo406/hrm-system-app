@@ -440,7 +440,10 @@
     },
     "top_up": {
       "title": "페이머니 충전",
+      "subtitle": "생협 Pay 충전을 위한 금액을 입력하세요",
       "description": "Coop Pay에 충전할\n금액을 입력해주세요.",
+      "bonus_hint": "+ {{amount}}원 보너스 충전 예정 ({{percent}}%)",
+      "pay_account": "생협페이계좌",
       "amount_label": "금액 입력",
       "amount_placeholder": "금액을 입력해주세요",
       "currency": "원",

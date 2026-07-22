@@ -85,6 +85,29 @@ export const useHome = () => {
     };
   }, [accessToken]);
 
+  const onPressTopup = () => {
+    if (
+      !profile?.membershipType ||
+      profile?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER
+    ) {
+      AppNavigator.showDialog({
+        screen: Information,
+        iconInfo: {
+          name: imageNames.ic_bank_info,
+        },
+        title: t('home.non_member_dialog.title'),
+        desc: t('home.non_member_dialog.desc'),
+        cancelTitle: t('home.non_member_dialog.cancel'),
+        confirmTitle: t('home.non_member_dialog.confirm'),
+        onConfirm: () => {
+          onShowMemberShip();
+        },
+      });
+    } else {
+      AppNavigator.navigate(Paths.TopUp);
+    }
+  };
+
   const onGoToProduct = (productId: number) => {
     AppNavigator.navigate(Paths.ProductDetail, {
       id: productId,
@@ -200,6 +223,7 @@ export const useHome = () => {
     isShowCtaContribute,
     storeOrderRecent,
     isHideContribute,
+    onPressTopup,
     onGoToProduct,
     onPressEmptyStore: onPressStore,
     onPressStore,

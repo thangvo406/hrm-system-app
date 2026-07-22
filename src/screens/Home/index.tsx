@@ -20,22 +20,19 @@ import { DeviceUtils } from '@kits/core/utils';
 import { Colors } from '@constants';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import { Paths } from '@navigation/paths';
-import AppNavigator from '@navigation/AppNavigator';
 
 const FEATURE_IMAGE_SIZE = ScaleSize(88);
 const { ifAndroid } = DeviceUtils;
 // PLACEHOLDER_MAIN_COMPONENT
 
-const onPressTopup = () => {
-  AppNavigator.navigate(Paths.TopUp);
-};
-
 function PayCard({
-  onPress = undefined,
-  data = undefined,
+  onPress,
+  data,
+  onPressTopup,
 }: {
   readonly data?: IWallet;
   readonly onPress?: () => void;
+  readonly onPressTopup?: () => void;
 }) {
   const { t } = useTranslation();
 
@@ -152,6 +149,7 @@ function Home() {
     isHideContribute,
     onPressEmptyStore,
     onGoToProduct,
+    onPressTopup,
   } = useHome();
   const insets = useSafeAreaInsets();
 
@@ -167,7 +165,11 @@ function Home() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <PayCard onPress={goToPayCard} data={currentWallet} />
+        <PayCard
+          onPress={goToPayCard}
+          data={currentWallet}
+          onPressTopup={onPressTopup}
+        />
         <View style={styles.row}>
           {!isHideContribute && (
             <FeatureCard

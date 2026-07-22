@@ -12,6 +12,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { ScaleSize } from '@kits/core';
+import { Globals } from '@utils';
 
 const DOT_SIZE = ScaleSize(6);
 const DOT_ACTIVE_WIDTH = ScaleSize(18);
@@ -106,6 +107,26 @@ function CarouselInner<T extends ItemWithId>(
         scrollEventThrottle={16}
         showsHorizontalScrollIndicator={false}
         snapToInterval={itemWidth}
+        onTouchStart={() => {
+          if (Globals.isScrollingRef) {
+            Globals.isScrollingRef.current = true;
+          }
+        }}
+        onScrollEndDrag={() => {
+          if (Globals.isScrollingRef) {
+            Globals.isScrollingRef.current = false;
+          }
+        }}
+        onTouchCancel={() => {
+          if (Globals.isScrollingRef) {
+            Globals.isScrollingRef.current = false;
+          }
+        }}
+        onTouchEnd={() => {
+          if (Globals.isScrollingRef) {
+            Globals.isScrollingRef.current = false;
+          }
+        }}
       />
       {data.length > 1 ? (
         <View style={styles.dots}>

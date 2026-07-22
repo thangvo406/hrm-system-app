@@ -439,7 +439,10 @@
     },
     "top_up": {
       "title": "Pay money Top-up",
+      "subtitle": "Enter the amount to charge your Coop Pay",
       "description": "Please enter the amount you would like\nto recharge to Coop Pay.",
+      "bonus_hint": "+ {{amount}} KRW bonus expected ({{percent}}%)",
+      "pay_account": "Coop Pay Account",
       "amount_label": "Enter Amount",
       "amount_placeholder": "Please enter the amount",
       "currency": "KRW",

@@ -10,6 +10,34 @@ import { useTranslation } from 'react-i18next';
 
 export type PaymentMethod = 'credit_card' | 'virtual_account';
 
+export type IBankAccount = {
+  readonly accountMasked: string;
+  readonly bankName: string;
+  readonly id: string;
+};
+
+const BONUS_RATE = 0.005;
+export const BONUS_PERCENT = '0.5';
+
+// Mock data — replace with the registered-accounts endpoint once available.
+const BANK_ACCOUNTS: readonly IBankAccount[] = [
+  {
+    accountMasked: '****-**-****5678',
+    bankName: '신한은행',
+    id: 'bank-shinhan',
+  },
+  {
+    accountMasked: '****-**-****1234',
+    bankName: 'IBK기업은행',
+    id: 'bank-ibk',
+  },
+  {
+    accountMasked: '****-**-****9012',
+    bankName: '국민은행',
+    id: 'bank-kb',
+  },
+];
+
 export const useTopUp = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
@@ -21,6 +49,11 @@ export const useTopUp = () => {
   const enabledBtnSubmit = useMemo(() => {
     return Number(amountTopUp) >= 1;
   }, [amountTopUp]);
+
+  const bonusAmount = useMemo(
+    () => Math.floor(Number(amountTopUp) * BONUS_RATE),
+    [amountTopUp],
+  );
 
   const onSubmit = () => {
     dispatch(
@@ -79,6 +112,8 @@ export const useTopUp = () => {
 
   return {
     amountTopUp,
+    bankAccounts: BANK_ACCOUNTS,
+    bonusAmount,
     enabledBtnSubmit,
     methodPayment,
     onAmountChange,
