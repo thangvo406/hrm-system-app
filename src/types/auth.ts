@@ -84,6 +84,18 @@ export type IResponseLoginSocial = Record<string, never>;
 export interface IResponseVerifyOtpForgotPass {
   resetToken: string;
 }
+export interface IResponseCreateLinkVerifyInfoUser {
+  callUrl: string
+  regCertKey: string
+  ordrIdxx: string
+  certWebViewUrl: string
+}
+export interface IRequestCreateLinkVerifyInfoUser {
+  registerToken: string;
+}
+export interface IResponseRegisterUser {
+  registerToken: string;
+}
 export interface IResponseLogin {
   accessToken: string;
   membershipType: string;
@@ -129,7 +141,7 @@ export interface IRequestLoginSocial extends AppCallback<IResponseLogin> {
 }
 
 export interface IRequestRegisterUser
-  extends AppCallback<IResponseRegisterUser> {
+  extends AppCallback<IResponseCreateLinkVerifyInfoUser> {
   email: string;
   name: string;
   password: string;

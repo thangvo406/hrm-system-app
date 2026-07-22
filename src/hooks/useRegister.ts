@@ -19,13 +19,17 @@ import Selection from '@screens/Dialog/components/Selection';
 import { CommonUtils } from '@utils';
 import { AppConstants } from '@constants';
 // import Information from '@screens/Dialog/components/Information';
-import type { IResponseUniversity } from '@type/auth';
+import type { IResponseCreateLinkVerifyInfoUser, IResponseUniversity } from '@type/auth';
 import {
   IResponseRegisterSendOtp,
   IResponseRegisterVerifyOtp,
 } from '@type/auth';
 import { validatePassword } from '@utils/common';
 import Information from '@dialogs/Information';
+import WebViewScreen from '@dialogs/Webview';
+import { WebViewNavigation } from 'react-native-webview';
+import { deepLinkGate } from '@navigation/deepLinkGate';
+import { Linking } from 'react-native';
 
 const {
   CARRIER_ITEMS,
@@ -238,9 +242,36 @@ export const useRegister = () => {
         onFailure: (error: string) => {
           setErrors(prev => ({ ...prev, errorApi: error }));
         },
-        onSuccess: (response: any) => {
-          navigateToStep(REGISTER_FLOW_STEP.REGISTER_INPUT);
-          formData.current.registerToken = response.registerToken;
+        onSuccess: (response: IResponseCreateLinkVerifyInfoUser) => {
+          // console.log("responseCreateLink",response)
+          AppNavigator.showDialog({
+            screen: WebViewScreen,
+            cookies: {
+              call_url: response?.callUrl,
+              reg_cert_key: response?.regCertKey,
+              ordr_idxx: response?.ordrIdxx,
+            },
+            url: response?.certWebViewUrl,
+            isFullScreen: true,
+            onNavigationStateChange: (navState: WebViewNavigation, onRequestClose?: any) => {
+              // console.log("navState",navState)
+              const {url} = navState || {};
+              const isDeeplinkApp = url?.startsWith?.('coop://');
+              if(isDeeplinkApp) {
+                const params = deepLinkGate.getPathFromUrl(navState.url);
+                // console.log("params",params)
+                formData.current.signupToken = params.signupToken;
+                onRequestClose?.()
+                onSubmitRegisterInfo();
+              }else if(!(url?.startsWith('https://') || url?.startsWith('http://'))) {
+                  Linking.openURL(url).catch((e) => {
+                    // console.log("errr linking",e?.message)
+                  })
+                }
+            }
+          })
+          // navigateToStep(REGISTER_FLOW_STEP.REGISTER_INPUT);
+          // formData.current.registerToken = response.registerToken;
         },
         password: formData.current.password,
       }),
@@ -256,7 +287,6 @@ export const useRegister = () => {
 
   const onSubmitRegisterInfo = () => {
     // navigateToStep(REGISTER_FLOW_STEP.CHOOSE_MEMBERSHIP);
-    //TODO: hard code
     navigateToStep(REGISTER_FLOW_STEP.VERIFIED_INFO);
   };
 

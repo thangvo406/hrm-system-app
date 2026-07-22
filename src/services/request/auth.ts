@@ -23,6 +23,8 @@ import type {
   IResponseSendOtpVerifyMembership,
   IResponseConfirmMemberShipVerify,
   IResponseLogin,
+  IRequestCreateLinkVerifyInfoUser,
+  IResponseCreateLinkVerifyInfoUser
 } from '@type/auth';
 import omit from 'lodash/omit';
 import { httpRequest } from '@services/common/httpRequest';
@@ -142,6 +144,15 @@ export const sendOtpVerifyMembership = async (
   const response = await httpRequest.post<
     SingleApiResponse<IResponseSendOtpVerifyMembership>
   >(EndPoints.AUTH.sendOtpVerifyMembership, request);
+  return response.data;
+};
+
+export const createLinkVerifyInfoUser = async (
+  request: IRequestCreateLinkVerifyInfoUser,
+): Promise<IResponseCreateLinkVerifyInfoUser> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<IResponseCreateLinkVerifyInfoUser>
+  >(EndPoints.AUTH.createLinkVerifyInfoUser, request);
   return response.data;
 };
 

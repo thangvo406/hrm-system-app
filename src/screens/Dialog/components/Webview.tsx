@@ -23,6 +23,7 @@ import {
 } from 'react-native';
 // import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
+import type { WebViewNavigation } from 'react-native-webview';
 
 function WebViewScreen(props: any) {
   //   const {
@@ -41,19 +42,24 @@ function WebViewScreen(props: any) {
   //     isShowHeader,
   //   } = useWebview(props);
 
-  // "site_cd", "ordr_idxx", "req_amt", "qtid"
-  // siteCd, orderNo, amount, qtid
-  const { url, title, data, isError = false, onRequestClose } = props || {};
+  const {
+    url,
+    title,
+    cookies,
+    isError = false,
+    onRequestClose,
+    onNavigationStateChange,
+  } = props || {};
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
   // const insset = useSafeAreaInsets();
   const webViewRef = useRef(null);
-  const cookieScript = data
+  const cookieScript = cookies
     ? `
-      document.cookie = 'site_cd=${data.siteCd ?? ''}; path=/';
-      document.cookie = 'ordr_idxx=${data.orderNo ?? ''}; path=/';
-      document.cookie = 'req_amt=${data.amount ?? ''}; path=/';
-      document.cookie = 'qtid=${data.qtid ?? ''}; path=/';
+      ${Object.keys(cookies)
+        .map(key => `document.cookie = '${key}=${cookies[key] ?? ''}; path=/';`)
+        .join('\n      ')}
+
       true;
     `
     : undefined;
@@ -135,6 +141,9 @@ function WebViewScreen(props: any) {
           onError={onError}
           onLoadEnd={onLoadEnd}
           onLoadStart={onLoadStart}
+          onNavigationStateChange={(navState: WebViewNavigation): void => {
+            onNavigationStateChange?.(navState, onRequestClose);
+          }}
           userAgent={
             Platform.OS === 'android'
               ? 'Mozilla/5.0 (Linux; Android 10; Android SDK built for x86) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36'

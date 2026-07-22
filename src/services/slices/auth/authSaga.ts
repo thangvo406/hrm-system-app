@@ -13,6 +13,7 @@ import type {
   IRequestVerifyOTP,
   IRequestVerifyOtpForgotPass,
   IResponseLogin,
+  IResponseCreateLinkVerifyInfoUser,
 } from '@type/auth';
 
 import {
@@ -30,6 +31,7 @@ import {
   verifyOtpForgotPass,
   logout as logoutRequest,
   refreshToken,
+  createLinkVerifyInfoUser,
 } from '@services/request/auth';
 import { call, delay, put, select, takeLatest } from 'redux-saga/effects';
 
@@ -104,8 +106,11 @@ function* registerUserWorker(action: PayloadAction<IRequestRegisterUser>) {
   try {
     // alert('registerUserWorker');
     const response: IResponseRegisterUser = yield call(registerUser, request);
+    const responseCreateLink: IResponseCreateLinkVerifyInfoUser = yield call(createLinkVerifyInfoUser, {
+      registerToken: response.registerToken,
+    });
     // yield put(authSuccess(response));
-    onSuccess?.(response);
+    onSuccess?.(responseCreateLink);
   } catch (error) {
     // yield put(authFailure(toErrorMessage(error)));
     onFailure?.(getErrorMessageApi(error));
