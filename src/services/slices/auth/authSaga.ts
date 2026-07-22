@@ -1,4 +1,5 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
+import type { ListApiResponse } from '@type/common';
 import type {
   IRequestConfirmMemberShipVerify,
   IRequestGetUniversities,
@@ -153,7 +154,7 @@ function* getUniversitiesWorker(
 ) {
   const { onSuccess, onFailure, ...request } = action.payload || {};
   try {
-    const response: IResponseUniversity[] = yield call(
+    const response: ListApiResponse<IResponseUniversity[]> = yield call(
       getUniversities,
       request,
     );

@@ -601,6 +601,20 @@
       "title": "Network Error",
       "desc": "Unable to connect to the internet.\nPlease check your network connection and try again.",
       "retry_button": "Try Again"
+    },
+    "vouchers": {
+      "title": "Coupon Box",
+      "tab_available": "Available",
+      "tab_used": "Used",
+      "tab_expired": "Expired",
+      "dday": "D-{{days}}",
+      "valid_until": "Valid until: {{date}}",
+      "min_payment": "Min. payment: {{amount}}",
+      "min_payment_none": "None",
+      "applicable_store": "Store: {{store}}",
+      "use_now": "Use now",
+      "holding_count": "Holding {{count}} coupon(s)",
+      "empty": "You have no coupons"
     }
   }
 }

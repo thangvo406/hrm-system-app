@@ -3,11 +3,13 @@ import type { Profile } from '@services/request/account';
 import type { AddressSuggestion } from '@services/request/account';
 import type {
   IRequestAutoCompleteAddress,
+  IRequestGetVouchers,
   IRequestUpdateMembership,
   IRequestUpdatePassword,
   IRequestUpdatePushId,
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
+  IVoucher,
 } from '@type/account';
 import type {
   IContributeHistory,
@@ -18,7 +20,7 @@ import type {
 import type { AppCallback, IImage, ListApiResponse } from '@type/common';
 import type { TransactionHistory } from '@type/wallet';
 import type { ITotalItemCart } from '@type/payment';
-import type { AuthCallback, IRequestDeleteAccount } from '@type/auth';
+import type { IRequestDeleteAccount } from '@type/auth';
 
 import {
   activeAccount,
@@ -38,7 +40,7 @@ import {
   topUpWallet,
 } from '@services/request/wallet';
 import { getTotalItemCart } from '@services/request/payment';
-import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { call, delay, put, select, takeLatest } from 'redux-saga/effects';
 import { getErrorMessageApi } from '@utils/common';
 
 import {
@@ -51,6 +53,7 @@ import {
   getProfileSuccess,
   getTotalItemCartRequest,
   getTotalItemCartSuccess,
+  getVouchersRequest,
   getContributeHistoriesRequest,
   topUpWalletRequest,
   updateMembershipRequest,
@@ -61,6 +64,70 @@ import {
 } from './accountSlice';
 import { AccountSelector } from '@services/selectors';
 import { refreshTokenRequest } from '../auth/authSlice';
+
+const MOCK_VOUCHERS_DELAY_MS = 400;
+
+// Mock data — replace with a real request function once the endpoint exists.
+const MOCK_VOUCHERS: readonly IVoucher[] = [
+  {
+    applicableStore: '카페 COOP',
+    daysLeft: 30,
+    description: '카페 COOP 전 음료 1잔 무료',
+    id: 'voucher-drink-free',
+    status: 'available',
+    title: '음료 무료 쿠폰',
+    validUntil: '2026-07-31',
+  },
+  {
+    daysLeft: 45,
+    description: '매장 전체 10% 할인',
+    id: 'voucher-discount-10',
+    minPayment: 5000,
+    status: 'available',
+    title: '10% 할인 쿠폰',
+    validUntil: '2026-08-15',
+  },
+  {
+    daysLeft: 4,
+    description: '스마트오더 배송비 무료',
+    id: 'voucher-free-shipping',
+    status: 'available',
+    title: '무료배송 쿠폰',
+    validUntil: '2026-07-05',
+  },
+  {
+    applicableStore: '생협 매장',
+    daysLeft: 0,
+    description: '도서 구매 5% 적립 쿠폰',
+    id: 'voucher-book-point',
+    status: 'used',
+    title: '도서 적립 쿠폰',
+    validUntil: '2026-06-20',
+  },
+  {
+    daysLeft: 0,
+    description: '신학기 문구 3,000원 할인',
+    id: 'voucher-stationery',
+    minPayment: 10_000,
+    status: 'expired',
+    title: '문구 할인 쿠폰',
+    validUntil: '2026-03-31',
+  },
+];
+
+function* getVouchersWorker(
+  action: PayloadAction<IRequestGetVouchers>,
+): Generator<unknown, void, void> {
+  const { onFailure, onSuccess, type } = action.payload;
+  try {
+    // Simulate the network round-trip; swap for `call(getVouchers, request)`.
+    yield delay(MOCK_VOUCHERS_DELAY_MS);
+    onSuccess?.(MOCK_VOUCHERS.filter(voucher => voucher.status === type));
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
 
 function* getTotalItemCartWorker(
   action: PayloadAction<AppCallback<ITotalItemCart>>,
@@ -76,7 +143,7 @@ function* getTotalItemCartWorker(
   }
 }
 
-function* activeAccountWorker(action: PayloadAction<AuthCallback>) {
+function* activeAccountWorker(action: PayloadAction<AppCallback>) {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
     yield call(activeAccount, request);
@@ -243,6 +310,7 @@ export function* accountSaga() {
   yield takeLatest(autoCompleteAddressRequest.type, autoCompleteAddressWorker);
   yield takeLatest(deleteAccountRequest.type, deleteAccountWorker);
   yield takeLatest(getTotalItemCartRequest.type, getTotalItemCartWorker);
+  yield takeLatest(getVouchersRequest.type, getVouchersWorker);
   yield takeLatest(getProfileRequest.type, getProfileWorker);
   yield takeLatest(updateMembershipRequest.type, updateMembershipWorker);
   yield takeLatest(updatePasswordRequest.type, updatePasswordWorker);

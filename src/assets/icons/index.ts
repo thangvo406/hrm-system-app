@@ -3,6 +3,7 @@ import IcCalendarIcon from './ic_calendar.svg';
 import IcCheckFilledIcon from './ic_check_filled.svg';
 import IcClockFilledIcon from './ic_clock_filled.svg';
 import IcCopyIcon from './ic_copy.svg';
+import IcCouponIcon from './ic_coupon.svg';
 import EmailIcon from './email.svg';
 import IcHourglassIcon from './ic_hourglass.svg';
 import IcMapPinIcon from './ic_map_pin.svg';
@@ -51,6 +52,7 @@ const icons = {
   ic_check_filled: IcCheckFilledIcon,
   ic_clock_filled: IcClockFilledIcon,
   ic_copy: IcCopyIcon,
+  ic_coupon: IcCouponIcon,
   ic_hourglass: IcHourglassIcon,
   ic_map_pin: IcMapPinIcon,
   ic_order_receipt: IcOrderReceiptIcon,

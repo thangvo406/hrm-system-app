@@ -32,6 +32,7 @@ const images = {
   ic_tran_history: require('./ic_tran_history.png') as number,
   ic_user_fill: require('./ic_user_fill.png') as number,
   ic_utensils: require('./ic_utensils.png') as number,
+  ic_vouchers: require('./ic_vouchers.png') as number,
   ic_wallet_top_up: require('./ic_wallet_top_up.png') as number,
   img_discount: require('./img_discount.png') as number,
   img_header_products_default: require('./img_header_products_default.png') as number,

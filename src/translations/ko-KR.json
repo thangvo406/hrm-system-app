@@ -146,8 +146,8 @@
       "next": "다음"
     },
     "update_pass": {
-      "title": "새로운 비밀번호를\n입력해 주세요.",
-      "current_label": "현재 비밀번호",
+      "title": "비밀번호 변경해 주세요",
+      "current_label": "기존 비밀번호",
       "current_placeholder": "현재 비밀번호를 입력해 주세요",
       "new_label": "변경 비밀번호",
       "new_placeholder": "새 비밀번호를 입력해 주세요",
@@ -602,6 +602,20 @@
       "title": "네트워크 오류",
       "desc": "인터넷에 연결할 수 없습니다.\n네트워크 연결 상태를 확인한 후 다시 시도해 주세요.",
       "retry_button": "다시 시도"
+    },
+    "vouchers": {
+      "title": "쿠폰함",
+      "tab_available": "사용 가능",
+      "tab_used": "사용 완료",
+      "tab_expired": "만료",
+      "dday": "D-{{days}}",
+      "valid_until": "유효기간: {{date}}",
+      "min_payment": "최소 결제금액: {{amount}}",
+      "min_payment_none": "없음",
+      "applicable_store": "적용 매장: {{store}}",
+      "use_now": "바로 사용하기",
+      "holding_count": "쿠폰 {{count}}장 보유 중",
+      "empty": "보유한 쿠폰이 없습니다"
     }
   }
 }

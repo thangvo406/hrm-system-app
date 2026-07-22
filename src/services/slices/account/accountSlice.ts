@@ -9,13 +9,14 @@ import type {
 import type { ITotalItemCart } from '@type/payment';
 import type {
   IRequestAutoCompleteAddress,
+  IRequestGetVouchers,
   IRequestUpdateMembership,
   IRequestUpdatePassword,
   IRequestUpdatePushId,
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
 } from '@type/account';
-import type { AuthCallback, IRequestDeleteAccount } from '@type/auth';
+import type { IRequestDeleteAccount } from '@type/auth';
 
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -43,7 +44,7 @@ const accountSlice = createSlice({
   name: 'account',
   reducers: {
     activeAccountRequest: {
-      prepare: (payload: AuthCallback = {}) => ({ payload }),
+      prepare: (payload: AppCallback = {}) => ({ payload }),
       reducer: () => {},
     },
     autoCompleteAddressRequest: {
@@ -75,6 +76,10 @@ const accountSlice = createSlice({
     },
     getProfileSuccess: (state, action: PayloadAction<Profile>) => {
       state.profile = action.payload;
+    },
+    getVouchersRequest: {
+      prepare: (payload: IRequestGetVouchers) => ({ payload }),
+      reducer: () => {},
     },
     getContributeHistoriesRequest: {
       prepare: (payload: IRequestGetTransactionHistories) => ({ payload }),
@@ -120,6 +125,7 @@ export const {
   getProfileSuccess,
   getTotalItemCartRequest,
   getTotalItemCartSuccess,
+  getVouchersRequest,
   getContributeHistoriesRequest,
   topUpWalletRequest,
   updateMembershipRequest,

@@ -30,3 +30,20 @@ export interface IUpdateAvatarRequest extends AppCallback {
   avatarPath?: string;
   file?: any;
 }
+
+export type VoucherStatus = 'available' | 'expired' | 'used';
+
+export interface IRequestGetVouchers extends AppCallback<IVoucher[]> {
+  type: VoucherStatus;
+}
+
+export type IVoucher = {
+  readonly applicableStore?: string;
+  readonly daysLeft: number;
+  readonly description: string;
+  readonly id: string;
+  readonly minPayment?: number;
+  readonly status: VoucherStatus;
+  readonly title: string;
+  readonly validUntil: string;
+};

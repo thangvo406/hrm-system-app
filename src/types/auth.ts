@@ -1,9 +1,4 @@
-import { IImage } from './common';
-
-export interface AuthCallback {
-  onFailure?: (error: string, status?: number) => void;
-  onSuccess?: (data?: any) => void;
-}
+import type { AppCallback, IImage, ListApiResponse } from './common';
 
 export interface IResponseUniversity {
   id: number;
@@ -16,7 +11,7 @@ export interface IResponseRegisterVerifyOtp {
   signupToken: string;
 }
 
-export interface ISelectSchoolRequest extends AuthCallback {
+export interface ISelectSchoolRequest extends AppCallback {
   universityId: number;
 }
 
@@ -86,12 +81,12 @@ export interface IResponseSubmitForgotPass {
   success?: boolean;
 }
 
-export interface IRequestLogin extends AuthCallback {
+export interface IRequestLogin extends AppCallback<IResponseLogin> {
   email: string;
   password: string;
 }
 
-export interface IRequestLoginSocial extends AuthCallback {
+export interface IRequestLoginSocial extends AppCallback<IResponseLogin> {
   accessToken?: string;
   authorizationCode?: string;
   codeVerifier?: string;
@@ -101,18 +96,19 @@ export interface IRequestLoginSocial extends AuthCallback {
   state?: string;
 }
 
-export interface IRequestRegisterUser extends AuthCallback {
+export interface IRequestRegisterUser extends AppCallback<IResponseRegisterUser> {
   email: string;
   name: string;
   password: string;
 }
 
-export interface IRequestSendOTP extends AuthCallback {
+export interface IRequestSendOTP extends AppCallback<IResponseRegisterSendOtp> {
   registerToken: string;
   phone: string;
 }
 
-export interface IRequestVerifyOTP extends AuthCallback {
+export interface IRequestVerifyOTP
+  extends AppCallback<IResponseRegisterVerifyOtp> {
   phoneVerificationToken?: string;
   phone: string;
   identityNumber: string;
@@ -120,17 +116,20 @@ export interface IRequestVerifyOTP extends AuthCallback {
   termsAgreed: boolean;
 }
 
-export interface IRequestGetUniversities extends AuthCallback {
+export interface IRequestGetUniversities
+  extends AppCallback<ListApiResponse<IResponseUniversity[]>> {
   keyword?: string;
   page?: number;
   size?: number;
 }
 
-export interface IRequestSendOtpForgotPass extends AuthCallback {
+export interface IRequestSendOtpForgotPass
+  extends AppCallback<IResponseSendOtpForgotPass> {
   identifier: string;
 }
 
-export interface IRequestVerifyOtpForgotPass extends AuthCallback {
+export interface IRequestVerifyOtpForgotPass
+  extends AppCallback<IResponseVerifyOtpForgotPass> {
   email: string;
   identityNumber: string;
   otp: string;
@@ -140,13 +139,15 @@ export interface IRequestVerifyOtpForgotPass extends AuthCallback {
   termsAgreed: boolean;
 }
 
-export interface IRequestSubmitForgotPass extends AuthCallback {
+export interface IRequestSubmitForgotPass
+  extends AppCallback<IResponseSubmitForgotPass> {
   confirmPassword: string;
   newPassword: string;
   resetToken: string;
 }
 
-export interface IRequestSendOtpVerifyMembership extends AuthCallback {
+export interface IRequestSendOtpVerifyMembership
+  extends AppCallback<IResponseSendOtpVerifyMembership> {
   membershipType?: string;
   signupToken?: string;
   universityId?: number;
@@ -154,10 +155,10 @@ export interface IRequestSendOtpVerifyMembership extends AuthCallback {
 }
 
 export interface IRequestConfirmMemberShipVerify
-  extends AuthCallback,
+  extends AppCallback<IResponseConfirmMemberShipVerify>,
     IConfirmMembershipVerification {}
 
-export interface IRequestDeleteAccount extends AuthCallback {
+export interface IRequestDeleteAccount extends AppCallback {
   deletedReason: string;
 }
 // TODO: define request fields when the reactivation API spec is available.

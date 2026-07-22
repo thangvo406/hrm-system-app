@@ -28,3 +28,4 @@ export { useInputAddress } from './useInputAddress';
 export { useProfile } from './useProfile';
 export { useSchoolSelection } from './useSchoolSelection';
 export { useUpdatePass } from './useUpdatePass';
+export { useVouchers } from './useVouchers';

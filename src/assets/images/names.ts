@@ -34,6 +34,7 @@ const imageNames = {
   ic_tran_history: 'ic_tran_history',
   ic_user_fill: 'ic_user_fill',
   ic_utensils: 'ic_utensils',
+  ic_vouchers: 'ic_vouchers',
   ic_wallet_top_up: 'ic_wallet_top_up',
   img_discount: 'img_discount',
   img_header_products_default: 'img_header_products_default',
