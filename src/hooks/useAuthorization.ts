@@ -222,18 +222,22 @@ export const useAuthorization = () => {
       const stepMapping = {
         [NEED_INFO_LOGIN_CODE.MEMBERSHIP_INCOMPLETE]:
           REGISTER_FLOW_STEP.CHOOSE_MEMBERSHIP,
-        [NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED]:
-          REGISTER_FLOW_STEP.REGISTER_INPUT,
+        // [NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED]:
+        //   REGISTER_FLOW_STEP.REGISTER_INPUT,
         [NEED_INFO_LOGIN_CODE.VERIFY_UNIVERSITY_EMAIL]:
           REGISTER_FLOW_STEP.CHOOSE_MEMBERSHIP,
       };
       const step = stepMapping[error?.code];
+    
       register.goToStep(step, true);
       const { registerToken, signupToken } = error?.data || {};
       if (registerToken) {
         register.setRegisterToken(registerToken);
       } else if (signupToken) {
         register.setSignupToken(signupToken);
+      }
+      if(!step && error?.code == NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED) {
+        register.onCreateLinkVerifyUser();
       }
       return;
     }

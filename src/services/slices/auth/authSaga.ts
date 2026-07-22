@@ -2,6 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { ListApiResponse } from '@type/common';
 import type {
   IRequestConfirmMemberShipVerify,
+  IRequestCreateLinkVerifyInfoUser,
   IRequestGetUniversities,
   IRequestLogin,
   IRequestLoginSocial,
@@ -41,6 +42,7 @@ import {
   authFailure,
   authSuccess,
   confirmMemberShipVerifyRequest,
+  createLinkVerifyUserRequest,
   getUniversitiesRequest,
   getUniversitiesSuccess,
   loginRequest,
@@ -106,13 +108,25 @@ function* registerUserWorker(action: PayloadAction<IRequestRegisterUser>) {
   try {
     // alert('registerUserWorker');
     const response: IResponseRegisterUser = yield call(registerUser, request);
-    const responseCreateLink: IResponseCreateLinkVerifyInfoUser = yield call(createLinkVerifyInfoUser, {
-      registerToken: response.registerToken,
-    });
     // yield put(authSuccess(response));
-    onSuccess?.(responseCreateLink);
+    onSuccess?.(response);
   } catch (error) {
     // yield put(authFailure(toErrorMessage(error)));
+    onFailure?.(getErrorMessageApi(error));
+  }
+}
+
+function* createLinkVerifyUserWorker(
+  action: PayloadAction<IRequestCreateLinkVerifyInfoUser>,
+) {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: IResponseCreateLinkVerifyInfoUser = yield call(
+      createLinkVerifyInfoUser,
+      request,
+    );
+    onSuccess?.(response);
+  } catch (error) {
     onFailure?.(getErrorMessageApi(error));
   }
 }
@@ -296,6 +310,10 @@ export function* authSaga() {
   yield takeLatest(loginRequest.type, loginWorker);
   yield takeLatest(loginSocialRequest.type, loginSocialWorker);
   yield takeLatest(registerUserRequest.type, registerUserWorker);
+  yield takeLatest(
+    createLinkVerifyUserRequest.type,
+    createLinkVerifyUserWorker,
+  );
   yield takeLatest(sendOTPRequest.type, sendOTPWorker);
   yield takeLatest(verifyOTPRequest.type, verifyOTPWorker);
   yield takeLatest(getUniversitiesRequest.type, getUniversitiesWorker);

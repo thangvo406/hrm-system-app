@@ -90,7 +90,8 @@ export interface IResponseCreateLinkVerifyInfoUser {
   ordrIdxx: string
   certWebViewUrl: string
 }
-export interface IRequestCreateLinkVerifyInfoUser {
+export interface IRequestCreateLinkVerifyInfoUser
+  extends AppCallback<IResponseCreateLinkVerifyInfoUser> {
   registerToken: string;
 }
 export interface IResponseRegisterUser {
@@ -141,7 +142,7 @@ export interface IRequestLoginSocial extends AppCallback<IResponseLogin> {
 }
 
 export interface IRequestRegisterUser
-  extends AppCallback<IResponseCreateLinkVerifyInfoUser> {
+  extends AppCallback<IResponseRegisterUser> {
   email: string;
   name: string;
   password: string;

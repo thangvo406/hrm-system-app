@@ -12,6 +12,7 @@ import {
   registerUserRequest,
   sendOTPRequest,
   verifyOTPRequest,
+  createLinkVerifyUserRequest,
 } from '@services/slices/auth/authSlice';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
@@ -19,7 +20,7 @@ import Selection from '@screens/Dialog/components/Selection';
 import { CommonUtils } from '@utils';
 import { AppConstants } from '@constants';
 // import Information from '@screens/Dialog/components/Information';
-import type { IResponseCreateLinkVerifyInfoUser, IResponseUniversity } from '@type/auth';
+import type { IResponseCreateLinkVerifyInfoUser, IResponseRegisterUser, IResponseUniversity } from '@type/auth';
 import {
   IResponseRegisterSendOtp,
   IResponseRegisterVerifyOtp,
@@ -232,6 +233,45 @@ export const useRegister = () => {
     });
   };
 
+  const onCreateLinkVerifyUser = () => {
+    dispatch(createLinkVerifyUserRequest({
+      registerToken: formData.current.registerToken || '',
+      onSuccess: (response: IResponseCreateLinkVerifyInfoUser) => {
+        AppNavigator.showDialog({
+          screen: WebViewScreen,
+          cookies: {
+            call_url: response?.callUrl,
+            reg_cert_key: response?.regCertKey,
+            ordr_idxx: response?.ordrIdxx,
+          },
+          url: response?.certWebViewUrl,
+          isFullScreen: true,
+          onNavigationStateChange: (navState: WebViewNavigation, onRequestClose?: any) => {
+            // console.log("navState",navState)
+            const {url} = navState || {};
+            const isDeeplinkApp = url?.startsWith?.('coop://');
+            if(isDeeplinkApp) {
+              const params = deepLinkGate.getPathFromUrl(navState.url);
+              // console.log("params",params)
+              formData.current.signupToken = params.signupToken;
+              onRequestClose?.()
+              onSubmitRegisterInfo();
+            }else if(!(url?.startsWith('https://') || url?.startsWith('http://'))) {
+                Linking.openURL(url).catch((e) => {
+                  // console.log("errr linking",e?.message)
+                })
+              }
+          }
+        })
+      },
+      onFailure: (error) => {
+        AppNavigator.showSnackBar({
+          message: error,
+          type: 'failed',
+        });
+      },
+    }))
+  }
   const onGoRegisterForm = () => {
     setErrors({ email: true, name: true, password: true });
     if (!isRegisterValid) return;
@@ -242,36 +282,11 @@ export const useRegister = () => {
         onFailure: (error: string) => {
           setErrors(prev => ({ ...prev, errorApi: error }));
         },
-        onSuccess: (response: IResponseCreateLinkVerifyInfoUser) => {
+        onSuccess: (response: IResponseRegisterUser) => {
           // console.log("responseCreateLink",response)
-          AppNavigator.showDialog({
-            screen: WebViewScreen,
-            cookies: {
-              call_url: response?.callUrl,
-              reg_cert_key: response?.regCertKey,
-              ordr_idxx: response?.ordrIdxx,
-            },
-            url: response?.certWebViewUrl,
-            isFullScreen: true,
-            onNavigationStateChange: (navState: WebViewNavigation, onRequestClose?: any) => {
-              // console.log("navState",navState)
-              const {url} = navState || {};
-              const isDeeplinkApp = url?.startsWith?.('coop://');
-              if(isDeeplinkApp) {
-                const params = deepLinkGate.getPathFromUrl(navState.url);
-                // console.log("params",params)
-                formData.current.signupToken = params.signupToken;
-                onRequestClose?.()
-                onSubmitRegisterInfo();
-              }else if(!(url?.startsWith('https://') || url?.startsWith('http://'))) {
-                  Linking.openURL(url).catch((e) => {
-                    // console.log("errr linking",e?.message)
-                  })
-                }
-            }
-          })
           // navigateToStep(REGISTER_FLOW_STEP.REGISTER_INPUT);
-          // formData.current.registerToken = response.registerToken;
+          formData.current.registerToken = response.registerToken;
+          onCreateLinkVerifyUser()
         },
         password: formData.current.password,
       }),
@@ -488,6 +503,7 @@ export const useRegister = () => {
     onGoRegisterForm,
     onInfoChange,
     onPressSelectSchool,
+    onCreateLinkVerifyUser,
     titleRegisterCompletedBtnPrimary,
     titleRegisterCompletedBtnSecondary,
     isVerifiedEmailAcademic,

@@ -3,6 +3,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
 import type {
   IRequestConfirmMemberShipVerify,
+  IRequestCreateLinkVerifyInfoUser,
   IRequestGetUniversities,
   IRequestLogin,
   IRequestLoginSocial,
@@ -74,6 +75,12 @@ const authSlice = createSlice({
     // Step 1 of multi-step registration.
     registerUserRequest: {
       prepare: (payload: IRequestRegisterUser) => ({ payload }),
+      reducer: () => {},
+    },
+    // Creates the identity-verification link/cert webview info for a
+    // registered user (used to open the cert WebView dialog).
+    createLinkVerifyUserRequest: {
+      prepare: (payload: IRequestCreateLinkVerifyInfoUser) => ({ payload }),
       reducer: () => {},
     },
     // Step 2: send OTP to phone.
@@ -163,6 +170,7 @@ export const {
   authSuccess,
   clearCredentials,
   confirmMemberShipVerifyRequest,
+  createLinkVerifyUserRequest,
   getUniversitiesRequest,
   loginRequest,
   loginSocialRequest,
