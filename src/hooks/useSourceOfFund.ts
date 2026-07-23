@@ -1,6 +1,9 @@
+import imageNames from '@assets/images/names';
+import Information from '@dialogs/Information';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type SourceCard = {
   readonly brand: string;
@@ -102,17 +105,57 @@ const TRANSACTIONS: readonly WalletTransaction[] = [
   },
 ];
 
+
 export const useSourceOfFund = () => {
+
+  const [isShowUnRegister, setShowUnRegister] = useState(false);
+  const [accounts, setAccounts] = useState(ACCOUNTS);
+  const [transactions, setTransactions] = useState(TRANSACTIONS);
+  const {t} = useTranslation()
+  const toggleUnRegister = () => {
+    setShowUnRegister(prev => !prev);
+    setAccounts([])
+    setTransactions([])
+  }
+
+  const onShowDialogConfirm = () => {
+    AppNavigator.showDialog({
+      screen: Information,
+      iconInfo: {
+        name: imageNames.ic_bank_info,
+      },
+      title: t('home.non_member_dialog.title'),
+      desc: t('home.non_member_dialog.desc'),
+      cancelTitle: t('home.non_member_dialog.cancel'),
+      confirmTitle: t('home.non_member_dialog.confirm'),
+      onConfirm: () => {
+        // onShowMemberShip();
+      },
+    })
+  }
+ 
   const onCharge = useCallback(() => {
     AppNavigator.navigate(Paths.TopUp);
   }, []);
 
   const onChargeHistory = useCallback(() => {
     // TODO: navigate to charge history when the screen is available.
+    onShowDialogConfirm()
   }, []);
 
   const onManagePaymentMethods = useCallback(() => {
     // TODO: navigate to payment-method management when available.
+    onShowDialogConfirm()
+  }, []);
+
+  const onRegisterCard = useCallback(() => {
+    // TODO: navigate to card registration when the screen is available.
+    onShowDialogConfirm()
+  }, []);
+
+  const onRegisterAccount = useCallback(() => {
+    // TODO: navigate to account registration when the screen is available.
+    onShowDialogConfirm()
   }, []);
 
   const onUse = useCallback(() => {
@@ -121,18 +164,23 @@ export const useSourceOfFund = () => {
 
   const onViewAllTransactions = useCallback(() => {
     // TODO: navigate to full transaction history when available.
+    onShowDialogConfirm()
   }, []);
 
   return {
-    accounts: ACCOUNTS,
+    accounts,
     balance: WALLET_BALANCE,
     cards: CARDS,
+    isShowUnRegister,
     onCharge,
     onChargeHistory,
     onManagePaymentMethods,
+    onRegisterAccount,
+    onRegisterCard,
     onUse,
     onViewAllTransactions,
+    toggleUnRegister,
     point: WALLET_POINT,
-    transactions: TRANSACTIONS,
+    transactions,
   };
 };

@@ -470,7 +470,12 @@
       "card_alias": "Card alias",
       "account": "Account",
       "recent_history": "Recent history",
-      "view_all": "View all"
+      "view_all": "View all",
+      "no_payment_methods_title": "No payment methods registered yet",
+      "no_payment_methods_desc": "Register a payment method to start using Coop Pay",
+      "register_card": "+ Register card",
+      "register_account": "+ Register account",
+      "no_history": "No recent history yet"
     },
     "order_completed": {
       "order_code": "Order Code",

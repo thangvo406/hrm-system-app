@@ -12,6 +12,7 @@ export const Colors = {
   gray08: '#b6b6b6',
   yellow01: '#F5A623',
   green01: '#1A6633',
+  green02: '#2DB34A',
 } as const;
 
 export const Fonts = {} as const;

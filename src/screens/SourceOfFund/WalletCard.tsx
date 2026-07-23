@@ -15,7 +15,9 @@ type Properties = {
   readonly onCharge: () => void;
   readonly onChargeHistory: () => void;
   readonly onUse: () => void;
+  readonly toggleUnRegister: () => void;
   readonly point: number;
+  readonly isShowUnRegister: boolean;
 };
 
 function WalletCard({
@@ -24,6 +26,8 @@ function WalletCard({
   onChargeHistory,
   onUse,
   point,
+  toggleUnRegister,
+  isShowUnRegister,
 }: Properties) {
   const { t } = useTranslation();
 
@@ -31,57 +35,64 @@ function WalletCard({
     <View
       style={{
         width: '100%',
-      }}>
-       <LinearGradient
-      colors={CARD_GRADIENT}
-      end={{ x: 1, y: 1 }}
-      start={{ x: 0, y: 0 }}
-      style={styles.card}
+      }}
     >
-      <View style={styles.topRow}>
-        <Text style={styles.walletName}>{t('source_of_fund.wallet_name')}</Text>
-        <View style={styles.pointPill}>
-          <Text style={styles.pointText}>
-            {t('source_of_fund.point_held', { point: formatCurrency(point) })}
-          </Text>
-        </View>
-      </View>
-
-      <Text style={styles.balanceLabel}>{t('source_of_fund.balance')}</Text>
-      <View style={styles.balanceRow}>
-        <Text style={styles.balanceValue}>{formatCurrency(balance)}</Text>
-        <Text style={styles.currency}>{t('source_of_fund.currency')}</Text>
-      </View>
-
-      <AppButton
-        onPress={onUse}
-        style={styles.useButton}
-        testID="source-of-fund-use"
+      <LinearGradient
+        colors={CARD_GRADIENT}
+        end={{ x: 1, y: 1 }}
+        start={{ x: 0, y: 0 }}
+        style={styles.card}
       >
-        <Text style={styles.useButtonText}>{t('source_of_fund.use')}</Text>
-      </AppButton>
+        <View style={styles.topRow}>
+          <Text style={styles.walletName}>
+            {t('source_of_fund.wallet_name')}
+          </Text>
+          <AppButton style={styles.pointPill} onPress={toggleUnRegister}>
+            <Text style={styles.pointText}>
+              {t('source_of_fund.point_held', { point: formatCurrency(point) })}
+            </Text>
+          </AppButton>
+        </View>
 
-      <View style={styles.actionRow}>
-        <AppButton
-          onPress={onCharge}
-          style={styles.actionButton}
-          testID="source-of-fund-charge"
-        >
-          <Text style={styles.actionButtonText}>
-            {t('source_of_fund.charge')}
-          </Text>
-        </AppButton>
-        <AppButton
-          onPress={onChargeHistory}
-          style={styles.actionButton}
-          testID="source-of-fund-charge-history"
-        >
-          <Text style={styles.actionButtonText}>
-            {t('source_of_fund.charge_history')}
-          </Text>
-        </AppButton>
-      </View>
-    </LinearGradient>
+        <Text style={styles.balanceLabel}>{t('source_of_fund.balance')}</Text>
+        <View style={styles.balanceRow}>
+          <Text style={styles.balanceValue}>{formatCurrency(balance)}</Text>
+          <Text style={styles.currency}>{t('source_of_fund.currency')}</Text>
+        </View>
+
+        {!isShowUnRegister && (
+          <AppButton
+            onPress={onUse}
+            style={styles.useButton}
+            testID="source-of-fund-use"
+          >
+            <Text style={styles.useButtonText}>{t('source_of_fund.use')}</Text>
+          </AppButton>
+        )}
+
+        <View style={styles.actionRow}>
+          <AppButton
+            onPress={onCharge}
+            style={styles.actionButton}
+            testID="source-of-fund-charge"
+          >
+            <Text style={styles.actionButtonText}>
+              {t('source_of_fund.charge')}
+            </Text>
+          </AppButton>
+          {!isShowUnRegister && (
+            <AppButton
+              onPress={onChargeHistory}
+              style={styles.actionButton}
+              testID="source-of-fund-charge-history"
+            >
+              <Text style={styles.actionButtonText}>
+                {t('source_of_fund.charge_history')}
+              </Text>
+            </AppButton>
+          )}
+        </View>
+      </LinearGradient>
     </View>
   );
 }
@@ -107,7 +118,7 @@ const styles = StyleSheet.create({
     gap: ScaleSize(10),
     marginTop: ScaleSize(10),
     marginHorizontal: ScaleSize(20),
-    paddingBottom: ScaleSize(20)
+    paddingBottom: ScaleSize(20),
   },
   balanceLabel: {
     color: 'rgba(255, 255, 255, 0.8)',
@@ -154,7 +165,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: ScaleSize(20),
-    paddingTop: ScaleSize(20)
+    paddingTop: ScaleSize(20),
   },
   useButton: {
     alignItems: 'center',

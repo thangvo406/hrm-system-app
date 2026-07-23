@@ -471,7 +471,12 @@
       "card_alias": "카드별명",
       "account": "계좌",
       "recent_history": "최근 이용 내역",
-      "view_all": "전체보기"
+      "view_all": "전체보기",
+      "no_payment_methods_title": "아직 등록된 결제수단이 없어요",
+      "no_payment_methods_desc": "결제수단을 등록하고 생협페이를 이용해보세요",
+      "register_card": "+ 카드 등록",
+      "register_account": "+ 계좌 등록",
+      "no_history": "최근 이용 내역이 없습니다"
     },
     "order_completed": {
       "order_code": "주문 코드",

@@ -19,7 +19,8 @@ type ButtonType =
   | 'primary'
   | 'rounded'
   | 'outline-bordered'
-  | 'outline-bordered-rounded';
+  | 'outline-bordered-rounded'
+  | 'outline-green';
 
 const typeOutletBorderedRounded = 'outline-bordered-rounded';
 const typeOutletBordered = 'outline-bordered';
@@ -56,6 +57,7 @@ function Button({
         type === 'primary' && styles.primary,
         type === 'rounded' && styles.rounded,
         type === 'outline' && styles.outline,
+        type === 'outline-green' && styles.outlineGreen,
         type === typeOutletBorderedRounded && [
           styles.rounded,
           styles.outline,
@@ -80,6 +82,7 @@ function Button({
             styles.label,
             isOutlet && styles.labelOutline,
             isDisabled && !isOutlet && styles.labelDisabled,
+            type === 'outline-green' && styles.textOutlineGreen,
             titleStyle,
           ]}
         >
@@ -96,6 +99,14 @@ const styles = StyleSheet.create({
     height: BUTTON_HEIGHT,
     justifyContent: 'center',
     width: '100%',
+  },
+  outlineGreen: {
+    borderWidth:1,
+    borderColor: Colors.green02,
+    borderRadius: ScaleSize(10),
+  },
+  textOutlineGreen: {
+    color: Colors.green02,
   },
   disabled: {
     backgroundColor: DISABLED_COLOR,
