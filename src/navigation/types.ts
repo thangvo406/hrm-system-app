@@ -57,6 +57,7 @@ export type RootStackParamList = {
   [Paths.ContributionHistory]: undefined;
   [Paths.PayPointHistories]: undefined;
   [Paths.PointMain]: undefined;
+  [Paths.Payment]: undefined;
   [Paths.CartDetail]: undefined;
   [Paths.QRCodePayment]: undefined;
   [Paths.RegisterCard]: undefined;

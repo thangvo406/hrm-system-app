@@ -67,6 +67,24 @@
       "tag_welfare": "Welfare",
       "title": "Coop Pay"
     },
+    "payment": {
+      "title": "Payment method",
+      "pay_money_label": "Coop Pay Money",
+      "balance_label": "Balance",
+      "won_unit": "won",
+      "point_coupon_label": "Point / Coupon",
+      "select_coupon": "Select coupon",
+      "use_point": "Use points",
+      "point_holding": "Holding {{amount}}P",
+      "point_unit": "P",
+      "general_payment_label": "General payment",
+      "credit_check_card": "Credit card · Check card (PG)",
+      "simple_payment_label": "Easy payment",
+      "kakao_pay": "KakaoPay",
+      "naver_pay": "NaverPay",
+      "toss_pay": "Toss",
+      "pay_action": "Pay"
+    },
     "point_main": {
       "title": "Point",
       "subtitle": "Check your points and usage history",

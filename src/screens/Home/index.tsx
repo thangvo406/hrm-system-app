@@ -39,7 +39,7 @@ function PayCard({
   const navigation = useNavigation();
 
   const onPressPayment = () => {
-    navigation.dispatch(CommonActions.navigate(Paths.QRCodePayment));
+    navigation.dispatch(CommonActions.navigate(Paths.Payment));
   };
 
   return (

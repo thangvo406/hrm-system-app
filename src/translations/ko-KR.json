@@ -323,6 +323,24 @@
       "tag_welfare": "복지",
       "title": "생협 Pay"
     },
+    "payment": {
+      "title": "결제수단",
+      "pay_money_label": "생협페이머니",
+      "balance_label": "잔액",
+      "won_unit": "원",
+      "point_coupon_label": "포인트 / 쿠폰",
+      "select_coupon": "쿠폰 선택",
+      "use_point": "포인트 사용",
+      "point_holding": "보유 {{amount}}P",
+      "point_unit": "P",
+      "general_payment_label": "일반결제",
+      "credit_check_card": "신용카드 · 체크카드 (PG)",
+      "simple_payment_label": "간편결제",
+      "kakao_pay": "카카오페이",
+      "naver_pay": "네이버페이",
+      "toss_pay": "토스",
+      "pay_action": "결제하기"
+    },
     "point_main": {
       "title": "포인트",
       "subtitle": "보유 포인트와 이용내역을 확인하세요",
