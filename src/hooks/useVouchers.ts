@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { getVouchersRequest } from '@services/slices/account/accountSlice';
 import { useAppDispatch } from '@services/common/storeHooks';
+import AppNavigator from '@navigation/AppNavigator';
+import QRVoucher from '@dialogs/QRVoucher';
 
 const EMPTY_VOUCHERS: Record<VoucherStatus, IVoucher[]> = {
   available: [],
@@ -61,8 +63,11 @@ export function useVouchers() {
   }, [activeTab, loadVouchers]);
 
   const onUseVoucher = useCallback((voucher: IVoucher) => {
-    // TODO: navigate to the redeem flow once the endpoint is available.
-    console.warn('Redeem voucher not implemented yet:', voucher.id);
+    AppNavigator.showDialog({
+      screen: QRVoucher,
+      isFullScreen: true,
+      data: voucher,
+    });
   }, []);
 
   return {

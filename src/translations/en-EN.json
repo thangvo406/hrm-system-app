@@ -15,6 +15,12 @@
         "error_limit_size_file": "File size must be less than 50MB"
       }
     },
+    "qr_voucher": {
+      "title": "Coupon QR",
+      "valid_time": "Valid time {{time}}",
+      "refresh": "Refresh QR",
+      "pay_other_method": "Pay with another method"
+    },
     "notifications": {
       "title": "Notifications",
       "mark_read_success": "Updated successfully",

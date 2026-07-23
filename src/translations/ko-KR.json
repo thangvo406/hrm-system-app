@@ -15,6 +15,12 @@
         "error_limit_size_file": "파일 크기는 50MB 미만이어야 합니다"
       }
     },
+    "qr_voucher": {
+      "title": "쿠폰 QR",
+      "valid_time": "유효시간 {{time}}",
+      "refresh": "QR 갱신",
+      "pay_other_method": "다른 수단으로 결제"
+    },
     "welcome": {
       "login": "로그인",
       "register": "신규 가입"

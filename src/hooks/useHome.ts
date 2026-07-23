@@ -7,15 +7,11 @@ import {
 import { Paths } from '@navigation/paths';
 import AppNavigator from '@navigation/AppNavigator';
 import useNotification from './useNotification';
-import {
-  getProfileRequest,
-  updateMembershipRequest,
-} from '@services/slices/account/accountSlice';
+import { getProfileRequest } from '@services/slices/account/accountSlice';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MEMBERSHIP_TYPE } from '@constants/config';
 import Information from '@screens/Dialog/components/Information';
-import BankInformation from '../screens/Authorisation/components/RegisterFlow/BankInformation';
 import { useFocusEffect } from '@react-navigation/native';
 import { getCurrentWalletRequest } from '@services/slices/account/accountSlice';
 import { getStoreOrderRecentRequest } from '@services/slices/stores/storesSlice';
@@ -23,7 +19,8 @@ import { AppStorage } from '@services/common/storage';
 import { AppConstants } from '@constants';
 import SocketService from '@services/common/webSocket';
 import imageNames from '@assets/images/names';
-import RegisterMembership from '@dialogs/RegisterMembership';
+//TODO: should remove it
+// import RegisterMembership from '@dialogs/RegisterMembership';
 
 export type UseHome = ReturnType<typeof useHome>;
 
@@ -53,6 +50,18 @@ const onPressSurvey = () => {
 
 const onGoToStore = () => {
   AppNavigator.navigate(Paths.Products);
+};
+
+const onPressContribution = () => {
+  AppNavigator.navigate(Paths.ContributionHistory);
+};
+
+const onShowMemberShip = () => {
+  AppNavigator.navigate(Paths.RegisterCard);
+};
+
+const onPressVoucher = () => {
+  AppNavigator.navigate(Paths.Vouchers);
 };
 
 export const useHome = () => {
@@ -111,78 +120,6 @@ export const useHome = () => {
       storeId: storeOrderRecent?.id,
     });
   };
-  const onSubmitMemberShip = (membershipType: string) => {
-    AppNavigator.showDialog({
-      screen: Information,
-      desc: t('register_flow.contribution_dialog.desc'),
-      cancelTitle: t('common.cancel'),
-      confirmTitle: t('common.confirm'),
-      onConfirm: () => {
-        dispatch(
-          updateMembershipRequest({
-            membershipType,
-            onFailure: message => {
-              AppNavigator.showSnackBar({
-                message: message || '',
-                type: 'failed',
-              });
-            },
-            onSuccess: () => {
-              AppNavigator.showDialog({
-                screen: BankInformation,
-                isFullScreen: true,
-                cancelable: false,
-                onSubmit: () => {
-                  AppNavigator.hideAllPopup();
-                  dispatch(getProfileRequest());
-                },
-              });
-            },
-          }),
-        );
-      },
-    });
-  };
-  const onShowMemberShip = () => {
-    AppNavigator.showDialog({
-      isFullScreen: true,
-      cancelable: false,
-      onBack: () => {
-        AppNavigator.hideAllPopup();
-      },
-      screen: RegisterMembership,
-      onSubmit: onSubmitMemberShip,
-    });
-  };
-
-  const onPressContribution = () => {
-    if (
-      !profile?.membershipType ||
-      profile?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER
-    ) {
-      AppNavigator.showDialog({
-        screen: Information,
-        iconInfo: {
-          name: imageNames.ic_bank_info,
-        },
-        title: t('home.non_member_dialog.title'),
-        desc: t('home.non_member_dialog.desc'),
-        cancelTitle: t('home.non_member_dialog.cancel'),
-        confirmTitle: t('home.non_member_dialog.confirm'),
-        onConfirm: () => {
-          onShowMemberShip();
-        },
-      });
-    } else if (profile?.registrationStatus != 'COMPLETED') {
-      AppNavigator.showDialog({
-        screen: Information,
-        title: t('home.pending_dialog.title'),
-        confirmTitle: t('home.pending_dialog.confirm'),
-      });
-    } else {
-      AppNavigator.navigate(Paths.ContributionInput);
-    }
-  };
 
   useEffect(() => {
     const needContribute = AppStorage.getBoolean(
@@ -220,6 +157,7 @@ export const useHome = () => {
     isHideContribute,
     onPressTopup,
     onGoToProduct,
+    onPressVoucher,
     onPressEmptyStore: onPressStore,
     onPressStore,
     onPressContribution,

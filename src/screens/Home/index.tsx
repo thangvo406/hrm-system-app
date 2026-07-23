@@ -140,6 +140,7 @@ function Home() {
     onPressNotification,
     onPressStore,
     onPressSurvey,
+    onPressVoucher,
     currentWallet,
     openMenu,
     onGoToStore,
@@ -196,7 +197,7 @@ function Home() {
             desc={t('home.coupon_desc')}
             image={imageNames.ic_tag_green}
             testID="home-coupon"
-            // onPress={onPressNotice}
+            onPress={onPressVoucher}
             title={t('home.coupon_title')}
           />
           <FeatureCard
