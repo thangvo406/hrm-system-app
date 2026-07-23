@@ -1,5 +1,8 @@
 package com.coop_use.systemui
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.view.View
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -69,6 +72,80 @@ class CoopNativeModule(
   }
 
   /**
+   * Mở một Android intent-URI dạng `intent://...#Intent;...;package=...;end` để
+   * chuyển sang app khác (vd xác thực SKT tauth, app ngân hàng trong luồng KCP).
+   *
+   * WebView không tự mở được scheme `intent://`, và `Linking.openURL` của RN chỉ
+   * parse như một URI thường nên bỏ mất đoạn `#Intent;...` -> không launch được
+   * app đích. Ở đây dùng [Intent.parseUri] với [Intent.URI_INTENT_SCHEME] để lấy
+   * đúng data + package + action, rồi startActivity.
+   *
+   * Nếu app đích chưa cài: ưu tiên `browser_fallback_url` (nếu URL có kèm), sau
+   * đó tới CH Play theo `package` của intent.
+   */
+  @ReactMethod
+  fun openIntentUrl(url: String?, promise: Promise) {
+    if (url.isNullOrBlank()) {
+      promise.reject(ERR_INVALID_URL, "URL is null or blank")
+      return
+    }
+
+    try {
+      val intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
+
+      // Chống "intent scheme URL attack": không cho trang web ép mở component nội
+      // bộ của app. Data + package đã đủ để hệ thống resolve app đích.
+      intent.addCategory(Intent.CATEGORY_BROWSABLE)
+      intent.component = null
+      intent.selector = null
+
+      if (launch(intent)) {
+        promise.resolve(true)
+        return
+      }
+
+      // App đích chưa cài -> fallback.
+      val fallbackUrl = intent.getStringExtra("browser_fallback_url")
+      val packageName = intent.getPackage()
+      val opened = when {
+        !fallbackUrl.isNullOrBlank() ->
+          launch(Intent(Intent.ACTION_VIEW, Uri.parse(fallbackUrl)))
+        !packageName.isNullOrBlank() ->
+          launch(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")))
+        else -> false
+      }
+
+      if (opened) {
+        promise.resolve(true)
+      } else {
+        promise.reject(ERR_NO_HANDLER, "No app can handle url: $url")
+      }
+    } catch (error: Throwable) {
+      promise.reject(ERR_FAILED, error.message, error)
+    }
+  }
+
+  /**
+   * Thử start [intent] bằng activity hiện tại (nếu có), fallback về application
+   * context với cờ NEW_TASK. Trả về `false` khi không có app nào xử lý được
+   * (ActivityNotFoundException) để caller chạy nhánh fallback.
+   */
+  private fun launch(intent: Intent): Boolean {
+    return try {
+      val activity = reactContext.currentActivity
+      if (activity == null) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        reactContext.startActivity(intent)
+      } else {
+        activity.startActivity(intent)
+      }
+      true
+    } catch (_: ActivityNotFoundException) {
+      false
+    }
+  }
+
+  /**
    * Chạy [block] trên UI thread với decorView + insets controller của activity
    * hiện tại. Reject promise nếu không có activity (vd: app ở background).
    */
@@ -98,5 +175,7 @@ class CoopNativeModule(
     const val NAME = "CoopNativeModule"
     private const val ERR_NO_ACTIVITY = "E_NO_ACTIVITY"
     private const val ERR_FAILED = "E_FAILED"
+    private const val ERR_INVALID_URL = "E_INVALID_URL"
+    private const val ERR_NO_HANDLER = "E_NO_HANDLER"
   }
 }

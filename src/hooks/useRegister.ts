@@ -20,7 +20,11 @@ import Selection from '@screens/Dialog/components/Selection';
 import { CommonUtils } from '@utils';
 import { AppConstants } from '@constants';
 // import Information from '@screens/Dialog/components/Information';
-import type { IResponseCreateLinkVerifyInfoUser, IResponseRegisterUser, IResponseUniversity } from '@type/auth';
+import type {
+  IResponseCreateLinkVerifyInfoUser,
+  IResponseRegisterUser,
+  IResponseUniversity,
+} from '@type/auth';
 import {
   IResponseRegisterSendOtp,
   IResponseRegisterVerifyOtp,
@@ -30,7 +34,6 @@ import Information from '@dialogs/Information';
 import WebViewScreen from '@dialogs/Webview';
 import { WebViewNavigation } from 'react-native-webview';
 import { deepLinkGate } from '@navigation/deepLinkGate';
-import { Linking } from 'react-native';
 
 const {
   CARRIER_ITEMS,
@@ -234,44 +237,45 @@ export const useRegister = () => {
   };
 
   const onCreateLinkVerifyUser = () => {
-    dispatch(createLinkVerifyUserRequest({
-      registerToken: formData.current.registerToken || '',
-      onSuccess: (response: IResponseCreateLinkVerifyInfoUser) => {
-        AppNavigator.showDialog({
-          screen: WebViewScreen,
-          cookies: {
-            call_url: response?.callUrl,
-            reg_cert_key: response?.regCertKey,
-            ordr_idxx: response?.ordrIdxx,
-          },
-          url: response?.certWebViewUrl,
-          isFullScreen: true,
-          onNavigationStateChange: (navState: WebViewNavigation, onRequestClose?: any) => {
-            // console.log("navState",navState)
-            const {url} = navState || {};
-            const isDeeplinkApp = url?.startsWith?.('coop://');
-            if(isDeeplinkApp) {
-              const params = deepLinkGate.getPathFromUrl(navState.url);
-              // console.log("params",params)
-              formData.current.signupToken = params.signupToken;
-              onRequestClose?.()
-              onSubmitRegisterInfo();
-            }else if(!(url?.startsWith('https://') || url?.startsWith('http://'))) {
-                Linking.openURL(url).catch((e) => {
-                  // console.log("errr linking",e?.message)
-                })
+    dispatch(
+      createLinkVerifyUserRequest({
+        registerToken: formData.current.registerToken || '',
+        onSuccess: (response: IResponseCreateLinkVerifyInfoUser) => {
+          AppNavigator.showDialog({
+            screen: WebViewScreen,
+            cookies: {
+              call_url: response?.callUrl,
+              reg_cert_key: response?.regCertKey,
+              ordr_idxx: response?.ordrIdxx,
+            },
+            url: response?.certWebViewUrl,
+            isFullScreen: true,
+            onNavigationStateChange: (
+              navState: WebViewNavigation,
+              onRequestClose?: any,
+            ) => {
+              // console.log("navState",navState)
+              const { url } = navState || {};
+              const isDeeplinkApp = url?.startsWith?.('coop://');
+              if (isDeeplinkApp) {
+                const params = deepLinkGate.getPathFromUrl(navState.url);
+                // console.log("params",params)
+                formData.current.signupToken = params.signupToken;
+                onRequestClose?.();
+                onSubmitRegisterInfo();
               }
-          }
-        })
-      },
-      onFailure: (error) => {
-        AppNavigator.showSnackBar({
-          message: error,
-          type: 'failed',
-        });
-      },
-    }))
-  }
+            },
+          });
+        },
+        onFailure: error => {
+          AppNavigator.showSnackBar({
+            message: error,
+            type: 'failed',
+          });
+        },
+      }),
+    );
+  };
   const onGoRegisterForm = () => {
     setErrors({ email: true, name: true, password: true });
     if (!isRegisterValid) return;
@@ -286,7 +290,7 @@ export const useRegister = () => {
           // console.log("responseCreateLink",response)
           // navigateToStep(REGISTER_FLOW_STEP.REGISTER_INPUT);
           formData.current.registerToken = response.registerToken;
-          onCreateLinkVerifyUser()
+          onCreateLinkVerifyUser();
         },
         password: formData.current.password,
       }),

@@ -10,10 +10,11 @@ import HeaderDetail from '@components/HeaderDetail';
 // import { useWebview } from '@hooks/useWebview';
 import { ScaleSize } from '@kits/core';
 // import AppNavigator from '@navigations/AppNavigator';
-import React, { useRef, useState } from 'react';
+import AppNativeModules from '@services/native/AppNativeModules';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  //   Linking,
+  Linking,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -23,7 +24,10 @@ import {
 } from 'react-native';
 // import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
-import type { WebViewNavigation } from 'react-native-webview';
+import type {
+  ShouldStartLoadRequest,
+  WebViewNavigation,
+} from 'react-native-webview/lib/WebViewTypes';
 
 function WebViewScreen(props: any) {
   //   const {
@@ -75,6 +79,30 @@ function WebViewScreen(props: any) {
   const onReload = event => {};
   const onHandleMessage = event => {
     // console.log('onHandleMessage', event);
+  };
+
+  // Chặn các URL không phải http(s) trước khi WebView cố load. Đó là các
+  // scheme chuyển sang app khác: `intent://...#Intent;...;package=...` (xác thực
+  // SKT tauth, app ngân hàng KCP), hoặc app-scheme như `tauthlink://`, `tel:`,
+  // `mailto:`... WebView không mở được -> đẩy sang native để launch app đích.
+  const onShouldStartLoadWithRequest = (
+    request: ShouldStartLoadRequest,
+  ): boolean => {
+    const requestUrl = request?.url ?? '';
+    if (
+      requestUrl.startsWith('http://') ||
+      requestUrl.startsWith('https://') ||
+      requestUrl.startsWith('about:')
+    ) {
+      return true;
+    }
+
+    if (Platform.OS === 'android') {
+      AppNativeModules.openIntentUrl(requestUrl).catch(() => {});
+    } else {
+      Linking.openURL(requestUrl).catch(() => {});
+    }
+    return false;
   };
 
   const renderErrorScreen = () => {
@@ -144,6 +172,7 @@ function WebViewScreen(props: any) {
           onNavigationStateChange={(navState: WebViewNavigation): void => {
             onNavigationStateChange?.(navState, onRequestClose);
           }}
+          onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
           userAgent={
             Platform.OS === 'android'
               ? 'Mozilla/5.0 (Linux; Android 10; Android SDK built for x86) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36'

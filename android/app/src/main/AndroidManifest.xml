@@ -6,6 +6,14 @@
 
   <queries>
     <package android:name="com.kakao.talk" />
+    <!-- Xác thực SKT tauth (intent://...;package=com.sktelecom.tauth). -->
+    <package android:name="com.sktelecom.tauth" />
+    <!-- Cho phép resolve/launch các app-scheme browsable (PASS, app ngân hàng
+         trong luồng KCP...) trên Android 11+ (package visibility). -->
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <category android:name="android.intent.category.BROWSABLE" />
+    </intent>
   </queries>
   <application
     android:name=".MainApplication"
