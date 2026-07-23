@@ -2,7 +2,7 @@ import imageNames from '@assets/images/names';
 import Information from '@dialogs/Information';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export type SourceCard = {
@@ -114,9 +114,18 @@ export const useSourceOfFund = () => {
   const {t} = useTranslation()
   const toggleUnRegister = () => {
     setShowUnRegister(prev => !prev);
-    setAccounts([])
-    setTransactions([])
   }
+
+  useEffect(() => {
+    if(!isShowUnRegister) {
+      setAccounts(ACCOUNTS)
+      setTransactions(TRANSACTIONS)
+    }else {
+      setAccounts([])
+      setTransactions([])
+    }
+  }, [isShowUnRegister])
+  
 
   const onShowDialogConfirm = () => {
     AppNavigator.showDialog({
@@ -150,7 +159,7 @@ export const useSourceOfFund = () => {
 
   const onRegisterCard = useCallback(() => {
     // TODO: navigate to card registration when the screen is available.
-    onShowDialogConfirm()
+    AppNavigator.navigate(Paths.RegisterCard)
   }, []);
 
   const onRegisterAccount = useCallback(() => {

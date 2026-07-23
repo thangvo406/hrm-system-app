@@ -477,6 +477,21 @@
       "register_account": "+ Register account",
       "no_history": "No recent history yet"
     },
+    "register_card": {
+      "title": "Register a payment method\nand pay with ease",
+      "card_title": "Register card",
+      "card_desc": "Scan your Coop Pay card or enter details",
+      "account_title": "Register bank account",
+      "account_desc": "Quick registration by entering account number",
+      "submit": "Proceed"
+    },
+    "register_cart_confirm": {
+      "title": "Register with Coop Pay for\neasy, convenient payment",
+      "term_service": "(Required) Electronic payment agency service terms",
+      "term_privacy_collect": "(Required) Consent to collect and use personal info",
+      "term_privacy_third_party": "(Required) Consent to provide personal info to third parties",
+      "submit": "Agree and proceed"
+    },
     "order_completed": {
       "order_code": "Order Code",
       "copy": "Copy",

@@ -478,6 +478,21 @@
       "register_account": "+ 계좌 등록",
       "no_history": "최근 이용 내역이 없습니다"
     },
+    "register_card": {
+      "title": "결제수단 등록하고\n간편하게 결제하세요",
+      "card_title": "카드 등록",
+      "card_desc": "생협페이카드 스캔 또는 정보 입력",
+      "account_title": "은행 계좌 등록",
+      "account_desc": "계좌번호 입력으로 간편 등록",
+      "submit": "등록 진행"
+    },
+    "register_cart_confirm": {
+      "title": "쉽고 편한 결제, 생협페이에\n등록합니다",
+      "term_service": "(필수) 전자지급결제대행 서비스 이용약관",
+      "term_privacy_collect": "(필수) 개인정보 수집 및 이용 동의",
+      "term_privacy_third_party": "(필수) 개인정보 제3자 제공 동의",
+      "submit": "동의하고 진행"
+    },
     "order_completed": {
       "order_code": "주문 코드",
       "copy": "복사",

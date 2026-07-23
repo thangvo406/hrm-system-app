@@ -32,3 +32,4 @@ export { default as Vouchers } from './Vouchers';
 export { default as Welcome } from './Welcome';
 export { default as ForgotPass } from './ForgotPass';
 export { default as RegisterCompleted } from './RegisterCompleted';
+export { default as RegisterCard } from './RegisterCard';
