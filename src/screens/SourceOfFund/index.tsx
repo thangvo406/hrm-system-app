@@ -64,6 +64,7 @@ function SourceOfFund() {
           cards={cards}
           initialIndex={PRIMARY_CARD_INDEX}
           isShowUnRegister={isShowUnRegister}
+          onRegisterCard={onRegisterCard}
         />
 
         <Cards

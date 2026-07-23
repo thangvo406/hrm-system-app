@@ -11,12 +11,18 @@ import { useSharedValue } from 'react-native-reanimated';
 import Carousel from 'react-native-reanimated-carousel';
 import { Globals } from '@utils';
 
+import AddPlaceholder from './AddPlaceholder';
 import PaginationDots from './PaginationDots';
+
+// Sentinel injected at index 0 so the "add account" tile leads the carousel.
+const ADD_ACCOUNT_ID = '__add_account__';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 // Slot narrower than the screen so the next account card peeks in on the side.
 const ITEM_WIDTH = SCREEN_WIDTH - ScaleSize(64);
-const CARD_WIDTH = ITEM_WIDTH - ScaleSize(-20);
+// Card narrower than its slot so a real gap sits between adjacent cards.
+const CARD_GAP = ScaleSize(24);
+const CARD_WIDTH = ITEM_WIDTH - CARD_GAP;
 const CARD_HEIGHT = ScaleSize(96);
 const CHEVRON_SIZE = ScaleSize(18);
 const ACCOUNT_GRADIENTS: readonly (readonly string[])[] = [
@@ -26,18 +32,17 @@ const ACCOUNT_GRADIENTS: readonly (readonly string[])[] = [
 
 const DOT_SIZE = ScaleSize(6);
 const DOT_ACTIVE_WIDTH = ScaleSize(18);
-const DOT_ACTIVE_COLOR = '#54C158';
-const DOT_INACTIVE_COLOR = '#E0E0E0';
+
 const DOT_GAP = ScaleSize(3);
 
 function AccountItem({
   account,
-  index,
+  accountIndex,
 }: {
   readonly account: SourceAccount;
-  readonly index: number;
+  readonly accountIndex: number;
 }) {
-  const colors = ACCOUNT_GRADIENTS[index % ACCOUNT_GRADIENTS.length];
+  const colors = ACCOUNT_GRADIENTS[accountIndex % ACCOUNT_GRADIENTS.length];
   return (
     <View style={styles.slot}>
       <LinearGradient
@@ -78,11 +83,32 @@ function Cards({
   onRegisterCard,
 }: Properties) {
   const { t } = useTranslation();
-  const progress = useSharedValue(0);
+  const progress = useSharedValue(1);
+
+  const data = React.useMemo<SourceAccount[]>(
+    () => [
+      { accountMasked: '', bankName: '', id: ADD_ACCOUNT_ID },
+      ...accounts,
+    ],
+    [accounts],
+  );
 
   const renderItem = useCallback<CarouselRenderItem<SourceAccount>>(
-    ({ index, item }) => <AccountItem account={item} index={index} />,
-    [],
+    ({ index, item }) =>
+      item.id === ADD_ACCOUNT_ID ? (
+        <View style={styles.slot}>
+          <AddPlaceholder
+            height={CARD_HEIGHT}
+            label={t('source_of_fund.add_account')}
+            onPress={onRegisterAccount}
+            testID="source-of-fund-add-account"
+            width={CARD_WIDTH}
+          />
+        </View>
+      ) : (
+        <AccountItem account={item} accountIndex={index - 1} />
+      ),
+    [onRegisterAccount, t],
   );
 
   const onTouchStart = useCallback(() => {
@@ -111,11 +137,13 @@ function Cards({
             onTouchStart={onTouchStart}
           >
             <Carousel
-              data={accounts as SourceAccount[]}
+              data={data}
+              defaultIndex={1}
               height={CARD_HEIGHT}
               onProgressChange={(_, absoluteProgress) => {
                 progress.value = absoluteProgress;
               }}
+              loop={false}
               pagingEnabled
               renderItem={renderItem}
               style={styles.carousel}
@@ -123,13 +151,11 @@ function Cards({
               width={ITEM_WIDTH}
             />
           </View>
-          {accounts.length > 1 ? (
+          {data.length > 1 ? (
             <PaginationDots
-              activeColor={DOT_ACTIVE_COLOR}
               activeWidth={DOT_ACTIVE_WIDTH}
-              count={accounts.length}
+              count={data.length}
               gap={DOT_GAP}
-              inactiveColor={DOT_INACTIVE_COLOR}
               progress={progress}
               size={DOT_SIZE}
               style={styles.paginationRow}

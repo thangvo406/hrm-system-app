@@ -105,27 +105,27 @@ const TRANSACTIONS: readonly WalletTransaction[] = [
   },
 ];
 
-
 export const useSourceOfFund = () => {
-
   const [isShowUnRegister, setShowUnRegister] = useState(false);
   const [accounts, setAccounts] = useState(ACCOUNTS);
+  const [cards, setCards] = useState(CARDS);
   const [transactions, setTransactions] = useState(TRANSACTIONS);
-  const {t} = useTranslation()
+  const { t } = useTranslation();
   const toggleUnRegister = () => {
     setShowUnRegister(prev => !prev);
-  }
+  };
 
   useEffect(() => {
-    if(!isShowUnRegister) {
-      setAccounts(ACCOUNTS)
-      setTransactions(TRANSACTIONS)
-    }else {
-      setAccounts([])
-      setTransactions([])
+    if (!isShowUnRegister) {
+      setAccounts(ACCOUNTS);
+      setTransactions(TRANSACTIONS);
+      setCards(CARDS);
+    } else {
+      setAccounts([]);
+      setTransactions([]);
+      setCards([]);
     }
-  }, [isShowUnRegister])
-  
+  }, [isShowUnRegister]);
 
   const onShowDialogConfirm = () => {
     AppNavigator.showDialog({
@@ -138,34 +138,37 @@ export const useSourceOfFund = () => {
       cancelTitle: t('home.non_member_dialog.cancel'),
       confirmTitle: t('home.non_member_dialog.confirm'),
       onConfirm: () => {
-        // onShowMemberShip();
+        AppNavigator.navigate(Paths.RegisterCard);
       },
-    })
-  }
- 
+    });
+  };
+
   const onCharge = useCallback(() => {
     AppNavigator.navigate(Paths.TopUp);
   }, []);
 
   const onChargeHistory = useCallback(() => {
-    // TODO: navigate to charge history when the screen is available.
-    onShowDialogConfirm()
+    if (!(accounts?.length > 0 || cards.length > 0)) {
+      onShowDialogConfirm();
+    } else {
+      AppNavigator.navigate(Paths.TopUp);
+    }
   }, []);
 
   const onManagePaymentMethods = useCallback(() => {
     // TODO: navigate to payment-method management when available.
-    onShowDialogConfirm()
+    onShowDialogConfirm();
   }, []);
 
   const onRegisterCard = useCallback(() => {
     // TODO: navigate to card registration when the screen is available.
-    AppNavigator.navigate(Paths.RegisterCard)
-  }, []);
+    AppNavigator.navigate(Paths.RegisterCard);
+  }, [accounts, cards]);
 
   const onRegisterAccount = useCallback(() => {
     // TODO: navigate to account registration when the screen is available.
-    onShowDialogConfirm()
-  }, []);
+    AppNavigator.navigate(Paths.RegisterCard);
+  }, [accounts, cards]);
 
   const onUse = useCallback(() => {
     AppNavigator.navigate(Paths.QRCodePayment);
@@ -173,13 +176,13 @@ export const useSourceOfFund = () => {
 
   const onViewAllTransactions = useCallback(() => {
     // TODO: navigate to full transaction history when available.
-    onShowDialogConfirm()
+    onShowDialogConfirm();
   }, []);
 
   return {
     accounts,
     balance: WALLET_BALANCE,
-    cards: CARDS,
+    cards,
     isShowUnRegister,
     onCharge,
     onChargeHistory,

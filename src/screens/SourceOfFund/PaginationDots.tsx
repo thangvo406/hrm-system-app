@@ -10,20 +10,21 @@ import Animated, {
 } from 'react-native-reanimated';
 
 type DotProps = {
-  readonly activeColor: string;
+  readonly activeColor?: string;
   readonly activeWidth: number;
   readonly gap: number;
-  readonly inactiveColor: string;
+  readonly inactiveColor?: string;
   readonly index: number;
   readonly progress: SharedValue<number>;
   readonly size: number;
 };
-
+const DOT_ACTIVE_COLOR = '#54C158';
+const DOT_INACTIVE_COLOR = '#E0E0E0';
 function Dot({
-  activeColor,
+  activeColor = DOT_ACTIVE_COLOR,
   activeWidth,
   gap,
-  inactiveColor,
+  inactiveColor = DOT_INACTIVE_COLOR,
   index,
   progress,
   size,

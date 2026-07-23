@@ -15,7 +15,11 @@ import Animated, {
 import Carousel from 'react-native-reanimated-carousel';
 import { Globals } from '@utils';
 
+import AddPlaceholder from './AddPlaceholder';
 import PaginationDots from './PaginationDots';
+
+// Sentinel injected at index 0 so the "add card" tile leads the carousel.
+const ADD_CARD_ID = '__add_card__';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = ScaleSize(180);
@@ -68,13 +72,23 @@ const CARD_THEMES: readonly CardTheme[] = [
 ];
 
 type CardItemProps = {
+  readonly addLabel: string;
   readonly animationValue: SharedValue<number>;
   readonly card: SourceCard;
-  readonly index: number;
+  readonly cardIndex: number;
+  readonly isAdd: boolean;
+  readonly onAddPress: () => void;
 };
 
-function CardItem({ animationValue, card, index }: CardItemProps) {
-  const theme = CARD_THEMES[index % CARD_THEMES.length];
+function CardItem({
+  addLabel,
+  animationValue,
+  card,
+  cardIndex,
+  isAdd,
+  onAddPress,
+}: CardItemProps) {
+  const theme = CARD_THEMES[cardIndex % CARD_THEMES.length];
 
   const animatedStyle = useAnimatedStyle(() => {
     const scale = interpolate(
@@ -91,6 +105,22 @@ function CardItem({ animationValue, card, index }: CardItemProps) {
     );
     return { opacity, transform: [{ scale }] };
   });
+
+  if (isAdd) {
+    return (
+      <View style={styles.cardSlot}>
+        <Animated.View style={animatedStyle}>
+          <AddPlaceholder
+            height={CARD_HEIGHT}
+            label={addLabel}
+            onPress={onAddPress}
+            testID="source-of-fund-add-card"
+            width={CARD_WIDTH}
+          />
+        </Animated.View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.cardSlot}>
@@ -127,21 +157,40 @@ type Properties = {
   readonly cards: readonly SourceCard[];
   readonly initialIndex: number;
   readonly isShowUnRegister: boolean;
+  readonly onRegisterCard: () => void;
 };
 
 function MembershipCards({
   cards,
   initialIndex,
   isShowUnRegister,
+  onRegisterCard,
 }: Properties) {
   const { t } = useTranslation();
-  const progress = useSharedValue(initialIndex);
+  // Add tile leads the carousel, so the branded card keeps its centered slot.
+  const focusedIndex = initialIndex + 1;
+  const progress = useSharedValue(focusedIndex);
+
+  const data = React.useMemo<SourceCard[]>(
+    () => [
+      { brand: '', id: ADD_CARD_ID, maskedNumber: '', network: '' },
+      ...cards,
+    ],
+    [cards],
+  );
 
   const renderItem = useCallback<CarouselRenderItem<SourceCard>>(
     ({ animationValue, index, item }) => (
-      <CardItem animationValue={animationValue} card={item} index={index} />
+      <CardItem
+        addLabel={t('source_of_fund.add_card')}
+        animationValue={animationValue}
+        card={item}
+        cardIndex={index - 1}
+        isAdd={item.id === ADD_CARD_ID}
+        onAddPress={onRegisterCard}
+      />
     ),
-    [],
+    [onRegisterCard, t],
   );
 
   const onTouchStart = useCallback(() => {
@@ -170,13 +219,14 @@ function MembershipCards({
           onTouchStart={onTouchStart}
         >
           <Carousel
-            data={cards as SourceCard[]}
-            defaultIndex={initialIndex}
+            data={data}
+            defaultIndex={focusedIndex}
             height={CARD_HEIGHT}
             onProgressChange={(_, absoluteProgress) => {
               progress.value = absoluteProgress;
             }}
             pagingEnabled
+            loop={false}
             renderItem={renderItem}
             style={styles.carousel}
             testID="source-of-fund-card-carousel"
@@ -184,11 +234,9 @@ function MembershipCards({
           />
         </View>
         <PaginationDots
-          activeColor={DOT_ACTIVE_COLOR}
           activeWidth={DOT_ACTIVE_WIDTH}
-          count={cards.length}
+          count={data.length}
           gap={DOT_GAP}
-          inactiveColor={DOT_INACTIVE_COLOR}
           progress={progress}
           size={DOT_SIZE}
           style={styles.paginationRow}

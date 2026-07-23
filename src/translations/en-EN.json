@@ -475,6 +475,8 @@
       "no_payment_methods_desc": "Register a payment method to start using Coop Pay",
       "register_card": "+ Register card",
       "register_account": "+ Register account",
+      "add_card": "Add card",
+      "add_account": "Add account",
       "no_history": "No recent history yet"
     },
     "register_card": {

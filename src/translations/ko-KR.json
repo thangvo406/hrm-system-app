@@ -476,6 +476,8 @@
       "no_payment_methods_desc": "결제수단을 등록하고 생협페이를 이용해보세요",
       "register_card": "+ 카드 등록",
       "register_account": "+ 계좌 등록",
+      "add_card": "카드 등록",
+      "add_account": "계좌 등록",
       "no_history": "최근 이용 내역이 없습니다"
     },
     "register_card": {
