@@ -1,6 +1,6 @@
 import type { CarouselRenderItem } from 'react-native-reanimated-carousel';
 
-import { Button, Image } from '@components';
+import { AppButton, Button, Image } from '@components';
 import { ScaleSize } from '@kits/core';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,37 +42,51 @@ const DOT_SIZE = ScaleSize(6);
 const DOT_ACTIVE_WIDTH = ScaleSize(18);
 
 const DOT_GAP = ScaleSize(3);
+const SELECTED_BORDER_COLOR = '#ff0fb7';
 
 function AccountItem({
   account,
   accountIndex,
+  onSelect,
+  selected,
 }: {
   readonly account: SourceAccount;
   readonly accountIndex: number;
+  readonly onSelect: (id: string) => void;
+  readonly selected: boolean;
 }) {
   const colors = ACCOUNT_GRADIENTS[accountIndex % ACCOUNT_GRADIENTS.length];
+
   return (
     <View style={styles.slot}>
-      <LinearGradient
-        colors={[...colors]}
-        end={{ x: 1, y: 1 }}
-        start={{ x: 0, y: 0 }}
-        style={styles.card}
+      <AppButton
+        onPress={() => onSelect(account.id)}
+        testID={`payment-account-${account.id}`}
       >
-        <View style={styles.info}>
-          <Text style={styles.bankName}>{account.bankName}</Text>
-          <Text style={styles.account}>{account.accountMasked}</Text>
-        </View>
-        <View style={styles.chevron}>
-          <Image
-            color="#FFFFFF"
-            height={CHEVRON_SIZE}
-            name="ic_chevron_right"
-            type="svg"
-            width={CHEVRON_SIZE}
-          />
-        </View>
-      </LinearGradient>
+        <LinearGradient
+          colors={[...colors]}
+          end={{ x: 1, y: 1 }}
+          start={{ x: 0, y: 0 }}
+          style={styles.card}
+        >
+          {selected ? (
+            <View pointerEvents="none" style={styles.selectedBorder} />
+          ) : undefined}
+          <View style={styles.info}>
+            <Text style={styles.bankName}>{account.bankName}</Text>
+            <Text style={styles.account}>{account.accountMasked}</Text>
+          </View>
+          <View style={styles.chevron}>
+            <Image
+              color="#FFFFFF"
+              height={CHEVRON_SIZE}
+              name="ic_chevron_right"
+              type="svg"
+              width={CHEVRON_SIZE}
+            />
+          </View>
+        </LinearGradient>
+      </AppButton>
     </View>
   );
 }
@@ -82,6 +96,8 @@ type Properties = {
   readonly isShowUnRegister: boolean;
   readonly onRegisterAccount: () => void;
   readonly onRegisterCard: () => void;
+  readonly onSelect: (id: string) => void;
+  readonly selectedId: string | undefined;
 };
 
 function Cards({
@@ -89,6 +105,8 @@ function Cards({
   isShowUnRegister,
   onRegisterAccount,
   onRegisterCard,
+  onSelect,
+  selectedId,
 }: Properties) {
   const { t } = useTranslation();
   const progress = useSharedValue(0);
@@ -96,8 +114,15 @@ function Cards({
   const data = React.useMemo<SourceAccount[]>(() => [...accounts], [accounts]);
 
   const renderItem = useCallback<CarouselRenderItem<SourceAccount>>(
-    ({ index, item }) => <AccountItem account={item} accountIndex={index} />,
-    [],
+    ({ index, item }) => (
+      <AccountItem
+        account={item}
+        accountIndex={index}
+        onSelect={onSelect}
+        selected={item.id === selectedId}
+      />
+    ),
+    [onSelect, selectedId],
   );
 
   const onTouchStart = useCallback(() => {
@@ -132,6 +157,7 @@ function Cards({
               onProgressChange={(_, absoluteProgress) => {
                 progress.value = absoluteProgress;
               }}
+              onSnapToItem={index => onSelect(data[index].id)}
               loop={false}
               pagingEnabled
               renderItem={renderItem}
@@ -258,6 +284,16 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'row',
     marginTop: ScaleSize(12),
+  },
+  selectedBorder: {
+    borderColor: SELECTED_BORDER_COLOR,
+    borderRadius: ScaleSize(16),
+    borderWidth: ScaleSize(2.5),
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   slot: {
     alignItems: 'center',

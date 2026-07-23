@@ -341,6 +341,14 @@
       "toss_pay": "토스",
       "pay_action": "결제하기"
     },
+    "payment_completed": {
+      "back": "뒤로",
+      "title": "결제가 완료되었습니다",
+      "store_label": "매장명",
+      "method_label": "결제수단",
+      "datetime_label": "결제일시",
+      "confirm": "확인"
+    },
     "point_main": {
       "title": "포인트",
       "subtitle": "보유 포인트와 이용내역을 확인하세요",

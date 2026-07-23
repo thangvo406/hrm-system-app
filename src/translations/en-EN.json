@@ -85,6 +85,14 @@
       "toss_pay": "Toss",
       "pay_action": "Pay"
     },
+    "payment_completed": {
+      "back": "Back",
+      "title": "Payment complete",
+      "store_label": "Store",
+      "method_label": "Payment method",
+      "datetime_label": "Paid at",
+      "confirm": "Done"
+    },
     "point_main": {
       "title": "Point",
       "subtitle": "Check your points and usage history",

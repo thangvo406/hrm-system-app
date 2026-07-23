@@ -21,10 +21,14 @@ function Payment() {
     onPay,
     onRegisterAccount,
     onRegisterCard,
+    onSelectAccount,
+    onSelectCard,
     onSelectGeneralMethod,
     payMoneyBalance,
     pointHolding,
     pointUsed,
+    selectedAccountId,
+    selectedCardId,
     selectedCoupon,
     onSelectCoupon,
     onUsePoint,
@@ -53,6 +57,8 @@ function Payment() {
             cards={cards}
             initialIndex={initialIndex}
             isShowUnRegister={isShowUnRegister}
+            onSelect={onSelectCard}
+            selectedId={selectedCardId}
           />
 
           <Cards
@@ -60,6 +66,8 @@ function Payment() {
             isShowUnRegister={isShowUnRegister}
             onRegisterAccount={onRegisterAccount}
             onRegisterCard={onRegisterCard}
+            onSelect={onSelectAccount}
+            selectedId={selectedAccountId}
           />
         </View>
 

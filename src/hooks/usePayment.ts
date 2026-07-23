@@ -3,11 +3,20 @@ import type { SourceCard } from '@screens/Payment/MembershipCards';
 
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 export type IPaymentCoupon = {
   readonly id: string;
   readonly name: string;
+};
+
+export type PaymentMethodType = 'account' | 'card';
+
+// A single source of truth for the selected payment method, so only one item
+// across the card carousel AND the account carousel can be selected at a time.
+export type SelectedPaymentMethod = {
+  readonly id: string;
+  readonly type: PaymentMethodType;
 };
 
 // TODO(api): replace mock values with the payment-method summary response.
@@ -65,6 +74,25 @@ const onUsePoint = () => {
 };
 
 export const usePayment = () => {
+  // Default to the primary card so a method is highlighted on open.
+  const [selectedMethod, setSelectedMethod] = useState<SelectedPaymentMethod>({
+    id: CARDS[PRIMARY_CARD_INDEX].id,
+    type: 'card',
+  });
+
+  const selectedCardId =
+    selectedMethod.type === 'card' ? selectedMethod.id : undefined;
+  const selectedAccountId =
+    selectedMethod.type === 'account' ? selectedMethod.id : undefined;
+
+  const onSelectCard = (id: string) => {
+    // setSelectedMethod({ id, type: 'card' });
+  };
+
+  const onSelectAccount = (id: string) => {
+    // setSelectedMethod({ id, type: 'account' });
+  };
+
   const onRegisterCard = useCallback(() => {
     // TODO: navigate to card registration when the screen is available.
     AppNavigator.navigate(Paths.RegisterCard);
@@ -92,12 +120,16 @@ export const usePayment = () => {
     onPay,
     onRegisterAccount,
     onRegisterCard,
+    onSelectAccount,
+    onSelectCard,
     onSelectCoupon,
     onSelectGeneralMethod,
     onUsePoint,
     payMoneyBalance: PAY_MONEY_BALANCE,
     pointHolding: POINT_HOLDING,
     pointUsed: POINT_USED,
+    selectedAccountId,
+    selectedCardId,
     selectedCoupon: SELECTED_COUPON,
   };
 };

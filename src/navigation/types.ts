@@ -58,6 +58,14 @@ export type RootStackParamList = {
   [Paths.PayPointHistories]: undefined;
   [Paths.PointMain]: undefined;
   [Paths.Payment]: undefined;
+  [Paths.PaymentCompleted]:
+    | {
+        amount?: number;
+        paymentAt?: string;
+        paymentMethod?: string;
+        storeName?: string;
+      }
+    | undefined;
   [Paths.CartDetail]: undefined;
   [Paths.QRCodePayment]: undefined;
   [Paths.RegisterCard]: undefined;

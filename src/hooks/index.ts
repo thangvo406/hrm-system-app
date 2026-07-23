@@ -34,3 +34,4 @@ export { useVouchers } from './useVouchers';
 export { useRegisterMembership } from './useRegisterMembership';
 export { useRefundRequest } from './useRefundRequest';
 export { usePayment } from './usePayment';
+export { usePaymentCompleted } from './usePaymentCompleted';

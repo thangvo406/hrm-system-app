@@ -1,5 +1,6 @@
 import type { CarouselRenderItem } from 'react-native-reanimated-carousel';
 
+import { AppButton } from '@components';
 import { ScaleSize } from '@kits/core';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,6 +40,7 @@ const DOT_ACTIVE_WIDTH = ScaleSize(20);
 const DOT_ACTIVE_COLOR = '#256B3A';
 const DOT_INACTIVE_COLOR = '#D7D7D7';
 const DOT_GAP = ScaleSize(4);
+const SELECTED_BORDER_COLOR = '#ff0fb7';
 
 type CardTheme = {
   readonly bg: string;
@@ -77,9 +79,17 @@ type CardItemProps = {
   readonly animationValue: SharedValue<number>;
   readonly card: SourceCard;
   readonly cardIndex: number;
+  readonly onSelect: (id: string) => void;
+  readonly selected: boolean;
 };
 
-function CardItem({ animationValue, card, cardIndex }: CardItemProps) {
+function CardItem({
+  animationValue,
+  card,
+  cardIndex,
+  onSelect,
+  selected,
+}: CardItemProps) {
   const theme = CARD_THEMES[cardIndex % CARD_THEMES.length];
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -100,31 +110,44 @@ function CardItem({ animationValue, card, cardIndex }: CardItemProps) {
 
   return (
     <View style={styles.cardSlot}>
-      <Animated.View
-        style={[styles.card, { backgroundColor: theme.bg }, animatedStyle]}
+      <AppButton
+        onPress={() => onSelect(card.id)}
+        testID={`payment-card-${card.id}`}
       >
-        <View style={styles.cardTop}>
-          <View style={[styles.aliasTag, { backgroundColor: theme.tag }]}>
-            <Text style={[styles.aliasText, { color: theme.text }]}>
+        <Animated.View
+          style={[styles.card, { backgroundColor: theme.bg }, animatedStyle]}
+        >
+          {selected ? (
+            <View pointerEvents="none" style={styles.selectedBorder} />
+          ) : undefined}
+          <View style={styles.cardTop}>
+            <View style={[styles.aliasTag, { backgroundColor: theme.tag }]}>
+              <Text style={[styles.aliasText, { color: theme.text }]}>
+                {card.brand}
+              </Text>
+            </View>
+            <View
+              style={[styles.networkTag, { backgroundColor: theme.network }]}
+            >
+              <Text style={[styles.networkText, { color: theme.text }]}>
+                {card.network}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.cardBottom}>
+            <Text
+              numberOfLines={1}
+              style={[styles.brand, { color: theme.text }]}
+            >
               {card.brand}
             </Text>
-          </View>
-          <View style={[styles.networkTag, { backgroundColor: theme.network }]}>
-            <Text style={[styles.networkText, { color: theme.text }]}>
-              {card.network}
+            <Text style={[styles.number, { color: theme.sub }]}>
+              {card.maskedNumber}
             </Text>
           </View>
-        </View>
-
-        <View style={styles.cardBottom}>
-          <Text numberOfLines={1} style={[styles.brand, { color: theme.text }]}>
-            {card.brand}
-          </Text>
-          <Text style={[styles.number, { color: theme.sub }]}>
-            {card.maskedNumber}
-          </Text>
-        </View>
-      </Animated.View>
+        </Animated.View>
+      </AppButton>
     </View>
   );
 }
@@ -133,9 +156,17 @@ type Properties = {
   readonly cards: readonly SourceCard[];
   readonly initialIndex: number;
   readonly isShowUnRegister: boolean;
+  readonly onSelect: (id: string) => void;
+  readonly selectedId: string | undefined;
 };
 
-function MembershipCards({ cards, initialIndex, isShowUnRegister }: Properties) {
+function MembershipCards({
+  cards,
+  initialIndex,
+  isShowUnRegister,
+  onSelect,
+  selectedId,
+}: Properties) {
   const { t } = useTranslation();
   const progress = useSharedValue(initialIndex);
 
@@ -143,9 +174,15 @@ function MembershipCards({ cards, initialIndex, isShowUnRegister }: Properties) 
 
   const renderItem = useCallback<CarouselRenderItem<SourceCard>>(
     ({ animationValue, index, item }) => (
-      <CardItem animationValue={animationValue} card={item} cardIndex={index} />
+      <CardItem
+        animationValue={animationValue}
+        card={item}
+        cardIndex={index}
+        onSelect={onSelect}
+        selected={item.id === selectedId}
+      />
     ),
-    [],
+    [onSelect, selectedId],
   );
 
   const onTouchStart = useCallback(() => {
@@ -180,6 +217,7 @@ function MembershipCards({ cards, initialIndex, isShowUnRegister }: Properties) 
             onProgressChange={(_, absoluteProgress) => {
               progress.value = absoluteProgress;
             }}
+            onSnapToItem={index => onSelect(data[index].id)}
             pagingEnabled
             loop={false}
             renderItem={renderItem}
@@ -272,6 +310,16 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'row',
     marginTop: ScaleSize(14),
+  },
+  selectedBorder: {
+    borderColor: SELECTED_BORDER_COLOR,
+    borderRadius: ScaleSize(16),
+    borderWidth: ScaleSize(2.5),
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   wrap: {
     alignSelf: 'center',
