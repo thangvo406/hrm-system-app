@@ -230,3 +230,16 @@ export interface IRequestIncreaseContribute extends AppCallback {
   amount: number;
   payment: IPaymentRequest;
 }
+
+export interface ITransactionDetail {
+  readonly id: string;
+  readonly productName: string;
+  readonly paidAt: string;
+  readonly paymentAmount: number;
+  readonly couponDiscount: number;
+  readonly couponName?: string;
+  readonly pointUsed: number;
+  readonly finalPaymentAmount: number;
+  readonly payMoneyAmount: number;
+  readonly pointEarned: number;
+}

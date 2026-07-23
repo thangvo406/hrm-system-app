@@ -592,6 +592,16 @@
       "status_completed": "완료",
       "copy_order_number_success": "주문 코드가 복사되었습니다"
     },
+    "transaction_detail": {
+      "title": "상세 내역",
+      "payment_amount_label": "결제 금액",
+      "coupon_discount_label": "쿠폰 할인",
+      "point_used_label": "포인트 사용",
+      "final_payment_label": "실결제 금액",
+      "pay_money_label": "생협페이머니",
+      "point_section_title": "포인트",
+      "point_earned_label": "포인트 적립"
+    },
     "input_address": {
       "search_placeholder": "도/시 및 동/면 검색",
       "title": "배달/결제",

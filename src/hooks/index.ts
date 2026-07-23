@@ -22,6 +22,7 @@ export { useSurveyDetail } from './useSurveyDetail';
 export { useStore } from './useStore';
 export { useOrderHistories } from './useOrderHistories';
 export { useOrderHistoryDetail } from './useOrderHistoryDetail';
+export { useTransactionDetail } from './useTransactionDetail';
 export { useTopUp } from './useTopUp';
 export { useQRCodePayment } from './useQRCodePayment';
 export { useInputAddress } from './useInputAddress';

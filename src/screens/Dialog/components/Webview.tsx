@@ -96,7 +96,10 @@ function WebViewScreen(props: any) {
     ) {
       return true;
     }
-
+    console.log('requestUrl', requestUrl);
+    if (requestUrl.startsWith('coop://')) {
+      return true;
+    }
     if (Platform.OS === 'android') {
       AppNativeModules.openIntentUrl(requestUrl).catch(() => {});
     } else {

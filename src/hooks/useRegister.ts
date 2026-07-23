@@ -256,6 +256,7 @@ export const useRegister = () => {
             ) => {
               console.log('navState', navState);
               const { url } = navState || {};
+              // coop://registration/identity/failure?error=cert_failed
               const isDeeplinkApp = url?.startsWith?.('coop://');
               if (isDeeplinkApp) {
                 const params = deepLinkGate.getPathFromUrl(navState.url);

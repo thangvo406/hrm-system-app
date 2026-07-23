@@ -591,6 +591,16 @@
       "status_completed": "Completed",
       "copy_order_number_success": "Order code copied successfully"
     },
+    "transaction_detail": {
+      "title": "Transaction Detail",
+      "payment_amount_label": "Payment Amount",
+      "coupon_discount_label": "Coupon Discount",
+      "point_used_label": "Points Used",
+      "final_payment_label": "Actual Payment",
+      "pay_money_label": "Coop Pay Money",
+      "point_section_title": "Point",
+      "point_earned_label": "Points Earned"
+    },
     "input_address": {
       "search_placeholder": "Search Province/City and Ward/Commune",
       "title": "Delivery/Payment",

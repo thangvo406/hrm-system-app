@@ -2,6 +2,7 @@ import type { AppStacks, Paths } from '@navigation/paths';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { TNotificationItem } from '@type';
 import { IStoreItem } from '@type/store';
+import type { ITransactionDetail } from '@type/payment';
 
 export type RootScreenProps<
   S extends keyof RootStackParamList = keyof RootStackParamList,
@@ -52,6 +53,7 @@ export type RootStackParamList = {
       }
     | undefined;
   [Paths.OrderHistories]: undefined;
+  [Paths.TransactionDetail]: { data?: ITransactionDetail } | undefined;
   [Paths.ContributionHistory]: undefined;
   [Paths.PayPointHistories]: undefined;
   [Paths.CartDetail]: undefined;

@@ -16,6 +16,7 @@ export { default as OrderCompleted } from './OrderCompleted';
 export { default as OrderHistories } from './OrderHistories';
 export { default as AcademicVerificationFinish } from './AcademicVerificationFinish';
 export { default as OrderHistoryDetail } from './OrderHistoryDetail';
+export { default as TransactionDetail } from './TransactionDetail';
 export { default as ContributionHistory } from './ContributionHistory';
 export { default as PayPointHistories } from './PayPointHistories';
 export { default as CartDetail } from './CartDetail';
