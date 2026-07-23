@@ -323,6 +323,25 @@
       "tag_welfare": "복지",
       "title": "생협 Pay"
     },
+    "point_main": {
+      "title": "포인트",
+      "subtitle": "보유 포인트와 이용내역을 확인하세요",
+      "balance_label": "보유 포인트",
+      "point_unit": "P",
+      "use_action": "사용하기",
+      "expire_warning": "30일 내 {{amount}}P 소멸 예정",
+      "expire_detail": "자세히 보기",
+      "history_title": "포인트 내역",
+      "view_all": "전체보기",
+      "type_accrue": "적립",
+      "type_use": "사용",
+      "type_expire": "소멸",
+      "desc_accrue": "생협페이 결제",
+      "desc_use": "생협페이 결제 시 자동 사용",
+      "desc_expire": "유효기간 만료",
+      "info": "포인트는 생협페이 결제 시 자동으로 사용돼요. 유효기간이 임박한 포인트부터 우선 차감됩니다.",
+      "legacy_lookup": "기존 시스템 이관 포인트 조회"
+    },
     "contribute_history": {
       "title": "출자 내역",
       "contribution_status_title": "출자금 현황",

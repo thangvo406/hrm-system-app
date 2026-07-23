@@ -112,7 +112,8 @@ export const useSourceOfFund = () => {
   const [transactions, setTransactions] = useState(TRANSACTIONS);
   const { t } = useTranslation();
   const toggleUnRegister = () => {
-    setShowUnRegister(prev => !prev);
+    // setShowUnRegister(prev => !prev);
+    AppNavigator.navigate(Paths.PointMain);
   };
 
   useEffect(() => {

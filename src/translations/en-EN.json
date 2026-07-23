@@ -67,6 +67,25 @@
       "tag_welfare": "Welfare",
       "title": "Coop Pay"
     },
+    "point_main": {
+      "title": "Point",
+      "subtitle": "Check your points and usage history",
+      "balance_label": "Points held",
+      "point_unit": "P",
+      "use_action": "Use points",
+      "expire_warning": "{{amount}}P expiring within 30 days",
+      "expire_detail": "View details",
+      "history_title": "Point history",
+      "view_all": "View all",
+      "type_accrue": "Earned",
+      "type_use": "Used",
+      "type_expire": "Expired",
+      "desc_accrue": "Coop Pay payment",
+      "desc_use": "Auto-used on Coop Pay payment",
+      "desc_expire": "Validity period expired",
+      "info": "Points are used automatically when paying with Coop Pay. Points closest to expiry are deducted first.",
+      "legacy_lookup": "Look up points transferred from the previous system"
+    },
     "contribute_history": {
       "title": "Contribution History",
       "contribution_status_title": "Contribution Status",
