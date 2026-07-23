@@ -175,8 +175,7 @@ export const useSourceOfFund = () => {
   }, []);
 
   const onViewAllTransactions = useCallback(() => {
-    // TODO: navigate to full transaction history when available.
-    onShowDialogConfirm();
+    AppNavigator.navigate(Paths.PayPointHistories);
   }, []);
 
   return {

@@ -289,6 +289,27 @@
         "type_label": "출자 유형"
       }
     },
+    "pay_point": {
+      "auto_use_info": "유효기간이 가장 임박한 포인트부터 자동으로 사용됩니다",
+      "balance": "잔액 : {{amount}}원",
+      "balance_after": "잔: {{amount}}",
+      "confirm": "확인",
+      "empty": "이력이 없습니다.",
+      "expire_banner": "{{amount}}P가 {{days}}일 후 소멸됩니다",
+      "expiry": "만료 {{value}}",
+      "point_balance": "잔여 point : {{amount}} point",
+      "point_expiring": "30일 내 소멸예정 point {{amount}} point",
+      "point_label": "Point",
+      "refund": "생협페이머니 환불",
+      "tab_pay_money": "생협페이머니",
+      "tab_point": "포인트",
+      "tag_accrue": "적립",
+      "tag_event": "이벤트",
+      "tag_expire": "소멸",
+      "tag_use": "사용",
+      "tag_welfare": "복지",
+      "title": "생협 Pay"
+    },
     "contribute_history": {
       "title": "출자 내역",
       "contribution_status_title": "출자금 현황",

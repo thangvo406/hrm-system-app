@@ -27,6 +27,7 @@ import IcClockIcon from './ic_clock.svg';
 import IcFilterIcon from './ic_filter.svg';
 import IcHomeIcon from './ic_home.svg';
 import IcIdCardIcon from './ic_id_card.svg';
+import IcInfoIcon from './ic_info.svg';
 import IcLogoUnappIcon from './ic_logo_unapp.svg';
 import IcLogoutIcon from './ic_logout.svg';
 import IcMenuIcon from './ic_menu.svg';
@@ -75,6 +76,7 @@ const icons = {
   ic_filter: IcFilterIcon,
   ic_home: IcHomeIcon,
   ic_id_card: IcIdCardIcon,
+  ic_info: IcInfoIcon,
   ic_notify_gray: IconNotifyGray,
   ic_logo_unapp: IcLogoUnappIcon,
   ic_logout: IcLogoutIcon,

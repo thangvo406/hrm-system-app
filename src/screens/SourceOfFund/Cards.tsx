@@ -13,15 +13,20 @@ import { Globals } from '@utils';
 
 import AddPlaceholder from './AddPlaceholder';
 import PaginationDots from './PaginationDots';
-
+import { DeviceUtils } from '@kits/core/utils';
+const { ifIOS } = DeviceUtils;
 // Sentinel injected at index 0 so the "add account" tile leads the carousel.
 const ADD_ACCOUNT_ID = '__add_account__';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 // Slot narrower than the screen so the next account card peeks in on the side.
 const ITEM_WIDTH = SCREEN_WIDTH - ScaleSize(64);
-// Card narrower than its slot so a real gap sits between adjacent cards.
-const CARD_GAP = ScaleSize(24);
+// Single spacing knob for the whole carousel: every card (accounts AND the add
+// tile) derives its width from this, so the gap between any two adjacent items
+// is identical. Keep it positive — carousel items stack (later index on top),
+// so a negative value would hide each card's edge under its neighbour instead
+// of producing a visible gap.
+const CARD_GAP = ScaleSize(ifIOS(0, 24));
 const CARD_WIDTH = ITEM_WIDTH - CARD_GAP;
 const CARD_HEIGHT = ScaleSize(96);
 const CHEVRON_SIZE = ScaleSize(18);

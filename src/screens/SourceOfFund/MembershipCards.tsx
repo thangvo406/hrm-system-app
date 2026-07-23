@@ -234,9 +234,11 @@ function MembershipCards({
           />
         </View>
         <PaginationDots
+          activeColor={DOT_ACTIVE_COLOR}
           activeWidth={DOT_ACTIVE_WIDTH}
           count={data.length}
           gap={DOT_GAP}
+          inactiveColor={DOT_INACTIVE_COLOR}
           progress={progress}
           size={DOT_SIZE}
           style={styles.paginationRow}

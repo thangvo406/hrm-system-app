@@ -18,7 +18,7 @@ type DotProps = {
   readonly progress: SharedValue<number>;
   readonly size: number;
 };
-const DOT_ACTIVE_COLOR = '#54C158';
+const DOT_ACTIVE_COLOR = '#256B3A';
 const DOT_INACTIVE_COLOR = '#E0E0E0';
 function Dot({
   activeColor = DOT_ACTIVE_COLOR,
@@ -49,22 +49,22 @@ function Dot({
 }
 
 type Properties = {
-  readonly activeColor: string;
+  readonly activeColor?: string;
   readonly activeWidth: number;
   readonly count: number;
   readonly gap: number;
-  readonly inactiveColor: string;
+  readonly inactiveColor?: string;
   readonly progress: SharedValue<number>;
   readonly size: number;
   readonly style?: StyleProp<ViewStyle>;
 };
 
 function PaginationDots({
-  activeColor,
+  activeColor = DOT_ACTIVE_COLOR,
   activeWidth,
   count,
   gap,
-  inactiveColor,
+  inactiveColor = DOT_INACTIVE_COLOR,
   progress,
   size,
   style = undefined,

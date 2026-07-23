@@ -40,6 +40,27 @@
         "type_label": "Transaction Type"
       }
     },
+    "pay_point": {
+      "auto_use_info": "Points closest to expiry are used automatically first",
+      "balance": "Balance: {{amount}} KRW",
+      "balance_after": "Bal: {{amount}}",
+      "confirm": "OK",
+      "empty": "No history to display.",
+      "expire_banner": "{{amount}}P expire in {{days}} days",
+      "expiry": "Expires {{value}}",
+      "point_balance": "Remaining point: {{amount}} point",
+      "point_expiring": "Expiring within 30 days: {{amount}} point",
+      "point_label": "Point",
+      "refund": "Refund Coop Pay Money",
+      "tab_pay_money": "Coop Pay Money",
+      "tab_point": "Point",
+      "tag_accrue": "Accrue",
+      "tag_event": "Event",
+      "tag_expire": "Expire",
+      "tag_use": "Use",
+      "tag_welfare": "Welfare",
+      "title": "Coop Pay"
+    },
     "contribute_history": {
       "title": "Contribution History",
       "contribution_status_title": "Contribution Status",
