@@ -254,16 +254,21 @@ export const useRegister = () => {
               navState: WebViewNavigation,
               onRequestClose?: any,
             ) => {
-              console.log('navState', navState);
+              // console.log('navState', navState);
               const { url } = navState || {};
               // coop://registration/identity/failure?error=cert_failed
               const isDeeplinkApp = url?.startsWith?.('coop://');
               if (isDeeplinkApp) {
                 const params = deepLinkGate.getPathFromUrl(navState.url);
+                if (params?.error) {
+                  onRequestClose?.();
+                  navigateToStep(REGISTER_FLOW_STEP.VERIFY_INFO_FAILED);
+                } else {
+                  formData.current.signupToken = params.signupToken as string;
+                  onRequestClose?.();
+                  onSubmitRegisterInfo();
+                }
                 // console.log("params",params)
-                formData.current.signupToken = params.signupToken;
-                onRequestClose?.();
-                onSubmitRegisterInfo();
               }
             },
           });

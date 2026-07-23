@@ -165,6 +165,13 @@
       "error_birthday_min": "Please enter the first {{min}} digits of birthday your ID",
       "contribution_dialog": {
         "desc": "Joining as a member requires an initial contribution payment. Would you like to continue?"
+      },
+      "verify_info_failed": {
+        "title": "Identity verification registration failed.",
+        "subtitle": "Identity verification registration failed. Please try again later.",
+        "reason_label": "REASON FOR FAILURE",
+        "reason_default": "An error occurred during identity verification registration.",
+        "try_again": "Close"
       }
     },
     "school_selection": {

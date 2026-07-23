@@ -12,6 +12,7 @@ export interface IResponseRegisterVerifyOtp {
 }
 
 export type AuthStep =
+  | 'verify_info_failed'
   | 'choose_membership'
   | 'input_academic_email'
   | 'academic_verification'
@@ -85,10 +86,10 @@ export interface IResponseVerifyOtpForgotPass {
   resetToken: string;
 }
 export interface IResponseCreateLinkVerifyInfoUser {
-  callUrl: string
-  regCertKey: string
-  ordrIdxx: string
-  certWebViewUrl: string
+  callUrl: string;
+  regCertKey: string;
+  ordrIdxx: string;
+  certWebViewUrl: string;
 }
 export interface IRequestCreateLinkVerifyInfoUser
   extends AppCallback<IResponseCreateLinkVerifyInfoUser> {

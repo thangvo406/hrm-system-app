@@ -26,6 +26,7 @@ export const REGISTER_FLOW_STEP = {
   CHOOSE_MEMBERSHIP: 'choose_membership' as AuthStep,
   ACADEMIC_VERIFICATION_COMPLETED:
     'academic_verification_completed' as AuthStep,
+  VERIFY_INFO_FAILED: 'verify_info_failed' as AuthStep,
   INPUT_ACADEMIC_EMAIL: 'input_academic_email' as AuthStep,
   ACADEMIC_VERIFICATION: 'academic_verification' as AuthStep,
   CHOOSE_ROLE: 'choose_role' as AuthStep,

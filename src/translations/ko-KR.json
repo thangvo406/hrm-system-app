@@ -65,6 +65,13 @@
       "error_birthday_min": "주민등록번호 앞 {{min}}자리(생년월일)를 입력해 주세요.",
       "contribution_dialog": {
         "desc": "조합원 가입을 위해 최초 1회 출자금 납부가 필요합니다. 계속 진행할까요?"
+      },
+      "verify_info_failed": {
+        "title": "본인인증 등록에 실패했습니다.",
+        "subtitle": "본인인증 등록에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+        "reason_label": "실패 사유",
+        "reason_default": "본인인증 등록 중 오류가 발생했습니다.",
+        "try_again": "닫기"
       }
     },
     "school_selection": {
