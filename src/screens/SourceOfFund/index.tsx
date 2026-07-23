@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Cards from './Cards';
-import MembershipCardSection from './MembershipCardSection';
-import UseHistories from './UseHistories';
+import MembershipCards from './MembershipCards';
+import TransactionHistories from './TransactionHistories';
 import WalletCard from './WalletCard';
 
 function SourceOfFund() {
@@ -25,7 +25,7 @@ function SourceOfFund() {
     toggleUnRegister,
     point,
     transactions,
-    isShowUnRegister
+    isShowUnRegister,
   } = useSourceOfFund();
 
   return (
@@ -60,7 +60,7 @@ function SourceOfFund() {
           </AppButton>
         </View>
 
-        <MembershipCardSection
+        <MembershipCards
           cards={cards}
           initialIndex={PRIMARY_CARD_INDEX}
           isShowUnRegister={isShowUnRegister}
@@ -73,7 +73,7 @@ function SourceOfFund() {
           onRegisterCard={onRegisterCard}
         />
 
-        <UseHistories
+        <TransactionHistories
           onViewAllTransactions={onViewAllTransactions}
           transactions={transactions}
         />
