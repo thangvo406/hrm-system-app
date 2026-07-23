@@ -1,3 +1,5 @@
+import AppNavigator from '@navigation/AppNavigator';
+import { Paths } from '@navigation/paths';
 import { useCallback, useMemo, useState } from 'react';
 
 export type TPayPointTab = 'payMoney' | 'point';
@@ -142,7 +144,9 @@ export const usePayPointHistories = () => {
     setActiveTab(tab);
   }, []);
 
-  const onPressRefund = useCallback(() => {}, []);
+  const onPressRefund = useCallback(() => {
+    AppNavigator.navigate(Paths.RefundRequest);
+  }, []);
 
   const onDismissNotice = useCallback(() => {}, []);
 

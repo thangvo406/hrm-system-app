@@ -254,7 +254,7 @@ export const useRegister = () => {
               navState: WebViewNavigation,
               onRequestClose?: any,
             ) => {
-              // console.log("navState",navState)
+              console.log('navState', navState);
               const { url } = navState || {};
               const isDeeplinkApp = url?.startsWith?.('coop://');
               if (isDeeplinkApp) {

@@ -27,6 +27,7 @@ export enum Paths {
   ProductDetail = 'product_detail',
   Products = 'products',
   Profile = 'profile',
+  RefundRequest = 'refund_request',
   SourceOfFund = 'source_of_fund',
   Startup = 'startup',
   Stores = 'stores',

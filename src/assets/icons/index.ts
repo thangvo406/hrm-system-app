@@ -1,41 +1,44 @@
 import AlertCircleIcon from './alert-circle.svg';
-import IcCalendarIcon from './ic_calendar.svg';
-import IcCheckFilledIcon from './ic_check_filled.svg';
-import IcClockFilledIcon from './ic_clock_filled.svg';
-import IcCopyIcon from './ic_copy.svg';
-import IcCouponIcon from './ic_coupon.svg';
 import EmailIcon from './email.svg';
-import IcHourglassIcon from './ic_hourglass.svg';
-import IcMapPinIcon from './ic_map_pin.svg';
-import IcOrderReceiptIcon from './ic_order_receipt.svg';
-import IcOtpPlaceholderIcon from './ic_otp_placeholder.svg';
-import IcShieldCheckIcon from './ic_shield_check.svg';
-import IcShoppingBagIcon from './ic_shopping_bag.svg';
-import IcStarIcon from './ic_star.svg';
-import IcTruckIcon from './ic_truck.svg';
-import IcWalletIcon from './ic_wallet.svg';
 import EyeOffIcon from './eye-off.svg';
 import EyeIcon from './eye.svg';
 import FireIcon from './fire.svg';
 import GoogleIcon from './google.svg';
-import IcArrowLeftGrayIcon from './ic_arrow_left_gray.svg';
-import IcCartIcon from './ic_cart.svg';
-import IcCheckIcon from './ic_check.svg';
-import IcChevronDownIcon from './ic_chevron_down.svg';
-import IcChevronRightIcon from './ic_chevron_right.svg';
-import IcClockIcon from './ic_clock.svg';
-import IcFilterIcon from './ic_filter.svg';
-import IcHomeIcon from './ic_home.svg';
-import IcIdCardIcon from './ic_id_card.svg';
-import IcInfoIcon from './ic_info.svg';
-import IcLogoUnappIcon from './ic_logo_unapp.svg';
-import IcLogoutIcon from './ic_logout.svg';
-import IcMenuIcon from './ic_menu.svg';
-import IcPhoneIcon from './ic_phone.svg';
-import IcRadioSelectedIcon from './ic_radio_selected.svg';
-import IcRadioUnselectedIcon from './ic_radio_unselected.svg';
-import IcSearchIcon from './ic_search.svg';
-import IcStoreIcon from './ic_store.svg';
+import Ic_alert_triangleIcon from './ic_alert_triangle.svg';
+import Ic_arrow_left_grayIcon from './ic_arrow_left_gray.svg';
+import Ic_calendarIcon from './ic_calendar.svg';
+import Ic_cartIcon from './ic_cart.svg';
+import Ic_checkIcon from './ic_check.svg';
+import Ic_check_filledIcon from './ic_check_filled.svg';
+import Ic_chevron_downIcon from './ic_chevron_down.svg';
+import Ic_chevron_rightIcon from './ic_chevron_right.svg';
+import Ic_clockIcon from './ic_clock.svg';
+import Ic_clock_filledIcon from './ic_clock_filled.svg';
+import Ic_copyIcon from './ic_copy.svg';
+import Ic_couponIcon from './ic_coupon.svg';
+import Ic_filterIcon from './ic_filter.svg';
+import Ic_homeIcon from './ic_home.svg';
+import Ic_hourglassIcon from './ic_hourglass.svg';
+import Ic_id_cardIcon from './ic_id_card.svg';
+import Ic_infoIcon from './ic_info.svg';
+import Ic_logo_unappIcon from './ic_logo_unapp.svg';
+import Ic_logoutIcon from './ic_logout.svg';
+import Ic_map_pinIcon from './ic_map_pin.svg';
+import Ic_menuIcon from './ic_menu.svg';
+import Ic_notify_grayIcon from './ic_notify_gray.svg';
+import Ic_notify_read_allIcon from './ic_notify_read_all.svg';
+import Ic_order_receiptIcon from './ic_order_receipt.svg';
+import Ic_otp_placeholderIcon from './ic_otp_placeholder.svg';
+import Ic_phoneIcon from './ic_phone.svg';
+import Ic_radio_selectedIcon from './ic_radio_selected.svg';
+import Ic_radio_unselectedIcon from './ic_radio_unselected.svg';
+import Ic_searchIcon from './ic_search.svg';
+import Ic_shield_checkIcon from './ic_shield_check.svg';
+import Ic_shopping_bagIcon from './ic_shopping_bag.svg';
+import Ic_starIcon from './ic_star.svg';
+import Ic_storeIcon from './ic_store.svg';
+import Ic_truckIcon from './ic_truck.svg';
+import Ic_walletIcon from './ic_wallet.svg';
 import KakaoIcon from './kakao.svg';
 import LanguageIcon from './language.svg';
 import LockIcon from './lock.svg';
@@ -43,56 +46,55 @@ import NaverIcon from './naver.svg';
 import SendIcon from './send.svg';
 import UserIcon from './user.svg';
 import XCircleIcon from './x-circle.svg';
-import IconNotifyGray from './ic_notify_gray.svg';
-import IconNotifyReadAll from './ic_notify_read_all.svg';
 
 const icons = {
   'alert-circle': AlertCircleIcon,
-  email: EmailIcon,
-  ic_calendar: IcCalendarIcon,
-  ic_check_filled: IcCheckFilledIcon,
-  ic_clock_filled: IcClockFilledIcon,
-  ic_copy: IcCopyIcon,
-  ic_coupon: IcCouponIcon,
-  ic_hourglass: IcHourglassIcon,
-  ic_map_pin: IcMapPinIcon,
-  ic_order_receipt: IcOrderReceiptIcon,
-  ic_otp_placeholder: IcOtpPlaceholderIcon,
-  ic_shield_check: IcShieldCheckIcon,
-  ic_shopping_bag: IcShoppingBagIcon,
-  ic_star: IcStarIcon,
-  ic_truck: IcTruckIcon,
-  ic_wallet: IcWalletIcon,
+  'email': EmailIcon,
   'eye-off': EyeOffIcon,
-  eye: EyeIcon,
-  fire: FireIcon,
-  google: GoogleIcon,
-  ic_arrow_left_gray: IcArrowLeftGrayIcon,
-  ic_cart: IcCartIcon,
-  ic_check: IcCheckIcon,
-  ic_chevron_down: IcChevronDownIcon,
-  ic_chevron_right: IcChevronRightIcon,
-  ic_clock: IcClockIcon,
-  ic_filter: IcFilterIcon,
-  ic_home: IcHomeIcon,
-  ic_id_card: IcIdCardIcon,
-  ic_info: IcInfoIcon,
-  ic_notify_gray: IconNotifyGray,
-  ic_logo_unapp: IcLogoUnappIcon,
-  ic_logout: IcLogoutIcon,
-  ic_menu: IcMenuIcon,
-  ic_phone: IcPhoneIcon,
-  ic_radio_selected: IcRadioSelectedIcon,
-  ic_radio_unselected: IcRadioUnselectedIcon,
-  ic_search: IcSearchIcon,
-  ic_store: IcStoreIcon,
-  kakao: KakaoIcon,
-  ic_notify_read_all: IconNotifyReadAll,
-  language: LanguageIcon,
-  lock: LockIcon,
-  naver: NaverIcon,
-  send: SendIcon,
-  user: UserIcon,
+  'eye': EyeIcon,
+  'fire': FireIcon,
+  'google': GoogleIcon,
+  'ic_alert_triangle': Ic_alert_triangleIcon,
+  'ic_arrow_left_gray': Ic_arrow_left_grayIcon,
+  'ic_calendar': Ic_calendarIcon,
+  'ic_cart': Ic_cartIcon,
+  'ic_check': Ic_checkIcon,
+  'ic_check_filled': Ic_check_filledIcon,
+  'ic_chevron_down': Ic_chevron_downIcon,
+  'ic_chevron_right': Ic_chevron_rightIcon,
+  'ic_clock': Ic_clockIcon,
+  'ic_clock_filled': Ic_clock_filledIcon,
+  'ic_copy': Ic_copyIcon,
+  'ic_coupon': Ic_couponIcon,
+  'ic_filter': Ic_filterIcon,
+  'ic_home': Ic_homeIcon,
+  'ic_hourglass': Ic_hourglassIcon,
+  'ic_id_card': Ic_id_cardIcon,
+  'ic_info': Ic_infoIcon,
+  'ic_logo_unapp': Ic_logo_unappIcon,
+  'ic_logout': Ic_logoutIcon,
+  'ic_map_pin': Ic_map_pinIcon,
+  'ic_menu': Ic_menuIcon,
+  'ic_notify_gray': Ic_notify_grayIcon,
+  'ic_notify_read_all': Ic_notify_read_allIcon,
+  'ic_order_receipt': Ic_order_receiptIcon,
+  'ic_otp_placeholder': Ic_otp_placeholderIcon,
+  'ic_phone': Ic_phoneIcon,
+  'ic_radio_selected': Ic_radio_selectedIcon,
+  'ic_radio_unselected': Ic_radio_unselectedIcon,
+  'ic_search': Ic_searchIcon,
+  'ic_shield_check': Ic_shield_checkIcon,
+  'ic_shopping_bag': Ic_shopping_bagIcon,
+  'ic_star': Ic_starIcon,
+  'ic_store': Ic_storeIcon,
+  'ic_truck': Ic_truckIcon,
+  'ic_wallet': Ic_walletIcon,
+  'kakao': KakaoIcon,
+  'language': LanguageIcon,
+  'lock': LockIcon,
+  'naver': NaverIcon,
+  'send': SendIcon,
+  'user': UserIcon,
   'x-circle': XCircleIcon,
 } as const;
 

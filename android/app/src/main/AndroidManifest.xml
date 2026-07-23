@@ -6,8 +6,11 @@
 
   <queries>
     <package android:name="com.kakao.talk" />
-    <!-- Xác thực SKT tauth (intent://...;package=com.sktelecom.tauth). -->
+    <!-- Xác thực nhà mạng (intent://...;package=...): SKT tauth, KT ktauth,
+         LG U+ smartotp. -->
     <package android:name="com.sktelecom.tauth" />
+    <package android:name="com.kt.ktauth" />
+    <package android:name="com.lguplus.smartotp" />
     <!-- Cho phép resolve/launch các app-scheme browsable (PASS, app ngân hàng
          trong luồng KCP...) trên Android 11+ (package visibility). -->
     <intent>

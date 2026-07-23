@@ -476,6 +476,25 @@
       "security_note": "For safe payment, all information is encrypted and protected.",
       "next": "Next"
     },
+    "refund_request": {
+      "title": "Coop Pay Money Refund",
+      "balance_label": "Coop Pay Money Balance",
+      "bonus_label": "Bonus Money (Excluded from Refund)",
+      "refundable_label": "Refundable Amount",
+      "currency": "KRW",
+      "amount_section": "Refund Amount",
+      "amount_placeholder": "Enter amount",
+      "refund_all": "Refund All",
+      "account_section": "Refund Account",
+      "bank_placeholder": "Select bank",
+      "account_number_placeholder": "Enter account number",
+      "account_holder_placeholder": "Enter account holder",
+      "notice_title": "Notice",
+      "notice_1": "Bonus money is excluded from the refund.",
+      "notice_2": "Refund processing takes 1-3 business days.",
+      "notice_3": "Coop Pay Money cannot be used after a refund.",
+      "submit": "Apply for Refund"
+    },
     "source_of_fund": {
       "title": "Coop Pay",
       "wallet_name": "Coop Pay Money",
