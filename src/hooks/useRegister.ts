@@ -248,6 +248,7 @@ export const useRegister = () => {
               reg_cert_key: response?.regCertKey,
               ordr_idxx: response?.ordrIdxx,
             },
+            onLoadStart: () => undefined,
             url: response?.certWebViewUrl,
             isFullScreen: true,
             onNavigationStateChange: (

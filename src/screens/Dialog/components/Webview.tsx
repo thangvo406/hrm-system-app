@@ -9,7 +9,7 @@ import HeaderDetail from '@components/HeaderDetail';
 // import { AppConstants } from '@constants';
 // import { useWebview } from '@hooks/useWebview';
 import { ScaleSize } from '@kits/core';
-// import AppNavigator from '@navigations/AppNavigator';
+import { SkypeIndicator } from 'react-native-indicators';
 import AppNativeModules from '@services/native/AppNativeModules';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,8 +20,8 @@ import {
   TouchableOpacity,
   View,
   Platform,
-  ActivityIndicator,
 } from 'react-native';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 // import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import type {
@@ -53,6 +53,7 @@ function WebViewScreen(props: any) {
     isError = false,
     onRequestClose,
     onNavigationStateChange,
+    onLoadStart,
   } = props || {};
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
@@ -67,7 +68,7 @@ function WebViewScreen(props: any) {
       true;
     `
     : undefined;
-  const onLoadStart = () => {
+  const _onLoadStart = () => {
     setIsLoading(true);
   };
   const onLoadEnd = () => {
@@ -131,15 +132,20 @@ function WebViewScreen(props: any) {
         onPressBack={onRequestClose}
         hideNotify
       />
-      {!isLoading ? null : (
-        <ActivityIndicator
-          style={{
-            position: 'absolute',
-            alignSelf: 'center',
-            bottom: '35%',
-            zIndex: 999,
-          }}
-        />
+      {!isLoading ? undefined : (
+        <Animated.View
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(300)}
+          style={[styles.containerLoading]}
+          testID="loading-screen"
+        >
+          <SkypeIndicator
+            animationDuration={900}
+            color="#5BB85C"
+            size={ScaleSize(64)}
+            trackWidth={ScaleSize(3)}
+          />
+        </Animated.View>
       )}
       {isError ? (
         renderErrorScreen()
@@ -171,7 +177,7 @@ function WebViewScreen(props: any) {
           cacheEnabled={false}
           onError={onError}
           onLoadEnd={onLoadEnd}
-          onLoadStart={onLoadStart}
+          onLoadStart={onLoadStart || _onLoadStart}
           onNavigationStateChange={(navState: WebViewNavigation): void => {
             onNavigationStateChange?.(navState, onRequestClose);
           }}
@@ -204,6 +210,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#edeeee',
+  },
+  containerLoading: {
+    alignItems: 'center',
+    flexDirection: 'column',
+    // gap: ScaleSize(14),
+    justifyContent: 'center',
+    // minWidth: ScaleSize(140),
+    paddingHorizontal: ScaleSize(28),
+    paddingVertical: ScaleSize(24),
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 9999,
   },
   errorText: {
     textAlign: 'center',
