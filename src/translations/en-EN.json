@@ -85,6 +85,19 @@
       "toss_pay": "Toss",
       "pay_action": "Pay"
     },
+    "payment_offline": {
+      "title": "Pay",
+      "use_point": "Use points",
+      "point_holding": "Holding {{amount}}P",
+      "point_unit": "P",
+      "method_label": "Payment method",
+      "coop_pay_label": "Coop Pay",
+      "add_method": "Card/Account",
+      "pay_action": "Pay",
+      "qr_header_badge": "💰 Coop Pay Money payment",
+      "qr_balance_text": "Balance {{amount}} KRW",
+      "qr_customer_name": "John Doe"
+    },
     "payment_completed": {
       "back": "Back",
       "title": "Payment complete",

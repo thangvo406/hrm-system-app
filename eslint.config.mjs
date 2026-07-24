@@ -117,6 +117,7 @@ export default defineConfig(
       'unicorn/no-negated-condition': OFF,
       'react/function-component-definition': OFF,
       'perfectionist/sort-interfaces': OFF,
+      'react-hooks/set-state-in-effect': OFF,
       'react/display-name': OFF,
       '@typescript-eslint/consistent-type-definitions': OFF,
       'unicorn/prevent-abbreviations': OFF,

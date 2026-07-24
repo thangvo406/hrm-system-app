@@ -23,12 +23,17 @@ const formatTime = (total: number) => {
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 };
 
+type IQRVoucherData = {
+  headerBadge?: string;
+  amountText?: string;
+};
+
 type QRVoucherProps = {
   readonly durationSeconds?: number;
   readonly onPayOtherMethod?: () => void;
   readonly onRefresh?: () => void;
   readonly onRequestClose?: () => void;
-  readonly data?: IVoucher;
+  readonly data?: IQRVoucherData & IVoucher;
 };
 
 /**
@@ -63,7 +68,7 @@ function QRVoucher({
 
   const onPressRefresh = () => {
     setRemaining(durationSeconds);
-    onRefresh?.();
+    onRefresh?.(data => {});
   };
 
   const onPressPayOther = () => {
@@ -79,13 +84,19 @@ function QRVoucher({
         usePaddingTop={false}
         title={t('qr_voucher.title')}
       />
-
+      {!!data?.headerBadge && (
+        <View style={styles.headerBadgeContainer}>
+          <Text style={styles.headerBadge}>{data?.headerBadge}</Text>
+        </View>
+      )}
       <View style={styles.content}>
         <View style={styles.card}>
           {!!data?.title && (
             <Text style={styles.couponLabel}>{data?.title}</Text>
           )}
-
+          {!!data?.amountText && (
+            <Text style={styles.amountLabel}>{data?.amountText}</Text>
+          )}
           <QRCode size={QR_SIZE} value={data?.applicableStore} />
 
           <Text style={styles.validTime}>
@@ -131,6 +142,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: ScaleSize(24),
+  },
+  headerBadgeContainer: {
+    paddingVertical: ScaleSize(8),
+    paddingHorizontal: ScaleSize(15),
+    borderRadius: ScaleSize(20),
+    backgroundColor: Colors.green03,
+    flexWrap: 'wrap',
+    alignSelf: 'baseline',
+    marginTop: ScaleSize(10),
+    marginLeft: ScaleSize(20),
+  },
+  headerBadge: {
+    color: Colors.green02,
+    fontSize: ScaleSize(12),
+    fontWeight: '700',
+  },
+  amountLabel: {
+    color: Colors.gray09,
+    fontSize: ScaleSize(12),
+    fontWeight: '700',
+    marginBottom: ScaleSize(24),
+    marginTop: ScaleSize(-15),
   },
   couponLabel: {
     color: '#1A1A1A',

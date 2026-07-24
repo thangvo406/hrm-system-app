@@ -18,12 +18,16 @@ import StoreOrderRecent from './StoreOrderRecent';
 import { formatCurrency } from '@utils/product';
 import { DeviceUtils } from '@kits/core/utils';
 import { Colors } from '@constants';
-import { CommonActions, useNavigation } from '@react-navigation/native';
 import { Paths } from '@navigation/paths';
+import AppNavigator from '@navigation/AppNavigator';
 
 const FEATURE_IMAGE_SIZE = ScaleSize(88);
 const { ifAndroid } = DeviceUtils;
 // PLACEHOLDER_MAIN_COMPONENT
+
+const onPressPayment = () => {
+  AppNavigator.navigate(Paths.PaymentOffline);
+};
 
 function PayCard({
   onPress,
@@ -35,12 +39,6 @@ function PayCard({
   readonly onPressTopup?: () => void;
 }) {
   const { t } = useTranslation();
-
-  const navigation = useNavigation();
-
-  const onPressPayment = () => {
-    navigation.dispatch(CommonActions.navigate(Paths.Payment));
-  };
 
   return (
     <TouchableOpacity

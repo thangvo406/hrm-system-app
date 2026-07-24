@@ -66,6 +66,7 @@ export type RootStackParamList = {
         storeName?: string;
       }
     | undefined;
+  [Paths.PaymentOffline]: undefined;
   [Paths.CartDetail]: undefined;
   [Paths.QRCodePayment]: undefined;
   [Paths.RegisterCard]: undefined;

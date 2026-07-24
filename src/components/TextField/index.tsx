@@ -43,6 +43,7 @@ type TextFieldProps = {
   readonly testID?: string;
   readonly value?: string;
   readonly containerStyle?: ViewStyle;
+  readonly inputWrapperStyle?: ViewStyle;
 } & TextInputProps;
 
 function TextField({
@@ -61,11 +62,13 @@ function TextField({
   returnKeyType,
   secureTextEntry,
   showClear,
+  style,
   submitBehavior,
   testID,
   renderRightComponent,
   value,
   containerStyle,
+  inputWrapperStyle,
   ...textInputProps
 }: TextFieldProps) {
   const [secure, setSecure] = useState(secureTextEntry);
@@ -90,6 +93,7 @@ function TextField({
           !editable && styles.inputWrapperEditable,
           hasError && styles.inputWrapperError,
           multiLine && styles.inputWrapperMultiline,
+          inputWrapperStyle,
         ]}
       >
         {!!iconName && (
@@ -115,7 +119,7 @@ function TextField({
           ref={reference || textInputRef}
           returnKeyType={returnKeyType}
           secureTextEntry={secure}
-          style={[styles.input, multiLine && styles.inputMultiline]}
+          style={[styles.input, multiLine && styles.inputMultiline, style]}
           submitBehavior={submitBehavior}
           testID={testID}
           value={value}

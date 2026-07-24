@@ -341,6 +341,19 @@
       "toss_pay": "토스",
       "pay_action": "결제하기"
     },
+    "payment_offline": {
+      "title": "결제하기",
+      "use_point": "포인트 사용",
+      "point_holding": "보유 {{amount}}P",
+      "point_unit": "P",
+      "method_label": "결제수단",
+      "coop_pay_label": "생협페이",
+      "add_method": "카드/계좌",
+      "pay_action": "결제하기",
+      "qr_header_badge": "💰 생협페이머니 결제",
+      "qr_balance_text": "잔액 {{amount}}원",
+      "qr_customer_name": "홍길동"
+    },
     "payment_completed": {
       "back": "뒤로",
       "title": "결제가 완료되었습니다",

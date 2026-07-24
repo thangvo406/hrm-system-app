@@ -22,6 +22,7 @@ export { default as PayPointHistories } from './PayPointHistories';
 export { default as PointMain } from './PointMain';
 export { default as Payment } from './Payment';
 export { default as PaymentCompleted } from './PaymentCompleted';
+export { default as PaymentOffline } from './PaymentOffline';
 export { default as CartDetail } from './CartDetail';
 export { default as QRCodePayment } from './QRCodePayment/index';
 export { default as ProductDetail } from './ProductDetail';

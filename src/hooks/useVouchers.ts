@@ -62,11 +62,14 @@ export function useVouchers() {
     loadVouchers(activeTab, true);
   }, [activeTab, loadVouchers]);
 
+  const onRefreshQR = useCallback((callback: any) => {}, []);
+
   const onUseVoucher = useCallback((voucher: IVoucher) => {
     AppNavigator.showDialog({
       screen: QRVoucher,
       isFullScreen: true,
       data: voucher,
+      onRefresh: onRefreshQR,
     });
   }, []);
 

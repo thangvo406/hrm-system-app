@@ -24,6 +24,7 @@ export enum Paths {
   PointMain = 'point_main',
   Payment = 'payment',
   PaymentCompleted = 'payment_completed',
+  PaymentOffline = 'payment_offline',
   CartDetail = 'cart_detail',
   QRCodePayment = 'qr_code_payment',
   RegisterCard = 'register_card',
