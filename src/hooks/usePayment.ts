@@ -4,6 +4,7 @@ import type { SourceCard } from '@screens/Payment/MembershipCards';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useCallback, useState } from 'react';
+import VouchersSelection from '@dialogs/VouchersSelection';
 
 export type IPaymentCoupon = {
   readonly id: string;
@@ -65,10 +66,6 @@ const ACCOUNTS: readonly SourceAccount[] = [
   },
 ];
 
-const onSelectCoupon = () => {
-  AppNavigator.navigate(Paths.Vouchers);
-};
-
 const onUsePoint = () => {
   AppNavigator.navigate(Paths.PointMain);
 };
@@ -85,23 +82,21 @@ export const usePayment = () => {
   const selectedAccountId =
     selectedMethod.type === 'account' ? selectedMethod.id : undefined;
 
-  const onSelectCard = (id: string) => {
-    // setSelectedMethod({ id, type: 'card' });
-  };
-
-  const onSelectAccount = (id: string) => {
-    // setSelectedMethod({ id, type: 'account' });
-  };
-
-  const onRegisterCard = useCallback(() => {
-    // TODO: navigate to card registration when the screen is available.
-    AppNavigator.navigate(Paths.RegisterCard);
+  const onSelectCard = useCallback((id: string) => {
+    setSelectedMethod({ id, type: 'card' });
   }, []);
 
-  const onRegisterAccount = useCallback(() => {
-    // TODO: navigate to account registration when the screen is available.
-    AppNavigator.navigate(Paths.RegisterCard);
+  const onSelectAccount = useCallback((id: string) => {
+    setSelectedMethod({ id, type: 'account' });
   }, []);
+
+  const onSelectCoupon = () => {
+    AppNavigator.showDialog({
+      screen: VouchersSelection,
+      isFullScreen: true,
+      // popupType: 'bottomSheet',
+    });
+  };
 
   const onSelectGeneralMethod = useCallback(() => {
     // TODO: navigate to the general payment-method picker when available.
@@ -116,10 +111,7 @@ export const usePayment = () => {
     accounts: ACCOUNTS,
     cards: CARDS,
     initialIndex: PRIMARY_CARD_INDEX,
-    isShowUnRegister: false,
     onPay,
-    onRegisterAccount,
-    onRegisterCard,
     onSelectAccount,
     onSelectCard,
     onSelectCoupon,

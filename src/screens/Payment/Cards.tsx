@@ -1,8 +1,11 @@
-import type { CarouselRenderItem } from 'react-native-reanimated-carousel';
+import type {
+  CarouselRenderItem,
+  ICarouselInstance,
+} from 'react-native-reanimated-carousel';
 
-import { AppButton, Button, Image } from '@components';
+import { AppButton, Image, PaginationDots } from '@components';
 import { ScaleSize } from '@kits/core';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -10,7 +13,6 @@ import { useSharedValue } from 'react-native-reanimated';
 import Carousel from 'react-native-reanimated-carousel';
 import { Globals } from '@utils';
 
-import PaginationDots from './PaginationDots';
 import { DeviceUtils } from '@kits/core/utils';
 
 export type SourceAccount = {
@@ -22,13 +24,9 @@ export type SourceAccount = {
 const { ifIOS } = DeviceUtils;
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-// Slot narrower than the screen so the next account card peeks in on the side.
+
 const ITEM_WIDTH = SCREEN_WIDTH - ScaleSize(64);
-// Single spacing knob for the whole carousel: every card (accounts AND the add
-// tile) derives its width from this, so the gap between any two adjacent items
-// is identical. Keep it positive — carousel items stack (later index on top),
-// so a negative value would hide each card's edge under its neighbour instead
-// of producing a visible gap.
+
 const CARD_GAP = ScaleSize(ifIOS(0, 24));
 const CARD_WIDTH = ITEM_WIDTH - CARD_GAP;
 const CARD_HEIGHT = ScaleSize(96);
@@ -52,15 +50,14 @@ function AccountItem({
 }: {
   readonly account: SourceAccount;
   readonly accountIndex: number;
-  readonly onSelect: (id: string) => void;
+  readonly onSelect: (id: string, index: number) => void;
   readonly selected: boolean;
 }) {
   const colors = ACCOUNT_GRADIENTS[accountIndex % ACCOUNT_GRADIENTS.length];
-
   return (
     <View style={styles.slot}>
       <AppButton
-        onPress={() => onSelect(account.id)}
+        onPress={() => onSelect(account.id, accountIndex)}
         testID={`payment-account-${account.id}`}
       >
         <LinearGradient
@@ -69,21 +66,31 @@ function AccountItem({
           start={{ x: 0, y: 0 }}
           style={styles.card}
         >
-          {selected ? (
-            <View pointerEvents="none" style={styles.selectedBorder} />
-          ) : undefined}
-          <View style={styles.info}>
-            <Text style={styles.bankName}>{account.bankName}</Text>
-            <Text style={styles.account}>{account.accountMasked}</Text>
-          </View>
-          <View style={styles.chevron}>
-            <Image
-              color="#FFFFFF"
-              height={CHEVRON_SIZE}
-              name="ic_chevron_right"
-              type="svg"
-              width={CHEVRON_SIZE}
-            />
+          <View
+            style={{
+              borderWidth: selected ? 2 : 0,
+              alignItems: 'center',
+              borderRadius: ScaleSize(16),
+              flexDirection: 'row',
+              flex: 1,
+              justifyContent: 'space-between',
+              paddingHorizontal: ScaleSize(20),
+              borderColor: SELECTED_BORDER_COLOR,
+            }}
+          >
+            <View style={styles.info}>
+              <Text style={styles.bankName}>{account.bankName}</Text>
+              <Text style={styles.account}>{account.accountMasked}</Text>
+            </View>
+            <View style={styles.chevron}>
+              <Image
+                color="#FFFFFF"
+                height={CHEVRON_SIZE}
+                name="ic_chevron_right"
+                type="svg"
+                width={CHEVRON_SIZE}
+              />
+            </View>
           </View>
         </LinearGradient>
       </AppButton>
@@ -93,36 +100,37 @@ function AccountItem({
 
 type Properties = {
   readonly accounts: readonly SourceAccount[];
-  readonly isShowUnRegister: boolean;
-  readonly onRegisterAccount: () => void;
-  readonly onRegisterCard: () => void;
   readonly onSelect: (id: string) => void;
   readonly selectedId: string | undefined;
 };
 
-function Cards({
-  accounts,
-  isShowUnRegister,
-  onRegisterAccount,
-  onRegisterCard,
-  onSelect,
-  selectedId,
-}: Properties) {
+function Cards({ accounts, onSelect, selectedId }: Properties) {
   const { t } = useTranslation();
   const progress = useSharedValue(0);
+  const carouselRef = useRef<ICarouselInstance>(null);
 
   const data = React.useMemo<SourceAccount[]>(() => [...accounts], [accounts]);
+
+  // Tapping an account both selects it and, if it isn't already focused
+  // (e.g. a peeking neighbour), scrolls the carousel to center it.
+  const handleSelect = useCallback(
+    (id: string, index: number) => {
+      onSelect(id);
+      carouselRef.current?.scrollTo({ animated: true, index });
+    },
+    [onSelect],
+  );
 
   const renderItem = useCallback<CarouselRenderItem<SourceAccount>>(
     ({ index, item }) => (
       <AccountItem
         account={item}
         accountIndex={index}
-        onSelect={onSelect}
+        onSelect={handleSelect}
         selected={item.id === selectedId}
       />
     ),
-    [onSelect, selectedId],
+    [handleSelect, selectedId],
   );
 
   const onTouchStart = useCallback(() => {
@@ -139,9 +147,7 @@ function Cards({
 
   return (
     <>
-      {!isShowUnRegister && (
-        <Text style={styles.label}>{t('source_of_fund.account')}</Text>
-      )}
+      <Text style={styles.label}>{t('source_of_fund.account')}</Text>
 
       {accounts.length > 0 ? (
         <View style={styles.wrap}>
@@ -160,6 +166,7 @@ function Cards({
               onSnapToItem={index => onSelect(data[index].id)}
               loop={false}
               pagingEnabled
+              ref={carouselRef}
               renderItem={renderItem}
               style={styles.carousel}
               testID="payment-account-carousel"
@@ -185,23 +192,6 @@ function Cards({
           <Text style={styles.subDesc}>
             {t('source_of_fund.no_payment_methods_desc')}
           </Text>
-
-          <View style={styles.actionRow}>
-            <Button
-              onPress={onRegisterCard}
-              title={t('source_of_fund.register_card')}
-              type="outline-green"
-              style={styles.actionButton}
-              testID="payment-register-card"
-            />
-            <Button
-              onPress={onRegisterAccount}
-              title={t('source_of_fund.register_account')}
-              type="outline-green"
-              style={styles.actionButton}
-              testID="payment-register-account"
-            />
-          </View>
         </View>
       )}
     </>
@@ -218,31 +208,19 @@ const styles = StyleSheet.create({
     marginTop: ScaleSize(8),
     opacity: 0.9,
   },
-  actionButton: {
-    alignItems: 'center',
-    flex: 1,
-    height: ScaleSize(46),
-    justifyContent: 'center',
-  },
-  actionRow: {
-    flexDirection: 'row',
-    gap: ScaleSize(10),
-    marginHorizontal: ScaleSize(20),
-    marginTop: ScaleSize(10),
-    paddingBottom: ScaleSize(20),
-  },
   bankName: {
     color: '#FFFFFF',
     fontSize: ScaleSize(16),
     fontWeight: '700',
   },
   card: {
-    alignItems: 'center',
+    // alignItems: 'center',
     borderRadius: ScaleSize(16),
     flexDirection: 'row',
     height: CARD_HEIGHT,
     justifyContent: 'space-between',
-    paddingHorizontal: ScaleSize(20),
+    paddingRight: ScaleSize(20),
+
     width: CARD_WIDTH,
   },
   carousel: {

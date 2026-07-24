@@ -782,7 +782,11 @@
       "applicable_store": "Store: {{store}}",
       "use_now": "Use now",
       "holding_count": "Holding {{count}} coupon(s)",
-      "empty": "You have no coupons"
+      "empty": "You have no coupons",
+      "select_title": "Select coupon",
+      "search_code_placeholder": "Enter voucher code",
+      "check": "Check",
+      "apply": "Apply"
     }
   }
 }

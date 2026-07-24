@@ -9,6 +9,7 @@ export { default as CheckBox } from './CheckBox';
 export { default as HeaderDetail } from './HeaderDetail';
 export { default as HomeHeader } from './HomeHeader';
 export { default as Image } from './Image';
+export { default as PaginationDots } from './PaginationDots';
 export { default as ProductDetailLoading } from './Loading/ProductDetail';
 export { default as ProductList } from './ProductList';
 export { default as ProductsLoading } from './Loading/Products';

@@ -1,8 +1,11 @@
-import type { CarouselRenderItem } from 'react-native-reanimated-carousel';
+import type {
+  CarouselRenderItem,
+  ICarouselInstance,
+} from 'react-native-reanimated-carousel';
 
-import { AppButton } from '@components';
+import { AppButton, PaginationDots } from '@components';
 import { ScaleSize } from '@kits/core';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Animated, {
@@ -14,8 +17,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import Carousel from 'react-native-reanimated-carousel';
 import { Globals } from '@utils';
-
-import PaginationDots from './PaginationDots';
 
 export type SourceCard = {
   readonly brand: string;
@@ -79,7 +80,7 @@ type CardItemProps = {
   readonly animationValue: SharedValue<number>;
   readonly card: SourceCard;
   readonly cardIndex: number;
-  readonly onSelect: (id: string) => void;
+  readonly onSelect: (id: string, cardIndex?: number) => void;
   readonly selected: boolean;
 };
 
@@ -111,15 +112,22 @@ function CardItem({
   return (
     <View style={styles.cardSlot}>
       <AppButton
-        onPress={() => onSelect(card.id)}
+        onPress={() => {
+          onSelect(card.id, cardIndex);
+        }}
         testID={`payment-card-${card.id}`}
       >
         <Animated.View
-          style={[styles.card, { backgroundColor: theme.bg }, animatedStyle]}
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.bg,
+              borderWidth: selected ? 2 : 0,
+              borderColor: SELECTED_BORDER_COLOR,
+            },
+            animatedStyle,
+          ]}
         >
-          {selected ? (
-            <View pointerEvents="none" style={styles.selectedBorder} />
-          ) : undefined}
           <View style={styles.cardTop}>
             <View style={[styles.aliasTag, { backgroundColor: theme.tag }]}>
               <Text style={[styles.aliasText, { color: theme.text }]}>
@@ -155,7 +163,6 @@ function CardItem({
 type Properties = {
   readonly cards: readonly SourceCard[];
   readonly initialIndex: number;
-  readonly isShowUnRegister: boolean;
   readonly onSelect: (id: string) => void;
   readonly selectedId: string | undefined;
 };
@@ -163,14 +170,23 @@ type Properties = {
 function MembershipCards({
   cards,
   initialIndex,
-  isShowUnRegister,
   onSelect,
   selectedId,
 }: Properties) {
   const { t } = useTranslation();
   const progress = useSharedValue(initialIndex);
-
+  const carouselRef = useRef<ICarouselInstance>(null);
   const data = React.useMemo<SourceCard[]>(() => [...cards], [cards]);
+
+  // Tapping a card both selects it and, if it isn't already focused
+  // (e.g. a peeking neighbour), scrolls the carousel to center it.
+  const handleSelect = useCallback(
+    (id: string, index?: number) => {
+      onSelect(id);
+      carouselRef.current?.scrollTo({ animated: true, index });
+    },
+    [onSelect],
+  );
 
   const renderItem = useCallback<CarouselRenderItem<SourceCard>>(
     ({ animationValue, index, item }) => (
@@ -178,11 +194,11 @@ function MembershipCards({
         animationValue={animationValue}
         card={item}
         cardIndex={index}
-        onSelect={onSelect}
+        onSelect={handleSelect}
         selected={item.id === selectedId}
       />
     ),
-    [onSelect, selectedId],
+    [handleSelect, selectedId],
   );
 
   const onTouchStart = useCallback(() => {
@@ -196,10 +212,6 @@ function MembershipCards({
       Globals.isScrollingRef.current = false;
     }
   }, []);
-
-  if (isShowUnRegister) {
-    return <></>;
-  }
 
   return (
     <>
@@ -220,6 +232,7 @@ function MembershipCards({
             onSnapToItem={index => onSelect(data[index].id)}
             pagingEnabled
             loop={false}
+            ref={carouselRef}
             renderItem={renderItem}
             style={styles.carousel}
             testID="payment-card-carousel"

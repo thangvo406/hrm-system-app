@@ -17,10 +17,7 @@ function Payment() {
     accounts,
     cards,
     initialIndex,
-    isShowUnRegister,
     onPay,
-    onRegisterAccount,
-    onRegisterCard,
     onSelectAccount,
     onSelectCard,
     onSelectGeneralMethod,
@@ -56,16 +53,12 @@ function Payment() {
           <MembershipCards
             cards={cards}
             initialIndex={initialIndex}
-            isShowUnRegister={isShowUnRegister}
             onSelect={onSelectCard}
             selectedId={selectedCardId}
           />
 
           <Cards
             accounts={accounts}
-            isShowUnRegister={isShowUnRegister}
-            onRegisterAccount={onRegisterAccount}
-            onRegisterCard={onRegisterCard}
             onSelect={onSelectAccount}
             selectedId={selectedAccountId}
           />

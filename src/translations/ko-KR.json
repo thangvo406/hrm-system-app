@@ -783,7 +783,11 @@
       "applicable_store": "적용 매장: {{store}}",
       "use_now": "바로 사용하기",
       "holding_count": "쿠폰 {{count}}장 보유 중",
-      "empty": "보유한 쿠폰이 없습니다"
+      "empty": "보유한 쿠폰이 없습니다",
+      "select_title": "쿠폰 선택",
+      "search_code_placeholder": "쿠폰 코드 입력",
+      "check": "확인",
+      "apply": "적용하기"
     }
   }
 }
