@@ -1,11 +1,9 @@
-import { AppButton, HeaderDetail } from '@components';
+import { AppButton, HeaderDetail, Cards, BankAccounts } from '@components';
 import { PRIMARY_CARD_INDEX, useSourceOfFund } from '@hooks/useSourceOfFund';
 import { ScaleSize } from '@kits/core';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import Cards from './Cards';
-import MembershipCards from './MembershipCards';
 import TransactionHistories from './TransactionHistories';
 import WalletCard from './WalletCard';
 
@@ -60,8 +58,8 @@ function SourceOfFund() {
           </AppButton>
         </View>
 
-        <MembershipCards
-          cards={cards}
+        <BankAccounts
+          accounts={cards}
           initialIndex={PRIMARY_CARD_INDEX}
           isShowUnRegister={isShowUnRegister}
           onRegisterCard={onRegisterCard}

@@ -132,6 +132,7 @@ export interface IKcpInitParams {
   reqType: string;
   reqAmt: string;
   kcpWebViewUrl: string;
+  qpaySdkUrl?: string;
 }
 export interface ICreateLinkPaymentOrderRequest {
   orderId?: number;

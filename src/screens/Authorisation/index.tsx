@@ -17,7 +17,7 @@ import AcademicVerification from './components/RegisterFlow/AcademicVerification
 import AcademicVerifyCompleted from './components/RegisterFlow/AcademicVerifyCompleted';
 import RegisterCompleted from './components/RegisterFlow/RegisterCompleted';
 import SchoolSelection from '@screens/SchoolSelection';
-import VerifyInfoFailed from './components/RegisterFlow/VerifyInfoFailed';
+import { VerificationFailed } from '@components';
 
 type AuthTab = 'login' | 'registration';
 
@@ -78,7 +78,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
       choose_role: ChooseMemberShipType,
       form: AuthFormStack,
       academic_verification_completed: AcademicVerifyCompleted,
-      verify_info_failed: VerifyInfoFailed,
+      verify_info_failed: VerificationFailed,
       input_academic_email: InputAcademicEmail,
       academic_verification: AcademicVerification,
       register_input: RegisterForm,

@@ -1,4 +1,5 @@
 export * from './account';
+export * from './accountManagement';
 export * from './auth';
 export * from './common';
 export * from './notifications';

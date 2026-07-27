@@ -598,6 +598,21 @@
       "account_desc": "Quick registration by entering account number",
       "submit": "Proceed"
     },
+    "request_add_card": {
+      "title": "Register payment method",
+      "payment_methods": "My payment methods",
+      "manage": "Manage",
+      "card": "Card",
+      "account": "Account",
+      "add_card": "Add card",
+      "add_account": "Add account",
+      "submit": "Proceed",
+      "failed": {
+        "title": "Card/Bank account registration failed",
+        "subtitle": "We couldn't register your card or bank account",
+        "reason": "Your card or bank account registration was unsuccessful. Please try again."
+      }
+    },
     "register_cart_confirm": {
       "title": "Register with Coop Pay for\neasy, convenient payment",
       "term_service": "(Required) Electronic payment agency service terms",

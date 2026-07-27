@@ -599,6 +599,21 @@
       "account_desc": "계좌번호 입력으로 간편 등록",
       "submit": "등록 진행"
     },
+    "request_add_card": {
+      "title": "결제수단 등록",
+      "payment_methods": "내 결제수단",
+      "manage": "관리",
+      "card": "카드",
+      "account": "계좌",
+      "add_card": "카드등록",
+      "add_account": "계좌등록",
+      "submit": "등록 진행",
+      "failed": {
+        "title": "카드/계좌 등록 실패",
+        "subtitle": "카드 또는 계좌를 등록하지 못했습니다",
+        "reason": "카드 또는 계좌 등록에 실패했습니다. 다시 시도해 주세요."
+      }
+    },
     "register_cart_confirm": {
       "title": "쉽고 편한 결제, 생협페이에\n등록합니다",
       "term_service": "(필수) 전자지급결제대행 서비스 이용약관",

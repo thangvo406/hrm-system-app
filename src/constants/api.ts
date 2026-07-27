@@ -18,7 +18,7 @@ export const EndPoints = {
     confirmMemberShipVerify:
       'auth/register/membership-verification/confirm-otp',
     selectSchool: 'user/session/university',
-    createLinkVerifyInfoUser: 'auth/register/identity/init'
+    createLinkVerifyInfoUser: 'auth/register/identity/init',
   },
   CONTRIBUTION: {
     increase: 'contribution/increase-request',
@@ -41,6 +41,13 @@ export const EndPoints = {
     activeAccount: 'activeAccount',
     changePass: 'user/change-password',
     updateProfile: 'user/profile',
+  },
+  // Payment-method management (bank accounts). Kept separate from PAYMENT
+  // (cart/order/checkout/KCP) — different lifecycle.
+  // NOTE: path is a placeholder — replace with the real backend spec.
+  ACCOUNT_MANAGEMENT: {
+    addAccount: (request: string) => `balance/kcp/register/init?${request}`,
+    list: 'balance/payment-method',
   },
   NOTIFICATIONS: {
     list: (request: string) => `notification?${request}`,
@@ -85,6 +92,7 @@ export const EndPoints = {
     balanceCharge: 'balance/kcp/charge/init',
     cartDetail: (cartId: number) => `app/cart/${cartId}`,
   },
+
   WALLET: {
     currentWallet: 'balance',
     getTransactionHistories: (request: string) => `balance/ledger?${request}`,

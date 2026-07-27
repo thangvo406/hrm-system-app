@@ -1,7 +1,9 @@
-import { AppButton } from '@components';
+import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+
+import AppButton from '../AppButton';
 
 // Quiet neutral tokens so the placeholder never competes with the real cards.
 const ADD_BG = '#FCFCFD';
@@ -13,20 +15,43 @@ const PLUS_THICKNESS = ScaleSize(2);
 type Properties = {
   readonly height: number;
   readonly label: string;
-  readonly onPress: () => void;
+  readonly onPress?: () => void;
+  readonly selected?: boolean;
   readonly testID?: string;
   readonly width: number;
 };
 
-function AddPlaceholder({ height, label, onPress, testID, width }: Properties) {
+function AddPlaceholder({
+  height,
+  label,
+  onPress,
+  selected = false,
+  testID,
+  width,
+}: Properties) {
   return (
     <AppButton onPress={onPress} testID={testID}>
-      <View style={[styles.card, { height, width }]}>
+      <View
+        style={[
+          styles.card,
+          selected && styles.cardSelected,
+          { height, width },
+        ]}
+      >
         <View style={styles.plus}>
-          <View style={styles.plusBarHorizontal} />
-          <View style={styles.plusBarVertical} />
+          <View
+            style={[
+              styles.plusBarHorizontal,
+              selected && styles.plusBarSelected,
+            ]}
+          />
+          <View
+            style={[styles.plusBarVertical, selected && styles.plusBarSelected]}
+          />
         </View>
-        <Text style={styles.label}>{label}</Text>
+        <Text style={[styles.label, selected && styles.labelSelected]}>
+          {label}
+        </Text>
       </View>
     </AppButton>
   );
@@ -44,11 +69,19 @@ const styles = StyleSheet.create({
     borderWidth: ScaleSize(1.5),
     justifyContent: 'center',
   },
+  cardSelected: {
+    backgroundColor: Colors.green03,
+    borderColor: Colors.green02,
+    borderStyle: 'solid',
+  },
   label: {
     color: ADD_TINT,
     fontSize: ScaleSize(13),
     fontWeight: '600',
     marginTop: ScaleSize(12),
+  },
+  labelSelected: {
+    color: Colors.green01,
   },
   plus: {
     alignItems: 'center',
@@ -62,6 +95,9 @@ const styles = StyleSheet.create({
     height: PLUS_THICKNESS,
     position: 'absolute',
     width: PLUS_SIZE,
+  },
+  plusBarSelected: {
+    backgroundColor: Colors.green02,
   },
   plusBarVertical: {
     backgroundColor: ADD_TINT,

@@ -1,7 +1,6 @@
-import type { SourceAccount } from '@hooks/useSourceOfFund';
 import type { CarouselRenderItem } from 'react-native-reanimated-carousel';
 
-import { Button, Image } from '@components';
+import { AddPlaceholder, Button, Image } from '@components';
 import { ScaleSize } from '@kits/core';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,21 +10,17 @@ import { useSharedValue } from 'react-native-reanimated';
 import Carousel from 'react-native-reanimated-carousel';
 import { Globals } from '@utils';
 
-import AddPlaceholder from './AddPlaceholder';
-import PaginationDots from './PaginationDots';
+import PaginationDots from '../PaginationDots';
 import { DeviceUtils } from '@kits/core/utils';
+import { IAccount } from '@type';
 const { ifIOS } = DeviceUtils;
-// Sentinel injected at index 0 so the "add account" tile leads the carousel.
+
 const ADD_ACCOUNT_ID = '__add_account__';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-// Slot narrower than the screen so the next account card peeks in on the side.
+
 const ITEM_WIDTH = SCREEN_WIDTH - ScaleSize(64);
-// Single spacing knob for the whole carousel: every card (accounts AND the add
-// tile) derives its width from this, so the gap between any two adjacent items
-// is identical. Keep it positive — carousel items stack (later index on top),
-// so a negative value would hide each card's edge under its neighbour instead
-// of producing a visible gap.
+
 const CARD_GAP = ScaleSize(ifIOS(0, 24));
 const CARD_WIDTH = ITEM_WIDTH - CARD_GAP;
 const CARD_HEIGHT = ScaleSize(96);
@@ -44,7 +39,7 @@ function AccountItem({
   account,
   accountIndex,
 }: {
-  readonly account: SourceAccount;
+  readonly account: IAccount;
   readonly accountIndex: number;
 }) {
   const colors = ACCOUNT_GRADIENTS[accountIndex % ACCOUNT_GRADIENTS.length];
@@ -57,8 +52,8 @@ function AccountItem({
         style={styles.card}
       >
         <View style={styles.info}>
-          <Text style={styles.bankName}>{account.bankName}</Text>
-          <Text style={styles.account}>{account.accountMasked}</Text>
+          <Text style={styles.bankName}>{account.provider}</Text>
+          <Text style={styles.account}>{account.displayNumber}</Text>
         </View>
         <View style={styles.chevron}>
           <Image
@@ -75,30 +70,35 @@ function AccountItem({
 }
 
 type Properties = {
-  readonly accounts: readonly SourceAccount[];
-  readonly isShowUnRegister: boolean;
-  readonly onRegisterAccount: () => void;
-  readonly onRegisterCard: () => void;
+  readonly accounts?: readonly IAccount[];
+  readonly isShowUnRegister?: boolean;
+  readonly isHideSubTitle?: boolean;
+  readonly selectedAddCard?: boolean;
+  readonly hideEmptyView?: boolean;
+  readonly initialIndex?: number;
+  readonly onRegisterAccount?: () => void;
+  readonly onRegisterCard?: () => void;
 };
 
 function Cards({
   accounts,
   isShowUnRegister,
+  isHideSubTitle,
+  selectedAddCard,
+  initialIndex = -1,
+  hideEmptyView,
   onRegisterAccount,
   onRegisterCard,
 }: Properties) {
+  const focusedIndex = initialIndex + 1;
   const { t } = useTranslation();
-  const progress = useSharedValue(1);
-
-  const data = React.useMemo<SourceAccount[]>(
-    () => [
-      { accountMasked: '', bankName: '', id: ADD_ACCOUNT_ID },
-      ...accounts,
-    ],
+  const progress = useSharedValue(focusedIndex);
+  const data = React.useMemo<IAccount[]>(
+    () => [{ id: ADD_ACCOUNT_ID } as IAccount, ...(accounts || [])],
     [accounts],
   );
 
-  const renderItem = useCallback<CarouselRenderItem<SourceAccount>>(
+  const renderItem = useCallback<CarouselRenderItem<IAccount>>(
     ({ index, item }) =>
       item.id === ADD_ACCOUNT_ID ? (
         <View style={styles.slot}>
@@ -108,12 +108,13 @@ function Cards({
             onPress={onRegisterAccount}
             testID="source-of-fund-add-account"
             width={CARD_WIDTH}
+            selected={selectedAddCard}
           />
         </View>
       ) : (
         <AccountItem account={item} accountIndex={index - 1} />
       ),
-    [onRegisterAccount, t],
+    [onRegisterAccount, selectedAddCard, t],
   );
 
   const onTouchStart = useCallback(() => {
@@ -130,11 +131,12 @@ function Cards({
 
   return (
     <>
-      {!isShowUnRegister && (
-        <Text style={styles.label}>{t('source_of_fund.account')}</Text>
-      )}
+      {!isShowUnRegister ||
+        (!isHideSubTitle && (
+          <Text style={styles.label}>{t('source_of_fund.account')}</Text>
+        ))}
 
-      {accounts.length > 0 ? (
+      {hideEmptyView || (accounts?.length || 0) > 0 ? (
         <View style={styles.wrap}>
           <View
             onTouchCancel={onTouchEnd}
@@ -143,8 +145,8 @@ function Cards({
           >
             <Carousel
               data={data}
-              defaultIndex={1}
               height={CARD_HEIGHT}
+              defaultIndex={focusedIndex}
               onProgressChange={(_, absoluteProgress) => {
                 progress.value = absoluteProgress;
               }}
@@ -168,31 +170,33 @@ function Cards({
           ) : undefined}
         </View>
       ) : (
-        <View style={styles.emptyState}>
-          <Text style={styles.desc}>
-            {t('source_of_fund.no_payment_methods_title')}
-          </Text>
-          <Text style={styles.subDesc}>
-            {t('source_of_fund.no_payment_methods_desc')}
-          </Text>
+        !hideEmptyView && (
+          <View style={styles.emptyState}>
+            <Text style={styles.desc}>
+              {t('source_of_fund.no_payment_methods_title')}
+            </Text>
+            <Text style={styles.subDesc}>
+              {t('source_of_fund.no_payment_methods_desc')}
+            </Text>
 
-          <View style={styles.actionRow}>
-            <Button
-              onPress={onRegisterCard}
-              title={t('source_of_fund.register_card')}
-              type="outline-green"
-              style={styles.actionButton}
-              testID="source-of-fund-register-card"
-            />
-            <Button
-              onPress={onRegisterAccount}
-              title={t('source_of_fund.register_account')}
-              type="outline-green"
-              style={styles.actionButton}
-              testID="source-of-fund-register-account"
-            />
+            <View style={styles.actionRow}>
+              <Button
+                onPress={onRegisterCard}
+                title={t('source_of_fund.register_card')}
+                type="outline-green"
+                style={styles.actionButton}
+                testID="source-of-fund-register-card"
+              />
+              <Button
+                onPress={onRegisterAccount}
+                title={t('source_of_fund.register_account')}
+                type="outline-green"
+                style={styles.actionButton}
+                testID="source-of-fund-register-account"
+              />
+            </View>
           </View>
-        </View>
+        )
       )}
     </>
   );

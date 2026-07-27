@@ -36,7 +36,10 @@ function RegisterCard() {
       </ScrollView>
 
       <View
-        style={[styles.footer, { paddingBottom: insets.bottom + ScaleSize(16) }]}
+        style={[
+          styles.footer,
+          { paddingBottom: insets.bottom + ScaleSize(16) },
+        ]}
       >
         <Button
           onPress={onSubmit}

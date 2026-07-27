@@ -32,12 +32,6 @@ type RegisterCartConfirmProps = {
   readonly onRequestClose?: () => void;
 };
 
-/**
- * Confirmation dialog shown before starting the payment-method registration
- * flow. Rendered as a Dialog `screen`, so the host provides the rounded card
- * chrome; this component lays out the title, the list of required-agreement
- * links, and the "agree and proceed" action.
- */
 function RegisterCartConfirm({
   items = DEFAULT_ITEMS,
   onConfirm,
@@ -87,7 +81,7 @@ function RegisterCartConfirm({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    paddingHorizontal: ScaleSize(30)
+    paddingHorizontal: ScaleSize(30),
   },
   item: {
     alignItems: 'center',

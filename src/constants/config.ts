@@ -13,6 +13,11 @@ export const NEED_INFO_LOGIN_CODE = {
   VERIFY_UNIVERSITY_EMAIL: 'AUTH_003',
 };
 
+export const REQUEST_ADD_CARD_METHOD_TYPES = {
+  ACCOUNT: 'PABK',
+  CARD: 'PACA',
+};
+
 export const REGISTER_MEMBER_SHIP_STEP = {
   CHOOSE_SCHOOL: 'choose_school' as RegisterMembershipStep,
   CHOOSE_MEMBERSHIP: 'choose_membership' as RegisterMembershipStep,

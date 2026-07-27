@@ -1,5 +1,6 @@
 import imageNames from '@assets/images/names';
 import Information from '@dialogs/Information';
+import RequestAddCard from '@dialogs/RequestAddCard';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useCallback, useEffect, useState } from 'react';
@@ -162,13 +163,17 @@ export const useSourceOfFund = () => {
   }, []);
 
   const onRegisterCard = useCallback(() => {
-    // TODO: navigate to card registration when the screen is available.
-    AppNavigator.navigate(Paths.RegisterCard);
+    AppNavigator.showDialog({
+      screen: RequestAddCard,
+      isFullScreen: true,
+    });
   }, [accounts, cards]);
 
   const onRegisterAccount = useCallback(() => {
-    // TODO: navigate to account registration when the screen is available.
-    AppNavigator.navigate(Paths.RegisterCard);
+    AppNavigator.showDialog({
+      screen: RequestAddCard,
+      isFullScreen: true,
+    });
   }, [accounts, cards]);
 
   const onUse = useCallback(() => {

@@ -1,6 +1,6 @@
-import type { SourceCard } from '@hooks/useSourceOfFund';
 import type { CarouselRenderItem } from 'react-native-reanimated-carousel';
 
+import { AddPlaceholder } from '@components';
 import { ScaleSize } from '@kits/core';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,8 +15,8 @@ import Animated, {
 import Carousel from 'react-native-reanimated-carousel';
 import { Globals } from '@utils';
 
-import AddPlaceholder from './AddPlaceholder';
-import PaginationDots from './PaginationDots';
+import PaginationDots from '../PaginationDots';
+import { IAccount } from '@type';
 
 // Sentinel injected at index 0 so the "add card" tile leads the carousel.
 const ADD_CARD_ID = '__add_card__';
@@ -24,8 +24,8 @@ const ADD_CARD_ID = '__add_card__';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = ScaleSize(180);
 const CARD_HEIGHT = ScaleSize(240);
-// Slot narrower than the card so neighbouring cards sit tight against the
-// focused one (smaller slot = less gap between cards).
+// Slot narrower than the card so neighbouring accounts sit tight against the
+// focused one (smaller slot = less gap between accounts).
 const ITEM_WIDTH = ScaleSize(178);
 const UNFOCUSED_SCALE = 0.82;
 const UNFOCUSED_OPACITY = 0.55;
@@ -73,8 +73,9 @@ const CARD_THEMES: readonly CardTheme[] = [
 
 type CardItemProps = {
   readonly addLabel: string;
+  readonly selectedAddCard: boolean;
   readonly animationValue: SharedValue<number>;
-  readonly card: SourceCard;
+  readonly card: IAccount;
   readonly cardIndex: number;
   readonly isAdd: boolean;
   readonly onAddPress: () => void;
@@ -86,6 +87,7 @@ function CardItem({
   card,
   cardIndex,
   isAdd,
+  selectedAddCard,
   onAddPress,
 }: CardItemProps) {
   const theme = CARD_THEMES[cardIndex % CARD_THEMES.length];
@@ -105,7 +107,6 @@ function CardItem({
     );
     return { opacity, transform: [{ scale }] };
   });
-
   if (isAdd) {
     return (
       <View style={styles.cardSlot}>
@@ -116,6 +117,7 @@ function CardItem({
             onPress={onAddPress}
             testID="source-of-fund-add-card"
             width={CARD_WIDTH}
+            selected={selectedAddCard}
           />
         </Animated.View>
       </View>
@@ -130,22 +132,22 @@ function CardItem({
         <View style={styles.cardTop}>
           <View style={[styles.aliasTag, { backgroundColor: theme.tag }]}>
             <Text style={[styles.aliasText, { color: theme.text }]}>
-              {card.brand}
+              {card.holderName}
             </Text>
           </View>
           <View style={[styles.networkTag, { backgroundColor: theme.network }]}>
             <Text style={[styles.networkText, { color: theme.text }]}>
-              {card.network}
+              {card.displayName}
             </Text>
           </View>
         </View>
 
         <View style={styles.cardBottom}>
           <Text numberOfLines={1} style={[styles.brand, { color: theme.text }]}>
-            {card.brand}
+            {card.provider}
           </Text>
           <Text style={[styles.number, { color: theme.sub }]}>
-            {card.maskedNumber}
+            {card.displayNumber}
           </Text>
         </View>
       </Animated.View>
@@ -154,16 +156,20 @@ function CardItem({
 }
 
 type Properties = {
-  readonly cards: readonly SourceCard[];
+  readonly accounts?: readonly IAccount[];
   readonly initialIndex: number;
   readonly isShowUnRegister: boolean;
+  readonly hideTitle: boolean;
+  readonly selectedAddCard: boolean;
   readonly onRegisterCard: () => void;
 };
 
-function MembershipCards({
-  cards,
-  initialIndex,
+function BankAccounts({
+  accounts,
+  initialIndex = -1,
   isShowUnRegister,
+  hideTitle,
+  selectedAddCard,
   onRegisterCard,
 }: Properties) {
   const { t } = useTranslation();
@@ -171,15 +177,12 @@ function MembershipCards({
   const focusedIndex = initialIndex + 1;
   const progress = useSharedValue(focusedIndex);
 
-  const data = React.useMemo<SourceCard[]>(
-    () => [
-      { brand: '', id: ADD_CARD_ID, maskedNumber: '', network: '' },
-      ...cards,
-    ],
-    [cards],
+  const data = React.useMemo<IAccount[]>(
+    () => [{ id: ADD_CARD_ID } as IAccount, ...(accounts || [])],
+    [accounts],
   );
 
-  const renderItem = useCallback<CarouselRenderItem<SourceCard>>(
+  const renderItem = useCallback<CarouselRenderItem<IAccount>>(
     ({ animationValue, index, item }) => (
       <CardItem
         addLabel={t('source_of_fund.add_card')}
@@ -187,10 +190,11 @@ function MembershipCards({
         card={item}
         cardIndex={index - 1}
         isAdd={item.id === ADD_CARD_ID}
+        selectedAddCard={selectedAddCard}
         onAddPress={onRegisterCard}
       />
     ),
-    [onRegisterCard, t],
+    [onRegisterCard, t, data, selectedAddCard],
   );
 
   const onTouchStart = useCallback(() => {
@@ -204,14 +208,15 @@ function MembershipCards({
       Globals.isScrollingRef.current = false;
     }
   }, []);
-
-  if (isShowUnRegister) {
+  if (isShowUnRegister || !accounts) {
     return <></>;
   }
 
   return (
     <>
-      <Text style={styles.label}>{t('source_of_fund.card')}</Text>
+      {!hideTitle && (
+        <Text style={styles.label}>{t('source_of_fund.card')}</Text>
+      )}
       <View style={styles.wrap}>
         <View
           onTouchCancel={onTouchEnd}
@@ -233,22 +238,24 @@ function MembershipCards({
             width={ITEM_WIDTH}
           />
         </View>
-        <PaginationDots
-          activeColor={DOT_ACTIVE_COLOR}
-          activeWidth={DOT_ACTIVE_WIDTH}
-          count={data.length}
-          gap={DOT_GAP}
-          inactiveColor={DOT_INACTIVE_COLOR}
-          progress={progress}
-          size={DOT_SIZE}
-          style={styles.paginationRow}
-        />
+        {accounts?.length > 0 && (
+          <PaginationDots
+            activeColor={DOT_ACTIVE_COLOR}
+            activeWidth={DOT_ACTIVE_WIDTH}
+            count={data.length}
+            gap={DOT_GAP}
+            inactiveColor={DOT_INACTIVE_COLOR}
+            progress={progress}
+            size={DOT_SIZE}
+            style={styles.paginationRow}
+          />
+        )}
       </View>
     </>
   );
 }
 
-export default React.memo(MembershipCards);
+export default React.memo(BankAccounts);
 
 const styles = StyleSheet.create({
   aliasTag: {

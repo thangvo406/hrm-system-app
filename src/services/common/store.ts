@@ -17,6 +17,7 @@ import { reactotronReduxEnhancer } from '../../reactotron.config';
 import { rootSaga } from './rootSaga';
 import { AppStorage } from './storage';
 import { accountReducer } from '@services/slices/account/accountSlice';
+import { accountManagementReducer } from '@services/slices/accountManagement/accountManagementSlice';
 import { appReducer } from '@services/slices/app/appSlice';
 import { authReducer } from '@services/slices/auth/authSlice';
 import { notificationsReducer } from '@services/slices/notifications/notificationsSlice';
@@ -39,6 +40,7 @@ const reduxStorage: Storage = {
 
 const rootReducer = combineReducers({
   account: accountReducer,
+  accountManagement: accountManagementReducer,
   app: appReducer,
   auth: authReducer,
   notifications: notificationsReducer,
