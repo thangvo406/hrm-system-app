@@ -31,8 +31,8 @@ function BankCard({ account, index, width }: Properties) {
       style={[styles.card, { width }]}
     >
       <View style={styles.info}>
-        <Text style={styles.bankName}>{account.bankName}</Text>
-        <Text style={styles.account}>{account.accountMasked}</Text>
+        <Text style={styles.bankName}>{account.displayName}</Text>
+        <Text style={styles.account}>{account.displayNumber}</Text>
       </View>
       <View style={styles.chevron}>
         <Image

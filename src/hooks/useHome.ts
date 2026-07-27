@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import {
+  AccountManagementSelector,
   AccountSelector,
   AuthSelector,
   StoresSelector,
@@ -20,6 +21,7 @@ import { AppConstants } from '@constants';
 import SocketService from '@services/common/webSocket';
 import imageNames from '@assets/images/names';
 import RequestAddCard from '@dialogs/RequestAddCard';
+import { getAccountCardsRequest } from '@services/slices/accountManagement/accountManagementSlice';
 //TODO: should remove it
 // import RegisterMembership from '@dialogs/RegisterMembership';
 
@@ -67,6 +69,8 @@ export const useHome = () => {
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const storeOrderRecent = useAppSelector(StoresSelector.getStoreOrderRecent);
   const accessToken = useAppSelector(AuthSelector.getAccessToken);
+  const cards = useAppSelector(AccountManagementSelector.getAccountCards);
+
   useNotification();
   const dispatch = useAppDispatch();
 
@@ -79,6 +83,10 @@ export const useHome = () => {
       profile?.registrationStatus == 'COMPLETED'
     );
   }, [profile]);
+
+  useEffect(() => {
+    dispatch(getAccountCardsRequest({}));
+  }, []);
 
   useEffect(() => {
     if (!accessToken) return;
@@ -96,10 +104,7 @@ export const useHome = () => {
   };
 
   const onPressTopup = () => {
-    if (
-      !profile?.membershipType ||
-      profile?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER
-    ) {
+    if (!(cards?.length > 0)) {
       AppNavigator.showDialog({
         screen: Information,
         iconInfo: {

@@ -26,7 +26,7 @@ export const useRequestAddCard = ({
 }: UseRequestAddCardParams) => {
   // Nothing is highlighted until the user taps a tile (matches the design).
   const [selectedMethod, setSelectedMethod] = useState<string>();
-  const [refreshKey, setRefreshKey] = useState(1);
+  const [refreshKey, setRefreshKey] = useState(0);
   const rawData = useAppSelector(AccountManagementSelector.getAccountCards);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
@@ -51,7 +51,9 @@ export const useRequestAddCard = ({
     // The saga stores the response in redux (getAccountCardsSuccess); rawData
     // above reads it via the selector. refreshKey re-triggers the fetch after
     // a card/account is registered.
-    dispatch(getAccountCardsRequest({}));
+    if (refreshKey != 0) {
+      dispatch(getAccountCardsRequest({}));
+    }
   }, [dispatch, refreshKey]);
 
   const onManage = useCallback(() => {

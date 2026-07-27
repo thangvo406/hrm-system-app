@@ -1,7 +1,8 @@
 import { AppConstants } from '@constants';
 import WebViewScreen from '@dialogs/Webview';
 import AppNavigator from '@navigation/AppNavigator';
-import { useAppDispatch } from '@services/common/storeHooks';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { AccountManagementSelector } from '@services/selectors';
 // import { topUpWalletRequest } from '@services/slices/account/accountSlice';
 import { balanceChargeRequest } from '@services/slices/payment/paymentSlice';
 // import uniqueId from 'lodash/uniqueId';
@@ -44,6 +45,9 @@ export const useTopUp = () => {
   const [amountTopUp, setAmountTopUp] = useState('');
   const [methodPayment, setMethodPayment] = useState(
     AppConstants.PaymentTypes.CARD_SAVE,
+  );
+  const bankAccounts = useAppSelector(
+    AccountManagementSelector.getAccountCards,
   );
 
   const enabledBtnSubmit = useMemo(() => {
@@ -112,7 +116,7 @@ export const useTopUp = () => {
 
   return {
     amountTopUp,
-    bankAccounts: BANK_ACCOUNTS,
+    bankAccounts,
     bonusAmount,
     enabledBtnSubmit,
     methodPayment,

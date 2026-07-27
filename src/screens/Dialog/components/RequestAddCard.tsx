@@ -9,14 +9,11 @@ import { Colors } from '@constants';
 import { REQUEST_ADD_CARD_METHOD_TYPES } from '@constants/config';
 import { useRequestAddCard } from '@hooks';
 import { ScaleSize } from '@kits/core';
-import { DeviceUtils } from '@kits/core/utils';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SCREEN_PADDING = ScaleSize(20);
-const { ifAndroid } = DeviceUtils;
 type Properties = {
   readonly onRegisterAccount?: () => void;
   readonly onRegisterCard?: () => void;
@@ -31,7 +28,6 @@ function RequestAddCard({
   onDismiss,
 }: Properties) {
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const {
     onManage,
     onSelectAccount,
@@ -97,9 +93,7 @@ function RequestAddCard({
         />
       </View>
 
-      <View
-        style={[styles.footer, { paddingBottom: ifAndroid(0, insets.bottom) }]}
-      >
+      <View style={styles.footer}>
         <Button
           onPress={onSubmit}
           testID="request-add-card-submit"
