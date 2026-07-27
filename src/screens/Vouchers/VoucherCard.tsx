@@ -6,7 +6,8 @@ import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from '@utils/product';
 import { useTranslation } from 'react-i18next';
-import React from 'react';
+import React, { useMemo } from 'react';
+import dayjs from 'dayjs';
 
 const ICON_SIZE = ScaleSize(22);
 const ACCENT_BAR = Colors.primary;
@@ -26,9 +27,13 @@ function VoucherCard({ onUse, voucher }: Properties) {
   };
 
   const minPaymentText =
-    voucher.minPayment === undefined
+    !voucher.minOrderAmount
       ? t('vouchers.min_payment_none')
-      : t('common.display_price', { amount: formatCurrency(voucher.minPayment) });
+      : t('common.display_price', { amount: formatCurrency(voucher.minOrderAmount) });
+  const storeNames = useMemo(() => {
+    return voucher?.stores?.map?.(it => it.storeName).join(",")
+  }, [JSON.stringify(voucher.stores)]);
+
 
   return (
     <View style={styles.card}>
@@ -47,25 +52,26 @@ function VoucherCard({ onUse, voucher }: Properties) {
           </Text>
           <View style={styles.badge}>
             <Text style={styles.badgeText}>
-              {t('vouchers.dday', { days: voucher.daysLeft })}
+              {t('vouchers.dday', { days: voucher.daysRemaining })}
             </Text>
           </View>
         </View>
 
-        <Text style={styles.description}>{voucher.description}</Text>
+        <Text style={styles.description}>{voucher?.name}</Text>
 
         <Text style={styles.metaText}>
-          {t('vouchers.valid_until', { date: voucher.validUntil })}
+          {t('vouchers.valid_until', { date: dayjs(voucher?.expiredTo).format('YYYY-MM-DD') })}
         </Text>
 
         <View style={styles.metaRow}>
           <Text style={styles.metaText}>
             {t('vouchers.min_payment', { amount: minPaymentText })}
           </Text>
-          {voucher.applicableStore !== undefined && (
-            <Text style={styles.metaText}>
+          {!!storeNames && (
+            <Text style={styles.metaText}
+              numberOfLines={2}>
               {t('vouchers.applicable_store', {
-                store: voucher.applicableStore,
+                store: storeNames,
               })}
             </Text>
           )}

@@ -82,9 +82,9 @@ export const usePaymentOffline = () => {
         amountText: t('payment_offline.qr_balance_text', {
           amount: formatCurrency(PAY_MONEY_BALANCE),
         }),
-        applicableStore: 'applicableStore',
+        code: 'applicableStore',
         headerBadge: t('payment_offline.qr_header_badge'),
-        title: t('payment_offline.qr_customer_name'),
+        name: t('payment_offline.qr_customer_name'),
         onRefresh: onRefreshQRCode,
       },
     });

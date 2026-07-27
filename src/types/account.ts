@@ -1,6 +1,6 @@
 import type { AddressSuggestion } from '@services/request/account';
 
-import type { AppCallback } from './common';
+import type { AppCallback, ListApiResponse } from './common';
 
 export interface IRequestAutoCompleteAddress
   extends AppCallback<AddressSuggestion[]> {
@@ -31,19 +31,28 @@ export interface IUpdateAvatarRequest extends AppCallback {
   file?: any;
 }
 
-export type VoucherStatus = 'available' | 'expired' | 'used';
+export type VoucherStatus = 'AVAILABLE' | 'EXPIRED' | 'USED';
 
-export interface IRequestGetVouchers extends AppCallback<IVoucher[]> {
-  type: VoucherStatus;
+export interface IRequestGetVouchers
+  extends AppCallback<ListApiResponse<IVoucher[]>> {
+  status: VoucherStatus;
+  code?: string;
+  page: number;
+  size: number;
+  orderAmount?: number;
+  storeId?: number;
 }
 
+export type IStoreVoucher = {
+  storeId: number;
+  storeName: string;
+}
 export type IVoucher = {
-  readonly applicableStore?: string;
-  readonly daysLeft: number;
-  readonly description: string;
+  readonly stores?: IStoreVoucher[];
+  readonly daysRemaining: number;
+  readonly name: string;
   readonly id: string;
-  readonly minPayment?: number;
-  readonly status: VoucherStatus;
-  readonly title: string;
-  readonly validUntil: string;
+  readonly minOrderAmount?: number;
+  readonly expiredTo: string;
+  readonly code: string;
 };

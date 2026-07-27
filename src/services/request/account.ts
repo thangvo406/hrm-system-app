@@ -2,17 +2,24 @@ import type { IRequestActiveAccount, IRequestDeleteAccount } from '@type/auth';
 
 import type {
   IRequestAutoCompleteAddress,
+  IRequestGetVouchers,
   IRequestUpdateMembership,
   IRequestUpdatePassword,
   IRequestUpdatePushId,
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
+  IVoucher,
 } from '@type/account';
 
 import { httpRequest } from '@services/common/httpRequest';
 import { z } from 'zod';
 import { EndPoints } from '@constants';
-import { IImage, IUploadFileRequest, SingleApiResponse } from '@type/common';
+import {
+  IImage,
+  IUploadFileRequest,
+  ListApiResponse,
+  SingleApiResponse,
+} from '@type/common';
 import { addressInstance } from '@services/common/instance';
 import { CommonUtils } from '@utils';
 
@@ -131,4 +138,15 @@ export const deletePushId = async (pushId: string): Promise<void> => {
   await httpRequest.delete(EndPoints.ACCOUNT.deletePushId(pushId), {
     loading: false,
   });
+};
+
+export const getVouchers = async (
+  request: Omit<IRequestGetVouchers, 'onFailure' | 'onSuccess'>,
+): Promise<ListApiResponse<IVoucher[]>> => {
+  const _request = CommonUtils.removeEmptyFieldObject(request, true);
+  const params = CommonUtils.objectToQueryParams(_request);
+  const response = await httpRequest.get<
+    SingleApiResponse<ListApiResponse<IVoucher[]>>
+  >(EndPoints.VOUCHERS.list(params ? `?${params}` : ''), { loading: false });
+  return response.data;
 };

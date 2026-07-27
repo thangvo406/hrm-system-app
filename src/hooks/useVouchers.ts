@@ -1,4 +1,5 @@
 import type { IVoucher, VoucherStatus } from '@type/account';
+import type { ListApiResponse } from '@type/common';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -7,22 +8,77 @@ import { useAppDispatch } from '@services/common/storeHooks';
 import AppNavigator from '@navigation/AppNavigator';
 import QRVoucher from '@dialogs/QRVoucher';
 
+const PAGE_SIZE = 20;
+
+type TPaginationState = {
+  isLast: boolean;
+  isLoadingMore: boolean;
+  loaded: boolean;
+  page: number;
+};
+
+const INITIAL_PAGINATION: TPaginationState = {
+  isLast: false,
+  isLoadingMore: false,
+  loaded: false,
+  page: 0,
+};
+
 const EMPTY_VOUCHERS: Record<VoucherStatus, IVoucher[]> = {
-  available: [],
-  expired: [],
-  used: [],
+  AVAILABLE: [],
+  EXPIRED: [],
+  USED: [],
 };
 
 export function useVouchers() {
   const dispatch = useAppDispatch();
-  const [activeTab, setActiveTab] = useState<VoucherStatus>('available');
+  const [activeTab, setActiveTab] = useState<VoucherStatus>('AVAILABLE');
   const [vouchers, setVouchers] =
     useState<Record<VoucherStatus, IVoucher[]>>(EMPTY_VOUCHERS);
   const [loadedTabs, setLoadedTabs] = useState<ReadonlySet<VoucherStatus>>(
     () => new Set(),
   );
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const requestedTabs = useRef<Set<VoucherStatus>>(new Set());
+  const paginations = useRef<Record<VoucherStatus, TPaginationState>>({
+    AVAILABLE: { ...INITIAL_PAGINATION },
+    EXPIRED: { ...INITIAL_PAGINATION },
+    USED: { ...INITIAL_PAGINATION },
+  });
+
+  const fetchVouchers = useCallback(
+    (type: VoucherStatus, page: number) => {
+      const pagination = paginations.current[type];
+      dispatch(
+        getVouchersRequest({
+          onFailure: () => {
+            pagination.isLoadingMore = false;
+            setRefreshing(false);
+            setLoadingMore(false);
+          },
+          onSuccess: (data: ListApiResponse<IVoucher[]>) => {
+            const content = data.content ?? [];
+            pagination.isLast = data.last;
+            pagination.isLoadingMore = false;
+            pagination.loaded = true;
+            pagination.page = page;
+            setVouchers(prev => ({
+              ...prev,
+              [type]: page === 0 ? content : [...prev[type], ...content],
+            }));
+            setLoadedTabs(prev => new Set(prev).add(type));
+            setRefreshing(false);
+            setLoadingMore(false);
+          },
+          page,
+          size: PAGE_SIZE,
+          status: type,
+        }),
+      );
+    },
+    [dispatch],
+  );
 
   const loadVouchers = useCallback(
     (type: VoucherStatus, force = false) => {
@@ -31,22 +87,10 @@ export function useVouchers() {
         return;
       }
       requestedTabs.current.add(type);
-      dispatch(
-        getVouchersRequest({
-          onFailure: () => {
-            requestedTabs.current.delete(type);
-            setRefreshing(false);
-          },
-          onSuccess: (data: IVoucher[] = []) => {
-            setVouchers(prev => ({ ...prev, [type]: data }));
-            setLoadedTabs(prev => new Set(prev).add(type));
-            setRefreshing(false);
-          },
-          type,
-        }),
-      );
+      paginations.current[type] = { ...INITIAL_PAGINATION };
+      fetchVouchers(type, 0);
     },
-    [dispatch],
+    [fetchVouchers],
   );
 
   useEffect(() => {
@@ -54,6 +98,9 @@ export function useVouchers() {
   }, [activeTab, loadVouchers]);
 
   const onChangeTab = useCallback((tab: VoucherStatus) => {
+    // Reset the shared load-more flag so a switched-to tab doesn't inherit
+    // the previous tab's footer spinner.
+    setLoadingMore(false);
     setActiveTab(tab);
   }, []);
 
@@ -61,6 +108,18 @@ export function useVouchers() {
     setRefreshing(true);
     loadVouchers(activeTab, true);
   }, [activeTab, loadVouchers]);
+
+  const onLoadMore = useCallback(() => {
+    const pagination = paginations.current[activeTab];
+    // Ignore the mount-time onEndReached (short list) until the first page
+    // has actually loaded, and skip when there is nothing more / already busy.
+    if (!pagination.loaded || pagination.isLast || pagination.isLoadingMore) {
+      return;
+    }
+    pagination.isLoadingMore = true;
+    setLoadingMore(true);
+    fetchVouchers(activeTab, pagination.page + 1);
+  }, [activeTab, fetchVouchers]);
 
   const onRefreshQR = useCallback((callback: any) => {}, []);
 
@@ -75,13 +134,15 @@ export function useVouchers() {
 
   return {
     activeTab,
-    availableVouchers: vouchers.available,
-    expiredVouchers: vouchers.expired,
+    availableVouchers: vouchers.AVAILABLE,
+    expiredVouchers: vouchers.EXPIRED,
     loading: !loadedTabs.has(activeTab),
+    loadingMore,
     onChangeTab,
+    onLoadMore,
     onRefresh,
     onUseVoucher,
     refreshing,
-    usedVouchers: vouchers.used,
+    usedVouchers: vouchers.USED,
   };
 }

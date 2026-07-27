@@ -91,13 +91,13 @@ function QRVoucher({
       )}
       <View style={styles.content}>
         <View style={styles.card}>
-          {!!data?.title && (
-            <Text style={styles.couponLabel}>{data?.title}</Text>
+          {!!data?.name && (
+            <Text style={styles.couponLabel}>{data?.name}</Text>
           )}
           {!!data?.amountText && (
             <Text style={styles.amountLabel}>{data?.amountText}</Text>
           )}
-          <QRCode size={QR_SIZE} value={data?.applicableStore} />
+          <QRCode size={QR_SIZE} value={data?.code} />
 
           <Text style={styles.validTime}>
             {t('qr_voucher.valid_time', { time: formatTime(remaining) })}

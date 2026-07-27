@@ -27,6 +27,7 @@ import {
   autoCompleteAddress,
   deleteAccount,
   getProfile,
+  getVouchers,
   updateMembership,
   updatePassword,
   updateProfileInfo,
@@ -40,7 +41,7 @@ import {
   topUpWallet,
 } from '@services/request/wallet';
 import { getTotalItemCart } from '@services/request/payment';
-import { call, delay, put, select, takeLatest } from 'redux-saga/effects';
+import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import { getErrorMessageApi } from '@utils/common';
 
 import {
@@ -65,64 +66,16 @@ import {
 import { AccountSelector } from '@services/selectors';
 import { refreshTokenRequest } from '../auth/authSlice';
 
-const MOCK_VOUCHERS_DELAY_MS = 400;
-
-// Mock data — replace with a real request function once the endpoint exists.
-const MOCK_VOUCHERS: readonly IVoucher[] = [
-  {
-    applicableStore: '카페 COOP',
-    daysLeft: 30,
-    description: '카페 COOP 전 음료 1잔 무료',
-    id: 'voucher-drink-free',
-    status: 'available',
-    title: '음료 무료 쿠폰',
-    validUntil: '2026-07-31',
-  },
-  {
-    daysLeft: 45,
-    description: '매장 전체 10% 할인',
-    id: 'voucher-discount-10',
-    minPayment: 5000,
-    status: 'available',
-    title: '10% 할인 쿠폰',
-    validUntil: '2026-08-15',
-  },
-  {
-    daysLeft: 4,
-    description: '스마트오더 배송비 무료',
-    id: 'voucher-free-shipping',
-    status: 'available',
-    title: '무료배송 쿠폰',
-    validUntil: '2026-07-05',
-  },
-  {
-    applicableStore: '생협 매장',
-    daysLeft: 0,
-    description: '도서 구매 5% 적립 쿠폰',
-    id: 'voucher-book-point',
-    status: 'used',
-    title: '도서 적립 쿠폰',
-    validUntil: '2026-06-20',
-  },
-  {
-    daysLeft: 0,
-    description: '신학기 문구 3,000원 할인',
-    id: 'voucher-stationery',
-    minPayment: 10_000,
-    status: 'expired',
-    title: '문구 할인 쿠폰',
-    validUntil: '2026-03-31',
-  },
-];
-
 function* getVouchersWorker(
   action: PayloadAction<IRequestGetVouchers>,
-): Generator<unknown, void, void> {
-  const { onFailure, onSuccess, type } = action.payload;
+): Generator<unknown, void, ListApiResponse<IVoucher[]>> {
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    // Simulate the network round-trip; swap for `call(getVouchers, request)`.
-    yield delay(MOCK_VOUCHERS_DELAY_MS);
-    onSuccess?.(MOCK_VOUCHERS.filter(voucher => voucher.status === type));
+    const response: ListApiResponse<IVoucher[]> = yield call(
+      getVouchers,
+      request,
+    );
+    onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
     onFailure?.(message);
@@ -310,7 +263,10 @@ export function* accountSaga() {
   yield takeLatest(autoCompleteAddressRequest.type, autoCompleteAddressWorker);
   yield takeLatest(deleteAccountRequest.type, deleteAccountWorker);
   yield takeLatest(getTotalItemCartRequest.type, getTotalItemCartWorker);
-  yield takeLatest(getVouchersRequest.type, getVouchersWorker);
+  // takeEvery (not takeLatest): voucher tabs share one action type, so a new
+  // fetch (tab switch / refresh) must not cancel an in-flight one. Duplicate
+  // work is already guarded in the hook (requestedTabs / isLoadingMore).
+  yield takeEvery(getVouchersRequest.type, getVouchersWorker);
   yield takeLatest(getProfileRequest.type, getProfileWorker);
   yield takeLatest(updateMembershipRequest.type, updateMembershipWorker);
   yield takeLatest(updatePasswordRequest.type, updatePasswordWorker);

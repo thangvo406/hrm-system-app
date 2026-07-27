@@ -75,6 +75,9 @@ export const EndPoints = {
     detail: (storeId: number | string) => `store/${storeId}`,
     storeOrderRecent: 'store/store-recent',
   },
+  VOUCHERS: {
+    list: (request: string) => `coupon/my-certificates${request}`,
+  },
   PAYMENT: {
     checkout: 'app/cart/items',
     updateProductCart: (cartId: number) => `app/cart/items/${cartId}`,

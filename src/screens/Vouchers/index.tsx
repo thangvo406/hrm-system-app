@@ -17,7 +17,9 @@ function Vouchers() {
     availableVouchers,
     expiredVouchers,
     loading,
+    loadingMore,
     onChangeTab,
+    onLoadMore,
     onRefresh,
     onUseVoucher,
     refreshing,
@@ -27,11 +29,13 @@ function Vouchers() {
   const tabs = useMemo(
     () => [
       {
-        id: 'available' as VoucherStatus,
+        id: 'AVAILABLE' as VoucherStatus,
         label: t('vouchers.tab_available'),
         render: () => (
           <VoucherList
             loading={loading}
+            loadingMore={loadingMore}
+            onLoadMore={onLoadMore}
             onRefresh={onRefresh}
             onUse={onUseVoucher}
             refreshing={refreshing}
@@ -41,11 +45,13 @@ function Vouchers() {
         testID: 'vouchers-tab-available',
       },
       {
-        id: 'used' as VoucherStatus,
+        id: 'USED' as VoucherStatus,
         label: t('vouchers.tab_used'),
         render: () => (
           <VoucherList
             loading={loading}
+            loadingMore={loadingMore}
+            onLoadMore={onLoadMore}
             onRefresh={onRefresh}
             onUse={onUseVoucher}
             refreshing={refreshing}
@@ -55,11 +61,13 @@ function Vouchers() {
         testID: 'vouchers-tab-used',
       },
       {
-        id: 'expired' as VoucherStatus,
+        id: 'EXPIRED' as VoucherStatus,
         label: t('vouchers.tab_expired'),
         render: () => (
           <VoucherList
             loading={loading}
+            loadingMore={loadingMore}
+            onLoadMore={onLoadMore}
             onRefresh={onRefresh}
             onUse={onUseVoucher}
             refreshing={refreshing}
@@ -75,6 +83,8 @@ function Vouchers() {
       usedVouchers,
       expiredVouchers,
       loading,
+      loadingMore,
+      onLoadMore,
       onRefresh,
       onUseVoucher,
       refreshing,
