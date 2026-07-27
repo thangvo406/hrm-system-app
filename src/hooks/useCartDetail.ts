@@ -1,13 +1,11 @@
 import { AppConstants } from '@constants';
 import Selection from '@dialogs/Selection';
-import WebViewScreen from '@dialogs/Webview';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import Shipping from '@screens/CartDetail/OrderFlow/Shipping';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
 import {
-  createOrderRequest,
   getAddressOrderRecentRequest,
   getCartDetailRequest,
   removeCartItemRequest,
@@ -202,24 +200,8 @@ export const useCartDetail = (props: any) => {
     });
   };
 
-  const handleRedirectPayment = (data: any) => {
-    const { kcpInitParams } = data?.responsePayment || {};
-    AppNavigator.showDialog({
-      screen: WebViewScreen,
-      data: {
-        siteCd: kcpInitParams?.siteCd,
-        orderNo: kcpInitParams?.orderNo,
-        amount: kcpInitParams?.reqAmt,
-        qtid: kcpInitParams?.qtid,
-      },
-      url: kcpInitParams?.kcpWebViewUrl,
-      isFullScreen: true,
-    });
-  };
-
   const onSubmitShipping = (shippingData: any) => {
     setAddressDelivery(shippingData?.address);
-    console.log('shippingData', shippingData);
     if (shippingData?.shipping) {
       setDeliveryTab(shippingData.shipping);
     }
@@ -232,64 +214,20 @@ export const useCartDetail = (props: any) => {
       quantity: it.quantity,
       selectedAttributes: it.selectedAttributes,
     }));
-
     AppNavigator.navigate(Paths.Payment, {
       payloadRequest: {
         storeId: data?.storeId,
-        address: JSON.stringify(addressDelivery?.address?.detail),
+        address: JSON.stringify(
+          addressDelivery?.address?.detail || addressDelivery,
+        ),
         addressDetail: addressDelivery?.detail || '',
         receiveMethod: deliveryTab,
         products: items,
         vouchers: [],
+        totalAmount: data?.subTotal,
         goFrom: 'order_product',
       },
     });
-    // dispatch(
-    //   createOrderRequest({
-    //     storeId: data?.storeId,
-    //     address: JSON.stringify(addressDelivery?.address?.detail),
-    //     addressDetail: addressDelivery?.detail || '',
-    //     createLinkRequest: {
-    //       payment: {
-    //         paymentType: paymentMethod,
-    //       },
-    //     },
-    //     receiveMethod: deliveryTab,
-    //     products: items,
-    //     vouchers: [],
-    //     onSuccess: (data: any) => {
-    //       const { responsePayment, responseCreateOrder } = data || {};
-    //       if (responsePayment?.requiresRedirect) {
-    //         handleRedirectPayment(data);
-    //       } else {
-    //         AppNavigator.navigate(Paths.OrderCompleted, {
-    //           data: responseCreateOrder,
-    //           dataOrder: {
-    //             deliveryMethod: deliveryTab,
-    //             paymentMethod,
-    //           },
-    //         });
-    //       }
-    //     },
-    //     onFailure: (_type: string, error: any) => {
-    //       if (typeof error == 'string') {
-    //         AppNavigator.showSnackBar({
-    //           message: error,
-    //           type: 'failed',
-    //         });
-    //       } else {
-    //         AppNavigator.navigate(Paths.OrderCompleted, {
-    //           data: error,
-    //           status: 'pending',
-    //           dataOrder: {
-    //             deliveryMethod: deliveryTab,
-    //             paymentMethod,
-    //           },
-    //         });
-    //       }
-    //     },
-    //   }),
-    // );
   };
 
   const onBack = () => {
@@ -305,6 +243,7 @@ export const useCartDetail = (props: any) => {
       screen: Shipping,
       isFullScreen: true,
       addressOrderRecent,
+      overlayColor: '#F2F2F2',
       onSubmit: onSubmitShipping,
     });
   };

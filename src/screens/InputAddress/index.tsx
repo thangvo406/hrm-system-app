@@ -18,11 +18,12 @@ import EmptyView from '@components/EmptyView';
 import imageNames from '@assets/images/names';
 import { Colors } from '@constants';
 import isEmpty from 'lodash/isEmpty';
+import { DeviceUtils } from '@kits/core/utils';
 
 const TEXT_COLOR = '#1A1A1A';
 const TEXT_MUTED = '#9E9E9E';
 const BORDER_COLOR = '#E0E0E0';
-
+const { ifAndroid } = DeviceUtils;
 function InputAddress(props: any) {
   const { t } = useTranslation();
   const inssets = useSafeAreaInsets();
@@ -53,7 +54,9 @@ function InputAddress(props: any) {
     <View
       style={[
         styles.container,
-        { paddingBottom: isDialog ? undefined : inssets.bottom },
+        isDialog
+          ? { marginBottom: -inssets.bottom }
+          : { paddingBottom: inssets.bottom },
       ]}
     >
       <HeaderDetail
@@ -128,7 +131,15 @@ function InputAddress(props: any) {
           )}
         </ScrollView>
       </ScrollView>
-      <View style={styles.footer}>
+      <View
+        style={[
+          styles.footer,
+          {
+            paddingBottom:
+              (isDialog ? ifAndroid(0, inssets.bottom) : 0) + ScaleSize(12),
+          },
+        ]}
+      >
         <Button
           title={t('input_address.confirm_button')}
           type="primary"
@@ -149,7 +160,7 @@ const styles = StyleSheet.create({
     borderTopColor: BORDER_COLOR,
     borderTopWidth: 1,
     paddingHorizontal: ScaleSize(16),
-    paddingVertical: ScaleSize(12),
+    paddingTop: ScaleSize(12),
   },
   previousAddress: {
     color: TEXT_MUTED,

@@ -16,11 +16,12 @@ import CartProductCard from './CartProductCard';
 import OrderSummary from './OrderSummary';
 import StoreHeader from './StoreHeader';
 import imageNames from '@assets/images/names';
+import { DeviceUtils } from '@kits/core/utils';
 
 const SCREEN_BG = '#F2F2F2';
 const TEXT_DARK = '#1A1A1A';
 const DELIVERY_FEE = 0;
-
+const { ifAndroid } = DeviceUtils;
 const METHOD_LABEL_KEYS: Readonly<Record<string, string>> = {
   DELIVERY: 'order_method.method_delivery',
   DINE_IN: 'order_method.method_dinein',
@@ -120,7 +121,7 @@ function CartDetail(props: any) {
           <View
             style={[
               styles.bottomBar,
-              { paddingBottom: insets.bottom + ScaleSize(12) },
+              { paddingBottom: ifAndroid(16, insets.bottom) },
             ]}
           >
             <Button

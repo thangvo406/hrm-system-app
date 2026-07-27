@@ -137,13 +137,13 @@ function CardItem({
             testID="bank-accounts-add"
             width={CARD_WIDTH}
             containerStyle={{
-                backgroundColor: Colors.green03,
+              backgroundColor: Colors.green03,
             }}
             labelStyle={{
-                color: Colors.green04,
+              color: Colors.green04,
             }}
             plusStyle={{
-                backgroundColor: Colors.green04,
+              backgroundColor: Colors.green04,
             }}
           />
         </Animated.View>
@@ -214,7 +214,12 @@ type Properties = {
   readonly selectedId: string | undefined;
 };
 
-function BankAccounts({ cards, initialIndex, onSelect, selectedId }: Properties) {
+function BankAccounts({
+  cards,
+  initialIndex,
+  onSelect,
+  selectedId,
+}: Properties) {
   const { t } = useTranslation();
   const carouselRef = useRef<ICarouselInstance>(null);
   const focusedIndex = cards.length > 0 ? initialIndex : 0;
@@ -238,7 +243,6 @@ function BankAccounts({ cards, initialIndex, onSelect, selectedId }: Properties)
     },
     [onSelect],
   );
-
   const renderItem = useCallback<CarouselRenderItem<IAccount>>(
     ({ animationValue, index, item }) => (
       <CardItem
@@ -248,7 +252,7 @@ function BankAccounts({ cards, initialIndex, onSelect, selectedId }: Properties)
         isAdd={item.id === ADD_CARD_ID}
         onAddPress={onAdd}
         onSelect={handleSelect}
-        selected={String(item.id) === selectedId}
+        selected={String(item.id) == selectedId}
         slotIndex={index}
       />
     ),
@@ -269,6 +273,7 @@ function BankAccounts({ cards, initialIndex, onSelect, selectedId }: Properties)
 
   return (
     <View style={styles.wrap}>
+      <Text style={styles.labelBankAccount}>{t('payment.coop_pay_label')}</Text>
       <View
         onTouchCancel={onTouchEnd}
         onTouchEnd={onTouchEnd}
@@ -320,6 +325,14 @@ const styles = StyleSheet.create({
     maxWidth: '70%',
     paddingHorizontal: ScaleSize(10),
     paddingVertical: ScaleSize(4),
+  },
+  labelBankAccount: {
+    fontSize: ScaleSize(13),
+    fontWeight: 'bold',
+    color: Colors.green04,
+    // marginVertical: ScaleSize(18),
+    marginBottom: ScaleSize(18),
+    marginLeft: ScaleSize(18),
   },
   badgeText: {
     fontSize: ScaleSize(11),

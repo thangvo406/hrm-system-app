@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import PayButton from './PayButton';
 import PaymentMethodCarousel from './PaymentMethodCarousel';
-import PointUsageCard from './PointUsageCard';
+import { PointUsageCard } from '@components';
 import HeaderDetail from '@components/HeaderDetail';
 
 function PaymentOffline() {

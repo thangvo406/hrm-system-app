@@ -1,4 +1,6 @@
-import { AppButton, CheckBox, TextField } from '@components';
+import AppButton from '@components/AppButton';
+import CheckBox from '@components/CheckBox';
+import TextField from '@components/TextField';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from '@utils/product';
@@ -29,13 +31,13 @@ function PointUsageCard({
       <CheckBox
         onPress={onToggleUsePoints}
         selected={usePoints}
-        testID="payment-offline-toggle-point"
+        testID="point-usage-toggle"
       />
 
       <View style={styles.info}>
-        <Text style={styles.label}>{t('payment_offline.use_point')}</Text>
+        <Text style={styles.label}>{t('point_usage.use_point')}</Text>
         <Text style={styles.holdingLabel}>
-          {t('payment_offline.point_holding', {
+          {t('point_usage.point_holding', {
             amount: formatCurrency(pointHolding),
           })}
         </Text>
@@ -47,8 +49,8 @@ function PointUsageCard({
         onChangeText={onChangePointUsed}
         placeholder="0"
         style={styles.pointPillText}
-        testID="payment-offline-point-pill"
-        value={`${formatCurrency(pointUsed)} ${t('payment_offline.point_unit')}`}
+        testID="point-usage-input"
+        value={`${formatCurrency(pointUsed)} ${t('point_usage.point_unit')}`}
       />
     </AppButton>
   );

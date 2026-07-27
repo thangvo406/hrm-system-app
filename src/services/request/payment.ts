@@ -18,6 +18,7 @@ import type {
   ICreateOrderResponse,
   ICreateLinkPaymentOrderRequest,
   IKcpInitParams,
+  IResponseInitPayment,
 } from '@type/payment';
 
 import {
@@ -112,11 +113,11 @@ export const createOrder = async (
 
 export const createLinkPaymentOrder = async (
   request: ICreateLinkPaymentOrderRequest,
-): Promise<ICreateOrderResponse> => {
+): Promise<IResponseInitPayment> => {
   const orderId = request.orderId;
   delete request.orderId;
   const response = await httpRequest.post<
-    SingleApiResponse<ICreateOrderResponse>
+    SingleApiResponse<IResponseInitPayment>
   >(EndPoints.PAYMENT.createLinkPaymentOrder(orderId), request);
   return response.data;
 };
@@ -172,8 +173,10 @@ export const balanceCharge = async (
 export const increaseContribution = async (
   request: WithoutCallbacks<IRequestIncreaseContribute>,
 ): Promise<IResponseIncreaseContribute> => {
- const response =  await httpRequest.post<SingleApiResponse<IResponseIncreaseContribute>>(EndPoints.CONTRIBUTION.increase, request);
- return response.data;
+  const response = await httpRequest.post<
+    SingleApiResponse<IResponseIncreaseContribute>
+  >(EndPoints.CONTRIBUTION.increase, request);
+  return response.data;
 };
 
 export const getContributeSummary = async (): Promise<IContributeSummary> => {

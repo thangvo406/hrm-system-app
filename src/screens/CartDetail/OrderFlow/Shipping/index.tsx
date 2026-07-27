@@ -4,10 +4,12 @@ import { AppButton, Button, HeaderDetail, Image } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AppNavigator from '@navigation/AppNavigator';
 import InputAddress from '@screens/InputAddress';
+import { DeviceUtils } from '@kits/core/utils';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SCREEN_BG = '#F2F2F2';
 const TEXT_DARK = '#1A1A1A';
@@ -15,7 +17,7 @@ const ICON_TINT = '#6B6B6B';
 const METHOD_ICON_SIZE = ScaleSize(34);
 
 type OrderMethod = 'DELIVERY' | 'DINE_IN' | 'PICKUP';
-
+const { ifAndroid } = DeviceUtils;
 const ORDER_METHODS: readonly {
   readonly desc: string;
   readonly icon: IconName;
@@ -49,6 +51,9 @@ const STORE_HOURS = '09:00~17:00';
 
 type ShippingProperties = {
   readonly onSelectMethod?: (method: OrderMethod) => void;
+  readonly onSubmit?: (data: any) => void;
+  readonly onRequestClose: () => void;
+  readonly addressOrderRecent: any;
 };
 
 function Shipping({
@@ -60,6 +65,19 @@ function Shipping({
   const { t } = useTranslation();
   const [selected, setSelected] = useState<OrderMethod>('DELIVERY');
   const [addressDelivery, setAddressDelivery] = useState(addressOrderRecent);
+  const insets = useSafeAreaInsets();
+
+  const getAddressDisplay = () => {
+    return (
+      addressDelivery?.address?.roadAddress ||
+      addressDelivery?.address?.landAddress ||
+      addressDelivery?.address_name
+    );
+  };
+
+  const disableBtn = useMemo(() => {
+    return selected == 'DELIVERY' && !getAddressDisplay();
+  }, [addressDelivery, selected]);
 
   const onUpdateAddress = (address: any) => {
     setAddressDelivery(address);
@@ -77,14 +95,6 @@ function Shipping({
       addressRecent: addressOrderRecent,
       onSubmit: onUpdateAddress,
     });
-  };
-
-  const getAddressDisplay = () => {
-    return (
-      addressDelivery?.address?.roadAddress ||
-      addressDelivery?.address?.landAddress ||
-      addressDelivery?.address_name
-    );
   };
 
   const handleSubmit = () => {
@@ -176,9 +186,11 @@ function Shipping({
         title="Continue"
         type="rounded"
         onPress={handleSubmit}
+        disabled={disableBtn}
         style={{
           width: '90%',
           alignSelf: 'center',
+          bottom: ifAndroid(-insets.bottom, 0),
         }}
       />
     </View>
@@ -279,6 +291,7 @@ const styles = StyleSheet.create({
   screen: {
     backgroundColor: SCREEN_BG,
     flex: 1,
+    paddingBottom: ScaleSize(10),
   },
   sectionTitle: {
     color: TEXT_DARK,

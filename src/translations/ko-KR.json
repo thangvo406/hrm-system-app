@@ -325,14 +325,12 @@
     },
     "payment": {
       "title": "결제수단",
-      "pay_money_label": "생협페이머니",
-      "balance_label": "잔액",
       "won_unit": "원",
-      "point_coupon_label": "포인트 / 쿠폰",
+      "coupon_label": "쿠폰",
+      "coop_pay_label": "생협페이",
+      "order_amount": "주문 금액",
+      "final_amount": "최종 결제금액",
       "select_coupon": "쿠폰 선택",
-      "use_point": "포인트 사용",
-      "point_holding": "보유 {{amount}}P",
-      "point_unit": "P",
       "general_payment_label": "일반결제",
       "credit_check_card": "신용카드 · 체크카드 (PG)",
       "simple_payment_label": "간편결제",
@@ -345,11 +343,13 @@
       "badge_card": "CARD",
       "badge_bank": "BANK"
     },
-    "payment_offline": {
-      "title": "결제하기",
+    "point_usage": {
       "use_point": "포인트 사용",
       "point_holding": "보유 {{amount}}P",
-      "point_unit": "P",
+      "point_unit": "P"
+    },
+    "payment_offline": {
+      "title": "결제하기",
       "method_label": "결제수단",
       "coop_pay_label": "생협페이",
       "add_method": "카드/계좌",
@@ -696,8 +696,6 @@
     "payment_cart": {
       "remove_cart_success": "장바구니가 삭제되었습니다",
       "select_pickup_time": "픽업 시간 선택",
-      "delivery_pickup_title": "배달/픽업",
-      "new_address_label": "새 주소로 배달",
       "title": "장바구니",
       "badge_delivery": "배달",
       "badge_pickup": "픽업",
@@ -710,13 +708,7 @@
       "confirm_delivery_eta": "{{method}} · 예상 소요 약 15분",
       "quantity_count": "{{value}}개",
       "pay_button": "결제하기",
-      "payment_methods": {
-        "coop_pay": "생협 Pay",
-        "credit_card": "신용/체크카드",
-        "easy_payment": "간편결제"
-      },
       "product_info": {
-        "section_title": "선택한 상품",
         "remove_dialog_title": "이 상품을 삭제하시겠습니까?",
         "remove_dialog_cancel": "아니오",
         "remove_dialog_confirm": "확인",

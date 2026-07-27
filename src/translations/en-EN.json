@@ -69,14 +69,12 @@
     },
     "payment": {
       "title": "Payment method",
-      "pay_money_label": "Coop Pay Money",
-      "balance_label": "Balance",
       "won_unit": "won",
-      "point_coupon_label": "Point / Coupon",
+      "coupon_label": "Coupon",
+      "coop_pay_label": "Coop Pay",
+      "order_amount": "Order amount",
+      "final_amount": "Final payment amount",
       "select_coupon": "Select coupon",
-      "use_point": "Use points",
-      "point_holding": "Holding {{amount}}P",
-      "point_unit": "P",
       "general_payment_label": "General payment",
       "credit_check_card": "Credit card · Check card (PG)",
       "simple_payment_label": "Easy payment",
@@ -89,11 +87,13 @@
       "badge_card": "CARD",
       "badge_bank": "BANK"
     },
-    "payment_offline": {
-      "title": "Pay",
+    "point_usage": {
       "use_point": "Use points",
       "point_holding": "Holding {{amount}}P",
-      "point_unit": "P",
+      "point_unit": "P"
+    },
+    "payment_offline": {
+      "title": "Pay",
       "method_label": "Payment method",
       "coop_pay_label": "Coop Pay",
       "add_method": "Card/Account",
@@ -694,8 +694,6 @@
     "payment_cart": {
       "remove_cart_success": "Cart removed successfully",
       "select_pickup_time": "Select Pickup Time",
-      "delivery_pickup_title": "Delivery/Pickup",
-      "new_address_label": "Deliver to a new address",
       "title": "Cart",
       "badge_delivery": "Delivery",
       "badge_pickup": "Pickup",
@@ -708,13 +706,7 @@
       "confirm_delivery_eta": "{{method}} · Est. ~15 min",
       "quantity_count": "{{value}} pcs",
       "pay_button": "Pay",
-      "payment_methods": {
-        "coop_pay": "Coop Pay",
-        "credit_card": "Credit/Debit Card",
-        "easy_payment": "Easy Payment"
-      },
       "product_info": {
-        "section_title": "Selected Items",
         "remove_dialog_title": "Do you want to remove this item?",
         "remove_dialog_cancel": "No",
         "remove_dialog_confirm": "Confirm",

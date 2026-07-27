@@ -4,7 +4,10 @@ import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountManagementSelector } from '@services/selectors';
 // import { topUpWalletRequest } from '@services/slices/account/accountSlice';
-import { balanceChargeRequest, increaseContributionRequest } from '@services/slices/payment/paymentSlice';
+import {
+  balanceChargeRequest,
+  increaseContributionRequest,
+} from '@services/slices/payment/paymentSlice';
 // import uniqueId from 'lodash/uniqueId';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +16,7 @@ import type { IAccount } from '@type';
 import type { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { WebViewNavigation } from 'react-native-webview';
 import { deepLinkGate } from '@navigation/deepLinkGate';
+import { PaymentTypes } from '@constants/config';
 
 export type PaymentMethod = 'credit_card' | 'virtual_account';
 
@@ -26,7 +30,7 @@ const BONUS_RATE = 0.005;
 export const BONUS_PERCENT = '0.5';
 
 export const useTopUp = (props?: any) => {
-  const {isContribute = false } = props || {}
+  const { isContribute = false } = props || {};
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const [amountTopUp, setAmountTopUp] = useState('');
@@ -44,9 +48,8 @@ export const useTopUp = (props?: any) => {
   }, [amountTopUp]);
 
   useEffect(() => {
-    setSelectedAccountId(bankAccounts?.[0]?.id)
-  }, [])
-  
+    setSelectedAccountId(bankAccounts?.[0]?.id);
+  }, []);
 
   const bonusAmount = useMemo(
     () => Math.floor(Number(amountTopUp) * BONUS_RATE),
@@ -54,12 +57,14 @@ export const useTopUp = (props?: any) => {
   );
 
   const onSubmit = () => {
-    const executorRequest = isContribute ? increaseContributionRequest : balanceChargeRequest;
+    const executorRequest = isContribute
+      ? increaseContributionRequest
+      : balanceChargeRequest;
     dispatch(
       executorRequest({
         amount: Number(amountTopUp),
         payment: {
-          paymentType: 'SAVED_METHOD',
+          paymentType: PaymentTypes.SAVED_METHOD,
           paymentMethodId: selectedAccountId,
         },
         onSuccess: (data: any) => {

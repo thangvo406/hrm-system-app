@@ -77,7 +77,7 @@ function AccountManagement() {
             accounts={cards}
             initialIndex={PRIMARY_CARD_INDEX}
             isShowUnRegister={isShowUnRegister}
-            onRegisterCard={onRegisterCard}
+            onRegisterCard={onRegisterAccount}
           />
         ) : (
           <>

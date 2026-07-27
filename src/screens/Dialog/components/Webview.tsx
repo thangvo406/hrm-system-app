@@ -28,6 +28,7 @@ import type {
   ShouldStartLoadRequest,
   WebViewNavigation,
 } from 'react-native-webview/lib/WebViewTypes';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function WebViewScreen(props: any) {
   //   const {
@@ -56,8 +57,9 @@ function WebViewScreen(props: any) {
     onLoadStart,
   } = props || {};
   const [isLoading, setIsLoading] = useState(true);
+  const [webTitle, setWebTitle] = useState('');
   const { t } = useTranslation();
-  // const insset = useSafeAreaInsets();
+  const inssets = useSafeAreaInsets();
   const webViewRef = useRef(null);
   const cookieScript = cookies
     ? `
@@ -124,10 +126,12 @@ function WebViewScreen(props: any) {
     <View
       style={{
         flex: 1,
+        marginBottom: -inssets.bottom,
+        backgroundColor: 'white',
       }}
     >
       <HeaderDetail
-        title={title}
+        title={title || webTitle}
         usePaddingTop={false}
         onPressBack={onRequestClose}
         hideNotify
@@ -179,6 +183,9 @@ function WebViewScreen(props: any) {
           onLoadEnd={onLoadEnd}
           onLoadStart={onLoadStart || _onLoadStart}
           onNavigationStateChange={(navState: WebViewNavigation): void => {
+            if (!title && !webTitle && navState.title) {
+              setWebTitle(navState.title);
+            }
             onNavigationStateChange?.(navState, onRequestClose);
           }}
           onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}

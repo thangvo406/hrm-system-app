@@ -3,7 +3,6 @@ import type { IPaymentCoupon } from '@hooks/usePayment';
 import { AppButton, Image } from '@components';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
-import { formatCurrency } from '@utils/product';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
 
@@ -14,25 +13,14 @@ const ACCENT_COLOR = '#2DB34A';
 type Properties = {
   readonly coupon: IPaymentCoupon;
   readonly onSelectCoupon: () => void;
-  readonly onUsePoint: () => void;
-  readonly pointHolding: number;
-  readonly pointUsed: number;
 };
 
-function PointCouponCard({
-  coupon,
-  onSelectCoupon,
-  onUsePoint,
-  pointHolding,
-  pointUsed,
-}: Properties) {
+function PointCouponCard({ coupon, onSelectCoupon }: Properties) {
   const { t } = useTranslation();
 
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionLabel}>
-        {t('payment.point_coupon_label')}
-      </Text>
+      <Text style={styles.sectionLabel}>{t('payment.coupon_label')}</Text>
 
       <View style={styles.card}>
         <AppButton
@@ -61,28 +49,6 @@ function PointCouponCard({
             />
           </View>
         </AppButton>
-
-        <View style={styles.divider} />
-
-        <View style={styles.row}>
-          <View>
-            <Text style={styles.rowLabel}>{t('payment.use_point')}</Text>
-            <Text style={styles.holdingLabel}>
-              {t('payment.point_holding', {
-                amount: formatCurrency(pointHolding),
-              })}
-            </Text>
-          </View>
-          <AppButton
-            onPress={onUsePoint}
-            style={styles.pointPill}
-            testID="payment-use-point"
-          >
-            <Text style={styles.pointPillText}>
-              {`${formatCurrency(pointUsed)} ${t('payment.point_unit')}`}
-            </Text>
-          </AppButton>
-        </View>
       </View>
     </View>
   );
@@ -102,29 +68,6 @@ const styles = StyleSheet.create({
     color: ACCENT_COLOR,
     fontSize: ScaleSize(14),
     fontWeight: '600',
-  },
-  divider: {
-    backgroundColor: '#F0F0F0',
-    height: 1,
-  },
-  holdingLabel: {
-    color: '#8A8F94',
-    fontSize: ScaleSize(12),
-    marginTop: ScaleSize(4),
-  },
-  pointPill: {
-    alignItems: 'center',
-    backgroundColor: '#2DB34A',
-    borderRadius: ScaleSize(8),
-    justifyContent: 'center',
-    minWidth: ScaleSize(96),
-    paddingHorizontal: ScaleSize(18),
-    paddingVertical: ScaleSize(12),
-  },
-  pointPillText: {
-    color: '#FFFFFF',
-    fontSize: ScaleSize(15),
-    fontWeight: '700',
   },
   row: {
     alignItems: 'center',

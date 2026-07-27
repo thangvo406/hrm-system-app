@@ -2,7 +2,7 @@ import { AppButton } from '@components';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import React, { useState } from 'react';
+import React from 'react';
 import { EASY_PAY_METHODS } from '@constants/config';
 
 const CIRCLE_SIZE = ScaleSize(44);
@@ -90,9 +90,8 @@ function SimplePaymentOption({ method, onPress, selected }: OptionProps) {
   );
 }
 
-function SimplePaymentSection() {
+function SimplePaymentSection({ selectedId, onSelect }: any) {
   const { t } = useTranslation();
-  const [selectedId, setSelectedId] = useState(METHODS[0].id);
 
   return (
     <View style={styles.section}>
@@ -105,7 +104,7 @@ function SimplePaymentSection() {
           <SimplePaymentOption
             key={method.id}
             method={method}
-            onPress={setSelectedId}
+            onPress={onSelect}
             selected={method.id === selectedId}
           />
         ))}

@@ -12,6 +12,7 @@ import { ScaleSize } from '@kits/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SCREEN_PADDING = ScaleSize(20);
 type Properties = {
@@ -28,6 +29,7 @@ function RequestAddCard({
   onDismiss,
 }: Properties) {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const {
     onManage,
     onSelectAccount,
@@ -44,7 +46,15 @@ function RequestAddCard({
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          marginBottom: -insets.bottom,
+          paddingBottom: insets.bottom / 2,
+        },
+      ]}
+    >
       <HeaderDetail
         usePaddingTop={false}
         hideNotify

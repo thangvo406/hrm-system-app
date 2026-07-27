@@ -115,7 +115,11 @@ function DialogOverlay({
       testID="dialog-overlay"
     >
       <Animated.View
-        style={[styles.backdrop, { backgroundColor: backdropColor }, backdropStyle]}
+        style={[
+          styles.backdrop,
+          { backgroundColor: backdropColor },
+          backdropStyle,
+        ]}
       >
         <Pressable
           accessibilityRole="button"
@@ -127,6 +131,12 @@ function DialogOverlay({
         />
       </Animated.View>
       <Animated.View style={[cardStyleSheet, safeAreaStyle, cardStyle]}>
+        {isFullScreen && !transparent && insets.top > 0 ? (
+          <Animated.View
+            pointerEvents="none"
+            style={[styles.fullScreenTopInset, { height: insets.top }]}
+          />
+        ) : undefined}
         <Screen
           {...(screenProps as Record<string, unknown>)}
           onRequestClose={handleDismiss}
@@ -159,7 +169,7 @@ const styles = StyleSheet.create({
     width: '86%',
   },
   cardFullScreen: {
-    backgroundColor: DIALOG_COLORS.card,
+    // backgroundColor: DIALOG_COLORS.card,
     flex: 1,
     width: '100%',
   },
@@ -167,6 +177,13 @@ const styles = StyleSheet.create({
     // No background, no border, no shadow, no padding. The backdrop is
     // still rendered, so the underlying screen is dimmed and the screen
     // content (e.g. a centered loader) appears to float over it.
+  },
+  fullScreenTopInset: {
+    backgroundColor: '#FFFFFF',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
