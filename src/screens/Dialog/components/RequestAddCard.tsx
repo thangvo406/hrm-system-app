@@ -9,23 +9,26 @@ import { Colors } from '@constants';
 import { REQUEST_ADD_CARD_METHOD_TYPES } from '@constants/config';
 import { useRequestAddCard } from '@hooks';
 import { ScaleSize } from '@kits/core';
+import { DeviceUtils } from '@kits/core/utils';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SCREEN_PADDING = ScaleSize(20);
-
+const { ifAndroid } = DeviceUtils;
 type Properties = {
   readonly onRegisterAccount?: () => void;
   readonly onRegisterCard?: () => void;
   readonly onRequestClose?: () => void;
+  readonly onDismiss?: () => void;
 };
 
 function RequestAddCard({
   onRegisterAccount,
   onRegisterCard,
   onRequestClose,
+  onDismiss,
 }: Properties) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -39,12 +42,17 @@ function RequestAddCard({
     selectedMethod,
   } = useRequestAddCard({ onRegisterAccount, onRegisterCard, onRequestClose });
 
+  const onPressBack = () => {
+    onRequestClose?.();
+    onDismiss?.();
+  };
+
   return (
     <View style={styles.container}>
       <HeaderDetail
         usePaddingTop={false}
         hideNotify
-        onPressBack={onRequestClose}
+        onPressBack={onPressBack}
         title={t('request_add_card.title')}
       />
 
@@ -81,7 +89,7 @@ function RequestAddCard({
         <Cards
           onRegisterAccount={onSelectAccount}
           hideEmptyView
-          isHideSubTitle
+          isShowUnRegister
           accounts={accounts}
           selectedAddCard={
             selectedMethod === REQUEST_ADD_CARD_METHOD_TYPES.ACCOUNT
@@ -90,10 +98,7 @@ function RequestAddCard({
       </View>
 
       <View
-        style={[
-          styles.footer,
-          { paddingBottom: insets.bottom + ScaleSize(12) },
-        ]}
+        style={[styles.footer, { paddingBottom: ifAndroid(0, insets.bottom) }]}
       >
         <Button
           onPress={onSubmit}

@@ -29,7 +29,7 @@ const openMenu = () => {
 };
 
 const goToPayCard = () => {
-  AppNavigator.navigate(Paths.SourceOfFund);
+  AppNavigator.navigate(Paths.AccountManagement);
 };
 
 const onPressStore = () => {

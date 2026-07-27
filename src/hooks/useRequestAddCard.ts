@@ -4,12 +4,13 @@ import RegisterCartConfirm from '@dialogs/RegisterCartConfirm';
 import WebViewScreen from '@dialogs/Webview';
 import AppNavigator from '@navigation/AppNavigator';
 import { deepLinkGate } from '@navigation/deepLinkGate';
-import { useAppDispatch } from '@services/common/storeHooks';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { AccountManagementSelector } from '@services/selectors/accountManagement';
 import {
   addAccountRequest,
   getAccountCardsRequest,
 } from '@services/slices/accountManagement/accountManagementSlice';
-import { IAccount, IKcpInitParams } from '@type';
+import { IKcpInitParams } from '@type';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { WebViewNavigation } from 'react-native-webview';
@@ -25,8 +26,8 @@ export const useRequestAddCard = ({
 }: UseRequestAddCardParams) => {
   // Nothing is highlighted until the user taps a tile (matches the design).
   const [selectedMethod, setSelectedMethod] = useState<string>();
-  const [rawData, setRawData] = useState<IAccount[]>();
   const [refreshKey, setRefreshKey] = useState(1);
+  const rawData = useAppSelector(AccountManagementSelector.getAccountCards);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
@@ -47,15 +48,11 @@ export const useRequestAddCard = ({
   }, []);
 
   useEffect(() => {
-    dispatch(
-      getAccountCardsRequest({
-        onSuccess: data => {
-          setRawData(data);
-        },
-        onFailure: () => {},
-      }),
-    );
-  }, [refreshKey]);
+    // The saga stores the response in redux (getAccountCardsSuccess); rawData
+    // above reads it via the selector. refreshKey re-triggers the fetch after
+    // a card/account is registered.
+    dispatch(getAccountCardsRequest({}));
+  }, [dispatch, refreshKey]);
 
   const onManage = useCallback(() => {
     onRequestClose?.();

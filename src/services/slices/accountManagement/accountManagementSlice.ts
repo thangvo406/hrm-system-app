@@ -1,3 +1,5 @@
+import type { PayloadAction } from '@reduxjs/toolkit';
+import type { IAccount } from '@type/accountManagement';
 import type {
   IRequestAddAccount,
   IRequestGetAccountCards,
@@ -5,8 +7,16 @@ import type {
 
 import { createSlice } from '@reduxjs/toolkit';
 
+type AccountManagementState = {
+  accountCards: IAccount[];
+};
+
+const initialState: AccountManagementState = {
+  accountCards: [],
+};
+
 const accountManagementSlice = createSlice({
-  initialState: {},
+  initialState,
   name: 'accountManagement',
   reducers: {
     addAccountRequest: {
@@ -17,9 +27,15 @@ const accountManagementSlice = createSlice({
       prepare: (payload: IRequestGetAccountCards) => ({ payload }),
       reducer: () => {},
     },
+    getAccountCardsSuccess: (state, action: PayloadAction<IAccount[]>) => {
+      state.accountCards = action.payload;
+    },
   },
 });
 
-export const { addAccountRequest, getAccountCardsRequest } =
-  accountManagementSlice.actions;
+export const {
+  addAccountRequest,
+  getAccountCardsRequest,
+  getAccountCardsSuccess,
+} = accountManagementSlice.actions;
 export const accountManagementReducer = accountManagementSlice.reducer;

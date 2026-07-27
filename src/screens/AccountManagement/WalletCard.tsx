@@ -45,28 +45,28 @@ function WalletCard({
       >
         <View style={styles.topRow}>
           <Text style={styles.walletName}>
-            {t('source_of_fund.wallet_name')}
+            {t('account_management.wallet_name')}
           </Text>
           <AppButton style={styles.pointPill} onPress={toggleUnRegister}>
             <Text style={styles.pointText}>
-              {t('source_of_fund.point_held', { point: formatCurrency(point) })}
+              {t('account_management.point_held', { point: formatCurrency(point) })}
             </Text>
           </AppButton>
         </View>
 
-        <Text style={styles.balanceLabel}>{t('source_of_fund.balance')}</Text>
+        <Text style={styles.balanceLabel}>{t('account_management.balance')}</Text>
         <View style={styles.balanceRow}>
           <Text style={styles.balanceValue}>{formatCurrency(balance)}</Text>
-          <Text style={styles.currency}>{t('source_of_fund.currency')}</Text>
+          <Text style={styles.currency}>{t('account_management.currency')}</Text>
         </View>
 
         {!isShowUnRegister && (
           <AppButton
             onPress={onUse}
             style={styles.useButton}
-            testID="source-of-fund-use"
+            testID="account-management-use"
           >
-            <Text style={styles.useButtonText}>{t('source_of_fund.use')}</Text>
+            <Text style={styles.useButtonText}>{t('account_management.use')}</Text>
           </AppButton>
         )}
 
@@ -74,20 +74,20 @@ function WalletCard({
           <AppButton
             onPress={onCharge}
             style={styles.actionButton}
-            testID="source-of-fund-charge"
+            testID="account-management-charge"
           >
             <Text style={styles.actionButtonText}>
-              {t('source_of_fund.charge')}
+              {t('account_management.charge')}
             </Text>
           </AppButton>
           {!isShowUnRegister && (
             <AppButton
               onPress={onChargeHistory}
               style={styles.actionButton}
-              testID="source-of-fund-charge-history"
+              testID="account-management-charge-history"
             >
               <Text style={styles.actionButtonText}>
-                {t('source_of_fund.charge_history')}
+                {t('account_management.charge_history')}
               </Text>
             </AppButton>
           )}

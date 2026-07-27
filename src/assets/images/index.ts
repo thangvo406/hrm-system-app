@@ -9,6 +9,7 @@ const images = {
   ic_clock_green: require('./ic_clock_green.png') as number,
   ic_close_gray: require('./ic_close_gray.png') as number,
   ic_credit_card_green: require('./ic_credit_card_green.png') as number,
+  ic_empty_illustration: require('./ic_empty_illustration.png') as number,
   ic_gallery_gray: require('./ic_gallery_gray.png') as number,
   ic_info_white: require('./ic_info_white.png') as number,
   ic_launcher_round: require('./ic_launcher_round.webp') as number,

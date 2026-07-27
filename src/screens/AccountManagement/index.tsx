@@ -1,13 +1,24 @@
-import { AppButton, HeaderDetail, Cards, BankAccounts } from '@components';
-import { PRIMARY_CARD_INDEX, useSourceOfFund } from '@hooks/useSourceOfFund';
+import {
+  AppButton,
+  HeaderDetail,
+  Cards,
+  BankAccounts,
+  Image,
+} from '@components';
+import {
+  PRIMARY_CARD_INDEX,
+  useAccountManagement,
+} from '@hooks/useAccountManagement';
 import { ScaleSize } from '@kits/core';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import TransactionHistories from './TransactionHistories';
 import WalletCard from './WalletCard';
+import imageNames from '@assets/images/names';
+import { Colors } from '@constants';
 
-function SourceOfFund() {
+function AccountManagement() {
   const { t } = useTranslation();
   const {
     accounts,
@@ -24,11 +35,11 @@ function SourceOfFund() {
     point,
     transactions,
     isShowUnRegister,
-  } = useSourceOfFund();
+  } = useAccountManagement();
 
   return (
     <View style={styles.safeArea}>
-      <HeaderDetail hideNotify title={t('source_of_fund.title')} />
+      <HeaderDetail hideNotify title={t('account_management.title')} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -47,29 +58,49 @@ function SourceOfFund() {
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
-            {t('source_of_fund.payment_methods')}
+            {t('account_management.payment_methods')}
           </Text>
           <AppButton
             onPress={onManagePaymentMethods}
             style={styles.manageButton}
-            testID="source-of-fund-manage"
+            testID="account-management-manage"
           >
-            <Text style={styles.manageText}>{t('source_of_fund.manage')}</Text>
+            <Text style={styles.manageText}>
+              {t('account_management.manage')}
+            </Text>
           </AppButton>
         </View>
 
-        <BankAccounts
-          accounts={cards}
-          initialIndex={PRIMARY_CARD_INDEX}
-          isShowUnRegister={isShowUnRegister}
-          onRegisterCard={onRegisterCard}
-        />
+        {cards?.length > 0 ? (
+          <BankAccounts
+            accounts={cards}
+            initialIndex={PRIMARY_CARD_INDEX}
+            isShowUnRegister={isShowUnRegister}
+            onRegisterCard={onRegisterCard}
+          />
+        ) : (
+          <>
+            <Text style={styles.coopPayLabel}>
+              {t('account_management.coop_pay_label')}
+            </Text>
+            <Image
+              name={imageNames.ic_empty_illustration}
+              width={ScaleSize(72)}
+              height={ScaleSize(72)}
+              style={{
+                alignSelf: 'center',
+                marginVertical: ScaleSize(20),
+              }}
+            />
+          </>
+        )}
 
         <Cards
           accounts={accounts}
           isShowUnRegister={isShowUnRegister}
           onRegisterAccount={onRegisterAccount}
-          onRegisterCard={onRegisterCard}
+          initialIndex={PRIMARY_CARD_INDEX}
+          // onRegisterCard={onRegisterCard}
         />
 
         <TransactionHistories
@@ -81,7 +112,7 @@ function SourceOfFund() {
   );
 }
 
-export default SourceOfFund;
+export default AccountManagement;
 
 const styles = StyleSheet.create({
   manageButton: {
@@ -90,6 +121,13 @@ const styles = StyleSheet.create({
     borderWidth: ScaleSize(1),
     paddingHorizontal: ScaleSize(12),
     paddingVertical: ScaleSize(6),
+  },
+  coopPayLabel: {
+    color: Colors.green04,
+    fontSize: ScaleSize(14),
+    fontWeight: 'bold',
+    paddingHorizontal: ScaleSize(17),
+    marginTop: ScaleSize(10),
   },
   manageText: {
     color: '#717171',

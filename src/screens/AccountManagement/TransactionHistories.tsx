@@ -1,4 +1,4 @@
-import type { WalletTransaction } from '@hooks/useSourceOfFund';
+import type { WalletTransaction } from '@hooks/useAccountManagement';
 
 import { AppButton } from '@components';
 import { ScaleSize } from '@kits/core';
@@ -59,13 +59,13 @@ function TransactionHistories({
   return (
     <>
       <View style={styles.header}>
-        <Text style={styles.title}>{t('source_of_fund.recent_history')}</Text>
+        <Text style={styles.title}>{t('account_management.recent_history')}</Text>
         <AppButton
           onPress={onViewAllTransactions}
           style={styles.manageButton}
-          testID="source-of-fund-view-all"
+          testID="account-management-view-all"
         >
-          <Text style={styles.manageText}>{t('source_of_fund.view_all')}</Text>
+          <Text style={styles.manageText}>{t('account_management.view_all')}</Text>
         </AppButton>
       </View>
 
@@ -75,7 +75,7 @@ function TransactionHistories({
             <TransactionRow key={transaction.id} transaction={transaction} />
           ))
         ) : (
-          <Text style={styles.desc}>{t('source_of_fund.no_history')}</Text>
+          <Text style={styles.desc}>{t('account_management.no_history')}</Text>
         )}
       </View>
     </>

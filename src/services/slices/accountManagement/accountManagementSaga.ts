@@ -4,10 +4,11 @@ import type {
   IRequestGetAccountCards,
 } from '@type/accountManagement';
 
-import { call, takeLatest } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
 import {
   addAccountRequest,
   getAccountCardsRequest,
+  getAccountCardsSuccess,
 } from './accountManagementSlice';
 import {
   addAccount,
@@ -34,6 +35,7 @@ function* getAccountCardsWorker(
   const { onFailure, onSuccess } = action.payload;
   try {
     const response = yield call(getAccountCards);
+    yield put(getAccountCardsSuccess(response));
     onSuccess?.(response);
   } catch (error_) {
     onFailure?.(getErrorMessageApi(error_));

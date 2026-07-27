@@ -33,7 +33,7 @@ export enum Paths {
   Products = 'products',
   Profile = 'profile',
   RefundRequest = 'refund_request',
-  SourceOfFund = 'source_of_fund',
+  AccountManagement = 'account_management',
   Startup = 'startup',
   Stores = 'stores',
   Survey = 'survey',

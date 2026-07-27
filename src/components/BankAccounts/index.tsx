@@ -115,7 +115,7 @@ function CardItem({
             height={CARD_HEIGHT}
             label={addLabel}
             onPress={onAddPress}
-            testID="source-of-fund-add-card"
+            testID="account-management-add-card"
             width={CARD_WIDTH}
             selected={selectedAddCard}
           />
@@ -166,7 +166,7 @@ type Properties = {
 
 function BankAccounts({
   accounts,
-  initialIndex = -1,
+  initialIndex = 0,
   isShowUnRegister,
   hideTitle,
   selectedAddCard,
@@ -174,8 +174,8 @@ function BankAccounts({
 }: Properties) {
   const { t } = useTranslation();
   // Add tile leads the carousel, so the branded card keeps its centered slot.
-  const focusedIndex = initialIndex + 1;
-  const progress = useSharedValue(focusedIndex);
+  const focusedIndex = accounts?.length > 0 ? initialIndex : -1;
+  const progress = useSharedValue(focusedIndex == -1 ? 0 : focusedIndex);
 
   const data = React.useMemo<IAccount[]>(
     () => [{ id: ADD_CARD_ID } as IAccount, ...(accounts || [])],
@@ -185,7 +185,7 @@ function BankAccounts({
   const renderItem = useCallback<CarouselRenderItem<IAccount>>(
     ({ animationValue, index, item }) => (
       <CardItem
-        addLabel={t('source_of_fund.add_card')}
+        addLabel={t('account_management.add_card')}
         animationValue={animationValue}
         card={item}
         cardIndex={index - 1}
@@ -215,7 +215,7 @@ function BankAccounts({
   return (
     <>
       {!hideTitle && (
-        <Text style={styles.label}>{t('source_of_fund.card')}</Text>
+        <Text style={styles.label}>{t('account_management.card')}</Text>
       )}
       <View style={styles.wrap}>
         <View
@@ -225,7 +225,7 @@ function BankAccounts({
         >
           <Carousel
             data={data}
-            defaultIndex={focusedIndex}
+            defaultIndex={focusedIndex == -1 ? undefined : focusedIndex}
             height={CARD_HEIGHT}
             onProgressChange={(_, absoluteProgress) => {
               progress.value = absoluteProgress;
@@ -234,11 +234,11 @@ function BankAccounts({
             loop={false}
             renderItem={renderItem}
             style={styles.carousel}
-            testID="source-of-fund-card-carousel"
+            testID="account-management-card-carousel"
             width={ITEM_WIDTH}
           />
         </View>
-        {accounts?.length > 0 && (
+        {accounts?.length > 1 && (
           <PaginationDots
             activeColor={DOT_ACTIVE_COLOR}
             activeWidth={DOT_ACTIVE_WIDTH}

@@ -566,7 +566,7 @@
       "notice_3": "Coop Pay Money cannot be used after a refund.",
       "submit": "Apply for Refund"
     },
-    "source_of_fund": {
+    "account_management": {
       "title": "Coop Pay",
       "wallet_name": "Coop Pay Money",
       "point_held": "🌱 {{point}}P held",
@@ -584,8 +584,7 @@
       "view_all": "View all",
       "no_payment_methods_title": "No payment methods registered yet",
       "no_payment_methods_desc": "Register a payment method to start using Coop Pay",
-      "register_card": "+ Register card",
-      "register_account": "+ Register account",
+      "register_card_account": "+ Register card/account",
       "add_card": "Add card",
       "add_account": "Add account",
       "no_history": "No recent history yet"

@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     paddingBottom: ScaleSize(24),
+    justifyContent: 'flex-end',
   },
   footerSeparator: {
     backgroundColor: '#F0F0F0',

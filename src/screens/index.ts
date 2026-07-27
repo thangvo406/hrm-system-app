@@ -28,7 +28,7 @@ export { default as QRCodePayment } from './QRCodePayment/index';
 export { default as ProductDetail } from './ProductDetail';
 export { default as Products } from './Products';
 export { default as RefundRequest } from './RefundRequest';
-export { default as SourceOfFund } from './SourceOfFund';
+export { default as AccountManagement } from './AccountManagement';
 export { default as Startup } from './Startup/Startup';
 export { default as Stores } from './Stores';
 export { default as Survey } from './Survey';

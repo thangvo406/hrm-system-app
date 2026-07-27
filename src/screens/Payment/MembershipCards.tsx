@@ -215,7 +215,7 @@ function MembershipCards({
 
   return (
     <>
-      <Text style={styles.label}>{t('source_of_fund.card')}</Text>
+      <Text style={styles.label}>{t('account_management.card')}</Text>
       <View style={styles.wrap}>
         <View
           onTouchCancel={onTouchEnd}

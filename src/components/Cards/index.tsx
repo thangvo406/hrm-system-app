@@ -72,25 +72,24 @@ function AccountItem({
 type Properties = {
   readonly accounts?: readonly IAccount[];
   readonly isShowUnRegister?: boolean;
-  readonly isHideSubTitle?: boolean;
   readonly selectedAddCard?: boolean;
   readonly hideEmptyView?: boolean;
   readonly initialIndex?: number;
   readonly onRegisterAccount?: () => void;
-  readonly onRegisterCard?: () => void;
+  // readonly onRegisterCard?: () => void;
 };
 
 function Cards({
   accounts,
   isShowUnRegister,
-  isHideSubTitle,
   selectedAddCard,
-  initialIndex = -1,
+  initialIndex = 0,
   hideEmptyView,
   onRegisterAccount,
-  onRegisterCard,
+  // onRegisterCard,
 }: Properties) {
-  const focusedIndex = initialIndex + 1;
+  const focusedIndex = accounts?.length > 0 ? initialIndex : -1;
+
   const { t } = useTranslation();
   const progress = useSharedValue(focusedIndex);
   const data = React.useMemo<IAccount[]>(
@@ -104,9 +103,9 @@ function Cards({
         <View style={styles.slot}>
           <AddPlaceholder
             height={CARD_HEIGHT}
-            label={t('source_of_fund.add_account')}
+            label={t('account_management.add_account')}
             onPress={onRegisterAccount}
-            testID="source-of-fund-add-account"
+            testID="account-management-add-account"
             width={CARD_WIDTH}
             selected={selectedAddCard}
           />
@@ -131,10 +130,9 @@ function Cards({
 
   return (
     <>
-      {!isShowUnRegister ||
-        (!isHideSubTitle && (
-          <Text style={styles.label}>{t('source_of_fund.account')}</Text>
-        ))}
+      {!isShowUnRegister && (
+        <Text style={styles.label}>{t('account_management.account')}</Text>
+      )}
 
       {hideEmptyView || (accounts?.length || 0) > 0 ? (
         <View style={styles.wrap}>
@@ -146,7 +144,7 @@ function Cards({
             <Carousel
               data={data}
               height={CARD_HEIGHT}
-              defaultIndex={focusedIndex}
+              defaultIndex={focusedIndex == -1 ? undefined : focusedIndex}
               onProgressChange={(_, absoluteProgress) => {
                 progress.value = absoluteProgress;
               }}
@@ -154,7 +152,7 @@ function Cards({
               pagingEnabled
               renderItem={renderItem}
               style={styles.carousel}
-              testID="source-of-fund-account-carousel"
+              testID="account-management-account-carousel"
               width={ITEM_WIDTH}
             />
           </View>
@@ -173,26 +171,26 @@ function Cards({
         !hideEmptyView && (
           <View style={styles.emptyState}>
             <Text style={styles.desc}>
-              {t('source_of_fund.no_payment_methods_title')}
+              {t('account_management.no_payment_methods_title')}
             </Text>
             <Text style={styles.subDesc}>
-              {t('source_of_fund.no_payment_methods_desc')}
+              {t('account_management.no_payment_methods_desc')}
             </Text>
 
             <View style={styles.actionRow}>
-              <Button
+              {/* <Button
                 onPress={onRegisterCard}
-                title={t('source_of_fund.register_card')}
+                title={t('account_management.register_card')}
                 type="outline-green"
                 style={styles.actionButton}
-                testID="source-of-fund-register-card"
-              />
+                testID="account-management-register-card"
+              /> */}
               <Button
                 onPress={onRegisterAccount}
-                title={t('source_of_fund.register_account')}
+                title={t('account_management.register_card_account')}
                 type="outline-green"
                 style={styles.actionButton}
-                testID="source-of-fund-register-account"
+                testID="account-management-register-account"
               />
             </View>
           </View>

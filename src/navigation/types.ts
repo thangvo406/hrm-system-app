@@ -75,7 +75,7 @@ export type RootStackParamList = {
   [Paths.Products]: { data: IStoreItem } | undefined;
   [Paths.Profile]: undefined;
   [Paths.RefundRequest]: undefined;
-  [Paths.SourceOfFund]: undefined;
+  [Paths.AccountManagement]: undefined;
   [Paths.Startup]: undefined;
   [Paths.Stores]: undefined;
   [Paths.Survey]: undefined;

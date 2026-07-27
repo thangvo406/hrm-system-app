@@ -3,7 +3,10 @@ import Information from '@dialogs/Information';
 import RequestAddCard from '@dialogs/RequestAddCard';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
-import { useCallback, useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { AccountManagementSelector } from '@services/selectors/accountManagement';
+import { getAccountCardsRequest } from '@services/slices/accountManagement/accountManagementSlice';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export type SourceCard = {
@@ -34,42 +37,7 @@ export type WalletTransaction = {
 const WALLET_BALANCE = 87_500;
 const WALLET_POINT = 1000;
 
-// Ordered pale → branded → coral so the branded card centers on open.
-const CARDS: readonly SourceCard[] = [
-  {
-    brand: '카카오뱅크',
-    id: 'card-kakao',
-    maskedNumber: '**** **** **** 8888',
-    network: 'VISA',
-  },
-  {
-    brand: 'NH농협카드',
-    id: 'card-nh',
-    maskedNumber: '**** **** **** 1234',
-    network: 'BC',
-  },
-  {
-    brand: '삼성카드',
-    id: 'card-samsung',
-    maskedNumber: '**** **** **** 5678',
-    network: 'MC',
-  },
-];
-
 export const PRIMARY_CARD_INDEX = 1;
-
-const ACCOUNTS: readonly SourceAccount[] = [
-  {
-    accountMasked: '****-**-****5678',
-    bankName: '신한은행',
-    id: 'acc-shinhan',
-  },
-  {
-    accountMasked: '****-**-****9012',
-    bankName: 'IBK기업은행',
-    id: 'acc-ibk',
-  },
-];
 
 const TRANSACTIONS: readonly WalletTransaction[] = [
   {
@@ -106,28 +74,41 @@ const TRANSACTIONS: readonly WalletTransaction[] = [
   },
 ];
 
-export const useSourceOfFund = () => {
-  const [isShowUnRegister, setShowUnRegister] = useState(false);
-  const [accounts, setAccounts] = useState(ACCOUNTS);
-  const [cards, setCards] = useState(CARDS);
-  const [transactions, setTransactions] = useState(TRANSACTIONS);
+export const useAccountManagement = () => {
+  const [transactions, setTransactions] = useState([]);
+  const rawData = useAppSelector(AccountManagementSelector.getAccountCards);
+  const dispatch = useAppDispatch();
   const { t } = useTranslation();
+
+  const accounts = useMemo(() => {
+    return rawData?.filter(it => it.type == 'CARD');
+  }, [rawData]);
+
+  const cards = useMemo(() => {
+    return rawData?.filter(it => it.type == 'BANK_ACCOUNT');
+  }, [rawData]);
+
+  const isShowUnRegister = useMemo(() => {
+    return rawData?.length == 0;
+  }, [rawData]);
+
   const toggleUnRegister = () => {
     // setShowUnRegister(prev => !prev);
     AppNavigator.navigate(Paths.PointMain);
   };
 
   useEffect(() => {
-    if (!isShowUnRegister) {
-      setAccounts(ACCOUNTS);
-      setTransactions(TRANSACTIONS);
-      setCards(CARDS);
-    } else {
-      setAccounts([]);
-      setTransactions([]);
-      setCards([]);
-    }
-  }, [isShowUnRegister]);
+    // The saga stores the response in redux (getAccountCardsSuccess); the
+    // selector above keeps rawData in sync, so no local setter is needed.
+    dispatch(getAccountCardsRequest({}));
+  }, [dispatch]);
+
+  const onRegisterAccount = useCallback(() => {
+    AppNavigator.showDialog({
+      screen: RequestAddCard,
+      isFullScreen: true,
+    });
+  }, []);
 
   const onShowDialogConfirm = () => {
     AppNavigator.showDialog({
@@ -140,20 +121,24 @@ export const useSourceOfFund = () => {
       cancelTitle: t('home.non_member_dialog.cancel'),
       confirmTitle: t('home.non_member_dialog.confirm'),
       onConfirm: () => {
-        AppNavigator.navigate(Paths.RegisterCard);
+        onRegisterAccount();
       },
     });
   };
 
   const onCharge = useCallback(() => {
-    AppNavigator.navigate(Paths.TopUp);
-  }, []);
+    if (rawData?.length > 0) {
+      AppNavigator.navigate(Paths.TopUp);
+    } else {
+      onShowDialogConfirm();
+    }
+  }, [rawData]);
 
   const onChargeHistory = useCallback(() => {
     if (!(accounts?.length > 0 || cards.length > 0)) {
       onShowDialogConfirm();
     } else {
-      AppNavigator.navigate(Paths.TopUp);
+      AppNavigator.navigate(Paths.PayPointHistories);
     }
   }, []);
 
@@ -162,19 +147,12 @@ export const useSourceOfFund = () => {
     onShowDialogConfirm();
   }, []);
 
-  const onRegisterCard = useCallback(() => {
-    AppNavigator.showDialog({
-      screen: RequestAddCard,
-      isFullScreen: true,
-    });
-  }, [accounts, cards]);
-
-  const onRegisterAccount = useCallback(() => {
-    AppNavigator.showDialog({
-      screen: RequestAddCard,
-      isFullScreen: true,
-    });
-  }, [accounts, cards]);
+  // const onRegisterCard = useCallback(() => {
+  //   AppNavigator.showDialog({
+  //     screen: RequestAddCard,
+  //     isFullScreen: true,
+  //   });
+  // }, [accounts, cards]);
 
   const onUse = useCallback(() => {
     AppNavigator.navigate(Paths.QRCodePayment);
@@ -193,7 +171,7 @@ export const useSourceOfFund = () => {
     onChargeHistory,
     onManagePaymentMethods,
     onRegisterAccount,
-    onRegisterCard,
+    // onRegisterCard,
     onUse,
     onViewAllTransactions,
     toggleUnRegister,

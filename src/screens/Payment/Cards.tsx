@@ -147,7 +147,7 @@ function Cards({ accounts, onSelect, selectedId }: Properties) {
 
   return (
     <>
-      <Text style={styles.label}>{t('source_of_fund.account')}</Text>
+      <Text style={styles.label}>{t('account_management.account')}</Text>
 
       {accounts.length > 0 ? (
         <View style={styles.wrap}>
@@ -187,10 +187,10 @@ function Cards({ accounts, onSelect, selectedId }: Properties) {
       ) : (
         <View style={styles.emptyState}>
           <Text style={styles.desc}>
-            {t('source_of_fund.no_payment_methods_title')}
+            {t('account_management.no_payment_methods_title')}
           </Text>
           <Text style={styles.subDesc}>
-            {t('source_of_fund.no_payment_methods_desc')}
+            {t('account_management.no_payment_methods_desc')}
           </Text>
         </View>
       )}
