@@ -19,7 +19,7 @@ import imageNames from '@assets/images/names';
 
 const SCREEN_BG = '#F2F2F2';
 const TEXT_DARK = '#1A1A1A';
-const DELIVERY_FEE = 500;
+const DELIVERY_FEE = 0;
 
 const METHOD_LABEL_KEYS: Readonly<Record<string, string>> = {
   DELIVERY: 'order_method.method_delivery',

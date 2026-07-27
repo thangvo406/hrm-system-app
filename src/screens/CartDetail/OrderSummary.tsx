@@ -14,13 +14,15 @@ type OrderSummaryProperties = {
 
 function OrderSummary({ deliveryFee, subTotal }: OrderSummaryProperties) {
   const { t } = useTranslation();
-  const hasFee = typeof deliveryFee === 'number' && deliveryFee > 0;
+  const hasFee = typeof deliveryFee === 'number';
   const subtotalAmount = t('common.display_price', {
     amount: formatCurrency(subTotal),
   });
-  const feeAmount = t('common.display_price', {
-    amount: formatCurrency(deliveryFee),
-  });
+  const feeAmount = deliveryFee
+    ? t('common.display_price', {
+        amount: formatCurrency(deliveryFee),
+      })
+    : t('order_history_detail.shipping_fee_free');
   const totalAmount = t('common.display_price', {
     amount: formatCurrency((subTotal ?? 0) + (hasFee ? deliveryFee : 0)),
   });
