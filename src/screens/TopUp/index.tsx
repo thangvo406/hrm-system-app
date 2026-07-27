@@ -1,7 +1,4 @@
-import type { IBankAccount } from '@hooks/useTopUp';
-import type { ListRenderItem } from 'react-native';
-
-import { AppButton, Carousel, HeaderDetail } from '@components';
+import { AppButton, HeaderDetail } from '@components';
 import {
   Dimensions,
   ScrollView,
@@ -11,19 +8,18 @@ import {
   View,
 } from 'react-native';
 import { ScaleSize } from '@kits/core';
-import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
 import { BONUS_PERCENT, useTopUp } from '@hooks/useTopUp';
 import { formatCurrency } from '@utils/product';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DeviceUtils } from '@kits/core/utils';
-import BankCard from './BankCard';
+import Cards from './Cards'
 
 const { ifAndroid } = DeviceUtils;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CARD_GUTTER = ScaleSize(20);
-const CARD_WIDTH = SCREEN_WIDTH - CARD_GUTTER * 2;
+const ITEM_WIDTH = SCREEN_WIDTH - ScaleSize(64);
+const CARD_HEIGHT = ScaleSize(92);
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#9B9B9B';
@@ -38,19 +34,13 @@ function TopUp() {
     amountTopUp,
     bankAccounts,
     bonusAmount,
+    selectedAccountId,
     enabledBtnSubmit,
     onAmountChange,
+    onSelectAccount,
     onSubmit,
   } = useTopUp();
 
-  const renderBankCard = useCallback<ListRenderItem<IBankAccount>>(
-    ({ index, item }) => (
-      <View style={styles.cardSlot}>
-        <BankCard account={item} index={index} width={CARD_WIDTH} />
-      </View>
-    ),
-    [],
-  );
 
   return (
     <View style={styles.safeArea}>
@@ -96,15 +86,15 @@ function TopUp() {
           </View>
         </View>
 
-        <Carousel
-          data={bankAccounts}
-          horizontalPadding={CARD_GUTTER}
-          itemWidth={CARD_WIDTH}
-          keyExtractor={item => item.id}
-          renderItem={renderBankCard}
-          style={styles.carousel}
-          testID="top-up-bank-carousel"
-        />
+        {bankAccounts.length > 0 ? (
+          <View style={styles.carouselWrap}>
+             <Cards
+              accounts={bankAccounts}
+              onSelect={onSelectAccount}
+              selectedId={selectedAccountId}
+            />
+          </View>
+        ) : undefined}
       </ScrollView>
 
       <View
@@ -161,10 +151,19 @@ const styles = StyleSheet.create({
     marginTop: ScaleSize(10),
   },
   carousel: {
+    justifyContent: 'center',
+    width: SCREEN_WIDTH,
+  },
+  carouselWrap: {
+    alignSelf: 'center',
     marginTop: ScaleSize(16),
+    width: SCREEN_WIDTH,
   },
   cardSlot: {
-    width: CARD_WIDTH,
+    alignItems: 'center',
+    height: CARD_HEIGHT,
+    justifyContent: 'center',
+    width: ITEM_WIDTH,
   },
   content: {
     paddingHorizontal: ScaleSize(20),
@@ -204,6 +203,12 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: ScaleSize(16),
     fontWeight: '600',
+  },
+  paginationRow: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    marginTop: ScaleSize(12),
   },
   safeArea: {
     backgroundColor: '#FFFFFF',

@@ -2,7 +2,7 @@ import type { ListRenderItem, StyleProp, ViewStyle } from 'react-native';
 import type { SharedValue } from 'react-native-reanimated';
 
 import { StyleSheet, View } from 'react-native';
-import React, { useImperativeHandle, useRef } from 'react';
+import React, { useCallback, useImperativeHandle, useRef } from 'react';
 import type { FlatList } from 'react-native';
 import Animated, {
   interpolate,
@@ -24,6 +24,7 @@ type ItemWithId = { readonly id: string };
 type Properties<T extends ItemWithId> = {
   readonly data: readonly T[];
   readonly horizontalPadding?: number;
+  readonly itemSpacing?: number;
   readonly itemWidth: number;
   readonly keyExtractor: (item: T, index: number) => string;
   readonly renderItem: ListRenderItem<T>;
@@ -61,6 +62,7 @@ function CarouselInner<T extends ItemWithId>(
   {
     data,
     horizontalPadding = 0,
+    itemSpacing = 0,
     itemWidth,
     keyExtractor,
     renderItem,
@@ -71,6 +73,7 @@ function CarouselInner<T extends ItemWithId>(
 ) {
   const scrollX = useSharedValue(0);
   const listReference = useRef<FlatList<T>>(null);
+  const snapInterval = itemWidth + itemSpacing;
 
   useImperativeHandle(
     ref,
@@ -78,35 +81,46 @@ function CarouselInner<T extends ItemWithId>(
       scrollToIndex: (index: number) => {
         listReference.current?.scrollToOffset({
           animated: true,
-          offset: index * itemWidth,
+          offset: index * snapInterval,
         });
       },
     }),
-    [itemWidth],
+    [snapInterval],
   );
 
   const onScroll = useAnimatedScrollHandler(event => {
     scrollX.value = event.contentOffset.x;
   });
 
+  const renderSpacedItem = useCallback<ListRenderItem<T>>(
+    info => (
+      <View
+        style={
+          info.index < data.length - 1 ? { marginRight: itemSpacing } : undefined
+        }
+      >
+        {renderItem(info)}
+      </View>
+    ),
+    [data.length, itemSpacing, renderItem],
+  );
+
   return (
-    <View
-      style={[styles.wrap, { paddingHorizontal: horizontalPadding }, style]}
-      testID={testID}
-    >
+    <View style={[styles.wrap, style]} testID={testID}>
       <Animated.FlatList
         bounces={false}
+        contentContainerStyle={{ paddingHorizontal: horizontalPadding }}
         data={data}
         decelerationRate="fast"
         horizontal
         keyExtractor={keyExtractor}
         onScroll={onScroll}
-        pagingEnabled
         ref={listReference}
-        renderItem={renderItem}
+        renderItem={renderSpacedItem}
         scrollEventThrottle={16}
         showsHorizontalScrollIndicator={false}
-        snapToInterval={itemWidth}
+        snapToAlignment="start"
+        snapToInterval={snapInterval}
         onTouchStart={() => {
           if (Globals.isScrollingRef) {
             Globals.isScrollingRef.current = true;
@@ -134,7 +148,7 @@ function CarouselInner<T extends ItemWithId>(
             <CarouselDot
               index={index}
               key={item.id}
-              pageSize={itemWidth}
+              pageSize={snapInterval}
               scrollX={scrollX}
             />
           ))}

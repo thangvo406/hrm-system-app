@@ -6,8 +6,13 @@ import { AccountManagementSelector } from '@services/selectors';
 // import { topUpWalletRequest } from '@services/slices/account/accountSlice';
 import { balanceChargeRequest } from '@services/slices/payment/paymentSlice';
 // import uniqueId from 'lodash/uniqueId';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import type { IAccount } from '@type';
+import type { ICarouselInstance } from 'react-native-reanimated-carousel';
+import { WebViewNavigation } from 'react-native-webview';
+import { deepLinkGate } from '@navigation/deepLinkGate';
 
 export type PaymentMethod = 'credit_card' | 'virtual_account';
 
@@ -20,25 +25,6 @@ export type IBankAccount = {
 const BONUS_RATE = 0.005;
 export const BONUS_PERCENT = '0.5';
 
-// Mock data — replace with the registered-accounts endpoint once available.
-const BANK_ACCOUNTS: readonly IBankAccount[] = [
-  {
-    accountMasked: '****-**-****5678',
-    bankName: '신한은행',
-    id: 'bank-shinhan',
-  },
-  {
-    accountMasked: '****-**-****1234',
-    bankName: 'IBK기업은행',
-    id: 'bank-ibk',
-  },
-  {
-    accountMasked: '****-**-****9012',
-    bankName: '국민은행',
-    id: 'bank-kb',
-  },
-];
-
 export const useTopUp = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
@@ -49,10 +35,17 @@ export const useTopUp = () => {
   const bankAccounts = useAppSelector(
     AccountManagementSelector.getAccountCards,
   );
+  const [selectedAccountId, setSelectedAccountId] = useState<IAccount['id']>();
+  const carouselCards = useRef<ICarouselInstance>(null);
 
   const enabledBtnSubmit = useMemo(() => {
     return Number(amountTopUp) >= 1;
   }, [amountTopUp]);
+
+  useEffect(() => {
+    setSelectedAccountId(bankAccounts?.[0]?.id)
+  }, [])
+  
 
   const bonusAmount = useMemo(
     () => Math.floor(Number(amountTopUp) * BONUS_RATE),
@@ -64,18 +57,37 @@ export const useTopUp = () => {
       balanceChargeRequest({
         amount: Number(amountTopUp),
         payment: {
-          paymentType: methodPayment,
-          vaBankCode: '088',
+          paymentType: 'SAVED_METHOD',
+          paymentMethodId: selectedAccountId,
         },
         onSuccess: data => {
           AppNavigator.showDialog({
             screen: WebViewScreen,
             title: t('common.payment'),
-            data: {
-              siteCd: data?.siteCd,
-              orderNo: data?.orderNo,
-              amount: data?.reqAmt,
+            cookies: {
+              site_cd: data?.siteCd,
+              req_type: data?.reqType,
+              ordr_idxx: data?.orderNo,
+              req_amt: data?.reqAmt,
               qtid: data?.qtid,
+              qpay_sdk_url: data?.qpaySdkUrl,
+            },
+            onNavigationStateChange: (
+              navState: WebViewNavigation,
+              onRequestClose: any,
+            ) => {
+              const { url } = navState || {};
+              // coop://registration/identity/failure?error=cert_failed
+              const isDeeplinkApp = url?.startsWith?.('coop://');
+              if (isDeeplinkApp) {
+                const params = deepLinkGate.getPathFromUrl(navState.url);
+                onRequestClose();
+                if (params?.error) {
+                  // onShowPopupFailed();
+                } else {
+                  // setRefreshKey(prev => prev + 1);
+                }
+              }
             },
             url: data?.kcpWebViewUrl,
             isFullScreen: true,
@@ -114,14 +126,22 @@ export const useTopUp = () => {
     setAmountTopUp(value.replaceAll(/\D/g, ''));
   };
 
+  const onSelectAccount = (itemId: string) => {
+    setSelectedAccountId(itemId);
+    // carouselCards.current?.scrollTo({ animated: true, index });
+  };
+
   return {
     amountTopUp,
     bankAccounts,
     bonusAmount,
+    carouselCards,
     enabledBtnSubmit,
     methodPayment,
+    selectedAccountId,
     onAmountChange,
-    setMethodPayment,
+    onSelectAccount,
     onSubmit,
+    setMethodPayment,
   };
 };
