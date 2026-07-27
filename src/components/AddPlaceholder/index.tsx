@@ -1,7 +1,7 @@
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 
 import AppButton from '../AppButton';
 
@@ -19,6 +19,9 @@ type Properties = {
   readonly selected?: boolean;
   readonly testID?: string;
   readonly width: number;
+  readonly plusStyle?: ViewStyle;
+  readonly labelStyle?: TextStyle;
+  readonly containerStyle?: ViewStyle;
 };
 
 function AddPlaceholder({
@@ -28,6 +31,9 @@ function AddPlaceholder({
   selected = false,
   testID,
   width,
+  plusStyle,
+  labelStyle,
+  containerStyle
 }: Properties) {
   return (
     <AppButton onPress={onPress} testID={testID}>
@@ -36,6 +42,7 @@ function AddPlaceholder({
           styles.card,
           selected && styles.cardSelected,
           { height, width },
+          containerStyle
         ]}
       >
         <View style={styles.plus}>
@@ -43,13 +50,14 @@ function AddPlaceholder({
             style={[
               styles.plusBarHorizontal,
               selected && styles.plusBarSelected,
+              plusStyle
             ]}
           />
           <View
-            style={[styles.plusBarVertical, selected && styles.plusBarSelected]}
+            style={[styles.plusBarVertical, selected && styles.plusBarSelected, plusStyle]}
           />
         </View>
-        <Text style={[styles.label, selected && styles.labelSelected]}>
+        <Text style={[styles.label, selected && styles.labelSelected, labelStyle]}>
           {label}
         </Text>
       </View>

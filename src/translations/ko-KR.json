@@ -339,7 +339,11 @@
       "kakao_pay": "카카오페이",
       "naver_pay": "네이버페이",
       "toss_pay": "토스",
-      "pay_action": "결제하기"
+      "pay_action": "결제하기",
+      "add_method": "카드/계좌",
+      "badge_pay_money": "PAY MONEY",
+      "badge_card": "CARD",
+      "badge_bank": "BANK"
     },
     "payment_offline": {
       "title": "결제하기",

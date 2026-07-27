@@ -3,9 +3,8 @@ import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { usePayment } from '@hooks';
 import { useTranslation } from 'react-i18next';
-import Cards from './Cards';
 import GeneralPaymentSection from './GeneralPaymentSection';
-import MembershipCards from './MembershipCards';
+import BankAccounts from './BankAccounts';
 import PayButton from './PayButton';
 import PayMoneyCard from './PayMoneyCard';
 import PointCouponCard from './PointCouponCard';
@@ -14,17 +13,14 @@ import SimplePaymentSection from './SimplePaymentSection';
 function Payment() {
   const { t } = useTranslation();
   const {
-    accounts,
-    cards,
     initialIndex,
     onPay,
-    onSelectAccount,
     onSelectCard,
     onSelectGeneralMethod,
     payMoneyBalance,
     pointHolding,
     pointUsed,
-    selectedAccountId,
+    bankAccounts,
     selectedCardId,
     selectedCoupon,
     onSelectCoupon,
@@ -50,17 +46,11 @@ function Payment() {
         />
 
         <View style={styles.fullBleed}>
-          <MembershipCards
-            cards={cards}
+          <BankAccounts
+            cards={bankAccounts}
             initialIndex={initialIndex}
             onSelect={onSelectCard}
             selectedId={selectedCardId}
-          />
-
-          <Cards
-            accounts={accounts}
-            onSelect={onSelectAccount}
-            selectedId={selectedAccountId}
           />
         </View>
 

@@ -6,6 +6,8 @@ import { Paths } from '@navigation/paths';
 import { useCallback, useState } from 'react';
 import RequestAddCard from '@dialogs/RequestAddCard';
 import VouchersSelection from '@dialogs/VouchersSelection';
+import { useAppSelector } from '@services/common/storeHooks';
+import { AccountManagementSelector } from '@services/selectors';
 
 export type IPaymentCoupon = {
   readonly id: string;
@@ -77,6 +79,7 @@ export const usePayment = () => {
     id: CARDS[PRIMARY_CARD_INDEX].id,
     type: 'card',
   });
+  const bankAccounts = useAppSelector(AccountManagementSelector.getAccountCards);
 
   const selectedCardId =
     selectedMethod.type === 'card' ? selectedMethod.id : undefined;
@@ -120,6 +123,7 @@ export const usePayment = () => {
     onSelectCoupon,
     onSelectGeneralMethod,
     onUsePoint,
+    bankAccounts,
     payMoneyBalance: PAY_MONEY_BALANCE,
     pointHolding: POINT_HOLDING,
     pointUsed: POINT_USED,

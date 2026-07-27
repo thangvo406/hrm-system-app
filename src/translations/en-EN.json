@@ -83,7 +83,11 @@
       "kakao_pay": "KakaoPay",
       "naver_pay": "NaverPay",
       "toss_pay": "Toss",
-      "pay_action": "Pay"
+      "pay_action": "Pay",
+      "add_method": "Card/Account",
+      "badge_pay_money": "PAY MONEY",
+      "badge_card": "CARD",
+      "badge_bank": "BANK"
     },
     "payment_offline": {
       "title": "Pay",
