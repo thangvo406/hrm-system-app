@@ -17,6 +17,7 @@ import TextField from '@components/TextField';
 import EmptyView from '@components/EmptyView';
 import imageNames from '@assets/images/names';
 import { Colors } from '@constants';
+import isEmpty from 'lodash/isEmpty';
 
 const TEXT_COLOR = '#1A1A1A';
 const TEXT_MUTED = '#9E9E9E';
@@ -25,7 +26,11 @@ const BORDER_COLOR = '#E0E0E0';
 function InputAddress(props: any) {
   const { t } = useTranslation();
   const inssets = useSafeAreaInsets();
-  const { addressRecent } = AppNavigator.getParams(props);
+  const isDialog = isEmpty(AppNavigator.getParams(props));
+  const { onRequestClose, addressRecent } = isDialog
+    ? props
+    : AppNavigator.getParams(props) || props || {};
+  // const { addressRecent } = AppNavigator.getParams(props);
   const {
     address,
     loading,
@@ -35,11 +40,27 @@ function InputAddress(props: any) {
     setAddress,
     setDetailAddress,
     suggestions,
-  } = useInputAddress();
+  } = useInputAddress(props);
+  const onBack = () => {
+    if (onRequestClose) {
+      onRequestClose?.();
+    } else {
+      AppNavigator.goBack();
+    }
+  };
 
   return (
-    <View style={[styles.container, { paddingBottom: inssets.bottom }]}>
-      <HeaderDetail title={t('input_address.title')} />
+    <View
+      style={[
+        styles.container,
+        { paddingBottom: isDialog ? undefined : inssets.bottom },
+      ]}
+    >
+      <HeaderDetail
+        title={t('input_address.title')}
+        usePaddingTop={!isDialog}
+        onPressBack={onBack}
+      />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"

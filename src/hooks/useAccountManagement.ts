@@ -92,6 +92,10 @@ export const useAccountManagement = () => {
     return rawData?.length == 0;
   }, [rawData]);
 
+  const isEmptyBankAccount = useMemo(() => {
+    return rawData?.length == 0;
+  }, [rawData]);
+
   const toggleUnRegister = () => {
     // setShowUnRegister(prev => !prev);
     AppNavigator.navigate(Paths.PointMain);
@@ -167,6 +171,7 @@ export const useAccountManagement = () => {
     balance: WALLET_BALANCE,
     cards,
     isShowUnRegister,
+    isEmptyBankAccount,
     onCharge,
     onChargeHistory,
     onManagePaymentMethods,

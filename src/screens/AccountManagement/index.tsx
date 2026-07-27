@@ -35,6 +35,7 @@ function AccountManagement() {
     point,
     transactions,
     isShowUnRegister,
+    isEmptyBankAccount,
   } = useAccountManagement();
 
   return (
@@ -71,7 +72,7 @@ function AccountManagement() {
           </AppButton>
         </View>
 
-        {cards?.length > 0 ? (
+        {!isEmptyBankAccount ? (
           <BankAccounts
             accounts={cards}
             initialIndex={PRIMARY_CARD_INDEX}

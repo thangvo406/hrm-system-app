@@ -18,6 +18,12 @@ export const REQUEST_ADD_CARD_METHOD_TYPES = {
   CARD: 'PACA',
 };
 
+export enum EASY_PAY_METHODS {
+  KAKAOPAY = 'KAKAOPAY',
+  NAVERPAY = 'NAVERPAY',
+  TOSSPAY = 'TOSSPAY',
+}
+
 export const REGISTER_MEMBER_SHIP_STEP = {
   CHOOSE_SCHOOL: 'choose_school' as RegisterMembershipStep,
   CHOOSE_MEMBERSHIP: 'choose_membership' as RegisterMembershipStep,

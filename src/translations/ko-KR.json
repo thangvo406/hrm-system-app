@@ -698,6 +698,18 @@
       "select_pickup_time": "픽업 시간 선택",
       "delivery_pickup_title": "배달/픽업",
       "new_address_label": "새 주소로 배달",
+      "title": "장바구니",
+      "badge_delivery": "배달",
+      "badge_pickup": "픽업",
+      "order_button": "주문하기",
+      "summary_title": "결제 금액",
+      "summary_subtotal": "상품 합계",
+      "summary_delivery_fee": "배달비",
+      "summary_total": "총 결제 금액",
+      "confirm_title": "주문 확인",
+      "confirm_delivery_eta": "{{method}} · 예상 소요 약 15분",
+      "quantity_count": "{{value}}개",
+      "pay_button": "결제하기",
       "payment_methods": {
         "coop_pay": "생협 Pay",
         "credit_card": "신용/체크카드",
@@ -710,6 +722,22 @@
         "remove_dialog_confirm": "확인",
         "max_quantity_reached": "선택한 수량이 이 상품의 최대 재고 수량에 도달했습니다."
       }
+    },
+    "order_method": {
+      "title": "주문 방식 선택",
+      "heading": "주문 방식을 선택하세요",
+      "subheading": "배달, 포장, 매장 중 원하는 방식을 선택하세요.",
+      "method_delivery": "배달",
+      "method_delivery_desc": "캠퍼스 내 배달",
+      "method_pickup": "포장",
+      "method_pickup_desc": "직접 픽업",
+      "method_dinein": "매장",
+      "method_dinein_desc": "매장 내 취식",
+      "wait_time_title": "예상 대기 시간",
+      "wait_time_value": "배달 약 15분 | 포장 약 5분 | 매장 약 10분",
+      "store_available": "현재 {{method}} 가능",
+      "address_section_title": "배달 주소",
+      "change": "변경"
     },
     "contribution_input": {
       "title": "출자금 입력",

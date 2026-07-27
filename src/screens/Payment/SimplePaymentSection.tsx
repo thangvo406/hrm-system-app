@@ -3,6 +3,7 @@ import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
+import { EASY_PAY_METHODS } from '@constants/config';
 
 const CIRCLE_SIZE = ScaleSize(44);
 const CARD_HEIGHT = ScaleSize(104);
@@ -23,7 +24,7 @@ const METHODS: readonly SimpleMethod[] = [
     cardBg: '#FFFDF2',
     cardBorder: '#EFE7C4',
     circleBg: '#FEE500',
-    id: 'kakao',
+    id: EASY_PAY_METHODS.KAKAOPAY,
     labelColor: '#1A1A1A',
     labelKey: 'payment.kakao_pay',
     letter: 'K',
@@ -33,7 +34,7 @@ const METHODS: readonly SimpleMethod[] = [
     cardBg: '#EAF7EF',
     cardBorder: '#CFEBD9',
     circleBg: '#03C75A',
-    id: 'naver',
+    id: EASY_PAY_METHODS.NAVERPAY,
     labelColor: '#3B8B57',
     labelKey: 'payment.naver_pay',
     letter: 'N',
@@ -43,7 +44,7 @@ const METHODS: readonly SimpleMethod[] = [
     cardBg: '#EAF1FE',
     cardBorder: '#CFE0FB',
     circleBg: '#3182F6',
-    id: 'toss',
+    id: EASY_PAY_METHODS.TOSSPAY,
     labelColor: '#3F72C4',
     labelKey: 'payment.toss_pay',
     letter: 'T',

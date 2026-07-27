@@ -10,8 +10,9 @@ import AppNavigator from '@navigation/AppNavigator';
 
 export type { AddressSuggestion } from '@services/request/account';
 
-export const useInputAddress = () => {
+export const useInputAddress = (props: any) => {
   const dispatch = useAppDispatch();
+  const { onSubmit, onRequestClose } = props || {};
   const [addressValue, setAddressValue] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
   const [suggestions, setSuggestions] = useState<SearchAddressItem[]>([]);
@@ -62,11 +63,19 @@ export const useInputAddress = () => {
   };
 
   const onConfirm = () => {
-    DeviceEventEmitter.emit(AppConstants.UPDATE_ADDRESS_CART_KEY, {
-      address: selectedAddress,
-      detail: detailAddress,
-    });
-    AppNavigator.goBack();
+    if (onSubmit) {
+      onRequestClose?.();
+      onSubmit({
+        address: selectedAddress,
+        detail: detailAddress,
+      });
+    } else {
+      DeviceEventEmitter.emit(AppConstants.UPDATE_ADDRESS_CART_KEY, {
+        address: selectedAddress,
+        detail: detailAddress,
+      });
+      AppNavigator.goBack();
+    }
   };
 
   return {

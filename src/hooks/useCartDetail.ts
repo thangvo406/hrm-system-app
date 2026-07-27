@@ -3,6 +3,7 @@ import Selection from '@dialogs/Selection';
 import WebViewScreen from '@dialogs/Webview';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
+import Shipping from '@screens/CartDetail/OrderFlow/Shipping';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
 import {
@@ -64,6 +65,7 @@ export const useCartDetail = (props: any) => {
   const debounceIdChangeQuanlity = useRef<
     DebouncedFunc<() => void> | undefined
   >(undefined);
+  const [isShowConfirmPayment, setShowConfirmPayment] = useState(false);
 
   const [paymentMethod, setPaymentMethod] = useState<string>(
     AppConstants.PaymentTypes.BALANCE,
@@ -214,58 +216,97 @@ export const useCartDetail = (props: any) => {
       isFullScreen: true,
     });
   };
-  const onPressOrder = () => {
+
+  const onSubmitShipping = (shippingData: any) => {
+    setAddressDelivery(shippingData?.address);
+    console.log('shippingData', shippingData);
+    if (shippingData?.shipping) {
+      setDeliveryTab(shippingData.shipping);
+    }
+    setShowConfirmPayment(true);
+  };
+
+  const onPressPayment = () => {
     const items = products?.map((it: any) => ({
       id: it.productId,
       quantity: it.quantity,
       selectedAttributes: it.selectedAttributes,
     }));
-    dispatch(
-      createOrderRequest({
+
+    AppNavigator.navigate(Paths.Payment, {
+      payloadRequest: {
         storeId: data?.storeId,
         address: JSON.stringify(addressDelivery?.address?.detail),
         addressDetail: addressDelivery?.detail || '',
-        createLinkRequest: {
-          payment: {
-            paymentType: paymentMethod,
-          },
-        },
         receiveMethod: deliveryTab,
         products: items,
         vouchers: [],
-        onSuccess: (data: any) => {
-          const { responsePayment, responseCreateOrder } = data || {};
-          if (responsePayment?.requiresRedirect) {
-            handleRedirectPayment(data);
-          } else {
-            AppNavigator.navigate(Paths.OrderCompleted, {
-              data: responseCreateOrder,
-              dataOrder: {
-                deliveryMethod: deliveryTab,
-                paymentMethod,
-              },
-            });
-          }
-        },
-        onFailure: (type: string, error: any) => {
-          if (typeof error == 'string') {
-            AppNavigator.showSnackBar({
-              message: error,
-              type: 'failed',
-            });
-          } else {
-            AppNavigator.navigate(Paths.OrderCompleted, {
-              data: error,
-              status: 'pending',
-              dataOrder: {
-                deliveryMethod: deliveryTab,
-                paymentMethod,
-              },
-            });
-          }
-        },
-      }),
-    );
+        goFrom: 'order_product',
+      },
+    });
+    // dispatch(
+    //   createOrderRequest({
+    //     storeId: data?.storeId,
+    //     address: JSON.stringify(addressDelivery?.address?.detail),
+    //     addressDetail: addressDelivery?.detail || '',
+    //     createLinkRequest: {
+    //       payment: {
+    //         paymentType: paymentMethod,
+    //       },
+    //     },
+    //     receiveMethod: deliveryTab,
+    //     products: items,
+    //     vouchers: [],
+    //     onSuccess: (data: any) => {
+    //       const { responsePayment, responseCreateOrder } = data || {};
+    //       if (responsePayment?.requiresRedirect) {
+    //         handleRedirectPayment(data);
+    //       } else {
+    //         AppNavigator.navigate(Paths.OrderCompleted, {
+    //           data: responseCreateOrder,
+    //           dataOrder: {
+    //             deliveryMethod: deliveryTab,
+    //             paymentMethod,
+    //           },
+    //         });
+    //       }
+    //     },
+    //     onFailure: (_type: string, error: any) => {
+    //       if (typeof error == 'string') {
+    //         AppNavigator.showSnackBar({
+    //           message: error,
+    //           type: 'failed',
+    //         });
+    //       } else {
+    //         AppNavigator.navigate(Paths.OrderCompleted, {
+    //           data: error,
+    //           status: 'pending',
+    //           dataOrder: {
+    //             deliveryMethod: deliveryTab,
+    //             paymentMethod,
+    //           },
+    //         });
+    //       }
+    //     },
+    //   }),
+    // );
+  };
+
+  const onBack = () => {
+    if (isShowConfirmPayment) {
+      setShowConfirmPayment(false);
+    } else {
+      AppNavigator.goBack();
+    }
+  };
+
+  const onPressOrder = () => {
+    AppNavigator.showDialog({
+      screen: Shipping,
+      isFullScreen: true,
+      addressOrderRecent,
+      onSubmit: onSubmitShipping,
+    });
   };
 
   const getAddressDisplay = () => {
@@ -285,8 +326,11 @@ export const useCartDetail = (props: any) => {
     error,
     pickupTime,
     products,
+    isShowConfirmPayment,
     addressDelivery: getAddressDisplay(),
     onPressOrder,
+    onBack,
+    onPressPayment,
     onPressPickupTime,
     setDeliveryTab,
     onPressSelectAddress,
