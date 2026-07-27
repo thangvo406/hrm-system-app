@@ -589,14 +589,6 @@
       "add_account": "Add account",
       "no_history": "No recent history yet"
     },
-    "register_card": {
-      "title": "Register a payment method\nand pay with ease",
-      "card_title": "Register card",
-      "card_desc": "Scan your Coop Pay card or enter details",
-      "account_title": "Register bank account",
-      "account_desc": "Quick registration by entering account number",
-      "submit": "Proceed"
-    },
     "request_add_card": {
       "title": "Register payment method",
       "payment_methods": "My payment methods",

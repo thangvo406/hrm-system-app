@@ -591,14 +591,6 @@
       "add_account": "계좌 등록",
       "no_history": "최근 이용 내역이 없습니다"
     },
-    "register_card": {
-      "title": "결제수단 등록하고\n간편하게 결제하세요",
-      "card_title": "카드 등록",
-      "card_desc": "생협페이카드 스캔 또는 정보 입력",
-      "account_title": "은행 계좌 등록",
-      "account_desc": "계좌번호 입력으로 간편 등록",
-      "submit": "등록 진행"
-    },
     "request_add_card": {
       "title": "결제수단 등록",
       "payment_methods": "내 결제수단",

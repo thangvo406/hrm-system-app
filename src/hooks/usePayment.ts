@@ -4,6 +4,7 @@ import type { SourceCard } from '@screens/Payment/MembershipCards';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useCallback, useState } from 'react';
+import RequestAddCard from '@dialogs/RequestAddCard';
 import VouchersSelection from '@dialogs/VouchersSelection';
 
 export type IPaymentCoupon = {
@@ -99,8 +100,10 @@ export const usePayment = () => {
   };
 
   const onSelectGeneralMethod = useCallback(() => {
-    // TODO: navigate to the general payment-method picker when available.
-    AppNavigator.navigate(Paths.RegisterCard);
+    AppNavigator.showDialog({
+      screen: RequestAddCard,
+      isFullScreen: true,
+    });
   }, []);
 
   const onPay = useCallback(() => {

@@ -1,6 +1,6 @@
 import QRVoucher from '@dialogs/QRVoucher';
+import RequestAddCard from '@dialogs/RequestAddCard';
 import AppNavigator from '@navigation/AppNavigator';
-import { Paths } from '@navigation/paths';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@utils/product';
@@ -66,8 +66,10 @@ export const usePaymentOffline = () => {
   }, []);
 
   const onAddMethod = useCallback((callback: any) => {
-    // TODO: navigate to the add payment-method flow when available.
-    AppNavigator.navigate(Paths.RegisterCard);
+    AppNavigator.showDialog({
+      screen: RequestAddCard,
+      isFullScreen: true,
+    });
   }, []);
 
   const onRefreshQRCode = useCallback(() => {}, []);

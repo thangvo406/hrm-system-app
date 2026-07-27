@@ -19,6 +19,7 @@ import { AppStorage } from '@services/common/storage';
 import { AppConstants } from '@constants';
 import SocketService from '@services/common/webSocket';
 import imageNames from '@assets/images/names';
+import RequestAddCard from '@dialogs/RequestAddCard';
 //TODO: should remove it
 // import RegisterMembership from '@dialogs/RegisterMembership';
 
@@ -56,10 +57,6 @@ const onPressContribution = () => {
   AppNavigator.navigate(Paths.ContributionHistory);
 };
 
-const onShowMemberShip = () => {
-  AppNavigator.navigate(Paths.RegisterCard);
-};
-
 const onPressVoucher = () => {
   AppNavigator.navigate(Paths.Vouchers);
 };
@@ -91,6 +88,13 @@ export const useHome = () => {
     };
   }, [accessToken]);
 
+  const onShowRequestAddCard = () => {
+    AppNavigator.showDialog({
+      screen: RequestAddCard,
+      isFullScreen: true,
+    });
+  };
+
   const onPressTopup = () => {
     if (
       !profile?.membershipType ||
@@ -106,7 +110,7 @@ export const useHome = () => {
         cancelTitle: t('home.non_member_dialog.cancel'),
         confirmTitle: t('home.non_member_dialog.confirm'),
         onConfirm: () => {
-          onShowMemberShip();
+          onShowRequestAddCard();
         },
       });
     } else {
