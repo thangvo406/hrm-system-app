@@ -91,8 +91,8 @@ function ContributionDetailComponent({ data, title }: ContributionDetailProps) {
           <Status status={data?.status} />
         </View>
         <Text style={styles.status}>{data?.displayType}</Text>
-        <Text style={styles.paymentMethod}>{data?.paymentMethod}</Text>
-        <Text style={styles.paymentMethod}>{data?.paymentType}</Text>
+        <Text style={styles.paymentMethod}>{data?.paymentMethod?.type}</Text>
+        {/* <Text style={styles.paymentMethod}>{data?.paymentType}</Text> */}
       </View>
     </View>
   );
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
     color: Colors.black,
     fontSize: ScaleSize(12),
     // marginBottom: ScaleSize(10),
-    // marginTop: ScaleSize(13),
+    marginTop: ScaleSize(13),
     textAlign: 'right',
   },
   paymentMethodRow: {

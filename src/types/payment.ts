@@ -227,11 +227,6 @@ export interface IRequestGenerateQRCode
   readonly orderId?: string;
 }
 
-export interface IRequestIncreaseContribute extends AppCallback {
-  amount: number;
-  payment: IPaymentRequest;
-}
-
 export interface ITransactionDetail {
   readonly id: string;
   readonly productName: string;

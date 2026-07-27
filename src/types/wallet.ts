@@ -1,4 +1,5 @@
 import type { AppCallback, ListApiResponse } from './common';
+import { IKcpInitParams, IPaymentRequest } from './payment';
 
 
 export interface IContributeSummary {
@@ -20,7 +21,7 @@ export interface IContributeHistoryDetail {
   status: string;
   paymentCompleted: boolean;
   adminApproved: boolean;
-  paymentMethod: string;
+  paymentMethod: IPaymentMethodContribute;
   paymentType?: string;
   requestedAt: string;
   processedAt: string;
@@ -56,6 +57,45 @@ export interface IContributeHistory {
   status: string;
   occurredAt: string;
 }
+
+export interface IPaymentMethodContribute {
+  id: number
+  userId: number
+  type: string
+  provider: string
+  status: string
+  displayName: string
+  displayNumber: string
+  holderName: string
+  expiryMonth: any
+  expiryYear: any
+  default: boolean
+}
+
+
+export interface IResponseIncreaseContribute {
+  id: number
+  type: string
+  displayType: string
+  amount: number
+  status: string
+  paymentCompleted: boolean
+  adminApproved: boolean
+  paymentFundingSource: string
+  paymentType: string
+  paymentMethod: IPaymentMethodContribute
+  requestedAt: string
+  processedAt: any
+  adminNote: any
+  kcpSessionData: IKcpInitParams
+  virtualAccount: any
+  stdPaySessionData: any
+}
+export interface IRequestIncreaseContribute extends AppCallback {
+  amount: number;
+  payment: IPaymentRequest;
+}
+
 
 export interface IDividendHistory {
   id: number;

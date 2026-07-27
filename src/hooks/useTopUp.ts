@@ -4,7 +4,7 @@ import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountManagementSelector } from '@services/selectors';
 // import { topUpWalletRequest } from '@services/slices/account/accountSlice';
-import { balanceChargeRequest } from '@services/slices/payment/paymentSlice';
+import { balanceChargeRequest, increaseContributionRequest } from '@services/slices/payment/paymentSlice';
 // import uniqueId from 'lodash/uniqueId';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +25,8 @@ export type IBankAccount = {
 const BONUS_RATE = 0.005;
 export const BONUS_PERCENT = '0.5';
 
-export const useTopUp = () => {
+export const useTopUp = (props?: any) => {
+  const {isContribute = false } = props || {}
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const [amountTopUp, setAmountTopUp] = useState('');
@@ -53,24 +54,26 @@ export const useTopUp = () => {
   );
 
   const onSubmit = () => {
+    const executorRequest = isContribute ? increaseContributionRequest : balanceChargeRequest;
     dispatch(
-      balanceChargeRequest({
+      executorRequest({
         amount: Number(amountTopUp),
         payment: {
           paymentType: 'SAVED_METHOD',
           paymentMethodId: selectedAccountId,
         },
-        onSuccess: data => {
+        onSuccess: (data: any) => {
+          const _data = data?.kcpSessionData || data;
           AppNavigator.showDialog({
             screen: WebViewScreen,
             title: t('common.payment'),
             cookies: {
-              site_cd: data?.siteCd,
-              req_type: data?.reqType,
-              ordr_idxx: data?.orderNo,
-              req_amt: data?.reqAmt,
-              qtid: data?.qtid,
-              qpay_sdk_url: data?.qpaySdkUrl,
+              site_cd: _data?.siteCd,
+              req_type: _data?.reqType,
+              ordr_idxx: _data?.orderNo,
+              req_amt: _data?.reqAmt,
+              qtid: _data?.qtid,
+              qpay_sdk_url: _data?.qpaySdkUrl,
             },
             onNavigationStateChange: (
               navState: WebViewNavigation,
@@ -89,7 +92,7 @@ export const useTopUp = () => {
                 }
               }
             },
-            url: data?.kcpWebViewUrl,
+            url: _data?.kcpWebViewUrl,
             isFullScreen: true,
           });
         },
@@ -126,9 +129,8 @@ export const useTopUp = () => {
     setAmountTopUp(value.replaceAll(/\D/g, ''));
   };
 
-  const onSelectAccount = (itemId: string) => {
+  const onSelectAccount = (itemId: IAccount['id']) => {
     setSelectedAccountId(itemId);
-    // carouselCards.current?.scrollTo({ animated: true, index });
   };
 
   return {

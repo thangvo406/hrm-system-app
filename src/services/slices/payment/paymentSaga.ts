@@ -13,7 +13,6 @@ import type {
   IRequestGetListCart,
   IRequestGetOrderHistories,
   IRequestGetOrderHistoryDetail,
-  IRequestIncreaseContribute,
   IRequestInitCharge,
   IOrderHistoryDetailItem,
   IOrderHistoryItem,
@@ -23,6 +22,7 @@ import type {
   IKcpInitParams,
 } from '@type/payment';
 import {
+  IRequestIncreaseContribute,
   IContributeHistoryDetail,
   IContributeSummary,
   IRequestGetContributeHistoryDetail,
@@ -264,8 +264,8 @@ function* increaseContributionWorker(
 ): Generator<unknown, void, void> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    yield call(increaseContribution, request);
-    onSuccess?.();
+   const response = yield call(increaseContribution, request);
+    onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
     onFailure?.(message);

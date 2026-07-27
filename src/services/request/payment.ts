@@ -5,12 +5,10 @@ import type {
   IRequestCreateOrder,
   IRequestGenerateQRCode,
   IRequestGetCartDetail,
-
   IRequestGetInfoProductCheckout,
   IRequestGetListCart,
   IRequestGetOrderHistories,
   IRequestGetOrderHistoryDetail,
-  IRequestIncreaseContribute,
   IRequestInitCharge,
   IRequestRemoveCartItem,
   IRequestUpdateCartItem,
@@ -23,6 +21,8 @@ import type {
 } from '@type/payment';
 
 import {
+  IResponseIncreaseContribute,
+  IRequestIncreaseContribute,
   IContributeHistoryDetail,
   IContributeSummary,
   IRequestGetContributeHistoryDetail,
@@ -171,8 +171,9 @@ export const balanceCharge = async (
 
 export const increaseContribution = async (
   request: WithoutCallbacks<IRequestIncreaseContribute>,
-): Promise<void> => {
-  await httpRequest.post(EndPoints.CONTRIBUTION.increase, request);
+): Promise<IResponseIncreaseContribute> => {
+ const response =  await httpRequest.post<SingleApiResponse<IResponseIncreaseContribute>>(EndPoints.CONTRIBUTION.increase, request);
+ return response.data;
 };
 
 export const getContributeSummary = async (): Promise<IContributeSummary> => {

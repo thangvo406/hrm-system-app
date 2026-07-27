@@ -1,4 +1,4 @@
-import { AppButton, HeaderDetail } from '@components';
+import { AppButton, CardSelection, HeaderDetail } from '@components';
 import {
   Dimensions,
   ScrollView,
@@ -14,7 +14,6 @@ import { BONUS_PERCENT, useTopUp } from '@hooks/useTopUp';
 import { formatCurrency } from '@utils/product';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DeviceUtils } from '@kits/core/utils';
-import Cards from './Cards'
 
 const { ifAndroid } = DeviceUtils;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -88,7 +87,7 @@ function TopUp() {
 
         {bankAccounts.length > 0 ? (
           <View style={styles.carouselWrap}>
-             <Cards
+            <CardSelection
               accounts={bankAccounts}
               onSelect={onSelectAccount}
               selectedId={selectedAccountId}

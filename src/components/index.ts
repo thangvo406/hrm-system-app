@@ -5,6 +5,7 @@ export { default as OrderHistoriesLoading } from './Loading/OrderHistories';
 export { default as TransactionHistoriesLoading } from './Loading/TransactionHistories';
 export { default as Button } from './Button';
 export { default as Carousel } from './Carousel';
+export { default as CardSelection } from './CardSelection';
 export { default as CheckBox } from './CheckBox';
 export { default as HeaderDetail } from './HeaderDetail';
 export { default as HomeHeader } from './HomeHeader';
