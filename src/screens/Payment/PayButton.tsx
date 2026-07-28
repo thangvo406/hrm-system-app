@@ -25,7 +25,9 @@ function PayButton({ disableBtn, onPay, totalAmount }: Properties) {
     <View
       style={[
         styles.wrap,
-        { paddingBottom: ifAndroid(16, insets.bottom > 0 ? 0 : 20) },
+        {
+          paddingBottom: ifAndroid(16, insets.bottom || 20),
+        },
       ]}
     >
       <LinearGradient
