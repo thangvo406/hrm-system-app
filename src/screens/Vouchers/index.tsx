@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useVouchers } from '@hooks';
 import VoucherList from './VoucherList';
+import { VOUCHERS_STATUSES } from '@constants/config';
 
 const SCREEN_BACKGROUND = '#F2F2F2';
 
@@ -29,7 +30,7 @@ function Vouchers() {
   const tabs = useMemo(
     () => [
       {
-        id: 'AVAILABLE' as VoucherStatus,
+        id: VOUCHERS_STATUSES.AVAILABLE as VoucherStatus,
         label: t('vouchers.tab_available'),
         render: () => (
           <VoucherList
@@ -45,7 +46,7 @@ function Vouchers() {
         testID: 'vouchers-tab-available',
       },
       {
-        id: 'USED' as VoucherStatus,
+        id: VOUCHERS_STATUSES.USED as VoucherStatus,
         label: t('vouchers.tab_used'),
         render: () => (
           <VoucherList
@@ -61,7 +62,7 @@ function Vouchers() {
         testID: 'vouchers-tab-used',
       },
       {
-        id: 'EXPIRED' as VoucherStatus,
+        id: VOUCHERS_STATUSES.EXPIRED as VoucherStatus,
         label: t('vouchers.tab_expired'),
         render: () => (
           <VoucherList

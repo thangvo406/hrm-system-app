@@ -8,6 +8,7 @@ import { formatCurrency } from '@utils/product';
 import { useTranslation } from 'react-i18next';
 import React, { useMemo } from 'react';
 import dayjs from 'dayjs';
+import { VOUCHER_TYPES } from '@constants/config';
 
 const ICON_SIZE = ScaleSize(22);
 const ACCENT_BAR = Colors.primary;
@@ -26,14 +27,25 @@ function VoucherCard({ onUse, voucher }: Properties) {
     onUse(voucher);
   };
 
-  const minPaymentText =
-    !voucher.minOrderAmount
-      ? t('vouchers.min_payment_none')
-      : t('common.display_price', { amount: formatCurrency(voucher.minOrderAmount) });
+  const minPaymentText = !voucher.minOrderAmount
+    ? t('vouchers.min_payment_none')
+    : t('common.display_price', {
+        amount: formatCurrency(voucher.minOrderAmount),
+      });
   const storeNames = useMemo(() => {
-    return voucher?.stores?.map?.(it => it.storeName).join(",")
+    return voucher?.stores?.map?.(it => it.storeName).join(',');
   }, [JSON.stringify(voucher.stores)]);
 
+  const name = useMemo(() => {
+    if (voucher?.type == VOUCHER_TYPES.RATE) {
+      return t('vouchers.name_rate', { rate: voucher?.discountRate });
+    } else if (voucher?.type == VOUCHER_TYPES.AMOUNT) {
+      return t('vouchers.name_amount', {
+        amount: formatCurrency(voucher?.discountAmount),
+      });
+    }
+    return '';
+  }, [t, voucher]);
 
   return (
     <View style={styles.card}>
@@ -48,7 +60,7 @@ function VoucherCard({ onUse, voucher }: Properties) {
             width={ICON_SIZE}
           />
           <Text numberOfLines={1} style={styles.title}>
-            {voucher.title}
+            {name}
           </Text>
           <View style={styles.badge}>
             <Text style={styles.badgeText}>
@@ -60,7 +72,9 @@ function VoucherCard({ onUse, voucher }: Properties) {
         <Text style={styles.description}>{voucher?.name}</Text>
 
         <Text style={styles.metaText}>
-          {t('vouchers.valid_until', { date: dayjs(voucher?.expiredTo).format('YYYY-MM-DD') })}
+          {t('vouchers.valid_until', {
+            date: dayjs(voucher?.expiredTo).format('YYYY-MM-DD'),
+          })}
         </Text>
 
         <View style={styles.metaRow}>
@@ -68,8 +82,7 @@ function VoucherCard({ onUse, voucher }: Properties) {
             {t('vouchers.min_payment', { amount: minPaymentText })}
           </Text>
           {!!storeNames && (
-            <Text style={styles.metaText}
-              numberOfLines={2}>
+            <Text style={styles.metaText} numberOfLines={2}>
               {t('vouchers.applicable_store', {
                 store: storeNames,
               })}

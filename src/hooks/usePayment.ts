@@ -83,6 +83,8 @@ export const usePayment = (props: any) => {
     AppNavigator.showDialog({
       screen: VouchersSelection,
       isFullScreen: true,
+      storeId: payloadRequest?.storeId,
+      orderAmount: payloadRequest?.totalAmount,
       // popupType: 'bottomSheet',
     });
   };

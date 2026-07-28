@@ -816,7 +816,9 @@
       "select_title": "Select coupon",
       "search_code_placeholder": "Enter voucher code",
       "check": "Check",
-      "apply": "Apply"
+      "apply": "Apply",
+      "name_rate": "{{rate}}% discount coupon",
+      "name_amount": "{{amount}}KRW discount coupon"
     }
   }
 }

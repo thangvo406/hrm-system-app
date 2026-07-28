@@ -3,10 +3,12 @@ import type { ListApiResponse } from '@type/common';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { useFocusEffect } from '@react-navigation/native';
 import { getVouchersRequest } from '@services/slices/account/accountSlice';
 import { useAppDispatch } from '@services/common/storeHooks';
 import AppNavigator from '@navigation/AppNavigator';
 import QRVoucher from '@dialogs/QRVoucher';
+import { VOUCHERS_STATUSES } from '@constants/config';
 
 const PAGE_SIZE = 20;
 
@@ -32,7 +34,9 @@ const EMPTY_VOUCHERS: Record<VoucherStatus, IVoucher[]> = {
 
 export function useVouchers() {
   const dispatch = useAppDispatch();
-  const [activeTab, setActiveTab] = useState<VoucherStatus>('AVAILABLE');
+  const [activeTab, setActiveTab] = useState<VoucherStatus>(
+    VOUCHERS_STATUSES.AVAILABLE,
+  );
   const [vouchers, setVouchers] =
     useState<Record<VoucherStatus, IVoucher[]>>(EMPTY_VOUCHERS);
   const [loadedTabs, setLoadedTabs] = useState<ReadonlySet<VoucherStatus>>(
@@ -96,6 +100,20 @@ export function useVouchers() {
   useEffect(() => {
     loadVouchers(activeTab);
   }, [activeTab, loadVouchers]);
+
+  const isFirstFocus = useRef(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (isFirstFocus.current) {
+        isFirstFocus.current = false;
+        return;
+      }
+
+      requestedTabs.current.clear();
+      loadVouchers(activeTab, true);
+    }, [activeTab, loadVouchers]),
+  );
 
   const onChangeTab = useCallback((tab: VoucherStatus) => {
     // Reset the shared load-more flag so a switched-to tab doesn't inherit

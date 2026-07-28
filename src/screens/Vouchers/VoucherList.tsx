@@ -16,6 +16,7 @@ import React from 'react';
 import VoucherCard from './VoucherCard';
 import EmptyView from '@components/EmptyView';
 import imageNames from '@assets/images/names';
+import { VouchersLoading } from '@components';
 
 const END_REACHED_THRESHOLD = 0.3;
 
@@ -70,6 +71,10 @@ function VoucherList({
       </Text>
     );
   }, [loadingMore, t, vouchers.length]);
+
+  if (loading && vouchers.length === 0) {
+    return <VouchersLoading />;
+  }
 
   return (
     <FlatList

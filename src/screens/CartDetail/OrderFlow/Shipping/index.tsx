@@ -190,7 +190,7 @@ function Shipping({
         style={{
           width: '90%',
           alignSelf: 'center',
-          bottom: ifAndroid(-insets.bottom, 0),
+          bottom: ifAndroid(-insets.bottom, insets.bottom > 0 ? 0 : 10),
         }}
       />
     </View>

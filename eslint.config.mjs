@@ -118,6 +118,7 @@ export default defineConfig(
       'react/function-component-definition': OFF,
       'perfectionist/sort-interfaces': OFF,
       'react-hooks/set-state-in-effect': OFF,
+      '@typescript-eslint/no-unsafe-enum-comparison': OFF,
       'react/display-name': OFF,
       '@typescript-eslint/consistent-type-definitions': OFF,
       'unicorn/prevent-abbreviations': OFF,

@@ -46,7 +46,7 @@ export interface IRequestGetVouchers
 export type IStoreVoucher = {
   storeId: number;
   storeName: string;
-}
+};
 export type IVoucher = {
   readonly stores?: IStoreVoucher[];
   readonly daysRemaining: number;
@@ -55,4 +55,7 @@ export type IVoucher = {
   readonly minOrderAmount?: number;
   readonly expiredTo: string;
   readonly code: string;
+  readonly type: string;
+  readonly discountRate: number;
+  readonly discountAmount: number;
 };

@@ -18,6 +18,15 @@ export const REQUEST_ADD_CARD_METHOD_TYPES = {
   CARD: 'PACA',
 };
 
+export enum VOUCHER_TYPES {
+  RATE = 'RATE',
+  AMOUNT = 'AMOUNT',
+}
+export enum VOUCHERS_STATUSES {
+  AVAILABLE = 'AVAILABLE',
+  EXPIRED = 'EXPIRED',
+  USED = 'USED',
+}
 export enum EASY_PAY_METHODS {
   KAKAOPAY = 'KAKAOPAY',
   NAVERPAY = 'NAVERPAY',

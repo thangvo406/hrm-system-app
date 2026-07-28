@@ -31,6 +31,7 @@ export { useProfile } from './useProfile';
 export { useSchoolSelection } from './useSchoolSelection';
 export { useUpdatePass } from './useUpdatePass';
 export { useVouchers } from './useVouchers';
+export { useVouchersSelection } from './useVouchersSelection';
 export { useRegisterMembership } from './useRegisterMembership';
 export { useRefundRequest } from './useRefundRequest';
 export { usePayment } from './usePayment';

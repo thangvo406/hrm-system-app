@@ -121,7 +121,7 @@ function CartDetail(props: any) {
           <View
             style={[
               styles.bottomBar,
-              { paddingBottom: ifAndroid(16, insets.bottom) },
+              { paddingBottom: ifAndroid(16, insets.bottom || ScaleSize(20)) },
             ]}
           >
             <Button
