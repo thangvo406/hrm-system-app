@@ -104,9 +104,7 @@ function DialogOverlay({
       ? styles.cardFullScreen
       : styles.cardCentered;
   const safeAreaStyle =
-    isFullScreen && !transparent
-      ? { paddingBottom: insets.bottom, paddingTop: insets.top }
-      : {};
+    isFullScreen && !transparent ? { paddingTop: insets.top } : {};
 
   return (
     <Animated.View

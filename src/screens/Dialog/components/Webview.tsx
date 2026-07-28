@@ -126,7 +126,6 @@ function WebViewScreen(props: any) {
     <View
       style={{
         flex: 1,
-        marginBottom: -inssets.bottom,
         backgroundColor: 'white',
       }}
     >

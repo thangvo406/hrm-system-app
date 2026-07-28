@@ -39,7 +39,7 @@ export const PRIMARY_CARD_INDEX = 0;
 export const usePayment = (props: any) => {
   // Default to the primary card so a method is highlighted on open.
   const [selectedMethod, setSelectedMethod] = useState<SelectedPaymentMethod>(
-    {},
+    {} as SelectedPaymentMethod,
   );
   const [usePoints, setUsePoints] = useState(true);
   const [pointUsed, setPointUsed] = useState(POINT_USED);
@@ -54,9 +54,13 @@ export const usePayment = (props: any) => {
   };
   const { payloadRequest } = AppNavigator.getParams(props);
   const dispatch = useAppDispatch();
-  const bankAccounts = useAppSelector(
+  const rawDataBankAccounts = useAppSelector(
     AccountManagementSelector.getAccountCards,
   );
+
+  const bankAccounts = useMemo(() => {
+    return rawDataBankAccounts;
+  }, [rawDataBankAccounts]);
 
   const disableBtnSubmit = useMemo(() => {
     return !selectedMethod?.id;
@@ -96,20 +100,48 @@ export const usePayment = (props: any) => {
     });
   }, []);
 
+  const getCookiesForPayment = (data: any) => {
+    const { kcpInitParams, stdPayInitParams } = data?.responsePayment || {};
+    // eslint-disable-next-line unicorn/prefer-ternary
+    if (selectedEasyPayId) {
+      return {
+        cookies: {
+          site_cd: stdPayInitParams?.siteCd,
+          pay_method: stdPayInitParams?.payMethod,
+          shop_name: stdPayInitParams?.shopName,
+          ordr_idxx: stdPayInitParams?.ordrIdxx,
+          good_name: stdPayInitParams?.goodName,
+          good_mny: stdPayInitParams?.goodMny,
+          buyr_name: stdPayInitParams?.buyrName,
+          buyr_tel2: stdPayInitParams?.buyrTel,
+          buyr_mail: stdPayInitParams?.buyrMail,
+          Ret_URL: stdPayInitParams?.retUrl,
+          approval_key: stdPayInitParams?.approvalKey,
+          PayUrl: stdPayInitParams?.payUrl,
+        },
+        url: stdPayInitParams?.stdWebViewUrl,
+      };
+    } else {
+      return {
+        cookies: {
+          site_cd: kcpInitParams?.siteCd,
+          req_type: kcpInitParams?.reqType,
+          ordr_idxx: kcpInitParams?.orderNo,
+          req_amt: kcpInitParams?.reqAmt,
+          qtid: kcpInitParams?.qtid,
+          qpay_sdk_url: kcpInitParams?.qpaySdkUrl,
+        },
+        url: kcpInitParams?.kcpWebViewUrl,
+      };
+    }
+  };
   const handleRedirectPayment = (data: any, paymentMethod: any) => {
-    const { responseCreateOrder, responsePayment } = data || {};
-    const { kcpInitParams: _data } = responsePayment || {};
+    const { responseCreateOrder } = data || {};
+    const { cookies, url } = getCookiesForPayment(data);
     AppNavigator.showDialog({
       screen: WebViewScreen,
-      cookies: {
-        site_cd: _data?.siteCd,
-        req_type: _data?.reqType,
-        ordr_idxx: _data?.orderNo,
-        req_amt: _data?.reqAmt,
-        qtid: _data?.qtid,
-        qpay_sdk_url: _data?.qpaySdkUrl,
-      },
-      url: _data?.kcpWebViewUrl,
+      cookies,
+      url,
       isFullScreen: true,
       onNavigationStateChange: (
         navState: WebViewNavigation,

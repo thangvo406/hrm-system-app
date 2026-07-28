@@ -9,11 +9,13 @@ import { Colors } from '@constants';
 import { REQUEST_ADD_CARD_METHOD_TYPES } from '@constants/config';
 import { useRequestAddCard } from '@hooks';
 import { ScaleSize } from '@kits/core';
+import { DeviceUtils } from '@kits/core/utils';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+const { ifAndroid } = DeviceUtils;
 const SCREEN_PADDING = ScaleSize(20);
 type Properties = {
   readonly onRegisterAccount?: () => void;
@@ -50,8 +52,7 @@ function RequestAddCard({
       style={[
         styles.container,
         {
-          marginBottom: -insets.bottom,
-          paddingBottom: insets.bottom / 2,
+          paddingBottom: insets.bottom / ifAndroid(2, 1),
         },
       ]}
     >

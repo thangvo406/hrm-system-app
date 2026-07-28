@@ -1,4 +1,9 @@
-import { AppButton, CardSelection, HeaderDetail } from '@components';
+import {
+  AddPlaceholder,
+  AppButton,
+  CardSelection,
+  HeaderDetail,
+} from '@components';
 import {
   Dimensions,
   ScrollView,
@@ -35,6 +40,7 @@ function TopUp() {
     bonusAmount,
     selectedAccountId,
     enabledBtnSubmit,
+    onAddCard,
     onAmountChange,
     onSelectAccount,
     onSubmit,
@@ -93,7 +99,17 @@ function TopUp() {
               selectedId={selectedAccountId}
             />
           </View>
-        ) : undefined}
+        ) : (
+          <View style={styles.addWrap}>
+            <AddPlaceholder
+              height={CARD_HEIGHT}
+              label={t('payment.add_method')}
+              onPress={onAddCard}
+              testID="top-up-add-account"
+              width={ITEM_WIDTH}
+            />
+          </View>
+        )}
       </ScrollView>
 
       <View
@@ -117,6 +133,10 @@ function TopUp() {
 export default TopUp;
 
 const styles = StyleSheet.create({
+  addWrap: {
+    alignItems: 'center',
+    marginTop: ScaleSize(16),
+  },
   accountField: {
     borderColor: BORDER_COLOR,
     borderRadius: ScaleSize(12),

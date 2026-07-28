@@ -54,9 +54,7 @@ function InputAddress(props: any) {
     <View
       style={[
         styles.container,
-        isDialog
-          ? { marginBottom: -inssets.bottom }
-          : { paddingBottom: inssets.bottom },
+        isDialog ? {} : { paddingBottom: inssets.bottom },
       ]}
     >
       <HeaderDetail

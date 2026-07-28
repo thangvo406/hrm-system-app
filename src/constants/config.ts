@@ -18,6 +18,11 @@ export const REQUEST_ADD_CARD_METHOD_TYPES = {
   CARD: 'PACA',
 };
 
+export enum BANK_ACC_TYPES {
+  ACCOUNT = 'BANK_ACCOUNT',
+  CARD = 'CARD',
+}
+
 export enum VOUCHER_TYPES {
   RATE = 'RATE',
   AMOUNT = 'AMOUNT',

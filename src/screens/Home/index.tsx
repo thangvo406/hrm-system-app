@@ -167,7 +167,7 @@ function Home() {
         <PayCard
           onPress={goToPayCard}
           data={currentWallet}
-          onPressTopup={onPressTopup}
+          onPressTopup={() => onPressTopup()}
         />
         <View style={styles.row}>
           {!isHideContribute && (

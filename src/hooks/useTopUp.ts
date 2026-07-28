@@ -1,4 +1,5 @@
 import { AppConstants } from '@constants';
+import RequestAddCard from '@dialogs/RequestAddCard';
 import WebViewScreen from '@dialogs/Webview';
 import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
@@ -10,13 +11,12 @@ import {
 } from '@services/slices/payment/paymentSlice';
 // import uniqueId from 'lodash/uniqueId';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import type { IAccount } from '@type';
 import type { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { WebViewNavigation } from 'react-native-webview';
 import { deepLinkGate } from '@navigation/deepLinkGate';
-import { PaymentTypes } from '@constants/config';
+import { BANK_ACC_TYPES, PaymentTypes } from '@constants/config';
 import { Paths } from '@navigation/paths';
 
 export type PaymentMethod = 'credit_card' | 'virtual_account';
@@ -30,23 +30,32 @@ export type IBankAccount = {
 const BONUS_RATE = 0.005;
 export const BONUS_PERCENT = '0.5';
 
+const onAddCard = () => {
+  AppNavigator.showDialog({ isFullScreen: true, screen: RequestAddCard });
+};
+
 export const useTopUp = (props?: any) => {
   const { isContribute = false } = props || {};
   const dispatch = useAppDispatch();
-  const { t } = useTranslation();
   const [amountTopUp, setAmountTopUp] = useState('');
   const [methodPayment, setMethodPayment] = useState(
     AppConstants.PaymentTypes.CARD_SAVE,
   );
-  const bankAccounts = useAppSelector(
+  const rawDataBankAccounts = useAppSelector(
     AccountManagementSelector.getAccountCards,
   );
+  const bankAccounts = useMemo(() => {
+    if (isContribute) {
+      return rawDataBankAccounts;
+    }
+    return rawDataBankAccounts?.filter(it => it.type == BANK_ACC_TYPES.ACCOUNT);
+  }, [rawDataBankAccounts, isContribute]);
   const [selectedAccountId, setSelectedAccountId] = useState<IAccount['id']>();
   const carouselCards = useRef<ICarouselInstance>(null);
 
   const enabledBtnSubmit = useMemo(() => {
-    return Number(amountTopUp) >= 1;
-  }, [amountTopUp]);
+    return Number(amountTopUp) >= 1 && bankAccounts?.length > 0;
+  }, [amountTopUp, bankAccounts]);
 
   useEffect(() => {
     setSelectedAccountId(bankAccounts?.[0]?.id);
@@ -72,7 +81,6 @@ export const useTopUp = (props?: any) => {
           const _data = data?.kcpSessionData || data;
           AppNavigator.showDialog({
             screen: WebViewScreen,
-            title: t('common.payment'),
             cookies: {
               site_cd: _data?.siteCd,
               req_type: _data?.reqType,
@@ -159,6 +167,7 @@ export const useTopUp = (props?: any) => {
     enabledBtnSubmit,
     methodPayment,
     selectedAccountId,
+    onAddCard,
     onAmountChange,
     onSelectAccount,
     onSubmit,

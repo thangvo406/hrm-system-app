@@ -1,7 +1,7 @@
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useFocusEffect } from '@react-navigation/native';
-import { useAppDispatch } from '@services/common/storeHooks';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import {
   getCurrentWalletRequest,
   getContributeHistoriesRequest,
@@ -12,7 +12,10 @@ import {
   getDividendDetailRequest,
   getHistoriesDividendRequest,
 } from '@services/slices/payment/paymentSlice';
-import type { IContributeHistoryDetail, IContributeSummary } from '@type/wallet';
+import type {
+  IContributeHistoryDetail,
+  IContributeSummary,
+} from '@type/wallet';
 import type {
   IDividendHistory,
   IContributeHistory,
@@ -21,6 +24,10 @@ import type {
 import { useCallback, useRef, useState } from 'react';
 import ContributionDetail from '@dialogs/ContributionDetail';
 import { useTranslation } from 'react-i18next';
+import { AccountManagementSelector } from '@services/selectors';
+import Information from '@dialogs/Information';
+import imageNames from '@assets/images/names';
+import RequestAddCard from '@dialogs/RequestAddCard';
 
 type TPayCardHistoryTab = 'pay' | 'point';
 
@@ -36,10 +43,6 @@ const INITIAL_PAGINATION: TTabPaginationState = {
   page: 0,
 };
 
-const onRecharge = () => {
-  AppNavigator.navigate(Paths.ContributionInput);
-};
-
 export const useContributeHistory = () => {
   const [historyTab, setHistoryTab] = useState<TPayCardHistoryTab>('pay');
   const dispatch = useAppDispatch();
@@ -51,14 +54,43 @@ export const useContributeHistory = () => {
   const [payItems, setPayItems] = useState<IContributeHistory[]>([]);
   const [pointItems, setPointItems] = useState<IDividendHistory[]>([]);
 
+  const bankAccounts = useAppSelector(
+    AccountManagementSelector.getAccountCards,
+  );
+
   const payPagination = useRef<TTabPaginationState>({ ...INITIAL_PAGINATION });
-  const pointPagination = useRef<TTabPaginationState>({ ...INITIAL_PAGINATION });
+  const pointPagination = useRef<TTabPaginationState>({
+    ...INITIAL_PAGINATION,
+  });
 
   const getPagination = useCallback(
     (tab: TPayCardHistoryTab) =>
       tab === 'pay' ? payPagination : pointPagination,
     [],
   );
+
+  const onRecharge = () => {
+    if (bankAccounts?.length > 0) {
+      AppNavigator.navigate(Paths.ContributionInput);
+    } else {
+      AppNavigator.showDialog({
+        screen: Information,
+        iconInfo: {
+          name: imageNames.ic_bank_info,
+        },
+        title: t('home.non_member_dialog.title'),
+        desc: t('home.non_member_dialog.desc'),
+        cancelTitle: t('home.non_member_dialog.cancel'),
+        confirmTitle: t('home.non_member_dialog.confirm'),
+        onConfirm: () => {
+          AppNavigator.showDialog({
+            screen: RequestAddCard,
+            isFullScreen: true,
+          });
+        },
+      });
+    }
+  };
 
   const fetchTab = useCallback(
     (tab: TPayCardHistoryTab, page: number) => {

@@ -103,7 +103,7 @@ export const useHome = () => {
     });
   };
 
-  const onPressTopup = () => {
+  const onPressTopup = (screenName = Paths.TopUp) => {
     if (!(cards?.length > 0)) {
       AppNavigator.showDialog({
         screen: Information,
@@ -119,7 +119,7 @@ export const useHome = () => {
         },
       });
     } else {
-      AppNavigator.navigate(Paths.TopUp);
+      AppNavigator.navigate(screenName);
     }
   };
 
@@ -140,7 +140,7 @@ export const useHome = () => {
         cancelTitle: t('common.cancel'),
         confirmTitle: t('common.confirm'),
         onConfirm: () => {
-          AppNavigator.navigate(Paths.ContributionInput);
+          onPressTopup(Paths.ContributionInput);
         },
         screen: Information,
         title: t('home.need_contribution_dialog.title'),
