@@ -1,5 +1,8 @@
 import VerificationFailed from '@components/VerificationFailed';
-import { REQUEST_ADD_CARD_METHOD_TYPES } from '@constants/config';
+import {
+  BANK_ACC_TYPES,
+  REQUEST_ADD_CARD_METHOD_TYPES,
+} from '@constants/config';
 import RegisterCartConfirm from '@dialogs/RegisterCartConfirm';
 import WebViewScreen from '@dialogs/Webview';
 import AppNavigator from '@navigation/AppNavigator';
@@ -16,8 +19,6 @@ import { useTranslation } from 'react-i18next';
 import { WebViewNavigation } from 'react-native-webview';
 
 type UseRequestAddCardParams = {
-  readonly onRegisterAccount?: () => void;
-  readonly onRegisterCard?: () => void;
   readonly onRequestClose?: () => void;
 };
 
@@ -32,11 +33,11 @@ export const useRequestAddCard = ({
   const { t } = useTranslation();
 
   const accounts = useMemo(() => {
-    return rawData?.filter(it => it.type == 'CARD');
+    return rawData?.filter(it => it.type == BANK_ACC_TYPES.ACCOUNT);
   }, [rawData]);
 
   const cards = useMemo(() => {
-    return rawData?.filter(it => it.type == 'BANK_ACCOUNT');
+    return rawData?.filter(it => it.type == BANK_ACC_TYPES.CARD);
   }, [rawData]);
 
   const onSelectCard = useCallback(() => {
@@ -102,34 +103,28 @@ export const useRequestAddCard = ({
       isFullScreen: true,
     });
   };
-  const onConfirmAddCard = (payType: string) => () => {
+  const onConfirmAddCard = () => {
     dispatch(
       addAccountRequest({
-        payType,
+        payType: selectedMethod,
         onSuccess: onAddCardFinished,
       }),
     );
-  };
-  const onRegisterAccount = () => {
-    onConfirmAddCard(REQUEST_ADD_CARD_METHOD_TYPES.CARD)();
-  };
-  const onRegisterCard = () => {
-    AppNavigator.showDialog({
-      screen: RegisterCartConfirm,
-      // isFullScreen: true,
-      popupType: 'bottomSheet',
-      onConfirm: onConfirmAddCard(REQUEST_ADD_CARD_METHOD_TYPES.ACCOUNT),
-    });
   };
 
   // "Proceed" routes to the registration flow of the highlighted tile.
   const onSubmit = useCallback(() => {
     if (selectedMethod === REQUEST_ADD_CARD_METHOD_TYPES.CARD) {
-      onRegisterCard?.();
+      AppNavigator.showDialog({
+        screen: RegisterCartConfirm,
+        // isFullScreen: true,
+        popupType: 'bottomSheet',
+        onConfirm: onConfirmAddCard,
+      });
     } else if (selectedMethod === REQUEST_ADD_CARD_METHOD_TYPES.ACCOUNT) {
-      onRegisterAccount?.();
+      onConfirmAddCard?.();
     }
-  }, [onRegisterAccount, onRegisterCard, selectedMethod]);
+  }, [selectedMethod]);
 
   return {
     onManage,

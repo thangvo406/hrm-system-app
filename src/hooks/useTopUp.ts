@@ -109,6 +109,8 @@ export const useTopUp = (props?: any) => {
                   // AppNavigator.navigate(Paths.TransactionResult, params);
                   const statuses = {
                     APPROVED: 'SUCCESS',
+                    SUCCESS: 'SUCCESS',
+                    COMPLETED: 'SUCCESS',
                   };
                   AppNavigator.navigate(Paths.TransactionResult, {
                     ...params,

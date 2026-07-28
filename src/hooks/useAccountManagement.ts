@@ -1,4 +1,5 @@
 import imageNames from '@assets/images/names';
+import { BANK_ACC_TYPES } from '@constants/config';
 import Information from '@dialogs/Information';
 import RequestAddCard from '@dialogs/RequestAddCard';
 import AppNavigator from '@navigation/AppNavigator';
@@ -81,11 +82,11 @@ export const useAccountManagement = () => {
   const { t } = useTranslation();
 
   const accounts = useMemo(() => {
-    return rawData?.filter(it => it.type == 'CARD');
+    return rawData?.filter(it => it.type == BANK_ACC_TYPES.ACCOUNT);
   }, [rawData]);
 
   const cards = useMemo(() => {
-    return rawData?.filter(it => it.type == 'BANK_ACCOUNT');
+    return rawData?.filter(it => it.type == BANK_ACC_TYPES.CARD);
   }, [rawData]);
 
   const isShowUnRegister = useMemo(() => {

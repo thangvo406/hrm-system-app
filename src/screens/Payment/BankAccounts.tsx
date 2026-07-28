@@ -68,6 +68,13 @@ const METHOD_STYLES: Record<string, MethodStyle> = {
     tag: 'rgba(255, 255, 255, 0.22)',
     text: '#FFFFFF',
   },
+  COOP_BALANCE: {
+    badgeKey: 'payment.badge_coop_balance',
+    bg: '#5A62B0',
+    sub: 'rgba(255, 255, 255, 0.85)',
+    tag: 'rgba(255, 255, 255, 0.22)',
+    text: '#FFFFFF',
+  },
   CARD: {
     badgeKey: 'payment.badge_card',
     bg: '#3C8459',
@@ -322,7 +329,7 @@ export default React.memo(BankAccounts);
 const styles = StyleSheet.create({
   badge: {
     borderRadius: ScaleSize(6),
-    maxWidth: '70%',
+    maxWidth: '80%',
     paddingHorizontal: ScaleSize(10),
     paddingVertical: ScaleSize(4),
   },

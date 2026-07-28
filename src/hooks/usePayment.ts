@@ -1,10 +1,14 @@
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import RequestAddCard from '@dialogs/RequestAddCard';
 import VouchersSelection from '@dialogs/VouchersSelection';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
-import { AccountManagementSelector } from '@services/selectors';
+import {
+  AccountManagementSelector,
+  AccountSelector,
+} from '@services/selectors';
 import { createOrderRequest } from '@services/slices/payment/paymentSlice';
 import WebViewScreen from '@dialogs/Webview';
 import { PaymentTypes } from '@constants/config';
@@ -17,7 +21,7 @@ export type IPaymentCoupon = {
 };
 
 export type PaymentMethodType = 'account' | 'card' | 'easy';
-
+const BALANCE_ID = '__balance__';
 // A single source of truth for the selected payment method, so only one item
 // across the card carousel AND the account carousel can be selected at a time.
 export type SelectedPaymentMethod = {
@@ -37,12 +41,14 @@ const SELECTED_COUPON: IPaymentCoupon = {
 export const PRIMARY_CARD_INDEX = 0;
 
 export const usePayment = (props: any) => {
+  const { t } = useTranslation();
   // Default to the primary card so a method is highlighted on open.
   const [selectedMethod, setSelectedMethod] = useState<SelectedPaymentMethod>(
     {} as SelectedPaymentMethod,
   );
   const [usePoints, setUsePoints] = useState(true);
   const [pointUsed, setPointUsed] = useState(POINT_USED);
+  const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
 
   const onToggleUsePoints = () => {
     setUsePoints(previous => !previous);
@@ -59,8 +65,18 @@ export const usePayment = (props: any) => {
   );
 
   const bankAccounts = useMemo(() => {
-    return rawDataBankAccounts;
-  }, [rawDataBankAccounts]);
+    return [
+      {
+        id: BALANCE_ID,
+        displayName: t('payment.pay_money_name'),
+        type: 'COOP_BALANCE',
+        displayNumber: t('payment.balance_amount', {
+          amount: currentWallet?.balance,
+        }),
+      },
+      ...rawDataBankAccounts,
+    ];
+  }, [currentWallet?.balance, rawDataBankAccounts, t]);
 
   const disableBtnSubmit = useMemo(() => {
     return !selectedMethod?.id;
@@ -178,7 +194,11 @@ export const usePayment = (props: any) => {
 
   const onPay = useCallback(() => {
     let paymentMethod = {};
-    if (selectedMethod?.type == 'card') {
+    if (selectedMethod.id == BALANCE_ID) {
+      paymentMethod = {
+        paymentType: PaymentTypes.BALANCE,
+      };
+    } else if (selectedMethod?.type == 'card') {
       paymentMethod = {
         paymentType: PaymentTypes.SAVED_METHOD,
         paymentMethodId: selectedMethod.id,

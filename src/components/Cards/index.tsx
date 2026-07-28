@@ -52,7 +52,7 @@ function AccountItem({
         style={styles.card}
       >
         <View style={styles.info}>
-          <Text style={styles.bankName}>{account.provider}</Text>
+          <Text style={styles.bankName}>{account.displayName}</Text>
           <Text style={styles.account}>{account.displayNumber}</Text>
         </View>
         <View style={styles.chevron}>
