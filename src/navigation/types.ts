@@ -8,6 +8,8 @@ export type RootScreenProps<
   S extends keyof RootStackParamList = keyof RootStackParamList,
 > = StackScreenProps<RootStackParamList, S>;
 
+export type TransactionResultStatus = 'FAILED' | 'PENDING' | 'SUCCESS';
+
 export type TabParamList = {
   [Paths.Vouchers]: undefined;
   [Paths.Home]: undefined;
@@ -54,6 +56,15 @@ export type RootStackParamList = {
     | undefined;
   [Paths.OrderHistories]: undefined;
   [Paths.TransactionDetail]: { data?: ITransactionDetail } | undefined;
+  [Paths.TransactionResult]:
+    | {
+        amount: number;
+        errorCode?: string;
+        paymentMethod: string;
+        requestedAt: number | string;
+        status: TransactionResultStatus;
+      }
+    | undefined;
   [Paths.ContributionHistory]: undefined;
   [Paths.PayPointHistories]: undefined;
   [Paths.PointMain]: undefined;

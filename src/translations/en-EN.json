@@ -758,6 +758,64 @@
       "status_processing": "처리 중",
       "confirm": "Confirm"
     },
+    "transaction_result": {
+      "close": "Close",
+      "contribution_amount": "Amount",
+      "error_code": "Error code : {{code}}",
+      "payment_method": "Payment method",
+      "payment_time": "Payment time",
+      "status": "Status",
+      "contribute": {
+        "contribution_amount": "Contribution Amount",
+        "error_code": "Error code : {{code}}",
+        "payment_method": "Payment method",
+        "payment_time": "Payment time",
+        "status": "Status",
+        "failed": {
+          "info_line1": "An error occurred while processing the payment.",
+          "info_line2": "Please try again.",
+          "status_label": "Failed",
+          "subtitle": "The payment was not completed.",
+          "title": "Payment failed"
+        },
+        "pending": {
+          "info_line1": "Your payment is being verified by the cooperative administrator",
+          "info_line2": "You will be notified through the app once the verification is complete",
+          "info_line3": "It usually takes 1–3 business days",
+          "status_label": "In progress",
+          "subtitle": "Cooperative membership will be granted after administrator approval",
+          "title": "Payment completed"
+        },
+        "success": {
+          "info_line1": "Your membership fee payment has been completed successfully.",
+          "info_line2": "Your membership has been activated.",
+          "status_label": "Completed",
+          "subtitle": "Your contribution payment has been completed successfully.\nCooperative membership will be granted after administrator approval.",
+          "title": "Contribution payment completed"
+        }
+      },
+      "failed": {
+        "info_line1": "An error occurred while processing the payment.",
+        "info_line2": "Please try again.",
+        "status_label": "Failed",
+        "subtitle": "The payment was not completed.",
+        "title": "Transaction Failed"
+      },
+      "pending": {
+        "info_line1": "Your transaction is currently being processed.",
+        "info_line2": "We'll notify you once the processing is complete.",
+        "info_line3": "It usually takes 1–3 business days",
+        "status_label": "In progress",
+        "subtitle": "Your transaction is being processed.",
+        "title": "Transaction Pending"
+      },
+      "success": {
+        "info_line1": "Your transaction has been processed successfully.",
+        "status_label": "Completed",
+        "subtitle": "Your transaction has been completed successfully.",
+        "title": "Transaction Successful"
+      }
+    },
     "inactive_account": {
       "title": "Inactive Account Notice",
       "dormant_title": "Dormant Account Notice",

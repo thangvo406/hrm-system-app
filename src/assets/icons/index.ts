@@ -9,6 +9,7 @@ import Ic_arrow_left_grayIcon from './ic_arrow_left_gray.svg';
 import Ic_calendarIcon from './ic_calendar.svg';
 import Ic_cartIcon from './ic_cart.svg';
 import Ic_checkIcon from './ic_check.svg';
+import Ic_check_circleIcon from './ic_check_circle.svg';
 import Ic_check_filledIcon from './ic_check_filled.svg';
 import Ic_chevron_downIcon from './ic_chevron_down.svg';
 import Ic_chevron_rightIcon from './ic_chevron_right.svg';
@@ -59,6 +60,7 @@ const icons = {
   'ic_calendar': Ic_calendarIcon,
   'ic_cart': Ic_cartIcon,
   'ic_check': Ic_checkIcon,
+  'ic_check_circle': Ic_check_circleIcon,
   'ic_check_filled': Ic_check_filledIcon,
   'ic_chevron_down': Ic_chevron_downIcon,
   'ic_chevron_right': Ic_chevron_rightIcon,

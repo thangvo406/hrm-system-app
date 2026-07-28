@@ -19,6 +19,7 @@ export enum Paths {
   OrderHistories = 'order_histories',
   OrderHistoryDetail = 'order_history_detail',
   TransactionDetail = 'transaction_detail',
+  TransactionResult = 'transaction_result',
   ContributionHistory = 'contribution_history',
   PayPointHistories = 'pay_point_histories',
   PointMain = 'point_main',

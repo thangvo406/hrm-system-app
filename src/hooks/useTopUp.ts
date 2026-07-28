@@ -17,6 +17,7 @@ import type { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { WebViewNavigation } from 'react-native-webview';
 import { deepLinkGate } from '@navigation/deepLinkGate';
 import { PaymentTypes } from '@constants/config';
+import { Paths } from '@navigation/paths';
 
 export type PaymentMethod = 'credit_card' | 'virtual_account';
 
@@ -91,9 +92,21 @@ export const useTopUp = (props?: any) => {
                 const params = deepLinkGate.getPathFromUrl(navState.url);
                 onRequestClose();
                 if (params?.error) {
-                  // onShowPopupFailed();
+                  AppNavigator.navigate(Paths.TransactionResult, {
+                    ...params,
+                    isContribute,
+                    status: 'FAILED',
+                  });
                 } else {
-                  // setRefreshKey(prev => prev + 1);
+                  // AppNavigator.navigate(Paths.TransactionResult, params);
+                  const statuses = {
+                    APPROVED: 'SUCCESS',
+                  };
+                  AppNavigator.navigate(Paths.TransactionResult, {
+                    ...params,
+                    isContribute,
+                    status: statuses[params?.status] || params?.status,
+                  });
                 }
               }
             },
