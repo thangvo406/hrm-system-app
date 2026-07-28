@@ -276,7 +276,8 @@ function* confirmMemberShipVerifyWorker(
 function* selectSchoolWorker(action: PayloadAction<ISelectSchoolRequest>) {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    yield call(selectSchool, request);
+    const response: IResponseLogin = yield call(selectSchool, request);
+    yield put(authSuccess(response));
     yield put(selectSchoolSuccess({ universityId: request.universityId }));
     onSuccess?.();
   } catch (error) {

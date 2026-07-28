@@ -94,7 +94,7 @@ function TransactionResult(props: RootScreenProps<Paths.TransactionResult>) {
   const {
     amount,
     errorCode,
-    paymentMethod,
+    paymentMethodType,
     requestedAt,
     isContribute,
     ...params
@@ -205,7 +205,7 @@ function TransactionResult(props: RootScreenProps<Paths.TransactionResult>) {
           />
           <Row
             label={t(`transaction_result${prefixKeyTranslate}payment_method`)}
-            value={paymentMethod}
+            value={paymentMethodType}
           />
           <Row
             label={t(`transaction_result${prefixKeyTranslate}payment_time`)}

@@ -51,6 +51,10 @@ export const useProductDetail = (props: any) => {
     );
   }, [checkoutInfo]);
 
+  const disabledBtnSubmit = useMemo(() => {
+    return data?.stockQuantity == 0;
+  }, [data]);
+
   useEffect(() => {
     if (!checkoutInfo || checkoutInfo?.quantity > 0) {
       return;
@@ -285,6 +289,7 @@ export const useProductDetail = (props: any) => {
     totalAmount,
     buttonTextSubmit,
     minChooseQuantity,
+    disabledBtnSubmit,
     onChangeQuantity,
     onPressCart,
     onSelectAttribute,

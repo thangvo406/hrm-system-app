@@ -244,10 +244,12 @@ function BottomSheet({
   title,
   totalLabel,
   totalValue,
+  disabledBtn,
 }: {
   readonly bottomInset: number;
   readonly onPressCart: () => void;
   readonly title: string;
+  readonly disabledBtn: boolean;
   readonly totalLabel: string;
   readonly totalValue: string;
 }) {
@@ -268,6 +270,7 @@ function BottomSheet({
       <Button
         onPress={onPressCart}
         style={styles.cartButton}
+        disabled={disabledBtn}
         testID="product-detail-cart"
         type="primary"
         title={title}
@@ -290,6 +293,7 @@ function ProductDetail(props: any) {
     selectedAttributes,
     minChooseQuantity,
     totalAmount,
+    disabledBtnSubmit,
   } = useProductDetail(props);
   const { t } = useTranslation();
 
@@ -366,6 +370,7 @@ function ProductDetail(props: any) {
           <BottomSheet
             bottomInset={ifAndroid(16, insets.bottom)}
             onPressCart={onPressCart}
+            disabledBtn={disabledBtnSubmit}
             title={buttonTextSubmit}
             totalLabel={t('product_detail.min_order_label')}
             totalValue={ProductUtils.formatCurrency(totalAmount)}

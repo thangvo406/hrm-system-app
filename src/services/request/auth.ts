@@ -24,7 +24,7 @@ import type {
   IResponseConfirmMemberShipVerify,
   IResponseLogin,
   IRequestCreateLinkVerifyInfoUser,
-  IResponseCreateLinkVerifyInfoUser
+  IResponseCreateLinkVerifyInfoUser,
 } from '@type/auth';
 import omit from 'lodash/omit';
 import { httpRequest } from '@services/common/httpRequest';
@@ -167,6 +167,10 @@ export const confirmMemberShipVerify = async (
 
 export const selectSchool = async (
   request: ISelectSchoolRequest,
-): Promise<void> => {
-  await httpRequest.put(EndPoints.AUTH.selectSchool, request);
+): Promise<IResponseLogin> => {
+  const response = await httpRequest.put<SingleApiResponse<IResponseLogin>>(
+    EndPoints.AUTH.selectSchool,
+    request,
+  );
+  return response.data;
 };
