@@ -51,7 +51,7 @@ function OrderCompleted(props: any) {
       [
         {
           handlePress: () => {
-            // TODO: navigate to order detail
+            AppNavigator.navigate(Paths.OrderHistoryDetail, { data });
           },
           icon: 'ic_order_receipt' as const,
           label: t('order_completed.view_detail'),

@@ -26,6 +26,7 @@ const BALANCE_ID = '__balance__';
 // across the card carousel AND the account carousel can be selected at a time.
 export type SelectedPaymentMethod = {
   readonly id: string;
+  readonly cardType: string;
   readonly type: PaymentMethodType;
 };
 
@@ -87,16 +88,16 @@ export const usePayment = (props: any) => {
   const selectedEasyPayId =
     selectedMethod.type === 'easy' ? selectedMethod.id : undefined;
 
-  const onSelectCard = useCallback((id: string) => {
-    setSelectedMethod({ id, type: 'card' });
+  const onSelectCard = useCallback((item: any) => {
+    setSelectedMethod({ id: item?.id, cardType: item?.type, type: 'card' });
   }, []);
 
   const onSelectedEasyPay = useCallback((id: string) => {
-    setSelectedMethod({ id, type: 'easy' });
+    setSelectedMethod({ id, cardType: 'easyPay', type: 'easy' });
   }, []);
 
   useEffect(() => {
-    onSelectCard(bankAccounts?.[0]?.id);
+    onSelectCard(bankAccounts?.[0]);
   }, []);
 
   const onSelectCoupon = () => {
@@ -151,7 +152,7 @@ export const usePayment = (props: any) => {
       };
     }
   };
-  const handleRedirectPayment = (data: any, paymentMethod: any) => {
+  const handleRedirectPayment = (data: any) => {
     const { responseCreateOrder } = data || {};
     const { cookies, url } = getCookiesForPayment(data);
     AppNavigator.showDialog({
@@ -175,7 +176,7 @@ export const usePayment = (props: any) => {
               status: 'pending',
               dataOrder: {
                 deliveryMethod: payloadRequest?.receiveMethod,
-                paymentMethod: paymentMethod?.paymentType,
+                paymentMethod: selectedMethod?.cardType,
               },
             });
           } else {
@@ -183,7 +184,7 @@ export const usePayment = (props: any) => {
               data: responseCreateOrder,
               dataOrder: {
                 deliveryMethod: payloadRequest?.receiveMethod,
-                paymentMethod: paymentMethod?.paymentType,
+                paymentMethod: selectedMethod?.cardType,
               },
             });
           }
@@ -218,13 +219,13 @@ export const usePayment = (props: any) => {
         onSuccess: (data: any) => {
           const { responsePayment, responseCreateOrder } = data || {};
           if (responsePayment?.requiresRedirect) {
-            handleRedirectPayment(data, paymentMethod);
+            handleRedirectPayment(data);
           } else {
             AppNavigator.navigate(Paths.OrderCompleted, {
               data: responseCreateOrder,
               dataOrder: {
                 deliveryMethod: payloadRequest?.receiveMethod,
-                paymentMethod: paymentMethod?.paymentType,
+                paymentMethod: selectedMethod?.cardType,
               },
             });
           }
@@ -241,7 +242,7 @@ export const usePayment = (props: any) => {
               status: 'pending',
               dataOrder: {
                 deliveryMethod: payloadRequest?.receiveMethod,
-                paymentMethod: paymentMethod?.paymentType,
+                paymentMethod: selectedMethod?.cardType,
               },
             });
           }

@@ -100,7 +100,7 @@ type CardItemProps = {
   readonly card: IAccount;
   readonly isAdd: boolean;
   readonly onAddPress: () => void;
-  readonly onSelect: (id: string, index: number) => void;
+  readonly onSelect: (item: any, index: number) => void;
   readonly selected: boolean;
   readonly slotIndex: number;
 };
@@ -159,12 +159,12 @@ function CardItem({
   }
 
   const theme = getMethodStyle(card.type);
-
+  console.log('card', card);
   return (
     <View style={styles.cardSlot}>
       <Animated.View style={animatedStyle}>
         <AppButton
-          onPress={() => onSelect(String(card.id), slotIndex)}
+          onPress={() => onSelect(card, slotIndex)}
           testID={`bank-account-${card.id}`}
         >
           <View
@@ -217,7 +217,7 @@ function CardItem({
 type Properties = {
   readonly cards: readonly IAccount[];
   readonly initialIndex: number;
-  readonly onSelect: (id: string) => void;
+  readonly onSelect: (item: any) => void;
   readonly selectedId: string | undefined;
 };
 
@@ -244,8 +244,8 @@ function BankAccounts({
 
   // Tapping a method selects it and centres it if it was a peeking neighbour.
   const handleSelect = useCallback(
-    (id: string, index: number) => {
-      onSelect(id);
+    (card: any, index: number) => {
+      onSelect(card);
       carouselRef.current?.scrollTo({ animated: true, index });
     },
     [onSelect],
@@ -297,7 +297,7 @@ function BankAccounts({
           onSnapToItem={index => {
             const item = data[index];
             if (item && item.id !== ADD_CARD_ID) {
-              onSelect(String(item.id));
+              onSelect(item);
             }
           }}
           pagingEnabled
