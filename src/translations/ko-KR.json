@@ -877,6 +877,7 @@
       "tab_available": "사용 가능",
       "tab_used": "사용 완료",
       "tab_expired": "만료",
+      "expired": "만료",
       "dday": "D-{{days}}",
       "valid_until": "유효기간: {{date}}",
       "min_payment": "최소 결제금액: {{amount}}",

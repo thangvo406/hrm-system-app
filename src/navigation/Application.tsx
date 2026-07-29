@@ -115,7 +115,7 @@ function ApplicationNavigator() {
         const isRightEdge = screenWidth - pageX < 200; // For future left swipe support
         const isHorizontalSwipe =
           Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 0.6; // More forgiving ratio
-        const hasSignificantMovement = Math.abs(gestureState.dx) > 3; // Reduced from 5 to 3
+        const hasSignificantMovement = Math.abs(gestureState.dx) > 6; // Reduced from 5 to 3
 
         if (isScrolling.current) {
           return false;
@@ -143,7 +143,7 @@ function ApplicationNavigator() {
           return;
         }
 
-        const SWIPE_THRESHOLD = 80; // Increased from 10 to 30 to reduce sensitivity
+        const SWIPE_THRESHOLD = 160; // Increased from 80 to require a longer, deliberate swipe
         const SWIPE_VELOCITY_THRESHOLD = 0.4; // Increased from 0.07 to 0.2 to reduce sensitivity
 
         if (isScrolling.current) {
@@ -159,12 +159,13 @@ function ApplicationNavigator() {
           pendingSwipeAction.current = 'GO_BACK';
         }
 
-        // Handle left swipe (future use)
+        // Handle left swipe (go back)
         if (
           gestureState.dx < -SWIPE_THRESHOLD &&
           Math.abs(gestureState.vx) >= SWIPE_VELOCITY_THRESHOLD
         ) {
-          // Add your left swipe action here if needed
+          hasTriggeredSwipeAction.current = true;
+          pendingSwipeAction.current = 'GO_BACK';
         }
       },
       onPanResponderRelease: () => {

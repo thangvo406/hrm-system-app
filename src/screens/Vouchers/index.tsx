@@ -73,6 +73,7 @@ function Vouchers() {
             onUse={onUseVoucher}
             refreshing={refreshing}
             vouchers={expiredVouchers}
+            isExpired
           />
         ),
         testID: 'vouchers-tab-expired',

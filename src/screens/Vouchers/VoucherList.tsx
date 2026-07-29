@@ -27,6 +27,7 @@ type Properties = {
   readonly onRefresh?: () => void;
   readonly onUse: (voucher: IVoucher) => void;
   readonly refreshing?: boolean;
+  readonly isExpired?: boolean;
   readonly vouchers: readonly IVoucher[];
 };
 
@@ -40,12 +41,15 @@ function VoucherList({
   onUse,
   refreshing = false,
   vouchers,
+  isExpired,
 }: Properties) {
   const { t } = useTranslation();
 
   const renderItem = useCallback<ListRenderItem<IVoucher>>(
-    ({ item }) => <VoucherCard onUse={onUse} voucher={item} />,
-    [onUse],
+    ({ item }) => (
+      <VoucherCard onUse={onUse} voucher={item} isExpired={isExpired} />
+    ),
+    [onUse, isExpired],
   );
 
   const renderEmpty = useCallback(

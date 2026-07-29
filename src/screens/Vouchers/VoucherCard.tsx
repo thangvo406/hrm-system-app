@@ -19,9 +19,10 @@ const TEXT_MUTED = Colors.gray06;
 type Properties = {
   readonly onUse: (voucher: IVoucher) => void;
   readonly voucher: IVoucher;
+  readonly isExpired?: boolean;
 };
 
-function VoucherCard({ onUse, voucher }: Properties) {
+function VoucherCard({ onUse, voucher, isExpired }: Properties) {
   const { t } = useTranslation();
   const _onUse = () => {
     onUse(voucher);
@@ -64,7 +65,9 @@ function VoucherCard({ onUse, voucher }: Properties) {
           </Text>
           <View style={styles.badge}>
             <Text style={styles.badgeText}>
-              {t('vouchers.dday', { days: voucher.daysRemaining })}
+              {isExpired
+                ? t('vouchers.expired')
+                : t('vouchers.dday', { days: voucher.daysRemaining })}
             </Text>
           </View>
         </View>
@@ -91,13 +94,15 @@ function VoucherCard({ onUse, voucher }: Properties) {
         </View>
 
         <View style={styles.footerRow}>
-          <AppButton
-            onPress={_onUse}
-            style={styles.useButton}
-            testID={`voucher-use-${voucher.id}`}
-          >
-            <Text style={styles.useButtonText}>{t('vouchers.use_now')}</Text>
-          </AppButton>
+          {!isExpired ? (
+            <AppButton
+              onPress={_onUse}
+              style={styles.useButton}
+              testID={`voucher-use-${voucher.id}`}
+            >
+              <Text style={styles.useButtonText}>{t('vouchers.use_now')}</Text>
+            </AppButton>
+          ) : undefined}
         </View>
       </View>
     </View>
