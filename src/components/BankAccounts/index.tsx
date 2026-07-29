@@ -73,12 +73,12 @@ const CARD_THEMES: readonly CardTheme[] = [
 
 type CardItemProps = {
   readonly addLabel: string;
-  readonly selectedAddCard: boolean;
+  readonly selectedAddCard?: boolean;
   readonly animationValue: SharedValue<number>;
   readonly card: IAccount;
   readonly cardIndex: number;
   readonly isAdd: boolean;
-  readonly onAddPress: () => void;
+  readonly onAddPress?: () => void;
 };
 
 function CardItem({
@@ -159,9 +159,9 @@ type Properties = {
   readonly accounts?: readonly IAccount[];
   readonly initialIndex: number;
   readonly isShowUnRegister: boolean;
-  readonly hideTitle: boolean;
-  readonly selectedAddCard: boolean;
-  readonly onRegisterCard: () => void;
+  readonly hideTitle?: boolean;
+  readonly selectedAddCard?: boolean;
+  readonly onRegisterCard?: () => void;
 };
 
 function BankAccounts({

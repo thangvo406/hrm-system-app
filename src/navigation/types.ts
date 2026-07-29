@@ -30,6 +30,7 @@ export type RootStackParamList = {
     | undefined;
   [Paths.Announcements]: undefined;
   [Paths.Authorization]: { isLogin: boolean } | undefined;
+  [Paths.BankAccountManage]: undefined;
   [Paths.SchoolSelection]: undefined;
   [Paths.Carts]: undefined;
   [Paths.Contribution]: undefined;

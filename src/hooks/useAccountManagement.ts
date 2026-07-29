@@ -154,8 +154,7 @@ export const useAccountManagement = () => {
   }, []);
 
   const onManagePaymentMethods = useCallback(() => {
-    // TODO: navigate to payment-method management when available.
-    onShowDialogConfirm();
+    AppNavigator.navigate(Paths.BankAccountManage);
   }, []);
 
   // const onRegisterCard = useCallback(() => {

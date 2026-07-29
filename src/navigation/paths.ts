@@ -3,6 +3,7 @@ export enum Paths {
   AppTabs = 'app_tabs',
   Announcements = 'announcements',
   Authorization = 'authorization',
+  BankAccountManage = 'bank_account_manage',
   SchoolSelection = 'school_selection',
   Carts = 'carts',
   Contribution = 'contribution',
