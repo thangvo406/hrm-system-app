@@ -770,6 +770,15 @@
       "payment_method": "납부 수단",
       "payment_time": "납부 일시",
       "status": "상태",
+      "top_up": {
+        "account": "충전계좌",
+        "amount": "충전금액",
+        "bonus": "보너스 적립",
+        "charged_at": "충전일시",
+        "success_title": "충전이 완료되었습니다",
+        "pending_title": "충전 대기",
+        "fail_title": "충전 실패"
+      },
       "contribute": {
         "contribution_amount": "납부 금액",
         "error_code": "오류 코드 : {{code}}",

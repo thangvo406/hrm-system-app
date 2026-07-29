@@ -29,7 +29,7 @@ import {
   deleteAccountRequest,
   getTotalItemCartRequest,
 } from '@services/slices/account/accountSlice';
-import { MEMBER_STATUS, MEMBERSHIP_TYPE } from '@constants/config';
+import { MEMBER_STATUS } from '@constants/config';
 import InActiveAccount from '@dialogs/InActiveAccount';
 import DeletionAccount from '@dialogs/DeletionAccount';
 import { IResponseLogin } from '@type';
@@ -168,6 +168,14 @@ export const useAuthorization = () => {
     setTouchedFields(new Set());
   };
 
+  // Called when the auth tab loses focus: drop everything typed in the login
+  // form so the next visit starts empty (inputs are uncontrolled + remounted).
+  const resetLoginForm = () => {
+    loginFormRef.current = { ...initialLoginForm };
+    setLoginErrors(validateLogin(initialLoginForm, k => k));
+    setTouchedFields(new Set());
+  };
+
   const onLoginChange =
     (field: keyof typeof initialLoginForm) => (value: string) => {
       loginFormRef.current[field] = value.trim();
@@ -202,7 +210,7 @@ export const useAuthorization = () => {
           });
         },
       });
-    } else if (response?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER) {
+    } else if (!response?.universityId) {
       AppNavigator.navigate(Paths.SchoolSelection);
     } else {
       AppNavigator.replace(AppStacks.App);
@@ -228,7 +236,7 @@ export const useAuthorization = () => {
           REGISTER_FLOW_STEP.CHOOSE_MEMBERSHIP,
       };
       const step = stepMapping[error?.code];
-    
+
       register.goToStep(step, true);
       const { registerToken, signupToken } = error?.data || {};
       if (registerToken) {
@@ -236,7 +244,7 @@ export const useAuthorization = () => {
       } else if (signupToken) {
         register.setSignupToken(signupToken);
       }
-      if(!step && error?.code == NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED) {
+      if (!step && error?.code == NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED) {
         register.onCreateLinkVerifyUser();
       }
       return;
@@ -335,6 +343,7 @@ export const useAuthorization = () => {
     onForgotPassword,
     onLoginChange,
     register,
+    resetLoginForm,
     submitLogin,
   };
 };

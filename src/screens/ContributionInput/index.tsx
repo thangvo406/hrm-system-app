@@ -13,7 +13,7 @@ import { Colors } from '@constants';
 import { formatCurrency } from '@utils/product';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DeviceUtils } from '@kits/core/utils';
-import { CardSelection } from '@components'
+import { CardSelection } from '@components';
 import { useTopUp } from '@hooks';
 
 const { ifAndroid } = DeviceUtils;
@@ -40,7 +40,6 @@ function ContributionInput() {
     onSubmit,
   } = useTopUp({ isContribute: true });
 
-
   return (
     <View style={styles.safeArea}>
       <HeaderDetail hideNotify title={t('contribution_input.title')} />
@@ -50,9 +49,13 @@ function ContributionInput() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.content}>
-          <Text style={styles.subtitle}>{t('contribution_input.subtitle')}</Text>
+          <Text style={styles.subtitle}>
+            {t('contribution_input.subtitle')}
+          </Text>
 
-          <Text style={styles.sectionLabel}>{t('contribution_input.amount_label')}</Text>
+          <Text style={styles.sectionLabel}>
+            {t('contribution_input.amount_label')}
+          </Text>
           <View style={styles.amountRow}>
             <TextInput
               keyboardType="numeric"
@@ -69,7 +72,7 @@ function ContributionInput() {
 
         {bankAccounts.length > 0 ? (
           <View style={styles.carouselWrap}>
-             <CardSelection
+            <CardSelection
               accounts={bankAccounts}
               onSelect={onSelectAccount}
               selectedId={selectedAccountId}

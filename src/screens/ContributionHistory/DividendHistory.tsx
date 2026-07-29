@@ -32,7 +32,9 @@ const TransactionRow = React.memo(
       >
         <View style={styles.topRow}>
           <Text style={styles.amount}>
-            {formatCurrency(item.totalDividend)} 원
+            {t('common.display_price', {
+              amount: formatCurrency(item.totalDividend),
+            })}
           </Text>
           <Text style={styles.date}>
             {dayjs(item.paidAt).format('YYYY-MM-DD hh:mmA')}

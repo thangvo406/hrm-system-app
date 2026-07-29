@@ -70,6 +70,12 @@ export type FormData = {
   emailVerificationToken?: string;
 };
 
+const INITIAL_FORM_DATA: FormData = {
+  email: '',
+  name: '',
+  password: '',
+};
+
 type RegisterFormFields = Pick<FormData, 'email' | 'name' | 'password'>;
 
 const validateRegister = (
@@ -96,11 +102,7 @@ const validateRegister = (
 export const useRegister = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const formData = useRef<FormData>({
-    email: '',
-    name: '',
-    password: '',
-  });
+  const formData = useRef<FormData>({ ...INITIAL_FORM_DATA });
 
   const [errors, setErrors] = useState<{
     email?: boolean;
@@ -109,7 +111,7 @@ export const useRegister = () => {
     password?: boolean;
   }>({});
 
-  const dataInfoVerifyMembership = useRef(null);
+  const dataInfoVerifyMembership = useRef<unknown>(undefined);
   const [isVerifiedEmailAcademic, setVerifiedEmailAcademic] = useState(false);
 
   const [step, setStep] = useState<AuthStep>(REGISTER_FLOW_STEP.FORM);
@@ -174,6 +176,18 @@ export const useRegister = () => {
 
   const clearErrors = () => {
     setErrors({});
+  };
+
+  // Called when the auth tab loses focus: wipe every value typed in the flow
+  // (the ref) plus the states mirroring it, so coming back starts from scratch.
+  const resetFormData = () => {
+    formData.current = { ...INITIAL_FORM_DATA };
+    dataInfoVerifyMembership.current = undefined;
+    setErrors({});
+    setAgreed(false);
+    setCarrier(DEFAULT_CARRIER);
+    setSelectedMembershipId(undefined);
+    setVerifiedEmailAcademic(false);
   };
 
   const goToStep = (nextStep: string, showBtnBack = false) => {
@@ -534,6 +548,7 @@ export const useRegister = () => {
     mailAcademic: formData.current.mailAcademic,
     setSignupToken,
     registerErrors: visibleRegisterErrors,
+    resetRegisterForm: resetFormData,
     selectedMembershipId,
     setRegisterToken,
     step,

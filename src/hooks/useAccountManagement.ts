@@ -4,8 +4,11 @@ import Information from '@dialogs/Information';
 import RequestAddCard from '@dialogs/RequestAddCard';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { AccountSelector } from '@services/selectors';
 import { AccountManagementSelector } from '@services/selectors/accountManagement';
+import { getCurrentWalletRequest } from '@services/slices/account/accountSlice';
 import { getAccountCardsRequest } from '@services/slices/accountManagement/accountManagementSlice';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,10 +36,6 @@ export type WalletTransaction = {
   readonly title: string;
   readonly type: WalletTransactionType;
 };
-
-// Mock data — replace with the wallet/payment endpoints once available.
-const WALLET_BALANCE = 87_500;
-const WALLET_POINT = 1000;
 
 export const PRIMARY_CARD_INDEX = 1;
 
@@ -80,6 +79,7 @@ export const useAccountManagement = () => {
   const rawData = useAppSelector(AccountManagementSelector.getAccountCards);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+  const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
 
   const accounts = useMemo(() => {
     return rawData?.filter(it => it.type == BANK_ACC_TYPES.ACCOUNT);
@@ -102,9 +102,13 @@ export const useAccountManagement = () => {
     AppNavigator.navigate(Paths.PointMain);
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(getCurrentWalletRequest());
+    }, []),
+  );
+
   useEffect(() => {
-    // The saga stores the response in redux (getAccountCardsSuccess); the
-    // selector above keeps rawData in sync, so no local setter is needed.
     dispatch(getAccountCardsRequest({}));
   }, [dispatch]);
 
@@ -133,7 +137,9 @@ export const useAccountManagement = () => {
 
   const onCharge = useCallback(() => {
     if (rawData?.length > 0) {
-      AppNavigator.navigate(Paths.TopUp);
+      AppNavigator.navigate(Paths.TopUp, {
+        goFrom: 'accountManagement',
+      });
     } else {
       onShowDialogConfirm();
     }
@@ -169,7 +175,7 @@ export const useAccountManagement = () => {
 
   return {
     accounts,
-    balance: WALLET_BALANCE,
+    balance: currentWallet?.balance,
     cards,
     isShowUnRegister,
     isEmptyBankAccount,
@@ -181,7 +187,7 @@ export const useAccountManagement = () => {
     onUse,
     onViewAllTransactions,
     toggleUnRegister,
-    point: WALLET_POINT,
+    point: currentWallet?.pointBalance,
     transactions,
   };
 };

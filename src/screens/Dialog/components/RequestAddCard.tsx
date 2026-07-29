@@ -52,7 +52,8 @@ function RequestAddCard({
       style={[
         styles.container,
         {
-          paddingBottom: insets.bottom / ifAndroid(2, 1),
+          paddingBottom:
+            insets.bottom == 0 ? 20 : insets.bottom / ifAndroid(2, 1),
         },
       ]}
     >

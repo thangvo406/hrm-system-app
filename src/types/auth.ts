@@ -107,6 +107,7 @@ export interface IResponseLogin {
   dormantDate: string;
   lastLoginDate: string;
   expiredInformation: string;
+  universityId: string;
   accountStatus: string;
 }
 export interface IResponseConfirmMemberShipVerify {

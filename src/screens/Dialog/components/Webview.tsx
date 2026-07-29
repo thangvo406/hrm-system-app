@@ -182,7 +182,7 @@ function WebViewScreen(props: any) {
           onLoadEnd={onLoadEnd}
           onLoadStart={onLoadStart || _onLoadStart}
           onNavigationStateChange={(navState: WebViewNavigation): void => {
-            if (!title && !webTitle && navState.title) {
+            if (!title && navState.title) {
               setWebTitle(navState.title);
             }
             onNavigationStateChange?.(navState, onRequestClose);

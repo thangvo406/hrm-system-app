@@ -19,6 +19,7 @@ import { BONUS_PERCENT, useTopUp } from '@hooks/useTopUp';
 import { formatCurrency } from '@utils/product';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DeviceUtils } from '@kits/core/utils';
+import AppNavigator from '@navigation/AppNavigator';
 
 const { ifAndroid } = DeviceUtils;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -31,7 +32,7 @@ const TEXT_HINT = '#C4C4C4';
 const BORDER_COLOR = '#E0E0E0';
 const GREEN = Colors.primary;
 
-function TopUp() {
+function TopUp(props: any) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const {
@@ -44,8 +45,7 @@ function TopUp() {
     onAmountChange,
     onSelectAccount,
     onSubmit,
-  } = useTopUp();
-
+  } = useTopUp(AppNavigator.getParams(props));
 
   return (
     <View style={styles.safeArea}>

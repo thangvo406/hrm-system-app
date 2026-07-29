@@ -35,6 +35,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     loginWithSocial,
     onLoginChange,
     register,
+    resetLoginForm,
     submitLogin,
     onForgotPassword,
   } = useAuthorization();
@@ -66,11 +67,21 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     onToggleAgreement,
     onOTPEmailAcademicExpired,
     registerErrors,
+    resetRegisterForm,
     selectedMembershipId,
     step,
     titleRegisterCompletedBtnPrimary,
     titleRegisterCompletedBtnSecondary,
   } = register;
+
+  // Reset the form of the tab being left so it is empty when coming back.
+  const onTabBlur = (tab: AuthTab) => {
+    if (tab === 'registration') {
+      resetRegisterForm();
+    } else {
+      resetLoginForm();
+    }
+  };
 
   const DetailComponent = useMemo(() => {
     const screens: Record<AuthStep, ComponentType<any>> = {
@@ -122,6 +133,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
         onResendEmailAcademic={onResendEmailAcademic}
         onSelectMembership={onSelectMembership}
         onSubmit={handleSubmit}
+        onTabBlur={onTabBlur}
         onToggleAgreement={onToggleAgreement}
         options={chooseOptions}
         registerErrors={registerErrors}

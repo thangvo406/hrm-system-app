@@ -39,6 +39,7 @@ type AuthFormStackProps = {
   readonly onRegisterChange: (
     field: keyof RegisterValues,
   ) => (value: string) => void;
+  readonly onTabBlur: (tab: AuthTab) => void;
   readonly registerErrors: RegisterErrors;
   readonly submitLogin: () => void;
   readonly validLogin: boolean;
@@ -55,6 +56,7 @@ function AuthFormStack({
   onGoRegisterForm,
   onLoginChange,
   onRegisterChange,
+  onTabBlur,
   registerErrors,
   submitLogin,
   validLogin,
@@ -64,6 +66,11 @@ function AuthFormStack({
   const [activeTab, setActiveTab] = useState<AuthTab>(initialTab);
 
   const handleTabChange = (tab: AuthTab) => {
+    if (tab === activeTab) {
+      return;
+    }
+    // The tab we are leaving loses focus: clear the data it holds.
+    onTabBlur(activeTab);
     onClearErrors();
     setActiveTab(tab);
   };

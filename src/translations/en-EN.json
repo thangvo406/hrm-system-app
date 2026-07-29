@@ -768,6 +768,15 @@
       "payment_method": "Payment method",
       "payment_time": "Payment time",
       "status": "Status",
+      "top_up": {
+        "account": "Top-up account",
+        "amount": "Top-up amount",
+        "bonus": "Bonus earned",
+        "charged_at": "Top-up date",
+        "success_title": "Top-up Completed",
+        "pending_title": "Top-up Pending",
+        "fail_title": "Top-up Failure"
+      },
       "contribute": {
         "contribution_amount": "Contribution Amount",
         "error_code": "Error code : {{code}}",

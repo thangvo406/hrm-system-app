@@ -158,7 +158,7 @@ const authSlice = createSlice({
     },
     setCredentials: (state, action: PayloadAction<ICredentials>) => {
       state.accessToken = action.payload.accessToken;
-      if (action.payload.refreshToken !== undefined) {
+      if (action.payload.refreshToken) {
         state.refreshToken = action.payload.refreshToken;
       }
     },

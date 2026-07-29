@@ -35,7 +35,7 @@ const onAddCard = () => {
 };
 
 export const useTopUp = (props?: any) => {
-  const { isContribute = false } = props || {};
+  const { isContribute = false, goFrom } = props || {};
   const dispatch = useAppDispatch();
   const [amountTopUp, setAmountTopUp] = useState('');
   const [methodPayment, setMethodPayment] = useState(
@@ -66,6 +66,11 @@ export const useTopUp = (props?: any) => {
     [amountTopUp],
   );
 
+  const onHandleGoBack = () => {
+    if (goFrom == 'accountManagement') {
+      AppNavigator.goBack();
+    }
+  };
   const onSubmit = () => {
     const executorRequest = isContribute
       ? increaseContributionRequest
@@ -98,12 +103,18 @@ export const useTopUp = (props?: any) => {
               const isDeeplinkApp = url?.startsWith?.('coop://');
               if (isDeeplinkApp) {
                 const params = deepLinkGate.getPathFromUrl(navState.url);
+                const cardSelected = bankAccounts?.find(
+                  it => it.id == selectedAccountId,
+                );
                 onRequestClose();
                 if (params?.error) {
                   AppNavigator.navigate(Paths.TransactionResult, {
                     ...params,
+                    type: isContribute ? 'contribute' : 'topUp',
+                    bankName: cardSelected?.displayName,
                     isContribute,
                     status: 'FAILED',
+                    onHandleGoBack,
                   });
                 } else {
                   // AppNavigator.navigate(Paths.TransactionResult, params);
@@ -115,6 +126,9 @@ export const useTopUp = (props?: any) => {
                   AppNavigator.navigate(Paths.TransactionResult, {
                     ...params,
                     isContribute,
+                    type: isContribute ? 'contribute' : 'topUp',
+                    bankName: cardSelected?.displayName,
+                    onHandleGoBack,
                     status: statuses[params?.status] || params?.status,
                   });
                 }
