@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 import Image from '@components/Image';
@@ -17,6 +18,7 @@ type CheckBoxProps = {
   readonly disabled?: boolean;
   readonly label?: string;
   readonly onPress?: () => void;
+  readonly rightComponent?: ReactNode;
   readonly rightLabel?: string;
   readonly selected: boolean;
   readonly style?: StyleProp<ViewStyle>;
@@ -31,6 +33,7 @@ function CheckBox({
   selected,
   style,
   testID,
+  rightComponent,
 }: CheckBoxProps) {
   return (
     <TouchableOpacity
@@ -75,9 +78,10 @@ function CheckBox({
         )}
       </View>
 
-      {rightLabel === undefined ? undefined : (
-        <Text style={styles.label}>{rightLabel}</Text>
+      {!!rightLabel && (
+        <Text style={[styles.label, styles.rightLabel]}>{rightLabel}</Text>
       )}
+      {rightComponent}
     </TouchableOpacity>
   );
 }
@@ -88,6 +92,7 @@ const styles = StyleSheet.create({
     borderCurve: 'continuous',
     borderRadius: BOX_RADIUS,
     borderWidth: 1.5,
+    flexShrink: 0,
     height: BOX_SIZE,
     justifyContent: 'center',
     width: BOX_SIZE,
@@ -99,12 +104,18 @@ const styles = StyleSheet.create({
   },
   label: {
     color: TEXT_COLOR,
+    flexShrink: 1,
     fontSize: ScaleSize(16),
     marginLeft: ScaleSize(10),
   },
   leftGroup: {
     alignItems: 'center',
     flexDirection: 'row',
+    flexGrow: 1,
+    flexShrink: 1,
+  },
+  rightLabel: {
+    flexShrink: 0,
   },
 });
 

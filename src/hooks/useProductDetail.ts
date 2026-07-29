@@ -25,6 +25,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import isNumber from 'lodash/isNumber';
 import { Paths } from '@navigation/paths';
 import { AttributeType } from '@constants/config';
+import set from 'lodash/set';
 
 export type { IProduct } from '@type/products';
 
@@ -201,6 +202,31 @@ export const useProductDetail = (props: any) => {
     });
   };
 
+  const onChangeQuantityAttrItem = (
+    attribute: any,
+    attributeItem: any,
+    quantity: number,
+  ) => {
+    const attrSelect = [...(selectedAttributes[attribute?.id] || [])];
+    const itemIndex = attrSelect.findIndex(it => it.itemId == attributeItem.id);
+    if (itemIndex != -1) {
+      if (quantity == 0) {
+        attrSelect.splice(itemIndex, 1);
+      } else {
+        set(attrSelect, `[${itemIndex}].quantity`, quantity);
+        set(attrSelect, `[${itemIndex}].itemId`, attributeItem.id);
+      }
+    } else if (quantity > 0) {
+      attrSelect.push({
+        itemId: attributeItem.id,
+        quantity,
+      });
+    }
+    setSelectedAttributes(prev => ({
+      ...(prev || []),
+      [attribute.id]: attrSelect,
+    }));
+  };
   const onChangeQuantity = (delta: number) => {
     setQuantity(prev => Math.max(0, prev + delta));
   };
@@ -293,6 +319,7 @@ export const useProductDetail = (props: any) => {
     onChangeQuantity,
     onPressCart,
     onSelectAttribute,
+    onChangeQuantityAttrItem,
     quantity,
     selectedAttributes,
   };

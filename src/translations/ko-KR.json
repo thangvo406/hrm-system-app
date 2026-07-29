@@ -732,7 +732,8 @@
       "wait_time_value": "배달 약 15분 | 포장 약 5분 | 매장 약 10분",
       "store_available": "현재 {{method}} 가능",
       "address_section_title": "배달 주소",
-      "change": "변경"
+      "change": "변경",
+      "btn_submit": "계속하기"
     },
     "contribution_input": {
       "title": "출자금 입력",

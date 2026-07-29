@@ -171,7 +171,7 @@ export const usePayment = (props: any) => {
           const params = deepLinkGate.getPathFromUrl(navState.url);
           onRequestClose();
           if (params?.error) {
-            AppNavigator.navigate(Paths.OrderCompleted, {
+            AppNavigator.reset(Paths.OrderCompleted, {
               data: {},
               status: 'pending',
               dataOrder: {
@@ -180,7 +180,7 @@ export const usePayment = (props: any) => {
               },
             });
           } else {
-            AppNavigator.navigate(Paths.OrderCompleted, {
+            AppNavigator.reset(Paths.OrderCompleted, {
               data: responseCreateOrder,
               dataOrder: {
                 deliveryMethod: payloadRequest?.receiveMethod,

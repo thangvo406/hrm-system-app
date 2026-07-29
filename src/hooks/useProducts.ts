@@ -93,6 +93,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
       .flat()
       .map(attribute => ({
         attributeItemId: attribute?.attributeItemId,
+        quantity: attribute?.quantity,
       })) as AttributeCheckout[];
     dispatch(
       updateCartItemRequest({

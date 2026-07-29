@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { RootStackParamList } from '@navigation/types';
 
-import { AppStacks, Paths } from '@navigation/paths';
+import { AppStacks, Paths, SCREEN_IGNORE_SWIPE_LEFT } from '@navigation/paths';
 import {
   NavigationContainer,
   useNavigationContainerRef,
@@ -156,6 +156,11 @@ function ApplicationNavigator() {
           Math.abs(gestureState.vx) >= SWIPE_VELOCITY_THRESHOLD
         ) {
           hasTriggeredSwipeAction.current = true;
+          const currentRouteName = AppNavigator.getCurrentRoute()?.name;
+          if (SCREEN_IGNORE_SWIPE_LEFT.includes(currentRouteName)) {
+            pendingSwipeAction.current = 'NONE';
+            return;
+          }
           pendingSwipeAction.current = 'GO_BACK';
         }
 
@@ -165,6 +170,11 @@ function ApplicationNavigator() {
           Math.abs(gestureState.vx) >= SWIPE_VELOCITY_THRESHOLD
         ) {
           hasTriggeredSwipeAction.current = true;
+          const currentRouteName = AppNavigator.getCurrentRoute()?.name;
+          if (SCREEN_IGNORE_SWIPE_LEFT.includes(currentRouteName)) {
+            pendingSwipeAction.current = 'NONE';
+            return;
+          }
           pendingSwipeAction.current = 'GO_BACK';
         }
       },

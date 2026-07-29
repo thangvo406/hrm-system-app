@@ -286,6 +286,7 @@ function ProductDetail(props: any) {
     data,
     loading,
     onChangeQuantity,
+    onChangeQuantityAttrItem,
     onPressCart,
     onSelectAttribute,
     quantity,
@@ -349,6 +350,7 @@ function ProductDetail(props: any) {
               <ProductAttributes
                 data={data?.attributes ?? []}
                 onSelect={onSelectAttribute}
+                onChangeQuantity={onChangeQuantityAttrItem}
                 selected={selectedAttributes}
               />
               <View style={styles.quantityWrap}>

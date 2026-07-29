@@ -48,3 +48,5 @@ export enum AppStacks {
   Auth = 'Auth',
   App = 'App',
 }
+
+export const SCREEN_IGNORE_SWIPE_LEFT = [Paths.OrderCompleted];

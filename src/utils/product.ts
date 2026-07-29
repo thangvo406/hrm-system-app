@@ -21,7 +21,10 @@ export const groupAttributeItemsByAttributeId = (
   for (const row of rows) {
     const bucket = result[row.attributeId] ?? [];
     if (!bucket.some(entry => entry.itemId === row.attributeItemId)) {
-      bucket.push({ itemId: row.attributeItemId, quantity: 1 });
+      bucket.push({
+        itemId: row.attributeItemId,
+        quantity: row.quantity || 1,
+      });
     }
     result[row.attributeId] = bucket;
   }

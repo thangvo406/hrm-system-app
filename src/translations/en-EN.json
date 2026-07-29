@@ -730,7 +730,8 @@
       "wait_time_value": "Delivery ~15 min | Pickup ~5 min | Dine-in ~10 min",
       "store_available": "Available for {{method}} now",
       "address_section_title": "Delivery address",
-      "change": "Change"
+      "change": "Change",
+      "btn_submit": "Continue"
     },
     "contribution_input": {
       "title": "Capital Input",

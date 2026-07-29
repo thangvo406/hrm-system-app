@@ -183,7 +183,7 @@ function Shipping({
         </View>
       </ScrollView>
       <Button
-        title="Continue"
+        title={t('order_method.btn_submit')}
         type="rounded"
         onPress={handleSubmit}
         disabled={disableBtn}
