@@ -349,7 +349,8 @@
     "point_usage": {
       "use_point": "포인트 사용",
       "point_holding": "보유 {{amount}}P",
-      "point_unit": "P"
+      "point_unit": "P",
+      "max_point_error": "사용 가능한 최대 포인트는 {{amount}}P"
     },
     "payment_offline": {
       "title": "결제하기",

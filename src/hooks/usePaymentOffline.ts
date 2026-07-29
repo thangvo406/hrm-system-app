@@ -60,9 +60,8 @@ export const usePaymentOffline = () => {
     setSelectedMethodId(id);
   }, []);
 
-  const onChangePointUsed = useCallback((text: string) => {
-    const numeric = Number(text.replaceAll(/\D/g, ''));
-    setPointUsed(Number.isNaN(numeric) ? 0 : numeric);
+  const onChangePointUsed = useCallback((numeric: number) => {
+    setPointUsed(numeric);
   }, []);
 
   const onAddMethod = useCallback((callback: any) => {

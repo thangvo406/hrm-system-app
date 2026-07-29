@@ -35,6 +35,8 @@ function CheckBox({
   testID,
   rightComponent,
 }: CheckBoxProps) {
+  const hasRightSide = !!rightLabel || rightComponent !== undefined;
+
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -49,7 +51,7 @@ function CheckBox({
       style={[
         styles.container,
         style,
-        { justifyContent: rightLabel ? 'space-between' : 'flex-start' },
+        { justifyContent: hasRightSide ? 'space-between' : 'flex-start' },
       ]}
       testID={testID}
     >
@@ -111,7 +113,9 @@ const styles = StyleSheet.create({
   leftGroup: {
     alignItems: 'center',
     flexDirection: 'row',
-    flexGrow: 1,
+    // Chỉ shrink, KHÔNG grow: flexGrow ở đây sẽ khiến CheckBox (width auto) tự
+    // phình ra bằng toàn bộ không gian còn lại của parent row và đẩy các
+    // sibling ra ngoài container.
     flexShrink: 1,
   },
   rightLabel: {

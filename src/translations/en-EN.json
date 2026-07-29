@@ -93,7 +93,8 @@
     "point_usage": {
       "use_point": "Use points",
       "point_holding": "Holding {{amount}}P",
-      "point_unit": "P"
+      "point_unit": "P",
+      "max_point_error": "The maximum usable point is {{amount}}P"
     },
     "payment_offline": {
       "title": "Pay",

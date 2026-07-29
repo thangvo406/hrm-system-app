@@ -9,7 +9,10 @@ import { useTranslation } from 'react-i18next';
 import AppNavigator from '@navigation/AppNavigator';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { Paths } from '@navigation/paths';
-import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
+import {
+  getCurrentWalletRequest,
+  getTotalItemCartRequest,
+} from '@services/slices/account/accountSlice';
 import { useAppDispatch } from '@services/common/storeHooks';
 
 import Hero from './components/Hero';
@@ -32,6 +35,7 @@ function OrderCompleted(props: any) {
 
   useEffect(() => {
     dispatch(getTotalItemCartRequest());
+    dispatch(getCurrentWalletRequest());
   }, [dispatch]);
 
   const handleCopyCode = useCallback(() => {

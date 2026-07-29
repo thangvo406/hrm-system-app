@@ -32,8 +32,6 @@ export type SelectedPaymentMethod = {
 
 // TODO(api): replace mock values with the payment-method summary response.
 const PAY_MONEY_BALANCE = 87_500;
-const POINT_HOLDING = 11_000;
-const POINT_USED = 3000;
 const SELECTED_COUPON: IPaymentCoupon = {
   id: 'coupon-free-drink',
   name: '음료무료쿠폰',
@@ -48,16 +46,17 @@ export const usePayment = (props: any) => {
     {} as SelectedPaymentMethod,
   );
   const [usePoints, setUsePoints] = useState(true);
-  const [pointUsed, setPointUsed] = useState(POINT_USED);
-  const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
 
+  const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
+  const [pointUsed, setPointUsed] = useState(0);
   const onToggleUsePoints = () => {
     setUsePoints(previous => !previous);
   };
 
-  const onChangePointUsed = (text: string) => {
-    const numeric = Number(text.replaceAll(/\D/g, ''));
+  const onChangePointUsed = (numeric: number) => {
+    // const numeric = Number(text.replaceAll(/\D/g, ''));
     setPointUsed(Number.isNaN(numeric) ? 0 : numeric);
+    setUsePoints(previous => previous || !previous);
   };
   const { payloadRequest } = AppNavigator.getParams(props);
   const dispatch = useAppDispatch();
@@ -215,6 +214,7 @@ export const usePayment = (props: any) => {
         ...payloadRequest,
         createLinkRequest: {
           payment: paymentMethod,
+          pointAmount: usePoints ? pointUsed : 0,
         },
         onSuccess: (data: any) => {
           const { responsePayment, responseCreateOrder } = data || {};
@@ -249,7 +249,7 @@ export const usePayment = (props: any) => {
         },
       }),
     );
-  }, [selectedMethod, payloadRequest]);
+  }, [selectedMethod, payloadRequest, usePoints, pointUsed]);
 
   return {
     initialIndex: PRIMARY_CARD_INDEX,
@@ -264,7 +264,7 @@ export const usePayment = (props: any) => {
     onSelectedEasyPay,
     bankAccounts,
     payMoneyBalance: PAY_MONEY_BALANCE,
-    pointHolding: POINT_HOLDING,
+    pointHolding: currentWallet?.pointBalance,
     pointUsed,
     disableBtnSubmit,
     usePoints,

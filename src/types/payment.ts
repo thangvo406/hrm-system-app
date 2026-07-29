@@ -137,6 +137,7 @@ export interface IKcpInitParams {
 export interface ICreateLinkPaymentOrderRequest {
   orderId?: number;
   payment: IPaymentRequest;
+  pointAmount: number;
 }
 export interface ICreateOrderResponse {
   id: number;

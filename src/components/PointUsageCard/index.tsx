@@ -5,12 +5,14 @@ import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from '@utils/product';
 import { useTranslation } from 'react-i18next';
-import React from 'react';
+import React, { useState } from 'react';
+import { useAppSelector } from '@services/common/storeHooks';
+import { AccountSelector } from '@services/selectors';
 
 const ACCENT_COLOR = '#2DB34A';
 
 type Properties = {
-  readonly onChangePointUsed: (text: string) => void;
+  readonly onChangePointUsed: (text: number) => void;
   readonly onToggleUsePoints: () => void;
   readonly pointHolding: number;
   readonly pointUsed: number;
@@ -25,33 +27,63 @@ function PointUsageCard({
   usePoints,
 }: Properties) {
   const { t } = useTranslation();
+  const [errorInputPoint, setErrorInputPoint] = useState('');
+  const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
+
+  const onChangePoint = (text: string) => {
+    const newText = text.replaceAll(/\D/g, '');
+    const newNumber =
+      newText == String(pointUsed)
+        ? Number(newText.slice(0, -1))
+        : Number(newText);
+    if (newNumber > currentWallet?.pointBalance) {
+      setErrorInputPoint(
+        t('point_usage.max_point_error', {
+          amount: formatCurrency(currentWallet?.pointBalance),
+        }),
+      );
+      return;
+    }
+    setErrorInputPoint('');
+    onChangePointUsed(Number(newNumber));
+  };
 
   return (
     <AppButton style={styles.card} onPress={onToggleUsePoints}>
-      <CheckBox
-        onPress={onToggleUsePoints}
-        selected={usePoints}
-        testID="point-usage-toggle"
-      />
+      <View
+        style={{
+          flexDirection: 'row',
+          flex: 1,
+        }}
+      >
+        <CheckBox
+          onPress={onToggleUsePoints}
+          selected={usePoints}
+          testID="point-usage-toggle"
+        />
 
-      <View style={styles.info}>
-        <Text style={styles.label}>{t('point_usage.use_point')}</Text>
-        <Text style={styles.holdingLabel}>
-          {t('point_usage.point_holding', {
-            amount: formatCurrency(pointHolding),
-          })}
-        </Text>
+        <View style={styles.info}>
+          <Text style={styles.label}>{t('point_usage.use_point')}</Text>
+          <Text style={styles.holdingLabel}>
+            {t('point_usage.point_holding', {
+              amount: formatCurrency(pointHolding),
+            })}
+          </Text>
+        </View>
+
+        <TextField
+          inputWrapperStyle={styles.pointPill}
+          keyboardType="number-pad"
+          onChangeText={onChangePoint}
+          placeholder="0"
+          style={styles.pointPillText}
+          testID="point-usage-input"
+          value={`${formatCurrency(pointUsed)} ${t('point_usage.point_unit')}`}
+        />
       </View>
-
-      <TextField
-        inputWrapperStyle={styles.pointPill}
-        keyboardType="number-pad"
-        onChangeText={onChangePointUsed}
-        placeholder="0"
-        style={styles.pointPillText}
-        testID="point-usage-input"
-        value={`${formatCurrency(pointUsed)} ${t('point_usage.point_unit')}`}
-      />
+      {!!errorInputPoint && (
+        <Text style={styles.errorMaxQuantity}>{errorInputPoint}</Text>
+      )}
     </AppButton>
   );
 }
@@ -60,12 +92,10 @@ export default React.memo(PointUsageCard);
 
 const styles = StyleSheet.create({
   card: {
-    alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderColor: '#EFEFEF',
     borderRadius: ScaleSize(14),
     borderWidth: 1,
-    flexDirection: 'row',
     paddingHorizontal: ScaleSize(18),
     paddingVertical: ScaleSize(16),
   },
@@ -73,6 +103,13 @@ const styles = StyleSheet.create({
     color: '#8A8F94',
     fontSize: ScaleSize(12),
     marginTop: ScaleSize(4),
+  },
+  errorMaxQuantity: {
+    color: 'red',
+    textAlign: 'right',
+    fontSize: ScaleSize(14),
+    fontWeight: '400',
+    marginTop: ScaleSize(8),
   },
   info: {
     flex: 1,
@@ -96,6 +133,8 @@ const styles = StyleSheet.create({
   pointPillText: {
     color: '#FFFFFF',
     flex: 0,
+    // Giữ text trong maxWidth của pill khi số điểm dài, không tràn ra ngoài.
+    flexShrink: 1,
     fontSize: ScaleSize(15),
     fontWeight: '700',
     paddingVertical: 0,
