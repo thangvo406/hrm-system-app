@@ -48,6 +48,8 @@ export const EndPoints = {
   ACCOUNT_MANAGEMENT: {
     addAccount: (request: string) => `balance/kcp/register/init?${request}`,
     list: 'balance/payment-method',
+    lockCardAccount: 'lockCardAccount',
+    removeCardAccount: 'lockCardAccount',
   },
   NOTIFICATIONS: {
     list: (request: string) => `notification?${request}`,

@@ -122,6 +122,12 @@ export interface IWallet {
   status: string;
 }
 
+export interface IRequestLockCard extends AppCallback {
+  id: number
+}
+export interface IRequestRemoveCard extends AppCallback {
+  id: number
+}
 export interface TransactionHistory {
   id: number;
   walletId: number;

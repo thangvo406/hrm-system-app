@@ -4,6 +4,7 @@ import type {
   IRequestAddAccount,
   IRequestGetAccountCards,
 } from '@type/accountManagement';
+import type { IRequestLockCard, IRequestRemoveCard } from '@type/wallet';
 
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -30,6 +31,14 @@ const accountManagementSlice = createSlice({
     getAccountCardsSuccess: (state, action: PayloadAction<IAccount[]>) => {
       state.accountCards = action.payload;
     },
+    lockCardAccountRequest: {
+      prepare: (payload: IRequestLockCard) => ({ payload }),
+      reducer: () => {},
+    },
+    removeCardAccountRequest: {
+      prepare: (payload: IRequestRemoveCard) => ({ payload }),
+      reducer: () => {},
+    },
   },
 });
 
@@ -37,5 +46,7 @@ export const {
   addAccountRequest,
   getAccountCardsRequest,
   getAccountCardsSuccess,
+  lockCardAccountRequest,
+  removeCardAccountRequest,
 } = accountManagementSlice.actions;
 export const accountManagementReducer = accountManagementSlice.reducer;

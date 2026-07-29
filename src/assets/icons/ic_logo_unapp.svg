@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 32" fill="none">
-  <circle cx="12" cy="16" r="10" fill="#5BB85C"/>
-  <circle cx="28" cy="16" r="10" fill="#3FA040"/>
-  <circle cx="44" cy="16" r="10" fill="#7DCB7E"/>
-  <circle cx="60" cy="16" r="10" fill="#2D7A2E"/>
-  <text x="38" y="20" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#FFFFFF">UNAPP</text>
-</svg>
