@@ -1,10 +1,13 @@
-import { HeaderDetail, PointUsageCard } from '@components';
+import {
+  HeaderDetail,
+  PointUsageCard,
+  BankAccountsSelection,
+} from '@components';
 import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { usePayment } from '@hooks';
 import { useTranslation } from 'react-i18next';
 import GeneralPaymentSection from './GeneralPaymentSection';
-import BankAccounts from './BankAccounts';
 import PayButton from './PayButton';
 import PayMoneyCard from './PayMoneyCard';
 import PointCouponCard from './PointCouponCard';
@@ -57,7 +60,7 @@ function Payment(props: any) {
         </View>
 
         <View style={styles.fullBleed}>
-          <BankAccounts
+          <BankAccountsSelection
             cards={bankAccounts}
             initialIndex={initialIndex}
             onSelect={onSelectCard}

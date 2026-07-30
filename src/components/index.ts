@@ -29,5 +29,6 @@ export { default as AddPlaceholder } from './AddPlaceholder';
 export { default as Counter } from './Counter';
 export { default as BankAccounts } from './BankAccounts';
 export { default as Cards } from './Cards';
+export { default as BankAccountsSelection } from './BankAccountsSelection';
 export { default as VerificationFailed } from './VerificationFailed';
 export type { TCounterRef } from './Counter';

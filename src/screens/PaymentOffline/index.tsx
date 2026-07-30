@@ -4,19 +4,18 @@ import { usePaymentOffline } from '@hooks';
 import { useTranslation } from 'react-i18next';
 
 import PayButton from './PayButton';
-import PaymentMethodCarousel from './PaymentMethodCarousel';
-import { PointUsageCard } from '@components';
+import { BankAccountsSelection, PointUsageCard } from '@components';
 import HeaderDetail from '@components/HeaderDetail';
 
 function PaymentOffline() {
   const { t } = useTranslation();
   const {
-    onAddMethod,
     onChangePointUsed,
     onPay,
     onSelectMethod,
     onToggleUsePoints,
-    paymentMethods,
+    bankAccounts,
+    initialIndex,
     pointHolding,
     pointUsed,
     selectedMethodId,
@@ -42,14 +41,10 @@ function PaymentOffline() {
         <Text style={styles.sectionLabel}>
           {t('payment_offline.method_label')}
         </Text>
-        <Text style={styles.coopPayLabel}>
-          {t('payment_offline.coop_pay_label')}
-        </Text>
-
         <View style={styles.fullBleed}>
-          <PaymentMethodCarousel
-            methods={paymentMethods}
-            onAddMethod={onAddMethod}
+          <BankAccountsSelection
+            cards={bankAccounts}
+            initialIndex={initialIndex}
             onSelect={onSelectMethod}
             selectedId={selectedMethodId}
           />
@@ -72,7 +67,8 @@ const styles = StyleSheet.create({
     marginBottom: ScaleSize(10),
   },
   fullBleed: {
-    marginHorizontal: -ScaleSize(20),
+    // marginHorizontal: -ScaleSize(20),
+    marginTop: ScaleSize(10),
   },
   safeArea: {
     backgroundColor: '#FFFFFF',
