@@ -14,7 +14,7 @@ export interface AppState {
 const initialState: AppState = {
   counter: 0,
   showFloatingCart: false,
-  isEnablePaymentCard: true,
+  isEnablePaymentCard: false,
 };
 
 const appSlice = createSlice({
