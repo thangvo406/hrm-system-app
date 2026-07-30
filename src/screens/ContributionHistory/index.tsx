@@ -1,4 +1,10 @@
-import { Button, HeaderDetail, SegmentedTab } from '@components';
+import {
+  AppButton,
+  Button,
+  HeaderDetail,
+  Image,
+  SegmentedTab,
+} from '@components';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useMemo } from 'react';
 import { ScaleSize } from '@kits/core';
@@ -13,6 +19,7 @@ import dayjs from 'dayjs';
 const TEXT_DARK = '#1A1A1A';
 const SECTION_DIVIDER = Colors.gray3;
 const SCREEN_BACKGROUND = '#F2F2F2';
+const BADGE_SIZE = ScaleSize(22);
 
 function PayCard() {
   const { t } = useTranslation();
@@ -24,6 +31,8 @@ function PayCard() {
     tranHistories,
     pointTransactions,
     loading,
+    onPressFilter,
+    filterCount,
     onChangeTab,
     onPressTranItem,
   } = useContributeHistory();
@@ -128,7 +137,50 @@ function PayCard() {
         <View style={styles.sectionDivider} />
 
         <View style={styles.historySection}>
-          <Text style={styles.historyTitle}>{t('pay_card.history_title')}</Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text style={styles.historyTitle}>
+              {t('pay_card.history_title')}
+            </Text>
+            <AppButton onPress={onPressFilter}>
+              <Image
+                name="ic_filter"
+                width={ScaleSize(32)}
+                height={ScaleSize(32)}
+                type="svg"
+              />
+              {filterCount > 0 ? (
+                <View
+                  style={{
+                    alignItems: 'center',
+                    backgroundColor: Colors.primary,
+                    borderRadius: BADGE_SIZE / 2,
+                    height: BADGE_SIZE,
+                    justifyContent: 'center',
+                    minWidth: BADGE_SIZE,
+                    paddingHorizontal: ScaleSize(3),
+                    position: 'absolute',
+                    right: -(BADGE_SIZE / 4),
+                    bottom: -BADGE_SIZE / 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontSize: ScaleSize(11),
+                      fontWeight: '700',
+                    }}
+                  >
+                    {filterCount}
+                  </Text>
+                </View>
+              ) : undefined}
+            </AppButton>
+          </View>
           <SegmentedTab
             activeTab={historyTab}
             onTabChange={onChangeTab}

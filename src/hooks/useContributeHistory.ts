@@ -21,13 +21,15 @@ import type {
   IContributeHistory,
   ListApiResponse,
 } from '@type';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import ContributionDetail from '@dialogs/ContributionDetail';
 import { useTranslation } from 'react-i18next';
 import { AccountManagementSelector } from '@services/selectors';
 import Information from '@dialogs/Information';
 import imageNames from '@assets/images/names';
 import RequestAddCard from '@dialogs/RequestAddCard';
+import DatePicker from '@dialogs/DateRangeFilter';
+import dayjs from 'dayjs';
 
 type TPayCardHistoryTab = 'pay' | 'point';
 
@@ -53,6 +55,14 @@ export const useContributeHistory = () => {
   const { t } = useTranslation();
   const [payItems, setPayItems] = useState<IContributeHistory[]>([]);
   const [pointItems, setPointItems] = useState<IDividendHistory[]>([]);
+  const [paramsFilter, setParamsFilter] = useState<any>();
+
+  const filterCount = useMemo(() => {
+    if (paramsFilter?.fromDate) {
+      return 1;
+    }
+    return 0;
+  }, [paramsFilter]);
 
   const bankAccounts = useAppSelector(
     AccountManagementSelector.getAccountCards,
@@ -102,6 +112,7 @@ export const useContributeHistory = () => {
             balanceAccountType: 'CONTRIBUTION',
             page,
             size: 20,
+            ...(paramsFilter || {}),
             onSuccess: (data: ListApiResponse<IContributeHistory[]>) => {
               pagination.current.isLast = data.last;
               pagination.current.isLoadingMore = false;
@@ -121,6 +132,7 @@ export const useContributeHistory = () => {
           getHistoriesDividendRequest({
             page,
             size: 20,
+            ...(paramsFilter || {}),
             onSuccess: (data: ListApiResponse<IDividendHistory[]>) => {
               pagination.current.isLast = data.last;
               pagination.current.isLoadingMore = false;
@@ -137,8 +149,33 @@ export const useContributeHistory = () => {
         );
       }
     },
-    [dispatch, getPagination],
+    [dispatch, getPagination, paramsFilter],
   );
+
+  const onSubmitFilter = (_data: any) => {
+    const { from, to } = _data || {};
+    setParamsFilter({
+      fromDate: dayjs(`${from}T00:00:00`)?.toISOString(),
+      toDate: dayjs(`${to}T23:59:59`)?.toISOString(),
+    });
+  };
+  const onPressFilter = () => {
+    AppNavigator.showDialog({
+      screen: DatePicker,
+      isFullScreen: true,
+      maxDate: dayjs().format('YYYY-MM-DD'),
+      onSubmit: onSubmitFilter,
+      // dateSelected: birthdaySelected,
+      buttonSubmitTitle: 'submit',
+      buttonCancelTitle: 'Reset',
+      popupType: 'bottomSheet',
+      dateRange: {
+        from: dayjs(),
+        // to: birthdaySelected,
+      },
+      title: 'Chọn khoảng thời gian',
+    });
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -156,7 +193,7 @@ export const useContributeHistory = () => {
     useCallback(() => {
       setLoading(true);
       fetchTab(historyTab, getPagination(historyTab).current.page);
-    }, [historyTab, fetchTab, getPagination]),
+    }, [historyTab, paramsFilter, fetchTab, getPagination]),
   );
 
   const onLoadMore = useCallback(() => {
@@ -210,6 +247,8 @@ export const useContributeHistory = () => {
     onLoadMore,
     onPressTranItem,
     onRecharge,
+    onPressFilter,
+    filterCount,
     pointTransactions: pointItems,
     summary,
     tranHistories: payItems,

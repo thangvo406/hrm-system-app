@@ -25,6 +25,27 @@
       "login": "로그인",
       "register": "신규 가입"
     },
+    "date": {
+      "date_range": {
+        "sun_day_long": "일요일",
+        "day_long_display": "월요일, 화요일, 수요일, 목요일, 금요일, 토요일, 일요일",
+        "sun_day_short": "일",
+        "day_short_display": "월, 화, 수, 목, 금, 토, 일",
+        "mon": "월",
+        "tue": "화",
+        "wed": "수",
+        "thu": "목",
+        "fri": "금",
+        "sat": "토",
+        "sun": "일",
+        "month_display": "{{month}}월"
+      },
+      "date_picker": {
+        "button_cancel": "취소",
+        "this_week": "이번 주",
+        "button_submit": "보기"
+      }
+    },
     "authorisation": {
       "tab_login": "로그인",
       "tab_registration": "회원가입",

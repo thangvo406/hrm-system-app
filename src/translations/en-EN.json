@@ -171,6 +171,32 @@
       "login": "Login",
       "register": "New Registration"
     },
+    "date_range_filter": {
+      "one": "1 month",
+      "three": "3 months",
+      "custom": "Custom"
+    },
+    "date": {
+      "date_range": {
+        "sun_day_long": "Sunday",
+        "day_long_display": "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday",
+        "sun_day_short": "Sun",
+        "day_short_display": "Mon, Tue, Wed, Thu, Fri, Sat, Sun",
+        "mon": "M",
+        "tue": "T",
+        "wed": "W",
+        "thu": "T",
+        "fri": "F",
+        "sat": "S",
+        "sun": "S",
+        "month_display": "Month {{month}}"
+      },
+      "date_picker": {
+        "button_cancel": "Cancel",
+        "this_week": "This week",
+        "button_submit": "View"
+      }
+    },
     "forgot_password": {
       "desc_success": "Your password has been changed successfully. Please log in with your new password.",
       "email_description": "Enter the email you signed up with and we'll send you a link to reset your password.",

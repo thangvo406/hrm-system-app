@@ -28,6 +28,21 @@ import AppNativeModules from '@services/native/AppNativeModules';
 import { AppStack, AuthStack } from './Stacks';
 import { deepLinkGate } from './deepLinkGate';
 
+import isToday from 'dayjs/plugin/isToday';
+import isYesterday from 'dayjs/plugin/isYesterday';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import dayjs from 'dayjs';
+
+dayjs.extend(isToday);
+dayjs.extend(isYesterday);
+dayjs.extend(relativeTime);
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(customParseFormat);
+
 const Stack = createStackNavigator<RootStackParamList>();
 
 const IS_PAN_RESPONDER_ENABLED = true;

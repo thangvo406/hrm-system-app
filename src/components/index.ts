@@ -31,4 +31,5 @@ export { default as BankAccounts } from './BankAccounts';
 export { default as Cards } from './Cards';
 export { default as BankAccountsSelection } from './BankAccountsSelection';
 export { default as VerificationFailed } from './VerificationFailed';
+export { default as DatePicker } from './DatePicker';
 export type { TCounterRef } from './Counter';
