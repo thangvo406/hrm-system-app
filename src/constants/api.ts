@@ -10,7 +10,6 @@ export const EndPoints = {
     verifyOTP: 'auth/register/phone/confirm-otp',
     getUniversities: (request: string) => `university?${request}`,
     createLinkVerifyForgotPass: 'auth/forgot-password/identity/init',
-    verifyOtpForgotPass: 'auth/forgot-password/confirm-otp',
     submitForgotPass: 'auth/forgot-password/reset',
     refreshToken: 'auth/refresh',
     logout: 'auth/logout',

@@ -13,7 +13,6 @@ import type {
   IRequestSendOtpVerifyMembership,
   IRequestSubmitForgotPass,
   IRequestVerifyOTP,
-  IRequestVerifyOtpForgotPass,
   ICredentials,
   ISelectSchoolRequest,
   ISelectSchoolSuccessPayload,
@@ -103,11 +102,6 @@ const authSlice = createSlice({
       prepare: (payload: IRequestCreateLinkVerifyForgotPass) => ({ payload }),
       reducer: () => {},
     },
-    // Forgot-password step 2: verify the OTP and receive a reset token.
-    verifyOtpForgotPassRequest: {
-      prepare: (payload: IRequestVerifyOtpForgotPass) => ({ payload }),
-      reducer: () => {},
-    },
     // Forgot-password step 3: submit a new password with the reset token.
     submitForgotPassRequest: {
       prepare: (payload: IRequestSubmitForgotPass) => ({ payload }),
@@ -188,7 +182,6 @@ export const {
   setCredentials,
   submitForgotPassRequest,
   verifyOTPRequest,
-  verifyOtpForgotPassRequest,
 } = authSlice.actions;
 
 export const authReducer = authSlice.reducer;

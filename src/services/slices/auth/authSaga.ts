@@ -12,7 +12,6 @@ import type {
   IRequestCreateLinkVerifyForgotPass,
   IRequestSubmitForgotPass,
   IRequestVerifyOTP,
-  IRequestVerifyOtpForgotPass,
   IResponseLogin,
   IResponseCreateLinkVerifyInfoUser,
   IResponseCreateLinkVerifyForgotPass,
@@ -30,7 +29,6 @@ import {
   createLinkVerifyForgotPass,
   submitForgotPass,
   verifyOTP,
-  verifyOtpForgotPass,
   logout as logoutRequest,
   refreshToken,
   createLinkVerifyInfoUser,
@@ -60,7 +58,6 @@ import {
   setCredentials,
   submitForgotPassRequest,
   verifyOTPRequest,
-  verifyOtpForgotPassRequest,
 } from './authSlice';
 import {
   IResponseRegisterSendOtp,
@@ -68,7 +65,6 @@ import {
   IResponseRegisterVerifyOtp,
   IResponseSubmitForgotPass,
   IResponseUniversity,
-  IResponseVerifyOtpForgotPass,
   IResponseRefreshToken,
   ISelectSchoolRequest,
   IResponseSendOtpVerifyMembership,
@@ -211,22 +207,6 @@ function* createLinkVerifyForgotPassWorker(
   }
 }
 
-function* verifyOtpForgotPassWorker(
-  action: PayloadAction<IRequestVerifyOtpForgotPass>,
-) {
-  const { onFailure, onSuccess, ...request } = action.payload;
-  try {
-    const response: IResponseVerifyOtpForgotPass = yield call(
-      verifyOtpForgotPass,
-      request,
-    );
-    onSuccess?.(response);
-  } catch (error) {
-    yield put(authFailure(getErrorMessageApi(error)));
-    onFailure?.(getErrorMessageApi(error));
-  }
-}
-
 function* submitForgotPassWorker(
   action: PayloadAction<IRequestSubmitForgotPass>,
 ) {
@@ -322,7 +302,6 @@ export function* authSaga() {
     createLinkVerifyForgotPassRequest.type,
     createLinkVerifyForgotPassWorker,
   );
-  yield takeLatest(verifyOtpForgotPassRequest.type, verifyOtpForgotPassWorker);
   yield takeLatest(submitForgotPassRequest.type, submitForgotPassWorker);
   yield takeLatest(
     sendOtpVerifyMembershipRequest.type,

@@ -85,9 +85,6 @@ export interface LogoutRequest {
 }
 // TODO: define response fields when the social-login API spec is available.
 export type IResponseLoginSocial = Record<string, never>;
-export interface IResponseVerifyOtpForgotPass {
-  resetToken: string;
-}
 export interface IResponseCreateLinkVerifyInfoUser {
   callUrl: string;
   regCertKey: string;
@@ -177,17 +174,6 @@ export interface IRequestGetUniversities
 export interface IRequestCreateLinkVerifyForgotPass
   extends AppCallback<IResponseCreateLinkVerifyForgotPass> {
   email: string;
-}
-
-export interface IRequestVerifyOtpForgotPass
-  extends AppCallback<IResponseVerifyOtpForgotPass> {
-  email: string;
-  identityNumber: string;
-  otp: string;
-  phone: string;
-  fullName: string;
-  phoneVerificationToken: string;
-  termsAgreed: boolean;
 }
 
 export interface IRequestSubmitForgotPass

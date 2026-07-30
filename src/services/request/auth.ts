@@ -7,14 +7,12 @@ import type {
   IRequestSubmitForgotPass,
   IRequestVerifyOTP,
   IRequestLoginSocial,
-  IRequestVerifyOtpForgotPass,
   IResponseRegisterVerifyOtp,
   IResponseRegisterSendOtp,
   IResponseUniversity,
   IRequestCreateLinkVerifyForgotPass,
   IResponseCreateLinkVerifyForgotPass,
   IResponseSubmitForgotPass,
-  IResponseVerifyOtpForgotPass,
   IResponseLoginSocial,
   LogoutRequest,
   IResponseRefreshToken,
@@ -113,15 +111,6 @@ export const refreshToken = async (
       loading: false,
     },
   );
-  return response.data;
-};
-
-export const verifyOtpForgotPass = async (
-  request: IRequestVerifyOtpForgotPass,
-): Promise<IResponseVerifyOtpForgotPass> => {
-  const response = await httpRequest.post<
-    SingleApiResponse<IResponseVerifyOtpForgotPass>
-  >(EndPoints.AUTH.verifyOtpForgotPass, request);
   return response.data;
 };
 

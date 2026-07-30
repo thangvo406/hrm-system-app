@@ -1,23 +1,17 @@
 import { useRef, useState } from 'react';
-import type { InputInfoValues } from '@screens/Authorisation/components/RegisterFlow/InputInfo';
-import Selection from '@screens/Dialog/components/Selection';
 import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch } from '@services/common/storeHooks';
 // import { ValidateUtils } from '@kits/core/utils';
 import { useTranslation } from 'react-i18next';
-import { AppConstants } from '@constants';
 import {
   createLinkVerifyForgotPassRequest,
   submitForgotPassRequest,
-  verifyOtpForgotPassRequest,
 } from '@services/slices/auth/authSlice';
 import { Paths } from '@navigation/paths';
 import { IResponseCreateLinkVerifyForgotPass } from '@type';
 import WebViewScreen from '@dialogs/Webview';
 import { WebViewNavigation } from 'react-native-webview';
 import { deepLinkGate } from '@navigation/deepLinkGate';
-
-const { CARRIER_ITEMS, DEFAULT_CARRIER } = AppConstants;
 
 export type ForgotStep =
   | 'new_pass_form'
@@ -38,46 +32,14 @@ const onSubmitRegisterCompleted = () => {
 };
 
 export type FormData = {
-  birthday: string;
-  indentify: string;
-  carrier: string;
-  email: string;
-  membershipId: string;
-  name: string;
-  otp: string;
-  password: string;
-  phone: string;
-  roleId: string;
-  phoneVerificationToken: string;
   resetToken: string;
-  signupToken: string;
 };
 
 export const useForgotPass = () => {
-  const [agreed, setAgreed] = useState(false);
-  const [carrier, setCarrier] = useState<string>(DEFAULT_CARRIER);
   const formData = useRef<FormData>({} as FormData);
   const [step, setStep] = useState<ForgotStep>(FORGOT_STEP.REGISTER_INPUT);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
-
-  const onInfoChange = (field: keyof InputInfoValues, value: string) => {
-    formData.current[field] = value;
-    // formData.current = { ...formData.current, [field]: value };
-  };
-  const onPressCarrier = () => {
-    AppNavigator.showDialog({
-      cancelable: true,
-      items: CARRIER_ITEMS,
-      onSelect: (id: string) => {
-        setCarrier(id);
-        formData.current.carrier = id;
-      },
-      screen: Selection,
-      selectedId: carrier,
-      title: t('register_flow.choose_carrier'),
-    });
-  };
 
   const onSubmitResetPass = (_data: any) => {
     dispatch(
@@ -125,7 +87,7 @@ export const useForgotPass = () => {
               type: 'failed',
             });
           } else {
-            formData.current.resetToken = params?.resetToken;
+            formData.current.resetToken = params?.resetToken as string;
             setStep(FORGOT_STEP.NEW_PASS_FORM);
           }
         }
@@ -148,26 +110,6 @@ export const useForgotPass = () => {
       }),
     );
   };
-  const onPressVerify = (callback: any) => {
-    dispatch(
-      verifyOtpForgotPassRequest({
-        email: formData.current.email,
-        phone: formData.current.phone,
-        fullName: formData.current.name,
-        phoneVerificationToken: formData.current.phoneVerificationToken,
-        identityNumber: `${formData.current.birthday}-${formData.current.indentify}`,
-        otp: formData.current.otp,
-        termsAgreed: true,
-        onSuccess: (response: any) => {
-          formData.current.resetToken = response?.resetToken;
-          callback?.(true);
-        },
-        onFailure: msg => {
-          AppNavigator.showSnackBar({ message: msg, type: 'failed' });
-        },
-      }),
-    );
-  };
 
   const onSubmit = (data?: any) => {
     const handlers: Record<ForgotStep, (data?: any) => void> = {
@@ -178,19 +120,9 @@ export const useForgotPass = () => {
     handlers[step]?.(data);
   };
 
-  const onToggleAgreement = () => {
-    setAgreed(previous => !previous);
-  };
-
   return {
-    agreed,
-    carrier,
     step,
     onBack,
-    onInfoChange,
-    onPressVerify,
-    onPressCarrier,
     onSubmit,
-    onToggleAgreement,
   };
 };

@@ -10,30 +10,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import InputEmail from './components/InputEmail';
 
 function ForgotPass() {
-  const {
-    agreed,
-    carrier,
-    onInfoChange,
-    onPressCarrier,
-    onSubmit,
-    onToggleAgreement,
-    step,
-    onBack,
-    onPressVerify,
-  } = useForgotPass();
+  const { onSubmit, step, onBack } = useForgotPass();
 
   const insets = useSafeAreaInsets();
 
   const detailProps = {
-    agreed,
-    carrier,
-    isShowFieldName: true,
-    onInfoChange,
-    onPressCarrier,
     onSubmit,
     onBack,
-    onToggleAgreement,
-    onPressVerify,
     titleRegisterInfoKey: 'forgot_password.title_register_info',
   };
 
