@@ -2,7 +2,7 @@ import type { ComponentType } from 'react';
 
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Screens from '@screens';
-import { Paths } from './paths';
+import { AUTH_PATHS, Paths } from './paths';
 import { AppTabNavigator } from './AppTabNavigator';
 
 // ─── Auth stack ───────────────────────────────────────────────────────────────
@@ -59,15 +59,6 @@ export function AuthStack() {
 // ─── App stack ────────────────────────────────────────────────────────────────
 
 const AppNavigator = createStackNavigator();
-
-const AUTH_PATHS = new Set<string>([
-  Paths.AppTabs,
-  Paths.Welcome,
-  Paths.Authorization,
-  Paths.SchoolSelection,
-  Paths.ForgotPass,
-  Paths.AcademicVerificationFinish,
-]);
 
 const APP_SCREENS: ScreenDef[] = (Object.keys(Paths) as (keyof typeof Paths)[])
   .filter(key => !AUTH_PATHS.has(Paths[key]))

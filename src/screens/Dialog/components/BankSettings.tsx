@@ -2,7 +2,8 @@ import type { IconName } from '@assets/icons';
 
 import { AppButton, Button, Image } from '@components';
 import { ScaleSize } from '@kits/core';
-import React from 'react';
+import { IAccount } from '@type';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -51,7 +52,10 @@ function OptionRow({
 type Properties = {
   readonly onLock?: () => void;
   readonly onRequestClose?: () => void;
-  readonly onUnlink?: () => void;
+  readonly onSetDefault?: () => void;
+  readonly onUnLock?: () => void;
+  readonly isLocked: boolean;
+  readonly card: IAccount;
 };
 
 /**
@@ -59,41 +63,80 @@ type Properties = {
  * wallet. Rendered inside the bottom-sheet host, which supplies the white
  * card, drag handle and bottom inset.
  */
-function BankSettings({ onLock, onRequestClose, onUnlink }: Properties) {
+function BankSettings({
+  onLock,
+  onRequestClose,
+  isLocked,
+  onUnLock,
+  onSetDefault,
+  card,
+}: Properties) {
   const { t } = useTranslation();
 
   const wallet = t('account_management.wallet_name');
 
+  const { desc, iconLock, titleLock } = useMemo((): {
+    desc: string;
+    iconLock: IconName;
+    titleLock: string;
+  } => {
+    if (isLocked) {
+      return {
+        desc: t('account_management.bank_settings.unlock_desc', {
+          wallet,
+        }),
+        iconLock: 'ic_unlock',
+        titleLock: t('account_management.bank_settings.unlock_title'),
+      };
+    } else {
+      return {
+        desc: t('account_management.bank_settings.lock_desc', {
+          wallet,
+        }),
+        iconLock: 'ic_lock_closed',
+        titleLock: t('account_management.bank_settings.lock_title'),
+      };
+    }
+  }, [isLocked, wallet]);
+
   const onPressLock = () => {
     onRequestClose?.();
-    onLock?.();
+    if (isLocked) {
+      onUnLock?.();
+    } else {
+      onLock?.();
+    }
   };
 
-  const onPressUnlink = () => {
+  const onPressSetDefault = () => {
     onRequestClose?.();
-    onUnlink?.();
+    onSetDefault?.();
   };
 
   return (
     <View style={styles.container} testID="bank-settings-sheet">
-       <Text style={styles.title}>
+      <Text style={styles.title}>
         {t('account_management.bank_settings.title')}
       </Text>
       <OptionRow
-        description={t('account_management.bank_settings.lock_desc', { wallet })}
-        icon="ic_lock_closed"
+        description={desc}
+        icon={iconLock}
         onPress={onPressLock}
         showDivider
         testID="bank-settings-lock"
-        title={t('account_management.bank_settings.lock_title')}
+        title={titleLock}
       />
-      <OptionRow
-        description={t('account_management.bank_settings.unlink_desc', { wallet })}
-        icon="ic_close"
-        onPress={onPressUnlink}
-        testID="bank-settings-unlink"
-        title={t('account_management.bank_settings.unlink_title')}
-      />
+      {!card?.default && (
+        <OptionRow
+          description={t('account_management.bank_settings.set_default_desc', {
+            wallet,
+          })}
+          icon="ic_star"
+          onPress={onPressSetDefault}
+          testID="bank-settings-set-default"
+          title={t('account_management.bank_settings.set_default_title')}
+        />
+      )}
 
       <Button
         onPress={onRequestClose}
@@ -131,7 +174,7 @@ const styles = StyleSheet.create({
     fontSize: ScaleSize(17),
     fontWeight: '700',
     paddingHorizontal: ScaleSize(8),
-    marginBottom: ScaleSize(10)
+    marginBottom: ScaleSize(10),
   },
   option: {
     alignItems: 'center',

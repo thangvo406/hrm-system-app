@@ -1,7 +1,12 @@
 import { useEffect, useRef } from 'react';
 import type { RootStackParamList } from '@navigation/types';
 
-import { AppStacks, Paths, SCREEN_IGNORE_SWIPE_LEFT } from '@navigation/paths';
+import {
+  AppStacks,
+  AUTH_PATHS,
+  Paths,
+  SCREEN_IGNORE_SWIPE_LEFT,
+} from '@navigation/paths';
 import {
   NavigationContainer,
   useNavigationContainerRef,
@@ -58,19 +63,12 @@ function ApplicationNavigator() {
       if (url) {
         const data = deepLinkGate.getPathFromUrl(url);
         const { screen, ...params } = data || {};
-        let type;
-        if (screen == 'academicverifysuccess') {
-          type = 'success';
-        } else if (screen == 'academicverifyfail') {
-          type = 'failed';
+        if (screen?.toLowerCase?.() == 'vouchers') {
+          const currentRoute = AppNavigator.getCurrentRoute().name;
+          if (!AUTH_PATHS.has(currentRoute)) {
+            AppNavigator.navigate(Paths.Vouchers);
+          }
         }
-        AppNavigator.navigate(Paths.AcademicVerificationFinish, {
-          type,
-          ...(params || {}),
-        });
-        // AppNavigator.navigate(data?.stack, {
-        //   screen: data?.screen,
-        // });
       }
     }
   };

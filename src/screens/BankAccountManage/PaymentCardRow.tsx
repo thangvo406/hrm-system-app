@@ -1,6 +1,5 @@
 import type { IAccount } from '@type';
 
-// import { AppButton, Image } from '@components';
 import { ScaleSize } from '@kits/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,23 +31,15 @@ import {
 
 const THUMBNAIL_WIDTH = ScaleSize(96);
 const THUMBNAIL_HEIGHT = ScaleSize(72);
-// const MORE_ICON_SIZE = ScaleSize(18);
 
 type Properties = {
   readonly card: IAccount;
   readonly cardIndex: number;
-  // readonly onMore?: () => void;
   readonly onRemove?: (card: IAccount) => void;
   readonly onSettings?: (card: IAccount) => void;
 };
 
-function PaymentCardRow({
-  card,
-  cardIndex,
-  // onMore,
-  onRemove,
-  onSettings,
-}: Properties) {
+function PaymentCardRow({ card, cardIndex, onRemove, onSettings }: Properties) {
   const { t } = useTranslation();
 
   const colors = CARD_GRADIENTS[cardIndex % CARD_GRADIENTS.length];
@@ -101,28 +92,25 @@ function PaymentCardRow({
             surface={isActive ? ACCENT_SURFACE : WARNING_SURFACE}
           />
         </View>
-{/* 
-        <AppButton
-          onPress={onMore}
-          style={styles.more}
-          testID={`payment-method-card-more-${card.id}`}
-        >
-          <Image
-            color={MUTED_INK}
-            height={MORE_ICON_SIZE}
-            name="ic_dots_vertical"
-            type="svg"
-            width={MORE_ICON_SIZE}
-          />
-        </AppButton> */}
+        <View style={styles.topRight}>
+          {card?.default ? (
+            <Pill
+              ink={ACCENT_INK}
+              label={t('account_management.primary')}
+              surface={ACCENT_SURFACE}
+            />
+          ) : undefined}
+        </View>
       </View>
 
-      <CardActions
-        direction="row"
-        onRemove={() => onRemove?.(card)}
-        onSettings={() => onSettings?.(card)}
-        testIDSuffix={`-card-${card.id}`}
-      />
+      <View style={styles.actions}>
+        <CardActions
+          direction="row"
+          onRemove={() => onRemove?.(card)}
+          onSettings={() => onSettings?.(card)}
+          testIDSuffix={`-card-${card.id}`}
+        />
+      </View>
     </View>
   );
 }
@@ -130,6 +118,14 @@ function PaymentCardRow({
 export default React.memo(PaymentCardRow);
 
 const styles = StyleSheet.create({
+  actions: {
+    paddingTop: ROW_GAP,
+  },
+  topRight: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: ScaleSize(6),
+  },
   expiry: {
     color: MUTED_INK,
     fontSize: ScaleSize(13),
@@ -138,12 +134,6 @@ const styles = StyleSheet.create({
   info: {
     flex: 1,
     gap: ScaleSize(3),
-  },
-  more: {
-    alignItems: 'center',
-    height: ScaleSize(24),
-    justifyContent: 'center',
-    width: ScaleSize(24),
   },
   name: {
     color: TITLE_INK,
@@ -157,7 +147,6 @@ const styles = StyleSheet.create({
   row: {
     backgroundColor: ROW_SURFACE,
     borderRadius: ROW_RADIUS,
-    gap: ScaleSize(12),
     padding: ROW_PADDING,
   },
   thumbnail: {

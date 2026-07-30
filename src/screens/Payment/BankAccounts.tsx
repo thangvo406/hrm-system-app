@@ -159,7 +159,6 @@ function CardItem({
   }
 
   const theme = getMethodStyle(card.type);
-  console.log('card', card);
   return (
     <View style={styles.cardSlot}>
       <Animated.View style={animatedStyle}>

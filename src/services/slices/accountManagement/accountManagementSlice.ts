@@ -35,8 +35,16 @@ const accountManagementSlice = createSlice({
       prepare: (payload: IRequestLockCard) => ({ payload }),
       reducer: () => {},
     },
+    makeDefaultCardAccountRequest: {
+      prepare: (payload: IRequestLockCard) => ({ payload }),
+      reducer: () => {},
+    },
     removeCardAccountRequest: {
       prepare: (payload: IRequestRemoveCard) => ({ payload }),
+      reducer: () => {},
+    },
+    unLockCardAccountRequest: {
+      prepare: (payload: IRequestLockCard) => ({ payload }),
       reducer: () => {},
     },
   },
@@ -47,6 +55,8 @@ export const {
   getAccountCardsRequest,
   getAccountCardsSuccess,
   lockCardAccountRequest,
+  makeDefaultCardAccountRequest,
   removeCardAccountRequest,
+  unLockCardAccountRequest,
 } = accountManagementSlice.actions;
 export const accountManagementReducer = accountManagementSlice.reducer;

@@ -28,16 +28,13 @@ function navigateToPendingDeepLink(isAuthenticated: boolean) {
     return;
   }
   const { screen, ...params } = data || {};
-  let type;
-  if (screen == 'academicverifysuccess') {
-    type = 'success';
-  } else if (screen == 'academicverifyfail') {
-    type = 'failed';
+  if (isAuthenticated && screen?.toLowerCase?.() == 'vouchers') {
+    AppNavigator.replace(AppStacks.App, {
+      screen: Paths.Vouchers,
+    });
+    return;
   }
-  AppNavigator.navigate(Paths.AcademicVerificationFinish, {
-    type,
-    ...(params || {}),
-  });
+  handleNavigateScreen();
 }
 
 const handleNavigateScreen = () => {

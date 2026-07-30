@@ -45,6 +45,7 @@ import Ic_starIcon from './ic_star.svg';
 import Ic_storeIcon from './ic_store.svg';
 import Ic_trashIcon from './ic_trash.svg';
 import Ic_truckIcon from './ic_truck.svg';
+import Ic_unlockIcon from './ic_unlock.svg';
 import Ic_walletIcon from './ic_wallet.svg';
 import KakaoIcon from './kakao.svg';
 import LanguageIcon from './language.svg';
@@ -102,6 +103,7 @@ const icons = {
   'ic_store': Ic_storeIcon,
   'ic_trash': Ic_trashIcon,
   'ic_truck': Ic_truckIcon,
+  'ic_unlock': Ic_unlockIcon,
   'ic_wallet': Ic_walletIcon,
   'kakao': KakaoIcon,
   'language': LanguageIcon,

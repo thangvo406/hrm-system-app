@@ -46,10 +46,12 @@ export const EndPoints = {
   // (cart/order/checkout/KCP) — different lifecycle.
   // NOTE: path is a placeholder — replace with the real backend spec.
   ACCOUNT_MANAGEMENT: {
-    addAccount: (request: string) => `balance/kcp/register/init?${request}`,
+    addAccount: 'balance/kcp/register/init',
+    lockCardAccount: 'balance/payment-method/block',
+    unLockCardAccount: 'balance/payment-method/unblock',
+    makeDefaultCard: 'balance/payment-method/default',
     list: 'balance/payment-method',
-    lockCardAccount: 'lockCardAccount',
-    removeCardAccount: 'lockCardAccount',
+    removeCardAccount: 'balance/kcp/manage/init',
   },
   NOTIFICATIONS: {
     list: (request: string) => `notification?${request}`,

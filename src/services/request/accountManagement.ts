@@ -4,16 +4,14 @@ import type { IRequestLockCard, IRequestRemoveCard } from '@type/wallet';
 import { httpRequest } from '@services/common/httpRequest';
 import { EndPoints } from '@constants';
 import { SingleApiResponse } from '@type/common';
-import { CommonUtils } from '@utils';
 import { IKcpInitParams } from '@type';
 
 export const addAccount = async (
   request: IRequestAddAccount,
 ): Promise<IKcpInitParams> => {
-  const _request = CommonUtils.removeEmptyFieldObject(request, true);
-  const params = CommonUtils.objectToQueryParams(_request);
   const response = await httpRequest.post<SingleApiResponse<IKcpInitParams>>(
-    EndPoints.ACCOUNT_MANAGEMENT.addAccount(params),
+    EndPoints.ACCOUNT_MANAGEMENT.addAccount,
+    request,
   );
   return response.data;
 };
@@ -31,17 +29,37 @@ export const lockCardAccount = async (
 ): Promise<boolean> => {
   const response = await httpRequest.post<SingleApiResponse<boolean>>(
     EndPoints.ACCOUNT_MANAGEMENT.lockCardAccount,
-    CommonUtils.removeEmptyFieldObject(request, true),
+    request,
+  );
+  return response.data;
+};
+
+export const unLockCardAccount = async (
+  request: IRequestLockCard,
+): Promise<boolean> => {
+  const response = await httpRequest.post<SingleApiResponse<boolean>>(
+    EndPoints.ACCOUNT_MANAGEMENT.unLockCardAccount,
+    request,
   );
   return response.data;
 };
 
 export const removeCardAccount = async (
   request: IRequestRemoveCard,
+): Promise<IKcpInitParams> => {
+  const response = await httpRequest.post<SingleApiResponse<IKcpInitParams>>(
+    EndPoints.ACCOUNT_MANAGEMENT.removeCardAccount,
+    request,
+  );
+  return response.data;
+};
+
+export const makeDefaultCardAccount = async (
+  request: IRequestRemoveCard,
 ): Promise<boolean> => {
   const response = await httpRequest.post<SingleApiResponse<boolean>>(
-    EndPoints.ACCOUNT_MANAGEMENT.removeCardAccount,
-    CommonUtils.removeEmptyFieldObject(request, true),
+    EndPoints.ACCOUNT_MANAGEMENT.makeDefaultCard,
+    request,
   );
   return response.data;
 };

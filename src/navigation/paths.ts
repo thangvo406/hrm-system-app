@@ -51,3 +51,12 @@ export enum AppStacks {
 }
 
 export const SCREEN_IGNORE_SWIPE_LEFT = [Paths.OrderCompleted];
+
+export const AUTH_PATHS = new Set<string>([
+  Paths.AppTabs,
+  Paths.Welcome,
+  Paths.Authorization,
+  Paths.SchoolSelection,
+  Paths.ForgotPass,
+  Paths.AcademicVerificationFinish,
+]);

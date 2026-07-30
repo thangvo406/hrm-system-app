@@ -1,7 +1,6 @@
 import type { AppCallback, ListApiResponse } from './common';
 import { IKcpInitParams, IPaymentRequest } from './payment';
 
-
 export interface IContributeSummary {
   readonly currentContribution: number;
   readonly totalDividend: number;
@@ -59,43 +58,41 @@ export interface IContributeHistory {
 }
 
 export interface IPaymentMethodContribute {
-  id: number
-  userId: number
-  type: string
-  provider: string
-  status: string
-  displayName: string
-  displayNumber: string
-  holderName: string
-  expiryMonth: any
-  expiryYear: any
-  default: boolean
+  id: number;
+  userId: number;
+  type: string;
+  provider: string;
+  status: string;
+  displayName: string;
+  displayNumber: string;
+  holderName: string;
+  expiryMonth: any;
+  expiryYear: any;
+  default: boolean;
 }
 
-
 export interface IResponseIncreaseContribute {
-  id: number
-  type: string
-  displayType: string
-  amount: number
-  status: string
-  paymentCompleted: boolean
-  adminApproved: boolean
-  paymentFundingSource: string
-  paymentType: string
-  paymentMethod: IPaymentMethodContribute
-  requestedAt: string
-  processedAt: any
-  adminNote: any
-  kcpSessionData: IKcpInitParams
-  virtualAccount: any
-  stdPaySessionData: any
+  id: number;
+  type: string;
+  displayType: string;
+  amount: number;
+  status: string;
+  paymentCompleted: boolean;
+  adminApproved: boolean;
+  paymentFundingSource: string;
+  paymentType: string;
+  paymentMethod: IPaymentMethodContribute;
+  requestedAt: string;
+  processedAt: any;
+  adminNote: any;
+  kcpSessionData: IKcpInitParams;
+  virtualAccount: any;
+  stdPaySessionData: any;
 }
 export interface IRequestIncreaseContribute extends AppCallback {
   amount: number;
   payment: IPaymentRequest;
 }
-
 
 export interface IDividendHistory {
   id: number;
@@ -123,10 +120,11 @@ export interface IWallet {
 }
 
 export interface IRequestLockCard extends AppCallback {
-  id: number
+  paymentMethodId: number;
 }
-export interface IRequestRemoveCard extends AppCallback {
-  id: number
+export interface IRequestRemoveCard extends AppCallback<IKcpInitParams> {
+  paymentMethodId: number;
+  reqType: string;
 }
 export interface TransactionHistory {
   id: number;
@@ -153,4 +151,3 @@ export interface IRequestTopUpWallet extends AppCallback {
   paymentTransactionId: string;
   description: string;
 }
-

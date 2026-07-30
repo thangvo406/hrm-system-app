@@ -1,5 +1,6 @@
 import type { LayoutChangeEvent, ViewStyle } from 'react-native';
 
+import { ScaleSize } from '@kits/core';
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, {
@@ -11,6 +12,14 @@ import Animated, {
 
 const DURATION = 240;
 const MEASURE_EPSILON = 1;
+// Reanimated only patches style properties it is given a concrete value for
+// each frame — returning `undefined` later to "unset" a height that was
+// previously animated to a number is silently ignored, so the interpolated
+// height has to already be generous enough on its own to never clip the
+// real content (sub-pixel rounding, tight ascender/descender metrics on
+// some scripts...). A few extra px of headroom on top of the measured
+// height covers that.
+const MEASURE_BUFFER = ScaleSize(4);
 
 type Properties = {
   readonly children: React.ReactNode;
@@ -34,11 +43,13 @@ function Collapsible({ children, contentStyle, expanded }: Properties) {
   const lastMeasured = useRef(0);
 
   useEffect(() => {
-    progress.value = withTiming(expanded ? 1 : 0, {
-      duration: DURATION,
-      // Decelerate on the way open, accelerate on the way shut.
-      easing: expanded ? Easing.out(Easing.cubic) : Easing.in(Easing.cubic),
-    });
+    progress.set(
+      withTiming(expanded ? 1 : 0, {
+        duration: DURATION,
+        // Decelerate on the way open, accelerate on the way shut.
+        easing: expanded ? Easing.out(Easing.cubic) : Easing.in(Easing.cubic),
+      }),
+    );
   }, [expanded, progress]);
 
   const onLayout = (event: LayoutChangeEvent) => {
@@ -48,25 +59,26 @@ function Collapsible({ children, contentStyle, expanded }: Properties) {
     }
     const hadHeight = lastMeasured.current > 0;
     lastMeasured.current = next;
+    const target = next + MEASURE_BUFFER;
     // A row was added or removed: glide to the new height. First measure snaps.
-    contentHeight.value = hadHeight
-      ? withTiming(next, { duration: DURATION })
-      : next;
-    isMeasured.value = true;
+    contentHeight.set(
+      hadHeight ? withTiming(target, { duration: DURATION }) : target,
+    );
+    isMeasured.set(true);
   };
 
   const animatedStyle = useAnimatedStyle(() => {
     // Nothing to interpolate until the content has been measured: keep the
     // natural height when open, stay shut when closed.
-    if (!isMeasured.value) {
+    if (!isMeasured.get()) {
       return {
         height: expanded ? undefined : 0,
         opacity: expanded ? 1 : 0,
       };
     }
     return {
-      height: contentHeight.value * progress.value,
-      opacity: progress.value,
+      height: contentHeight.get() * progress.get(),
+      opacity: progress.get(),
     };
   });
 
