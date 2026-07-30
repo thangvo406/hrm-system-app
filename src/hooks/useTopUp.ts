@@ -3,7 +3,11 @@ import RequestAddCard from '@dialogs/RequestAddCard';
 import WebViewScreen from '@dialogs/Webview';
 import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
-import { AccountManagementSelector } from '@services/selectors';
+import {
+  AccountManagementSelector,
+  AccountSelector,
+  AppSelector,
+} from '@services/selectors';
 // import { topUpWalletRequest } from '@services/slices/account/accountSlice';
 import {
   balanceChargeRequest,
@@ -11,6 +15,7 @@ import {
 } from '@services/slices/payment/paymentSlice';
 // import uniqueId from 'lodash/uniqueId';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { IAccount } from '@type';
 import type { ICarouselInstance } from 'react-native-reanimated-carousel';
@@ -29,6 +34,9 @@ export type IBankAccount = {
 
 const BONUS_RATE = 0.005;
 export const BONUS_PERCENT = '0.5';
+// Sentinel for the "pay from wallet balance" pseudo-account shown in place of
+// card/bank accounts when payment cards are disabled.
+const BALANCE_ID = '__balance__';
 
 const onAddCard = () => {
   AppNavigator.showDialog({ isFullScreen: true, screen: RequestAddCard });
@@ -36,26 +44,51 @@ const onAddCard = () => {
 
 export const useTopUp = (props?: any) => {
   const { isContribute = false, goFrom } = props || {};
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [amountTopUp, setAmountTopUp] = useState('');
   const [methodPayment, setMethodPayment] = useState(
     AppConstants.PaymentTypes.CARD_SAVE,
   );
+  const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
   const rawDataBankAccounts = useAppSelector(
     AccountManagementSelector.getAccountCards,
   );
+  const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const bankAccounts = useMemo(() => {
+    // Contributing straight from the wallet balance when cards are disabled.
+    if (isContribute && !isEnablePaymentCard) {
+      return [
+        {
+          id: BALANCE_ID,
+          displayName: t('payment.pay_money_name'),
+          type: 'COOP_BALANCE',
+          displayNumber: t('payment.balance_amount', {
+            amount: currentWallet?.balance,
+          }),
+        },
+      ];
+    }
     if (isContribute) {
       return rawDataBankAccounts;
     }
     return rawDataBankAccounts?.filter(it => it.type == BANK_ACC_TYPES.ACCOUNT);
-  }, [rawDataBankAccounts, isContribute]);
+  }, [
+    currentWallet?.balance,
+    isContribute,
+    isEnablePaymentCard,
+    rawDataBankAccounts,
+    t,
+  ]);
   const [selectedAccountId, setSelectedAccountId] = useState<IAccount['id']>();
   const carouselCards = useRef<ICarouselInstance>(null);
 
   const enabledBtnSubmit = useMemo(() => {
+    if (!isEnablePaymentCard) {
+      return Number(amountTopUp) >= 1;
+    }
     return Number(amountTopUp) >= 1 && bankAccounts?.length > 0;
-  }, [amountTopUp, bankAccounts]);
+  }, [amountTopUp, bankAccounts, isEnablePaymentCard]);
 
   useEffect(() => {
     setSelectedAccountId(bankAccounts?.[0]?.id);
@@ -75,13 +108,17 @@ export const useTopUp = (props?: any) => {
     const executorRequest = isContribute
       ? increaseContributionRequest
       : balanceChargeRequest;
+    const payment =
+      selectedAccountId == BALANCE_ID
+        ? { paymentType: PaymentTypes.BALANCE }
+        : {
+            paymentType: PaymentTypes.SAVED_METHOD,
+            paymentMethodId: selectedAccountId,
+          };
     dispatch(
       executorRequest({
         amount: Number(amountTopUp),
-        payment: {
-          paymentType: PaymentTypes.SAVED_METHOD,
-          paymentMethodId: selectedAccountId,
-        },
+        payment,
         onSuccess: (data: any) => {
           const _data = data?.kcpSessionData || data;
           AppNavigator.showDialog({
@@ -181,6 +218,7 @@ export const useTopUp = (props?: any) => {
     bonusAmount,
     carouselCards,
     enabledBtnSubmit,
+    isEnablePaymentCard,
     methodPayment,
     selectedAccountId,
     onAddCard,

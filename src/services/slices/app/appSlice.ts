@@ -8,11 +8,13 @@ import { logoutSuccess } from '@services/slices/auth/authSlice';
 export interface AppState {
   counter: number;
   showFloatingCart: boolean;
+  isEnablePaymentCard: boolean;
 }
 
 const initialState: AppState = {
   counter: 0,
   showFloatingCart: false,
+  isEnablePaymentCard: true,
 };
 
 const appSlice = createSlice({
@@ -36,6 +38,9 @@ const appSlice = createSlice({
     incrementAsyncSuccess: (state, action: PayloadAction<number>) => {
       state.counter += action.payload;
     },
+    updateEnablePaymentCard: (state, action: PayloadAction<boolean>) => {
+      state.isEnablePaymentCard = action.payload;
+    },
     reset: () => initialState,
     setShowFloatingCart: (state, action: PayloadAction<boolean>) => {
       state.showFloatingCart = action.payload;
@@ -57,6 +62,7 @@ export const {
   incrementAsyncSuccess,
   reset,
   setShowFloatingCart,
+  updateEnablePaymentCard,
   startupApp,
 } = appSlice.actions;
 

@@ -24,7 +24,7 @@ import type {
 import { useCallback, useMemo, useRef, useState } from 'react';
 import ContributionDetail from '@dialogs/ContributionDetail';
 import { useTranslation } from 'react-i18next';
-import { AccountManagementSelector } from '@services/selectors';
+import { AccountManagementSelector, AppSelector } from '@services/selectors';
 import Information from '@dialogs/Information';
 import imageNames from '@assets/images/names';
 import RequestAddCard from '@dialogs/RequestAddCard';
@@ -70,6 +70,7 @@ export const useContributeHistory = () => {
   const bankAccounts = useAppSelector(
     AccountManagementSelector.getAccountCards,
   );
+  const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
 
   const requestIdReference = useRef(0);
   const payPagination = useRef<TTabPaginationState>({ ...INITIAL_PAGINATION });
@@ -84,7 +85,7 @@ export const useContributeHistory = () => {
   );
 
   const onRecharge = () => {
-    if (bankAccounts?.length > 0) {
+    if (!isEnablePaymentCard || bankAccounts?.length > 0) {
       AppNavigator.navigate(Paths.ContributionInput);
     } else {
       AppNavigator.showDialog({

@@ -74,6 +74,7 @@ type Properties = {
   readonly isShowUnRegister?: boolean;
   readonly selectedAddCard?: boolean;
   readonly hideEmptyView?: boolean;
+  readonly hideRegisterAccount?: boolean;
   readonly initialIndex?: number;
   readonly onRegisterAccount?: () => void;
   // readonly onRegisterCard?: () => void;
@@ -85,16 +86,26 @@ function Cards({
   selectedAddCard,
   initialIndex = 0,
   hideEmptyView,
+  hideRegisterAccount,
   onRegisterAccount,
   // onRegisterCard,
 }: Properties) {
-  const focusedIndex = accounts?.length > 0 ? initialIndex : -1;
+  // The "add account" tile leads the carousel, so hiding it shifts every
+  // real account's index back by one.
+  const focusedIndex = (accounts?.length ?? 0) > 0
+    ? hideRegisterAccount
+      ? Math.max(initialIndex - 1, 0)
+      : initialIndex
+    : -1;
 
   const { t } = useTranslation();
   const progress = useSharedValue(focusedIndex);
   const data = React.useMemo<IAccount[]>(
-    () => [{ id: ADD_ACCOUNT_ID } as IAccount, ...(accounts || [])],
-    [accounts],
+    () =>
+      hideRegisterAccount
+        ? [...(accounts || [])]
+        : [{ id: ADD_ACCOUNT_ID } as IAccount, ...(accounts || [])],
+    [accounts, hideRegisterAccount],
   );
 
   const renderItem = useCallback<CarouselRenderItem<IAccount>>(
@@ -111,9 +122,12 @@ function Cards({
           />
         </View>
       ) : (
-        <AccountItem account={item} accountIndex={index - 1} />
+        <AccountItem
+          account={item}
+          accountIndex={hideRegisterAccount ? index : index - 1}
+        />
       ),
-    [onRegisterAccount, selectedAddCard, t],
+    [hideRegisterAccount, onRegisterAccount, selectedAddCard, t],
   );
 
   const onTouchStart = useCallback(() => {
@@ -177,22 +191,24 @@ function Cards({
               {t('account_management.no_payment_methods_desc')}
             </Text>
 
-            <View style={styles.actionRow}>
-              {/* <Button
-                onPress={onRegisterCard}
-                title={t('account_management.register_card')}
-                type="outline-green"
-                style={styles.actionButton}
-                testID="account-management-register-card"
-              /> */}
-              <Button
-                onPress={onRegisterAccount}
-                title={t('account_management.register_card_account')}
-                type="outline-green"
-                style={styles.actionButton}
-                testID="account-management-register-account"
-              />
-            </View>
+            {!hideRegisterAccount && (
+              <View style={styles.actionRow}>
+                {/* <Button
+                  onPress={onRegisterCard}
+                  title={t('account_management.register_card')}
+                  type="outline-green"
+                  style={styles.actionButton}
+                  testID="account-management-register-card"
+                /> */}
+                <Button
+                  onPress={onRegisterAccount}
+                  title={t('account_management.register_card_account')}
+                  type="outline-green"
+                  style={styles.actionButton}
+                  testID="account-management-register-account"
+                />
+              </View>
+            )}
           </View>
         )
       )}

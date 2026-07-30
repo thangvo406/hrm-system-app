@@ -393,7 +393,8 @@ export const useRegister = () => {
         break;
       }
       case REGISTER_FLOW_STEP.ACADEMIC_VERIFICATION_COMPLETED: {
-        AppNavigator.navigate(Paths.RegisterCompleted);
+        // AppNavigator.navigate(Paths.RegisterCompleted);
+        navigateToStep(REGISTER_FLOW_STEP.BANK_INFORMATION);
         break;
       }
       case REGISTER_FLOW_STEP.ACADEMIC_VERIFICATION: {

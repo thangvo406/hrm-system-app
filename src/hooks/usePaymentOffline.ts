@@ -1,12 +1,13 @@
 import QRVoucher from '@dialogs/QRVoucher';
 import AppNavigator from '@navigation/AppNavigator';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@utils/product';
 import { useAppSelector } from '@services/common/storeHooks';
 import {
   AccountManagementSelector,
   AccountSelector,
+  AppSelector,
 } from '@services/selectors';
 import { IAccount } from '@type';
 
@@ -22,13 +23,32 @@ export type IPaymentMethod = {
 
 // TODO(api): replace mock values with the offline-payment summary response.
 const PRIMARY_CARD_INDEX = 0;
+// Sentinel for the "pay from wallet balance" pseudo-account shown in place of
+// card/bank accounts when payment cards are disabled.
+const BALANCE_ID = '__balance__';
 
 export const usePaymentOffline = () => {
   const { t } = useTranslation();
-  const bankAccounts = useAppSelector(
+  const rawBankAccounts = useAppSelector(
     AccountManagementSelector.getAccountCards,
   );
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
+  const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
+  const bankAccounts = useMemo(() => {
+    if (isEnablePaymentCard) {
+      return rawBankAccounts;
+    }
+    return [
+      {
+        id: BALANCE_ID,
+        displayName: t('payment.pay_money_name'),
+        type: 'COOP_BALANCE',
+        displayNumber: t('payment.balance_amount', {
+          amount: currentWallet?.balance,
+        }),
+      },
+    ];
+  }, [currentWallet?.balance, isEnablePaymentCard, rawBankAccounts, t]);
   const [usePoints, setUsePoints] = useState(true);
   const [pointUsed, setPointUsed] = useState(0);
   const [selectedMethodId, setSelectedMethodId] = useState<string>(
@@ -75,6 +95,7 @@ export const usePaymentOffline = () => {
     selectedMethodId,
     usePoints,
     bankAccounts,
+    isEnablePaymentCard,
     initialIndex: PRIMARY_CARD_INDEX,
   };
 };

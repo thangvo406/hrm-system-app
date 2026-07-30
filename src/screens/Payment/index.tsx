@@ -25,6 +25,7 @@ function Payment(props: any) {
     pointUsed,
     usePoints,
     bankAccounts,
+    isEnablePaymentCard,
     selectedCardId,
     selectedEasyPayId,
     selectedCoupon,
@@ -62,18 +63,22 @@ function Payment(props: any) {
         <View style={styles.fullBleed}>
           <BankAccountsSelection
             cards={bankAccounts}
+            hideAddCard={!isEnablePaymentCard}
             initialIndex={initialIndex}
             onSelect={onSelectCard}
             selectedId={selectedCardId}
           />
         </View>
 
-        <GeneralPaymentSection onSelectMethod={onSelectGeneralMethod} />
-
-        <SimplePaymentSection
-          onSelect={onSelectedEasyPay}
-          selectedId={selectedEasyPayId}
-        />
+        {isEnablePaymentCard ? (
+          <>
+            <GeneralPaymentSection onSelectMethod={onSelectGeneralMethod} />
+            <SimplePaymentSection
+              onSelect={onSelectedEasyPay}
+              selectedId={selectedEasyPayId}
+            />
+          </>
+        ) : undefined}
       </ScrollView>
       <PayButton
         onPay={onPay}

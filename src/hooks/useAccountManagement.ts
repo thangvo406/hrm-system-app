@@ -6,7 +6,7 @@ import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useFocusEffect } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
-import { AccountSelector } from '@services/selectors';
+import { AccountSelector, AppSelector } from '@services/selectors';
 import { AccountManagementSelector } from '@services/selectors/accountManagement';
 import { getCurrentWalletRequest } from '@services/slices/account/accountSlice';
 import { getAccountCardsRequest } from '@services/slices/accountManagement/accountManagementSlice';
@@ -80,6 +80,7 @@ export const useAccountManagement = () => {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
+  const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
 
   const accounts = useMemo(() => {
     return rawData?.filter(it => it.type == BANK_ACC_TYPES.ACCOUNT);
@@ -136,22 +137,22 @@ export const useAccountManagement = () => {
   };
 
   const onCharge = useCallback(() => {
-    if (rawData?.length > 0) {
+    if (!isEnablePaymentCard || rawData?.length > 0) {
       AppNavigator.navigate(Paths.TopUp, {
         goFrom: 'accountManagement',
       });
     } else {
       onShowDialogConfirm();
     }
-  }, [rawData]);
+  }, [isEnablePaymentCard, rawData]);
 
   const onChargeHistory = useCallback(() => {
-    if (!(accounts?.length > 0 || cards.length > 0)) {
-      onShowDialogConfirm();
-    } else {
+    if (!isEnablePaymentCard || accounts?.length > 0 || cards.length > 0) {
       AppNavigator.navigate(Paths.PayPointHistories);
+    } else {
+      onShowDialogConfirm();
     }
-  }, []);
+  }, [isEnablePaymentCard]);
 
   const onManagePaymentMethods = useCallback(() => {
     AppNavigator.navigate(Paths.BankAccountManage);
@@ -176,8 +177,9 @@ export const useAccountManagement = () => {
     accounts,
     balance: currentWallet?.balance,
     cards,
-    isShowUnRegister,
     isEmptyBankAccount,
+    isEnablePaymentCard,
+    isShowUnRegister,
     onCharge,
     onChargeHistory,
     onManagePaymentMethods,

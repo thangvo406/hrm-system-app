@@ -36,6 +36,7 @@ function AccountManagement() {
     transactions,
     isShowUnRegister,
     isEmptyBankAccount,
+    isEnablePaymentCard,
   } = useAccountManagement();
 
   return (
@@ -61,20 +62,23 @@ function AccountManagement() {
           <Text style={styles.sectionTitle}>
             {t('account_management.payment_methods')}
           </Text>
-          <AppButton
-            onPress={onManagePaymentMethods}
-            style={styles.manageButton}
-            testID="account-management-manage"
-          >
-            <Text style={styles.manageText}>
-              {t('account_management.manage')}
-            </Text>
-          </AppButton>
+          {isEnablePaymentCard ? (
+            <AppButton
+              onPress={onManagePaymentMethods}
+              style={styles.manageButton}
+              testID="account-management-manage"
+            >
+              <Text style={styles.manageText}>
+                {t('account_management.manage')}
+              </Text>
+            </AppButton>
+          ) : undefined}
         </View>
 
         {!isEmptyBankAccount ? (
           <BankAccounts
             accounts={cards}
+            hideAddCard={!isEnablePaymentCard}
             initialIndex={PRIMARY_CARD_INDEX}
             isShowUnRegister={isShowUnRegister}
             onRegisterCard={onRegisterAccount}
@@ -98,6 +102,7 @@ function AccountManagement() {
 
         <Cards
           accounts={accounts}
+          hideRegisterAccount={!isEnablePaymentCard}
           isShowUnRegister={isShowUnRegister}
           onRegisterAccount={onRegisterAccount}
           initialIndex={PRIMARY_CARD_INDEX}

@@ -16,6 +16,7 @@ function PaymentOffline() {
     onToggleUsePoints,
     bankAccounts,
     initialIndex,
+    isEnablePaymentCard,
     pointHolding,
     pointUsed,
     selectedMethodId,
@@ -44,6 +45,7 @@ function PaymentOffline() {
         <View style={styles.fullBleed}>
           <BankAccountsSelection
             cards={bankAccounts}
+            hideAddCard={!isEnablePaymentCard}
             initialIndex={initialIndex}
             onSelect={onSelectMethod}
             selectedId={selectedMethodId}

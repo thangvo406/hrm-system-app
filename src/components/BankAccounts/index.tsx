@@ -159,6 +159,7 @@ type Properties = {
   readonly accounts?: readonly IAccount[];
   readonly initialIndex: number;
   readonly isShowUnRegister: boolean;
+  readonly hideAddCard?: boolean;
   readonly hideTitle?: boolean;
   readonly selectedAddCard?: boolean;
   readonly onRegisterCard?: () => void;
@@ -168,18 +169,27 @@ function BankAccounts({
   accounts,
   initialIndex = 0,
   isShowUnRegister,
+  hideAddCard,
   hideTitle,
   selectedAddCard,
   onRegisterCard,
 }: Properties) {
   const { t } = useTranslation();
-  // Add tile leads the carousel, so the branded card keeps its centered slot.
-  const focusedIndex = accounts?.length > 0 ? initialIndex : -1;
+  // The add tile leads the carousel, so hiding it shifts every real card's
+  // index back by one.
+  const focusedIndex = (accounts?.length ?? 0) > 0
+    ? hideAddCard
+      ? Math.max(initialIndex - 1, 0)
+      : initialIndex
+    : -1;
   const progress = useSharedValue(focusedIndex == -1 ? 0 : focusedIndex);
 
   const data = React.useMemo<IAccount[]>(
-    () => [{ id: ADD_CARD_ID } as IAccount, ...(accounts || [])],
-    [accounts],
+    () =>
+      hideAddCard
+        ? [...(accounts || [])]
+        : [{ id: ADD_CARD_ID } as IAccount, ...(accounts || [])],
+    [accounts, hideAddCard],
   );
 
   const renderItem = useCallback<CarouselRenderItem<IAccount>>(
@@ -188,13 +198,13 @@ function BankAccounts({
         addLabel={t('account_management.add_card')}
         animationValue={animationValue}
         card={item}
-        cardIndex={index - 1}
+        cardIndex={hideAddCard ? index : index - 1}
         isAdd={item.id === ADD_CARD_ID}
         selectedAddCard={selectedAddCard}
         onAddPress={onRegisterCard}
       />
     ),
-    [onRegisterCard, t, data, selectedAddCard],
+    [hideAddCard, onRegisterCard, t, data, selectedAddCard],
   );
 
   const onTouchStart = useCallback(() => {

@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import {
   AccountManagementSelector,
   AccountSelector,
+  AppSelector,
 } from '@services/selectors';
 import { createOrderRequest } from '@services/slices/payment/paymentSlice';
 import WebViewScreen from '@dialogs/Webview';
@@ -48,6 +49,7 @@ export const usePayment = (props: any) => {
   const [usePoints, setUsePoints] = useState(true);
 
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
+  const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
   const [pointUsed, setPointUsed] = useState(0);
   const onToggleUsePoints = () => {
     setUsePoints(previous => !previous);
@@ -65,18 +67,19 @@ export const usePayment = (props: any) => {
   );
 
   const bankAccounts = useMemo(() => {
-    return [
-      {
-        id: BALANCE_ID,
-        displayName: t('payment.pay_money_name'),
-        type: 'COOP_BALANCE',
-        displayNumber: t('payment.balance_amount', {
-          amount: currentWallet?.balance,
-        }),
-      },
-      ...rawDataBankAccounts,
-    ];
-  }, [currentWallet?.balance, rawDataBankAccounts, t]);
+    const balanceAccount = {
+      id: BALANCE_ID,
+      displayName: t('payment.pay_money_name'),
+      type: 'COOP_BALANCE',
+      displayNumber: t('payment.balance_amount', {
+        amount: currentWallet?.balance,
+      }),
+    };
+    // With payment cards disabled, the wallet balance is the only method.
+    return isEnablePaymentCard
+      ? [balanceAccount, ...rawDataBankAccounts]
+      : [balanceAccount];
+  }, [currentWallet?.balance, isEnablePaymentCard, rawDataBankAccounts, t]);
 
   const disableBtnSubmit = useMemo(() => {
     return !selectedMethod?.id;
@@ -118,7 +121,6 @@ export const usePayment = (props: any) => {
 
   const getCookiesForPayment = (data: any) => {
     const { kcpInitParams, stdPayInitParams } = data?.responsePayment || {};
-    // eslint-disable-next-line unicorn/prefer-ternary
     if (selectedEasyPayId) {
       return {
         cookies: {
@@ -263,6 +265,7 @@ export const usePayment = (props: any) => {
     onToggleUsePoints,
     onSelectedEasyPay,
     bankAccounts,
+    isEnablePaymentCard,
     payMoneyBalance: PAY_MONEY_BALANCE,
     pointHolding: currentWallet?.pointBalance,
     pointUsed,

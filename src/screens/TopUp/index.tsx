@@ -41,6 +41,7 @@ function TopUp(props: any) {
     bonusAmount,
     selectedAccountId,
     enabledBtnSubmit,
+    isEnablePaymentCard,
     onAddCard,
     onAmountChange,
     onSelectAccount,
@@ -91,25 +92,27 @@ function TopUp(props: any) {
           </View>
         </View>
 
-        {bankAccounts.length > 0 ? (
-          <View style={styles.carouselWrap}>
-            <CardSelection
-              accounts={bankAccounts}
-              onSelect={onSelectAccount}
-              selectedId={selectedAccountId}
-            />
-          </View>
-        ) : (
-          <View style={styles.addWrap}>
-            <AddPlaceholder
-              height={CARD_HEIGHT}
-              label={t('payment.add_method')}
-              onPress={onAddCard}
-              testID="top-up-add-account"
-              width={ITEM_WIDTH}
-            />
-          </View>
-        )}
+        {isEnablePaymentCard ? (
+          bankAccounts.length > 0 ? (
+            <View style={styles.carouselWrap}>
+              <CardSelection
+                accounts={bankAccounts}
+                onSelect={onSelectAccount}
+                selectedId={selectedAccountId}
+              />
+            </View>
+          ) : (
+            <View style={styles.addWrap}>
+              <AddPlaceholder
+                height={CARD_HEIGHT}
+                label={t('payment.add_method')}
+                onPress={onAddCard}
+                testID="top-up-add-account"
+                width={ITEM_WIDTH}
+              />
+            </View>
+          )
+        ) : undefined}
       </ScrollView>
 
       <View

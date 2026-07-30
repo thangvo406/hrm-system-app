@@ -3,7 +3,6 @@ import RegisterHeader from '@screens/Authorisation/components/RegisterFlow/Heade
 import imageNames from '@assets/images/names';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
 import { ScaleSize } from '@kits/core';
 import { Paths } from '@navigation/paths';
 import AppNavigator from '@navigation/AppNavigator';
@@ -33,6 +32,7 @@ function RegisterCompleted() {
   const { goFrom, isHideContribution, onSubmit } = params as {
     goFrom: string;
     isHideContribution: boolean;
+    onSubmit: () => void;
   };
   const desc = DESC[goFrom] || DESC.default;
 

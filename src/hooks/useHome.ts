@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import {
   AccountManagementSelector,
   AccountSelector,
+  AppSelector,
   AuthSelector,
   StoresSelector,
 } from '@services/selectors';
@@ -70,6 +71,7 @@ export const useHome = () => {
   const storeOrderRecent = useAppSelector(StoresSelector.getStoreOrderRecent);
   const accessToken = useAppSelector(AuthSelector.getAccessToken);
   const cards = useAppSelector(AccountManagementSelector.getAccountCards);
+  const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
 
   useNotification();
   const dispatch = useAppDispatch();
@@ -104,7 +106,7 @@ export const useHome = () => {
   };
 
   const onPressTopup = (screenName = Paths.TopUp) => {
-    if (!(cards?.length > 0)) {
+    if (isEnablePaymentCard && !(cards?.length > 0)) {
       AppNavigator.showDialog({
         screen: Information,
         iconInfo: {

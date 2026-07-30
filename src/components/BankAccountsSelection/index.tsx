@@ -215,6 +215,7 @@ function CardItem({
 
 type Properties = {
   readonly cards: readonly IAccount[];
+  readonly hideAddCard?: boolean;
   readonly initialIndex: number;
   readonly onSelect: (item: any) => void;
   readonly selectedId: string | undefined;
@@ -222,6 +223,7 @@ type Properties = {
 
 function BankAccounts({
   cards,
+  hideAddCard,
   initialIndex,
   onSelect,
   selectedId,
@@ -231,10 +233,12 @@ function BankAccounts({
   const focusedIndex = cards.length > 0 ? initialIndex : 0;
   const progress = useSharedValue(focusedIndex);
 
-  // The add tile trails the real methods so it never steals a card's slot.
+  // The add tile trails the real methods so it never steals a card's slot;
+  // dropping it entirely leaves the real methods' indices untouched.
   const data = React.useMemo<IAccount[]>(
-    () => [...cards, { id: ADD_CARD_ID } as IAccount],
-    [cards],
+    () =>
+      hideAddCard ? [...cards] : [...cards, { id: ADD_CARD_ID } as IAccount],
+    [cards, hideAddCard],
   );
 
   const onAdd = useCallback(() => {
