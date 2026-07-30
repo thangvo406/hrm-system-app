@@ -9,12 +9,13 @@ import type {
   IRequestSendOtpVerifyMembership,
   IRequestRegisterUser,
   IRequestSendOTP,
-  IRequestSendOtpForgotPass,
+  IRequestCreateLinkVerifyForgotPass,
   IRequestSubmitForgotPass,
   IRequestVerifyOTP,
   IRequestVerifyOtpForgotPass,
   IResponseLogin,
   IResponseCreateLinkVerifyInfoUser,
+  IResponseCreateLinkVerifyForgotPass,
 } from '@type/auth';
 
 import {
@@ -26,7 +27,7 @@ import {
   registerUser,
   selectSchool,
   sendOTP,
-  sendOtpForgotPass,
+  createLinkVerifyForgotPass,
   submitForgotPass,
   verifyOTP,
   verifyOtpForgotPass,
@@ -55,7 +56,7 @@ import {
   selectSchoolRequest,
   selectSchoolSuccess,
   sendOTPRequest,
-  sendOtpForgotPassRequest,
+  createLinkVerifyForgotPassRequest,
   setCredentials,
   submitForgotPassRequest,
   verifyOTPRequest,
@@ -65,7 +66,6 @@ import {
   IResponseRegisterSendOtp,
   IResponseRegisterUser,
   IResponseRegisterVerifyOtp,
-  IResponseSendOtpForgotPass,
   IResponseSubmitForgotPass,
   IResponseUniversity,
   IResponseVerifyOtpForgotPass,
@@ -195,13 +195,13 @@ function* getUniversitiesWorker(
   }
 }
 
-function* sendOtpForgotPassWorker(
-  action: PayloadAction<IRequestSendOtpForgotPass>,
+function* createLinkVerifyForgotPassWorker(
+  action: PayloadAction<IRequestCreateLinkVerifyForgotPass>,
 ) {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: IResponseSendOtpForgotPass = yield call(
-      sendOtpForgotPass,
+    const response: IResponseCreateLinkVerifyForgotPass = yield call(
+      createLinkVerifyForgotPass,
       request,
     );
     onSuccess?.(response);
@@ -318,7 +318,10 @@ export function* authSaga() {
   yield takeLatest(sendOTPRequest.type, sendOTPWorker);
   yield takeLatest(verifyOTPRequest.type, verifyOTPWorker);
   yield takeLatest(getUniversitiesRequest.type, getUniversitiesWorker);
-  yield takeLatest(sendOtpForgotPassRequest.type, sendOtpForgotPassWorker);
+  yield takeLatest(
+    createLinkVerifyForgotPassRequest.type,
+    createLinkVerifyForgotPassWorker,
+  );
   yield takeLatest(verifyOtpForgotPassRequest.type, verifyOtpForgotPassWorker);
   yield takeLatest(submitForgotPassRequest.type, submitForgotPassWorker);
   yield takeLatest(

@@ -11,6 +11,7 @@ const images = {
   ic_credit_card_green: require('./ic_credit_card_green.png') as number,
   ic_empty_illustration: require('./ic_empty_illustration.png') as number,
   ic_gallery_gray: require('./ic_gallery_gray.png') as number,
+  ic_header_forgot_pass: require('./ic_header_forgot_pass.png') as number,
   ic_info_white: require('./ic_info_white.png') as number,
   ic_launcher_round: require('./ic_launcher_round.webp') as number,
   ic_logo_banner: require('./ic_logo_banner.png') as number,

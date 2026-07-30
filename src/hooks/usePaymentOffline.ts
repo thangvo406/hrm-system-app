@@ -21,39 +21,14 @@ export type IPaymentMethod = {
 };
 
 // TODO(api): replace mock values with the offline-payment summary response.
-const POINT_HOLDING = 11_000;
 const PRIMARY_CARD_INDEX = 0;
-const PAY_MONEY_BALANCE = 87_500;
-
-const PAYMENT_METHODS: readonly IPaymentMethod[] = [
-  {
-    id: 'money-coop-pay',
-    kind: 'money',
-    label: '페이머니',
-    subLabel: '20,000원',
-    tag: 'P MONEY',
-  },
-  {
-    id: 'card-nh',
-    kind: 'card',
-    label: 'NH농협카드',
-    subLabel: '**** 1234',
-    tag: 'CARD',
-  },
-  {
-    id: 'bank-shinhan',
-    kind: 'bank',
-    label: '신한은행',
-    subLabel: '**** 5678',
-    tag: 'BANK',
-  },
-];
 
 export const usePaymentOffline = () => {
   const { t } = useTranslation();
   const bankAccounts = useAppSelector(
     AccountManagementSelector.getAccountCards,
   );
+  const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const [usePoints, setUsePoints] = useState(true);
   const [pointUsed, setPointUsed] = useState(0);
   const [selectedMethodId, setSelectedMethodId] = useState<string>(
@@ -80,7 +55,7 @@ export const usePaymentOffline = () => {
       isFullScreen: true,
       data: {
         amountText: t('payment_offline.qr_balance_text', {
-          amount: formatCurrency(PAY_MONEY_BALANCE),
+          amount: formatCurrency(currentWallet?.balance),
         }),
         code: 'applicableStore',
         headerBadge: t('payment_offline.qr_header_badge'),
@@ -88,15 +63,14 @@ export const usePaymentOffline = () => {
         onRefresh: onRefreshQRCode,
       },
     });
-  }, [t, usePoints, pointUsed, selectedMethodId]);
+  }, [t, usePoints, pointUsed, currentWallet, selectedMethodId]);
 
   return {
     onChangePointUsed,
     onPay,
     onSelectMethod,
     onToggleUsePoints,
-    paymentMethods: PAYMENT_METHODS,
-    pointHolding: POINT_HOLDING,
+    pointHolding: currentWallet?.pointBalance,
     pointUsed,
     selectedMethodId,
     usePoints,

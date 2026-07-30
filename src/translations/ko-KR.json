@@ -477,7 +477,13 @@
     },
     "forgot_password": {
       "desc_success": "비밀번호 변경이 완료되었습니다. 새 비밀번호로 로그인해 주세요.",
-      "title_register_info": "비밀번호 재설정을 위해 인증을 진행해 주세요"
+      "email_description": "가입하신 이메일을 입력하시면\n비밀번호 재설정 링크를 보내드릴게요.",
+      "email_label": "이메일",
+      "email_placeholder": "학교 이메일 입력",
+      "email_title": "비밀번호 찾기",
+      "send_verification_email": "사용자 인증 시작",
+      "title_register_info": "비밀번호 재설정을 위해 인증을 진행해 주세요",
+      "verify_user_failed": "사용자 인증에 실패했습니다"
     },
     "product_detail": {
       "price_label": "가격",
@@ -633,7 +639,7 @@
         "set_default_desc": "이 카드/계좌를 {{wallet}}의 기본 결제 수단으로 설정합니다.",
         "close": "닫기",
         "title": "카드/계좌 설정"
-      },
+      }
     },
     "request_add_card": {
       "title": "결제수단 등록",

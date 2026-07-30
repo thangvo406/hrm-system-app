@@ -4,10 +4,10 @@ import { StyleSheet } from 'react-native';
 import { View } from 'react-native';
 import { useMemo } from 'react';
 import RegisterCompleted from '../Authorisation/components/RegisterFlow/RegisterCompleted';
-import RegisterForm from '../Authorisation/components/RegisterFlow/InputInfo';
 import NewPasswordForm from './components/NewPasswordForm';
 import { ForgotStep } from '@hooks/useForgotPass';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import InputEmail from './components/InputEmail';
 
 function ForgotPass() {
   const {
@@ -15,7 +15,6 @@ function ForgotPass() {
     carrier,
     onInfoChange,
     onPressCarrier,
-    onPressRequestOtp,
     onSubmit,
     onToggleAgreement,
     step,
@@ -31,7 +30,6 @@ function ForgotPass() {
     isShowFieldName: true,
     onInfoChange,
     onPressCarrier,
-    onPressRequestOtp,
     onSubmit,
     onBack,
     onToggleAgreement,
@@ -43,7 +41,7 @@ function ForgotPass() {
     const screens: Record<ForgotStep, ComponentType<any>> = {
       new_pass_form: NewPasswordForm,
       register_completed: RegisterCompleted,
-      register_input: RegisterForm,
+      register_input: InputEmail,
     };
     return screens[step];
   }, [step]);

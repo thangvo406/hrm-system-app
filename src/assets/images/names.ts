@@ -13,6 +13,7 @@ const imageNames = {
   ic_credit_card_green: 'ic_credit_card_green',
   ic_empty_illustration: 'ic_empty_illustration',
   ic_gallery_gray: 'ic_gallery_gray',
+  ic_header_forgot_pass: 'ic_header_forgot_pass',
   ic_info_white: 'ic_info_white',
   ic_launcher_round: 'ic_launcher_round',
   ic_logo_banner: 'ic_logo_banner',

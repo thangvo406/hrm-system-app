@@ -9,7 +9,7 @@ import type {
   IRequestLoginSocial,
   IRequestRegisterUser,
   IRequestSendOTP,
-  IRequestSendOtpForgotPass,
+  IRequestCreateLinkVerifyForgotPass,
   IRequestSendOtpVerifyMembership,
   IRequestSubmitForgotPass,
   IRequestVerifyOTP,
@@ -99,8 +99,8 @@ const authSlice = createSlice({
       reducer: () => {},
     },
     // Forgot-password step 1: send OTP to the user's identifier (email/phone).
-    sendOtpForgotPassRequest: {
-      prepare: (payload: IRequestSendOtpForgotPass) => ({ payload }),
+    createLinkVerifyForgotPassRequest: {
+      prepare: (payload: IRequestCreateLinkVerifyForgotPass) => ({ payload }),
       reducer: () => {},
     },
     // Forgot-password step 2: verify the OTP and receive a reset token.
@@ -182,7 +182,7 @@ export const {
   selectSchoolRequest,
   selectSchoolSuccess,
   sendOTPRequest,
-  sendOtpForgotPassRequest,
+  createLinkVerifyForgotPassRequest,
   getUniversitiesSuccess,
   setAccessToken,
   setCredentials,

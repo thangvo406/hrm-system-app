@@ -7,12 +7,15 @@ import { useAppDispatch } from '@services/common/storeHooks';
 import { useTranslation } from 'react-i18next';
 import { AppConstants } from '@constants';
 import {
-  sendOtpForgotPassRequest,
+  createLinkVerifyForgotPassRequest,
   submitForgotPassRequest,
   verifyOtpForgotPassRequest,
 } from '@services/slices/auth/authSlice';
-import { IResponseSendOtpForgotPass } from '@type/auth';
 import { Paths } from '@navigation/paths';
+import { IResponseCreateLinkVerifyForgotPass } from '@type';
+import WebViewScreen from '@dialogs/Webview';
+import { WebViewNavigation } from 'react-native-webview';
+import { deepLinkGate } from '@navigation/deepLinkGate';
 
 const { CARRIER_ITEMS, DEFAULT_CARRIER } = AppConstants;
 
@@ -23,7 +26,6 @@ export type ForgotStep =
 
 const FORGOT_STEP: Record<string, ForgotStep> = {
   NEW_PASS_FORM: 'new_pass_form',
-  REGISTER_COMPLETED: 'register_completed',
   REGISTER_INPUT: 'register_input',
 };
 
@@ -56,7 +58,6 @@ export const useForgotPass = () => {
   const [carrier, setCarrier] = useState<string>(DEFAULT_CARRIER);
   const formData = useRef<FormData>({} as FormData);
   const [step, setStep] = useState<ForgotStep>(FORGOT_STEP.REGISTER_INPUT);
-  const [errorMessage, setErrorMessage] = useState('');
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
@@ -78,32 +79,6 @@ export const useForgotPass = () => {
     });
   };
 
-  const onPressRequestOtp = (callback: (isSuccess: boolean) => void) => {
-    // alert(ValidateUtils.isPhoneNumber(formData.current.phone));
-    // if (!ValidateUtils.isPhoneNumber(formData.current.phone as string)) {
-    //   AppNavigator.showSnackBar({
-    //     message: t('authorisation.error_phone_invalid'),
-    //     type: 'failed',
-    //   });
-    //   return;
-    // }
-    dispatch(
-      sendOtpForgotPassRequest({
-        identifier: `${formData.current.birthday}-${formData.current.indentify}`,
-        phone: formData.current.phone,
-        onFailure: (error: string) => {
-          AppNavigator.showSnackBar({ message: error, type: 'failed' });
-          callback?.(false);
-        },
-        onSuccess: (response: IResponseSendOtpForgotPass) => {
-          formData.current.phoneVerificationToken =
-            response.phoneVerificationToken;
-          callback?.(true);
-        },
-      }),
-    );
-  };
-
   const onSubmitResetPass = (_data: any) => {
     dispatch(
       submitForgotPassRequest({
@@ -116,12 +91,62 @@ export const useForgotPass = () => {
             isHideContribution: true,
           });
         },
-        onFailure: msg => setErrorMessage(msg),
+        onFailure: msg => {
+          AppNavigator.showSnackBar({
+            message: msg,
+            type: 'failed',
+          });
+        },
       }),
     );
   };
-  const onSubmitRegisterInput = () => {
-    setStep(FORGOT_STEP.NEW_PASS_FORM);
+  const onExecuteVerifyUser = (data: IResponseCreateLinkVerifyForgotPass) => {
+    AppNavigator.showDialog({
+      screen: WebViewScreen,
+      cookies: {
+        call_url: data?.callUrl,
+        reg_cert_key: data?.regCertKey,
+        ordr_idxx: data?.ordrIdxx,
+      },
+      onNavigationStateChange: (
+        navState: WebViewNavigation,
+        onRequestClose: any,
+      ) => {
+        const { url } = navState || {};
+        // coop://registration/identity/failure?error=cert_failed
+        const isDeeplinkApp = url?.startsWith?.('coop://');
+        if (isDeeplinkApp) {
+          const params = deepLinkGate.getPathFromUrl(navState.url);
+          onRequestClose();
+          if (params?.error) {
+            // onShowPopupFailed();
+            AppNavigator.showSnackBar({
+              message: t('forgot_password.verify_user_failed'),
+              type: 'failed',
+            });
+          } else {
+            formData.current.resetToken = params?.resetToken;
+            setStep(FORGOT_STEP.NEW_PASS_FORM);
+          }
+        }
+      },
+      url: data?.certWebViewUrl,
+      isFullScreen: true,
+    });
+  };
+  const onSubmitRegisterInput = (email: string) => {
+    // setStep(FORGOT_STEP.NEW_PASS_FORM);
+    dispatch(
+      createLinkVerifyForgotPassRequest({
+        email,
+        onFailure: (error: string) => {
+          AppNavigator.showSnackBar({ message: error, type: 'failed' });
+        },
+        onSuccess: (response: IResponseCreateLinkVerifyForgotPass) => {
+          onExecuteVerifyUser(response);
+        },
+      }),
+    );
   };
   const onPressVerify = (callback: any) => {
     dispatch(
@@ -161,13 +186,10 @@ export const useForgotPass = () => {
     agreed,
     carrier,
     step,
-    // disabled = false,
-    errorMessage,
     onBack,
     onInfoChange,
     onPressVerify,
     onPressCarrier,
-    onPressRequestOtp,
     onSubmit,
     onToggleAgreement,
   };

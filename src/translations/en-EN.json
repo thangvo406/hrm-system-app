@@ -173,7 +173,13 @@
     },
     "forgot_password": {
       "desc_success": "Your password has been changed successfully. Please log in with your new password.",
-      "title_register_info": "Please proceed with verification to reset your password."
+      "email_description": "Enter the email you signed up with and we'll send you a link to reset your password.",
+      "email_label": "Email",
+      "email_placeholder": "Enter your email",
+      "email_title": "Find your password",
+      "send_verification_email": "Start verify account",
+      "title_register_info": "Please proceed with verification to reset your password.",
+      "verify_user_failed": "Failed to verify user"
     },
     "product_detail": {
       "price_label": "Price",
@@ -631,7 +637,7 @@
         "set_default_desc": "Use this card/account as the default payment method for {{wallet}}.",
         "close": "Close",
         "title": "Card/Account Bank Settings"
-      },
+      }
     },
 
     "request_add_card": {

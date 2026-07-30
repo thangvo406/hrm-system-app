@@ -4,7 +4,6 @@ import type {
   IRequestSendOtpVerifyMembership,
   IRequestRegisterUser,
   IRequestSendOTP,
-  IRequestSendOtpForgotPass,
   IRequestSubmitForgotPass,
   IRequestVerifyOTP,
   IRequestLoginSocial,
@@ -12,7 +11,8 @@ import type {
   IResponseRegisterVerifyOtp,
   IResponseRegisterSendOtp,
   IResponseUniversity,
-  IResponseSendOtpForgotPass,
+  IRequestCreateLinkVerifyForgotPass,
+  IResponseCreateLinkVerifyForgotPass,
   IResponseSubmitForgotPass,
   IResponseVerifyOtpForgotPass,
   IResponseLoginSocial,
@@ -90,12 +90,12 @@ export const loginSocial = async (
   return response.data;
 };
 
-export const sendOtpForgotPass = async (
-  request: IRequestSendOtpForgotPass,
-): Promise<IResponseSendOtpForgotPass> => {
+export const createLinkVerifyForgotPass = async (
+  request: IRequestCreateLinkVerifyForgotPass,
+): Promise<IResponseCreateLinkVerifyForgotPass> => {
   const response = await httpRequest.post<
-    SingleApiResponse<IResponseSendOtpForgotPass>
-  >(EndPoints.AUTH.sendOtpForgotPass, request);
+    SingleApiResponse<IResponseCreateLinkVerifyForgotPass>
+  >(EndPoints.AUTH.createLinkVerifyForgotPass, request);
   return response.data;
 };
 

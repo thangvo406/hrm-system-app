@@ -74,8 +74,11 @@ export interface IResponseRegisterSendOtp {
   phoneVerificationToken: string;
 }
 
-export interface IResponseSendOtpForgotPass {
-  phoneVerificationToken?: string;
+export interface IResponseCreateLinkVerifyForgotPass {
+  callUrl: string;
+  regCertKey: string;
+  ordrIdxx: string;
+  certWebViewUrl: string;
 }
 export interface LogoutRequest {
   refreshToken: string;
@@ -171,9 +174,9 @@ export interface IRequestGetUniversities
   size?: number;
 }
 
-export interface IRequestSendOtpForgotPass
-  extends AppCallback<IResponseSendOtpForgotPass> {
-  identifier: string;
+export interface IRequestCreateLinkVerifyForgotPass
+  extends AppCallback<IResponseCreateLinkVerifyForgotPass> {
+  email: string;
 }
 
 export interface IRequestVerifyOtpForgotPass
