@@ -5,7 +5,13 @@ import {
   Image,
   SegmentedTab,
 } from '@components';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useMemo } from 'react';
 import { ScaleSize } from '@kits/core';
 import { useContributeHistory } from '@hooks';
@@ -32,6 +38,8 @@ function PayCard() {
     pointTransactions,
     loading,
     onPressFilter,
+    onRefresh,
+    refreshing,
     filterCount,
     onChangeTab,
     onPressTranItem,
@@ -74,6 +82,14 @@ function PayCard() {
       <HeaderDetail title={t('pay_card.title')} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            colors={[Colors.primary]}
+            onRefresh={onRefresh}
+            refreshing={refreshing}
+            tintColor={Colors.primary}
+          />
+        }
         showsVerticalScrollIndicator={false}
         style={styles.scrollView}
       >
@@ -149,8 +165,8 @@ function PayCard() {
             <AppButton onPress={onPressFilter}>
               <Image
                 name="ic_filter"
-                width={ScaleSize(32)}
-                height={ScaleSize(32)}
+                width={ScaleSize(24)}
+                height={ScaleSize(24)}
                 type="svg"
               />
               {filterCount > 0 ? (
@@ -165,7 +181,7 @@ function PayCard() {
                     paddingHorizontal: ScaleSize(3),
                     position: 'absolute',
                     right: -(BADGE_SIZE / 4),
-                    bottom: -BADGE_SIZE / 10,
+                    bottom: 3,
                   }}
                 >
                   <Text

@@ -194,7 +194,9 @@
       "date_picker": {
         "button_cancel": "Cancel",
         "this_week": "This week",
-        "button_submit": "View"
+        "button_submit": "View",
+        "button_reset": "Reset",
+        "range_title": "Select a date range"
       }
     },
     "forgot_password": {

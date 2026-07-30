@@ -43,7 +43,9 @@
       "date_picker": {
         "button_cancel": "취소",
         "this_week": "이번 주",
-        "button_submit": "보기"
+        "button_submit": "보기",
+        "button_reset": "초기화",
+        "range_title": "기간 선택"
       }
     },
     "authorisation": {

@@ -14,9 +14,11 @@ const { ifAndroid, isIPadOrTablet, ifTablet } = DeviceUtils;
 interface DatePickerProps {
   readonly onSubmit?: (data: any) => void;
   readonly buttonSubmitTitle?: string;
+  readonly buttonCancelTitle?: string;
   readonly title?: string;
   readonly dateRange?: { from: any; to: any };
   readonly type?: string;
+  readonly onCancel?: () => void;
   readonly onRequestClose?: () => void;
   readonly maxDate?: any;
 }
@@ -26,6 +28,7 @@ function DatePicker({
   buttonSubmitTitle,
   buttonCancelTitle,
   title,
+  onCancel,
   dateRange,
   type = '',
   onRequestClose,
@@ -59,6 +62,10 @@ function DatePicker({
     return dates;
   };
 
+  const _onCancel = () => {
+    onRequestClose?.();
+    onCancel?.()
+  }
   const _onSubmit = () => {
     const dates = getDateValue();
     const lastWeek = dates.at(-1);
@@ -115,17 +122,19 @@ function DatePicker({
         <View
           style={{
             flexDirection: 'row',
-            justifyContent: 'center',
+            gap: ScaleSize(10),
+            marginTop: ScaleSize(10),
+            marginHorizontal: ScaleSize(20),
+            paddingBottom: ScaleSize(20),
           }}
         >
           {!!buttonCancelTitle && (
             <Button
               type="outline-bordered"
               title={buttonCancelTitle}
-              onPress={_onSubmit}
+              onPress={_onCancel}
               style={{
-                // position: 'absolute',
-                // bottom: 0,
+            
                 flex: 1,
                 alignSelf: 'center',
                 // zIndex: 1,
