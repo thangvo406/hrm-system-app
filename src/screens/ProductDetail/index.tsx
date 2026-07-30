@@ -1,3 +1,4 @@
+import type { Ref } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
 
 import {
@@ -17,7 +18,13 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
-import { useCallback } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { ScaleSize } from '@kits/core';
 import { ProductUtils } from '@utils';
 import { useFocusEffect } from '@react-navigation/native';
@@ -55,15 +62,21 @@ const SHEET_BG = '#F2F2F2';
 
 type BackButtonProps = {
   readonly onPress: () => void;
+  readonly ref?: Ref<TButtonBackRef>;
   readonly scrollY: SharedValue<number>;
+};
+
+type TButtonBackRef = {
+  changeButtonColor: (color: string) => void;
 };
 
 const onPressBack = () => {
   AppNavigator.goBack();
 };
 
-function BackButton({ onPress, scrollY }: BackButtonProps) {
+function BackButton({ onPress, ref, scrollY }: BackButtonProps) {
   const insets = useSafeAreaInsets();
+  const [backgroundBtn, setBackgroundBtn] = useState('rgba(255,255,255,0.3)');
   const animatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
       scrollY.value,
@@ -73,6 +86,14 @@ function BackButton({ onPress, scrollY }: BackButtonProps) {
     );
     return { opacity };
   });
+
+  const changeButtonColor = (color: string) => {
+    setBackgroundBtn(color);
+  };
+  useImperativeHandle<TButtonBackRef, TButtonBackRef>(ref, () => ({
+    changeButtonColor,
+  }));
+
   return (
     <Animated.View
       pointerEvents="box-none"
@@ -80,7 +101,7 @@ function BackButton({ onPress, scrollY }: BackButtonProps) {
     >
       <AppButton
         onPress={onPress}
-        style={styles.backButton}
+        style={[styles.backButton, { backgroundColor: backgroundBtn }]}
         testID="product-detail-back"
       >
         <Image
@@ -168,7 +189,13 @@ function StickyHeader({ onPressBack, scrollY, title }: StickyHeaderProps) {
   );
 }
 
-function ProductHero({ images }: { readonly images: IImage[] }) {
+function ProductHero({
+  images,
+  onLoadImageError,
+}: {
+  readonly images: IImage[];
+  readonly onLoadImageError?: () => void;
+}) {
   const items =
     images.length > 0 ? images : [{ name: imageNames.img_product_default }];
   return (
@@ -186,6 +213,9 @@ function ProductHero({ images }: { readonly images: IImage[] }) {
             imageStyle={styles.heroImage}
             resizeMode="cover"
             url={item.fileUrl}
+            onError={() => {
+              onLoadImageError?.();
+            }}
             width={SCREEN_WIDTH}
           />
         )}
@@ -297,6 +327,8 @@ function ProductDetail(props: any) {
     disabledBtnSubmit,
   } = useProductDetail(props);
   const { t } = useTranslation();
+  const backBtnRef = useRef<TButtonBackRef>(null);
+  const isSettedColorBtnBack = useRef(false);
 
   // Entering the screen the hero image is visible → light status bar; leaving
   // it we hand back the app-wide default (dark).
@@ -326,6 +358,23 @@ function ProductDetail(props: any) {
     scrollY.value = event.contentOffset.y;
   });
 
+  const onLoadImageError = () => {
+    if (
+      (!isSettedColorBtnBack.current && !data?.images?.length) ||
+      data?.images?.length == 1
+    ) {
+      isSettedColorBtnBack.current = true;
+      backBtnRef.current?.changeButtonColor('rgba(0,0,0,0.3)');
+      StatusBar.setBarStyle('dark-content');
+    }
+  };
+
+  useEffect(() => {
+    if (data && !data?.images.length) {
+      onLoadImageError();
+    }
+  }, [data?.images]);
+
   return (
     <View style={styles.safeArea}>
       {loading ? (
@@ -338,7 +387,10 @@ function ProductDetail(props: any) {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.topSection}>
-              <ProductHero images={data?.images ?? []} />
+              <ProductHero
+                images={data?.images ?? []}
+                onLoadImageError={onLoadImageError}
+              />
             </View>
             <View style={styles.middleSection}>
               <ProductInfo
@@ -368,7 +420,11 @@ function ProductDetail(props: any) {
             scrollY={scrollY}
             title={data?.name ?? ''}
           />
-          <BackButton onPress={onPressBack} scrollY={scrollY} />
+          <BackButton
+            ref={backBtnRef}
+            onPress={onPressBack}
+            scrollY={scrollY}
+          />
           <BottomSheet
             bottomInset={ifAndroid(16, insets.bottom)}
             onPressCart={onPressCart}
