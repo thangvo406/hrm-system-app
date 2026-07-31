@@ -4,7 +4,12 @@ import type { AppCallback } from '@type/common';
 import { AccountSelector, AuthSelector } from '@services/selectors';
 import { delay, put, select, takeLatest } from 'redux-saga/effects';
 
-import { incrementAsync, incrementAsyncSuccess, startupApp } from './appSlice';
+import {
+  incrementAsync,
+  incrementAsyncSuccess,
+  startupApp,
+  updateEnablePaymentCard,
+} from './appSlice';
 import { getTotalItemCartRequest } from '../account/accountSlice';
 import { Profile } from '@services/request/account';
 import { MEMBERSHIP_TYPE } from '@constants/config';
@@ -34,6 +39,7 @@ function* startupAppWorker(action: PayloadAction<AppCallback<boolean>>) {
     const universityId: number | undefined = yield select(
       AuthSelector.getUniversityId,
     );
+    yield put(updateEnablePaymentCard(true));
     const profile: Profile = yield select(AccountSelector.getProfile);
     let isAuthenticated = Boolean(accessToken);
     if (

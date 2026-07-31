@@ -21,6 +21,8 @@ function PaymentOffline() {
     pointUsed,
     selectedMethodId,
     usePoints,
+    amount,
+    onAmountChange,
   } = usePaymentOffline();
 
   return (
@@ -30,6 +32,9 @@ function PaymentOffline() {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        style={{
+          flex: 1,
+        }}
       >
         <PointUsageCard
           onChangePointUsed={onChangePointUsed}
@@ -45,6 +50,9 @@ function PaymentOffline() {
         <View style={styles.fullBleed}>
           <BankAccountsSelection
             cards={bankAccounts}
+            showAmountInput
+            amount={amount}
+            onAmountChange={onAmountChange}
             hideAddCard={!isEnablePaymentCard}
             initialIndex={initialIndex}
             onSelect={onSelectMethod}
@@ -79,6 +87,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingVertical: ScaleSize(32),
     paddingHorizontal: ScaleSize(20),
+    flexGrow: 1,
   },
   sectionLabel: {
     color: '#1A1A1A',

@@ -108,6 +108,12 @@ export const useRequestAddCard = ({
       addAccountRequest({
         payType: selectedMethod,
         onSuccess: onAddCardFinished,
+        onFailure: error => {
+          AppNavigator.showSnackBar({
+            message: error,
+            type: 'failed',
+          });
+        },
       }),
     );
   };

@@ -21,7 +21,6 @@ export type IPaymentMethod = {
   readonly tag: string;
 };
 
-// TODO(api): replace mock values with the offline-payment summary response.
 const PRIMARY_CARD_INDEX = 0;
 // Sentinel for the "pay from wallet balance" pseudo-account shown in place of
 // card/bank accounts when payment cards are disabled.
@@ -34,27 +33,34 @@ export const usePaymentOffline = () => {
   );
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
+
+  const BALANCE_ITEM = useMemo(() => {
+    return {
+      id: BALANCE_ID,
+      displayName: t('payment.pay_money_name'),
+      type: 'COOP_BALANCE',
+      displayNumber: t('payment.balance_amount', {
+        amount: currentWallet?.balance,
+      }),
+    };
+  }, []);
+
   const bankAccounts = useMemo(() => {
     if (isEnablePaymentCard) {
-      return rawBankAccounts;
+      return [BALANCE_ITEM, ...rawBankAccounts];
     }
-    return [
-      {
-        id: BALANCE_ID,
-        displayName: t('payment.pay_money_name'),
-        type: 'COOP_BALANCE',
-        displayNumber: t('payment.balance_amount', {
-          amount: currentWallet?.balance,
-        }),
-      },
-    ];
+    return [BALANCE_ITEM];
   }, [currentWallet?.balance, isEnablePaymentCard, rawBankAccounts, t]);
   const [usePoints, setUsePoints] = useState(true);
   const [pointUsed, setPointUsed] = useState(0);
   const [selectedMethodId, setSelectedMethodId] = useState<string>(
     bankAccounts?.[PRIMARY_CARD_INDEX]?.id,
   );
+  const [amount, setAmount] = useState('');
 
+  const onAmountChange = useCallback((value: string) => {
+    setAmount(value.replaceAll(/\D/g, ''));
+  }, []);
   const onToggleUsePoints = useCallback(() => {
     setUsePoints(previous => !previous);
   }, []);
@@ -90,6 +96,8 @@ export const usePaymentOffline = () => {
     onPay,
     onSelectMethod,
     onToggleUsePoints,
+    onAmountChange,
+    amount,
     pointHolding: currentWallet?.pointBalance,
     pointUsed,
     selectedMethodId,

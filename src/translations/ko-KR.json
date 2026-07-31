@@ -368,7 +368,8 @@
       "badge_bank": "BANK",
       "badge_coop_balance": "COOP MONEY",
       "pay_money_name": "생협페이머니",
-      "balance_amount": "잔액 {{amount}}원"
+      "balance_amount": "잔액 {{amount}}원",
+      "amount_input_placeholder": "금액 입력"
     },
     "point_usage": {
       "use_point": "포인트 사용",

@@ -3,6 +3,7 @@ import { ScaleSize } from '@kits/core';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Properties = {
   readonly onPay: () => void;
@@ -10,9 +11,9 @@ type Properties = {
 
 function PayButton({ onPay }: Properties) {
   const { t } = useTranslation();
-
+  const insets = useSafeAreaInsets();
   return (
-    <View style={styles.wrap}>
+    <View style={[styles.wrap, { bottom: insets.bottom || 20 }]}>
       <Button
         onPress={onPay}
         testID="payment-offline-pay-action"
@@ -28,5 +29,8 @@ export default React.memo(PayButton);
 const styles = StyleSheet.create({
   wrap: {
     marginTop: ScaleSize(32),
+    position: 'absolute',
+    left: 20,
+    right: 20,
   },
 });

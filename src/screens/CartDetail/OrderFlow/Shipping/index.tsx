@@ -16,7 +16,7 @@ const TEXT_DARK = '#1A1A1A';
 const ICON_TINT = '#6B6B6B';
 const METHOD_ICON_SIZE = ScaleSize(34);
 
-type OrderMethod = 'DELIVERY' | 'DINE_IN' | 'PICKUP';
+type OrderMethod = 'DELIVERY' | 'HALL' | 'PICKUP';
 const { isAndroid } = DeviceUtils;
 const ORDER_METHODS: readonly {
   readonly desc: string;
@@ -39,7 +39,7 @@ const ORDER_METHODS: readonly {
   {
     desc: 'order_method.method_dinein_desc',
     icon: 'ic_store',
-    id: 'DINE_IN',
+    id: 'HALL',
     label: 'order_method.method_dinein',
   },
 ];

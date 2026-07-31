@@ -12,7 +12,7 @@ import RequestAddCard from '@dialogs/RequestAddCard';
 import AppNavigator from '@navigation/AppNavigator';
 import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, TextInput, View } from 'react-native';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -21,6 +21,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Carousel from 'react-native-reanimated-carousel';
 import { Globals } from '@utils';
+import { formatCurrency } from '@utils/product';
 
 // Sentinel appended after the real methods so the "add" tile trails the list.
 const ADD_CARD_ID = '__add_card__';
@@ -96,23 +97,29 @@ const getMethodStyle = (type: string): MethodStyle =>
 
 type CardItemProps = {
   readonly addLabel: string;
+  readonly amount?: string;
   readonly animationValue: SharedValue<number>;
   readonly card: IAccount;
   readonly isAdd: boolean;
   readonly onAddPress: () => void;
+  readonly onAmountChange?: (value: string) => void;
   readonly onSelect: (item: any, index: number) => void;
   readonly selected: boolean;
+  readonly showAmountInput?: boolean;
   readonly slotIndex: number;
 };
 
 function CardItem({
   addLabel,
+  amount,
   animationValue,
   card,
   isAdd,
   onAddPress,
+  onAmountChange,
   onSelect,
   selected,
+  showAmountInput,
   slotIndex,
 }: CardItemProps) {
   const { t } = useTranslation();
@@ -192,19 +199,38 @@ function CardItem({
               </View>
             </View>
 
-            <View style={styles.cardBottom}>
-              <Text
-                numberOfLines={1}
-                style={[styles.brand, { color: theme.text }]}
-              >
-                {card.displayName}
-              </Text>
-              <Text
-                numberOfLines={1}
-                style={[styles.number, { color: theme.sub }]}
-              >
-                {card.displayNumber}
-              </Text>
+            <View style={styles.cardBottomWrap}>
+              {showAmountInput ? (
+                <View style={styles.amountRow}>
+                  <TextInput
+                    keyboardType="number-pad"
+                    onChangeText={onAmountChange}
+                    placeholder={t('payment.amount_input_placeholder')}
+                    placeholderTextColor={theme.sub}
+                    style={[styles.amountInput, { color: theme.text }]}
+                    testID={`bank-account-amount-${card.id}`}
+                    value={formatCurrency(amount)}
+                  />
+                  <Text style={[styles.amountUnit, { color: theme.text }]}>
+                    {t('payment.won_unit')}
+                  </Text>
+                </View>
+              ) : undefined}
+
+              <View style={styles.cardBottom}>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.brand, { color: theme.text }]}
+                >
+                  {card.displayName}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.number, { color: theme.sub }]}
+                >
+                  {card.displayNumber}
+                </Text>
+              </View>
             </View>
           </View>
         </AppButton>
@@ -214,19 +240,25 @@ function CardItem({
 }
 
 type Properties = {
+  readonly amount?: string;
   readonly cards: readonly IAccount[];
   readonly hideAddCard?: boolean;
   readonly initialIndex: number;
+  readonly onAmountChange?: (value: string) => void;
   readonly onSelect: (item: any) => void;
   readonly selectedId: string | undefined;
+  readonly showAmountInput?: boolean;
 };
 
 function BankAccounts({
+  amount,
   cards,
   hideAddCard,
   initialIndex,
+  onAmountChange,
   onSelect,
   selectedId,
+  showAmountInput,
 }: Properties) {
   const { t } = useTranslation();
   const carouselRef = useRef<ICarouselInstance>(null);
@@ -257,16 +289,27 @@ function BankAccounts({
     ({ animationValue, index, item }) => (
       <CardItem
         addLabel={t('payment.add_method')}
+        amount={amount}
         animationValue={animationValue}
         card={item}
         isAdd={item.id === ADD_CARD_ID}
         onAddPress={onAdd}
+        onAmountChange={onAmountChange}
         onSelect={handleSelect}
         selected={String(item.id) == selectedId}
+        showAmountInput={showAmountInput}
         slotIndex={index}
       />
     ),
-    [handleSelect, onAdd, selectedId, t],
+    [
+      amount,
+      handleSelect,
+      onAdd,
+      onAmountChange,
+      selectedId,
+      showAmountInput,
+      t,
+    ],
   );
 
   const onTouchStart = useCallback(() => {
@@ -330,6 +373,25 @@ function BankAccounts({
 export default React.memo(BankAccounts);
 
 const styles = StyleSheet.create({
+  amountInput: {
+    flex: 1,
+    fontSize: ScaleSize(14),
+    fontWeight: '700',
+    padding: 0,
+    textAlign: 'right',
+  },
+  amountRow: {
+    alignItems: 'center',
+    borderBottomColor: 'rgba(255, 255, 255, 0.5)',
+    borderBottomWidth: ScaleSize(1),
+    flexDirection: 'row',
+    gap: ScaleSize(4),
+    paddingBottom: ScaleSize(6),
+  },
+  amountUnit: {
+    fontSize: ScaleSize(13),
+    fontWeight: '600',
+  },
   badge: {
     borderRadius: ScaleSize(6),
     maxWidth: '80%',
@@ -364,6 +426,9 @@ const styles = StyleSheet.create({
   },
   cardBottom: {
     gap: ScaleSize(6),
+  },
+  cardBottomWrap: {
+    gap: ScaleSize(14),
   },
   cardSelected: {
     borderColor: '#FFFFFF',

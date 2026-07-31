@@ -41,15 +41,15 @@ class WebSocketService {
     };
 
     this.client.onStompError = frame => {
-      console.error('[STOMP] Broker error:', frame.headers.message, frame.body);
+      // console.error('[STOMP] Broker error:', frame.headers.message, frame.body);
     };
 
     this.client.onWebSocketError = error => {
-      console.error('[STOMP] WebSocket error', error);
+      // console.error('[STOMP] WebSocket error', error);
     };
 
     this.client.onWebSocketClose = () => {
-      console.warn('[STOMP] WebSocket closed');
+      // console.warn('[STOMP] WebSocket closed');
     };
 
     this.client.onDisconnect = () => {

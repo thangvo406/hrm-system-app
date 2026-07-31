@@ -69,7 +69,7 @@
     },
     "payment": {
       "title": "Payment method",
-      "won_unit": "won",
+      "won_unit": "KRW",
       "coupon_label": "Coupon",
       "coop_pay_label": "Coop Pay",
       "order_amount": "Order amount",
@@ -88,7 +88,8 @@
       "badge_bank": "BANK",
       "badge_coop_balance": "COOP MONEY",
       "pay_money_name": "Coop Pay Money",
-      "balance_amount": "Balance {{amount}} KRW"
+      "balance_amount": "Balance {{amount}} KRW",
+      "amount_input_placeholder": "Enter amount"
     },
     "point_usage": {
       "use_point": "Use points",
