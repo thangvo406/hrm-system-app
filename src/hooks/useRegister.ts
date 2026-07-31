@@ -5,7 +5,7 @@ import { ValidateUtils } from '@kits/core/utils';
 import { useTranslation } from 'react-i18next';
 import { AuthStep } from '@type/auth';
 
-import { useAppDispatch } from '@services/common/storeHooks';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import {
   confirmMemberShipVerifyRequest,
   sendOtpVerifyMembershipRequest,
@@ -34,6 +34,7 @@ import Information from '@dialogs/Information';
 import WebViewScreen from '@dialogs/Webview';
 import { WebViewNavigation } from 'react-native-webview';
 import { deepLinkGate } from '@navigation/deepLinkGate';
+import { AppSelector } from '@services/selectors';
 
 const {
   CARRIER_ITEMS,
@@ -103,6 +104,7 @@ export const useRegister = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const formData = useRef<FormData>({ ...INITIAL_FORM_DATA });
+  const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
 
   const [errors, setErrors] = useState<{
     email?: boolean;
@@ -393,8 +395,11 @@ export const useRegister = () => {
         break;
       }
       case REGISTER_FLOW_STEP.ACADEMIC_VERIFICATION_COMPLETED: {
-        // AppNavigator.navigate(Paths.RegisterCompleted);
-        navigateToStep(REGISTER_FLOW_STEP.BANK_INFORMATION);
+        if (isEnablePaymentCard) {
+          AppNavigator.navigate(Paths.RegisterCompleted);
+        } else {
+          navigateToStep(REGISTER_FLOW_STEP.BANK_INFORMATION);
+        }
         break;
       }
       case REGISTER_FLOW_STEP.ACADEMIC_VERIFICATION: {
@@ -410,7 +415,9 @@ export const useRegister = () => {
         break;
       }
       case REGISTER_FLOW_STEP.BANK_INFORMATION: {
-        AppNavigator.navigate(Paths.RegisterCompleted);
+        AppNavigator.navigate(Paths.RegisterCompleted, {
+          isHideContribution: true,
+        });
         break;
       }
       default: {

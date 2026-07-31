@@ -1,9 +1,10 @@
 import { Button } from '@components';
-import RegisterHeader from './Header';
+import RegisterHeader from '@screens/Authorisation/components/RegisterFlow/Header';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { ScaleSize } from '@kits/core';
+import { formatCurrency } from '@utils/product';
 
 const TEXT_COLOR = '#1A1A1A';
 
@@ -12,24 +13,28 @@ const DEFAULT_BANK_NAME = '우리은행';
 const DEFAULT_ACCOUNT_NUMBER = '8888-00-888888';
 const DEFAULT_SCHOOL_NAME = 'OO대학교 생협';
 
-type BankInformationProps = {
+type BankInformationViewProps = {
   readonly accountNumber?: string;
-  readonly amount?: string;
+  readonly amount?: number | string;
   readonly bankName?: string;
   readonly disabled?: boolean;
   readonly onSubmit: () => void;
   readonly schoolName?: string;
+  readonly titleBtn?: string;
 };
 
-function BankInformation({
+function BankInformationView({
   accountNumber = DEFAULT_ACCOUNT_NUMBER,
   amount = DEFAULT_AMOUNT,
   bankName = DEFAULT_BANK_NAME,
   disabled = false,
   onSubmit,
+  titleBtn = 'bank_information.next',
   schoolName = DEFAULT_SCHOOL_NAME,
-}: BankInformationProps) {
+}: BankInformationViewProps) {
   const { t } = useTranslation();
+  const amountText =
+    typeof amount === 'number' ? formatCurrency(amount) : amount;
 
   return (
     <View style={styles.container}>
@@ -38,7 +43,7 @@ function BankInformation({
       <View style={styles.content}>
         <Text style={styles.intro}>{t('bank_information.intro')}</Text>
         <Text style={styles.intro}>
-          {t('bank_information.instruction', { amount })}
+          {t('bank_information.instruction', { amount: amountText })}
         </Text>
 
         <Text style={styles.bankName}>{bankName}</Text>
@@ -53,7 +58,7 @@ function BankInformation({
           onPress={onSubmit}
           style={styles.submitButton}
           testID="bank-information-next"
-          title={t('bank_information.next')}
+          title={t(titleBtn)}
           type="primary"
         />
       </View>
@@ -113,4 +118,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(BankInformation);
+export default React.memo(BankInformationView);

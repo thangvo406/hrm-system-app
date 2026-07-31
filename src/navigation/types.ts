@@ -1,4 +1,5 @@
 import type { AppStacks, Paths } from '@navigation/paths';
+import type { BankInformationOrigin } from '@hooks/useBankInformation';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { TNotificationItem } from '@type';
 import { IStoreItem } from '@type/store';
@@ -31,6 +32,15 @@ export type RootStackParamList = {
   [Paths.Announcements]: undefined;
   [Paths.Authorization]: { isLogin: boolean } | undefined;
   [Paths.BankAccountManage]: undefined;
+  [Paths.BankInformation]:
+    | {
+        accountNumber?: string;
+        amount?: number | string;
+        bankName?: string;
+        goFrom?: BankInformationOrigin;
+        schoolName?: string;
+      }
+    | undefined;
   [Paths.SchoolSelection]: undefined;
   [Paths.Carts]: undefined;
   [Paths.Contribution]: undefined;

@@ -4,6 +4,7 @@ export enum Paths {
   Announcements = 'announcements',
   Authorization = 'authorization',
   BankAccountManage = 'bank_account_manage',
+  BankInformation = 'bank_information',
   SchoolSelection = 'school_selection',
   Carts = 'carts',
   Contribution = 'contribution',

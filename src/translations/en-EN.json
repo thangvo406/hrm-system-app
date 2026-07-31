@@ -375,7 +375,8 @@
     "bank_information": {
       "intro": "When joining as a member for the first time,\na contribution payment is required.",
       "instruction": "Pay the initial {{amount}} KRW\nto the account below to complete your application.",
-      "next": "Next"
+      "next": "Next",
+      "go_home": "Go to Home"
     },
     "profile": {
       "title": "My Page",

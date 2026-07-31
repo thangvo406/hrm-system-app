@@ -198,7 +198,8 @@
     "bank_information": {
       "intro": "조합원 최초 가입시,\n출자금 납부가 필요합니다.",
       "instruction": "아래 계좌로 최초 {{amount}}원을\n납부하여 신청을 완료하세요.",
-      "next": "다음"
+      "next": "다음",
+      "go_home": "홈으로 이동"
     },
     "profile": {
       "title": "내 정보 수정",

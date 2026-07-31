@@ -96,6 +96,7 @@ export const EndPoints = {
     addressOrderRecent: 'order/recent-address',
     generateQRCode: 'api/v1/pay/qr/generate',
     balanceCharge: 'balance/kcp/charge/init',
+    createBankInfoTopUp: 'balance/virtual-account/init',
     cartDetail: (cartId: number) => `app/cart/${cartId}`,
   },
 

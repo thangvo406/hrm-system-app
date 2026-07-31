@@ -2,13 +2,13 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   IStoreCartItem,
   ICheckoutInfo,
-
+  IBankInfoTopUp,
+  IRequestCreateBankInfoTopUp,
   IRequestCreateOrder,
   ICreateOrderResponse,
   IRequestGenerateQRCode,
   IGenerateQRCodeResponse,
   IRequestGetCartDetail,
-
   IRequestGetInfoProductCheckout,
   IRequestGetListCart,
   IRequestGetOrderHistories,
@@ -34,6 +34,7 @@ import type { AppCallback, ListApiResponse } from '@type/common';
 import { call, takeLatest } from 'redux-saga/effects';
 
 import {
+  createBankInfoTopUp,
   createLinkPaymentOrder,
   createOrder,
   generateQRCode,
@@ -55,6 +56,7 @@ import {
 import { getErrorMessageApi } from '@utils/common';
 
 import {
+  createBankInfoTopUpRequest,
   createOrderRequest,
   generateQRCodeRequest,
   getAddressOrderRecentRequest,
@@ -207,9 +209,12 @@ function* getOrderHistoryDetailWorker(
 ): Generator<unknown, void, IOrderHistoryDetailItem> {
   const { onFailure, onSuccess, orderId } = action.payload;
   try {
-    const response: IOrderHistoryDetailItem = yield call(getOrderHistoryDetail, {
-      orderId,
-    });
+    const response: IOrderHistoryDetailItem = yield call(
+      getOrderHistoryDetail,
+      {
+        orderId,
+      },
+    );
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -259,12 +264,25 @@ function* balanceChargeWorker(
   }
 }
 
+function* createBankInfoTopUpWorker(
+  action: PayloadAction<IRequestCreateBankInfoTopUp>,
+): Generator<unknown, void, IBankInfoTopUp> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: IBankInfoTopUp = yield call(createBankInfoTopUp, request);
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 function* increaseContributionWorker(
   action: PayloadAction<IRequestIncreaseContribute>,
 ): Generator<unknown, void, void> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-   const response = yield call(increaseContribution, request);
+    const response = yield call(increaseContribution, request);
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -347,6 +365,7 @@ export function* paymentSaga() {
     increaseContributionWorker,
   );
   yield takeLatest(balanceChargeRequest.type, balanceChargeWorker);
+  yield takeLatest(createBankInfoTopUpRequest.type, createBankInfoTopUpWorker);
   yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
   yield takeLatest(updateCartItemRequest.type, updateCartItemWorker);
   yield takeLatest(getCartDetailRequest.type, getCartDetailWorker);

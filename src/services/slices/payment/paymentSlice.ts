@@ -1,16 +1,14 @@
 import type { AppCallback } from '@type/common';
 import type {
   ICheckoutInfo,
-
+  IRequestCreateBankInfoTopUp,
   IRequestCreateOrder,
   IRequestGenerateQRCode,
   IRequestGetCartDetail,
-
   IRequestGetInfoProductCheckout,
   IRequestGetListCart,
   IRequestGetOrderHistories,
   IRequestGetOrderHistoryDetail,
-  IRequestIncreaseContribute,
   IRequestInitCharge,
   IRequestRemoveCartItem,
   IRequestUpdateCartItem,
@@ -20,6 +18,7 @@ import {
   IRequestGetContributeHistoryDetail,
   IRequestGetDividendDetail,
   IRequestGetHistoriesDividend,
+  IRequestIncreaseContribute,
 } from '@type/wallet';
 
 import { createSlice } from '@reduxjs/toolkit';
@@ -36,6 +35,10 @@ const paymentSlice = createSlice({
   initialState,
   name: 'payment',
   reducers: {
+    createBankInfoTopUpRequest: {
+      prepare: (payload: IRequestCreateBankInfoTopUp) => ({ payload }),
+      reducer: () => {},
+    },
     createOrderRequest: {
       prepare: (payload: IRequestCreateOrder) => ({ payload }),
       reducer: () => {},
@@ -104,6 +107,7 @@ const paymentSlice = createSlice({
 });
 
 export const {
+  createBankInfoTopUpRequest,
   createOrderRequest,
   generateQRCodeRequest,
   getAddressOrderRecentRequest,

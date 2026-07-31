@@ -82,14 +82,18 @@ function TopUp(props: any) {
             </Text>
           ) : undefined}
 
-          <Text style={[styles.sectionLabel, styles.methodLabel]}>
-            {t('top_up.payment_method_label')}
-          </Text>
-          <View style={styles.accountField} testID="top-up-pay-account">
-            <Text style={styles.accountFieldText}>
-              {t('top_up.pay_account')}
-            </Text>
-          </View>
+          {isEnablePaymentCard ? (
+            <>
+              <Text style={[styles.sectionLabel, styles.methodLabel]}>
+                {t('top_up.payment_method_label')}
+              </Text>
+              <View style={styles.accountField} testID="top-up-pay-account">
+                <Text style={styles.accountFieldText}>
+                  {t('top_up.pay_account')}
+                </Text>
+              </View>
+            </>
+          ) : undefined}
         </View>
 
         {isEnablePaymentCard ? (

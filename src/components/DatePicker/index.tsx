@@ -26,7 +26,7 @@ import {
   getMonday,
   isSameDay,
 } from '@utils/date';
-import { AppConstants, Colors } from '@constants';
+import { Colors } from '@constants';
 import AppButton from '../AppButton';
 import { ScrollView } from 'react-native-gesture-handler';
 import Image from '../Image';
@@ -253,7 +253,7 @@ const MonthYearSelection = memo(
               .locale(isVi ? 'vi' : 'en')
               .format('MMMM,  YYYY')}
           </Text>
-          <AppButton onPress={onClose} hitSlop={AppConstants.HIS_SLOP_BUTTON}>
+          <AppButton onPress={onClose}>
             {/* Hidden close icon since we have buttons now, or keep it as alternative */}
             <Text
               style={{ fontSize: ScaleSize(14), color: 'black', opacity: 0 }}
@@ -367,10 +367,7 @@ function DateDisplay({
       }}
     >
       {!showYearPicker && (
-        <AppButton
-          onPress={() => addMonth?.(-1)}
-          hitSlop={AppConstants.HIS_SLOP_BUTTON}
-        >
+        <AppButton onPress={() => addMonth?.(-1)}>
           <Image
             type="svg"
             name="ic_arrow_left_gray"

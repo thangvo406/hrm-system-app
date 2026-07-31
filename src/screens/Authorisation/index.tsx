@@ -9,7 +9,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import RegisterForm from './components/RegisterFlow/InputInfo';
 import AuthFormStack from './components/AuthFormStack';
-import BankInformation from './components/RegisterFlow/BankInformation';
+import BankInformationView from '@screens/BankInformation/BankInformationView';
 import InputAcademicEmail from './components/RegisterFlow/InputAcademicEmail';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -93,7 +93,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
       input_academic_email: InputAcademicEmail,
       academic_verification: AcademicVerification,
       register_input: RegisterForm,
-      bank_information: BankInformation,
+      bank_information: BankInformationView,
       verified_info: RegisterCompleted,
       choose_school: SchoolSelection,
     };

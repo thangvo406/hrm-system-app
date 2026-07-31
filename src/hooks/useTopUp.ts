@@ -11,6 +11,7 @@ import {
 // import { topUpWalletRequest } from '@services/slices/account/accountSlice';
 import {
   balanceChargeRequest,
+  createBankInfoTopUpRequest,
   increaseContributionRequest,
 } from '@services/slices/payment/paymentSlice';
 // import uniqueId from 'lodash/uniqueId';
@@ -105,6 +106,26 @@ export const useTopUp = (props?: any) => {
     }
   };
   const onSubmit = () => {
+    if (!isEnablePaymentCard && !isContribute) {
+      dispatch(
+        createBankInfoTopUpRequest({
+          amount: Number(amountTopUp),
+          onSuccess: data => {
+            AppNavigator.navigate(Paths.BankInformation, {
+              ...data,
+              goFrom: 'topUp',
+            });
+          },
+          onFailure: error => {
+            AppNavigator.showSnackBar({
+              message: error,
+              type: 'failed',
+            });
+          },
+        }),
+      );
+      return;
+    }
     const executorRequest = isContribute
       ? increaseContributionRequest
       : balanceChargeRequest;
