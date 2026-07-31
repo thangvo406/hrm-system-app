@@ -43,7 +43,7 @@ const paymentSlice = createSlice({
       prepare: (payload: IRequestCreateOrder) => ({ payload }),
       reducer: () => {},
     },
-    generateQRCodeRequest: {
+    generateQRCodePayRequest: {
       prepare: (payload: IRequestGenerateQRCode) => ({ payload }),
       reducer: () => {},
     },
@@ -109,7 +109,7 @@ const paymentSlice = createSlice({
 export const {
   createBankInfoTopUpRequest,
   createOrderRequest,
-  generateQRCodeRequest,
+  generateQRCodePayRequest,
   getAddressOrderRecentRequest,
   getCartDetailRequest,
   getContributeHistoryDetailRequest,

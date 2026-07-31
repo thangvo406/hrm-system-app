@@ -94,7 +94,7 @@ export const EndPoints = {
     orderHistories: (request: string) => `order?${request}`,
     orderHistoryDetail: (orderId: string) => `order/${orderId}`,
     addressOrderRecent: 'order/recent-address',
-    generateQRCode: 'api/v1/pay/qr/generate',
+    generateQRCodePay: 'api/v1/pay/qr/generate',
     balanceCharge: 'balance/kcp/charge/init',
     createBankInfoTopUp: 'balance/virtual-account/init',
     cartDetail: (cartId: number) => `app/cart/${cartId}`,

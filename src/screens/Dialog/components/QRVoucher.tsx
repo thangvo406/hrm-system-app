@@ -1,10 +1,9 @@
-import { Button, HeaderDetail } from '@components';
+import { Button, HeaderDetail, Image } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import AppButton from '@components/AppButton';
-import QRCode from 'react-native-qrcode-svg';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IVoucher } from '@type';
 import {
@@ -14,13 +13,28 @@ import {
 
 const QR_SIZE = ScaleSize(200);
 const SECONDS_PER_MINUTE = 60;
+const MINUTES_PER_HOUR = 60;
+const SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 const TICK_INTERVAL_MS = 1000;
 const DEFAULT_DURATION_SECONDS = 120;
 
 const formatTime = (total: number) => {
-  const minutes = Math.floor(total / SECONDS_PER_MINUTE);
-  const seconds = total % SECONDS_PER_MINUTE;
-  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  const safeTotal = Math.max(total, 0);
+  const hours = Math.floor(safeTotal / SECONDS_PER_HOUR);
+  const minutes = Math.floor(
+    (safeTotal % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE,
+  );
+  const seconds = safeTotal % SECONDS_PER_MINUTE;
+
+  const segments = [seconds];
+  if (hours > 0 || minutes > 0) {
+    segments.unshift(minutes);
+  }
+  if (hours > 0) {
+    segments.unshift(hours);
+  }
+
+  return segments.map(segment => String(segment).padStart(2, '0')).join(':');
 };
 
 type IQRVoucherData = {
@@ -43,14 +57,15 @@ type QRVoucherProps = {
  * way" action pinned to the bottom.
  */
 function QRVoucher({
-  data,
   durationSeconds = DEFAULT_DURATION_SECONDS,
   onPayOtherMethod,
   onRefresh,
   onRequestClose,
+  ...restProps
 }: QRVoucherProps) {
   const { t } = useTranslation();
   const [remaining, setRemaining] = React.useState(durationSeconds);
+  const [data, setData] = useState<any>(restProps?.data);
 
   useEffect(() => {
     setBrightnessLevel(1);
@@ -67,8 +82,13 @@ function QRVoucher({
   }, []);
 
   const onPressRefresh = () => {
-    setRemaining(durationSeconds);
-    onRefresh?.(data => {});
+    onRefresh?.(_data => {
+      setRemaining(durationSeconds);
+      setData(prev => ({
+        ...prev,
+        qrImageBase64: _data?.qrImageBase64,
+      }));
+    });
   };
 
   const onPressPayOther = () => {
@@ -91,13 +111,15 @@ function QRVoucher({
       )}
       <View style={styles.content}>
         <View style={styles.card}>
-          {!!data?.name && (
-            <Text style={styles.couponLabel}>{data?.name}</Text>
-          )}
+          {!!data?.name && <Text style={styles.couponLabel}>{data?.name}</Text>}
           {!!data?.amountText && (
             <Text style={styles.amountLabel}>{data?.amountText}</Text>
           )}
-          <QRCode size={QR_SIZE} value={data?.code} />
+          <Image
+            width={QR_SIZE}
+            height={QR_SIZE}
+            base64={data?.qrImageBase64}
+          />
 
           <Text style={styles.validTime}>
             {t('qr_voucher.valid_time', { time: formatTime(remaining) })}

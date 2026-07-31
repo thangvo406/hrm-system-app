@@ -153,12 +153,12 @@ export const getAddressOrderRecent = async (): Promise<string[]> => {
   return response.data;
 };
 
-export const generateQRCode = async (
+export const generateQRCodePay = async (
   request: WithoutCallbacks<IRequestGenerateQRCode>,
 ): Promise<IGenerateQRCodeResponse> => {
   const response = await httpRequest.post<
     SingleApiResponse<IGenerateQRCodeResponse>
-  >(EndPoints.PAYMENT.generateQRCode, request);
+  >(EndPoints.PAYMENT.generateQRCodePay, request);
   return response.data;
 };
 

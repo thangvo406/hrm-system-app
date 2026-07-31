@@ -5,7 +5,7 @@ import QRCodeViewer, { QRCodeViewerMode } from '@dialogs/QRCodeViewer';
 import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
-import { generateQRCodeRequest } from '@services/slices/payment/paymentSlice';
+import { generateQRCodePayRequest } from '@services/slices/payment/paymentSlice';
 import type { IGenerateQRCodeResponse } from '@type/payment';
 import {
   setBrightnessLevel,
@@ -66,7 +66,7 @@ export const useQRCodePayment = () => {
 
   const onRefreshQrCode = () => {
     dispatch(
-      generateQRCodeRequest({
+      generateQRCodePayRequest({
         onSuccess: response => {
           setIsExpired(false);
           setData(response);

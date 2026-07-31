@@ -215,7 +215,7 @@ export interface IRequestGetOrderHistoryDetail
 
 export interface IGenerateQRCodeResponse {
   readonly expiresIn: number;
-  readonly qrData: string;
+  readonly qrImageBase64: string;
 }
 
 export interface IRequestInitCharge extends AppCallback<IKcpInitParams> {
@@ -238,7 +238,8 @@ export interface IRequestCreateBankInfoTopUp
 
 export interface IRequestGenerateQRCode
   extends AppCallback<IGenerateQRCodeResponse> {
-  readonly orderId?: string;
+  readonly usePoint?: number;
+  readonly useMoney?: number;
 }
 
 export interface ITransactionDetail {

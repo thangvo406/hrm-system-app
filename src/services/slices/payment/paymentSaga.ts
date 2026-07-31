@@ -37,7 +37,7 @@ import {
   createBankInfoTopUp,
   createLinkPaymentOrder,
   createOrder,
-  generateQRCode,
+  generateQRCodePay,
   getAddressOrderRecent,
   getCartDetail,
   getContributeHistoryDetail,
@@ -58,7 +58,7 @@ import { getErrorMessageApi } from '@utils/common';
 import {
   createBankInfoTopUpRequest,
   createOrderRequest,
-  generateQRCodeRequest,
+  generateQRCodePayRequest,
   getAddressOrderRecentRequest,
   getCartDetailRequest,
   getContributeHistoryDetailRequest,
@@ -241,7 +241,7 @@ function* generateQRCodeWorker(
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
     const response: IGenerateQRCodeResponse = yield call(
-      generateQRCode,
+      generateQRCodePay,
       request,
     );
     onSuccess?.(response);
@@ -336,7 +336,7 @@ function* getDividendDetailWorker(
 
 export function* paymentSaga() {
   yield takeLatest(createOrderRequest.type, createOrderWorker);
-  yield takeLatest(generateQRCodeRequest.type, generateQRCodeWorker);
+  yield takeLatest(generateQRCodePayRequest.type, generateQRCodeWorker);
   yield takeLatest(
     getAddressOrderRecentRequest.type,
     getAddressOrderRecentWorker,

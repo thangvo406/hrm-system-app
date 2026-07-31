@@ -3,13 +3,14 @@ import AppNavigator from '@navigation/AppNavigator';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '@utils/product';
-import { useAppSelector } from '@services/common/storeHooks';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import {
   AccountManagementSelector,
   AccountSelector,
   AppSelector,
 } from '@services/selectors';
 import { IAccount } from '@type';
+import { generateQRCodePayRequest } from '@services/slices/payment/paymentSlice';
 
 export type PaymentMethodKind = 'bank' | 'card' | 'money';
 
@@ -31,6 +32,7 @@ export const usePaymentOffline = () => {
   const rawBankAccounts = useAppSelector(
     AccountManagementSelector.getAccountCards,
   );
+  const dispatch = useAppDispatch();
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
 
@@ -73,23 +75,49 @@ export const usePaymentOffline = () => {
     setPointUsed(numeric);
   }, []);
 
-  const onRefreshQRCode = useCallback(() => {}, []);
+  const onRefreshQRCode = useCallback((callback: any) => {
+    dispatch(
+      generateQRCodePayRequest({
+        useMoney: Number(amount),
+        usePoint: pointUsed,
+        onSuccess: data => {
+          callback?.(data);
+        },
+      }),
+    );
+  }, []);
 
   const onPay = useCallback(() => {
-    AppNavigator.showDialog({
-      screen: QRVoucher,
-      isFullScreen: true,
-      data: {
-        amountText: t('payment_offline.qr_balance_text', {
-          amount: formatCurrency(currentWallet?.balance),
-        }),
-        code: 'applicableStore',
-        headerBadge: t('payment_offline.qr_header_badge'),
-        name: t('payment_offline.qr_customer_name'),
-        onRefresh: onRefreshQRCode,
-      },
-    });
-  }, [t, usePoints, pointUsed, currentWallet, selectedMethodId]);
+    dispatch(
+      generateQRCodePayRequest({
+        useMoney: Number(amount),
+        usePoint: usePoints ? pointUsed : 0,
+        onSuccess: data => {
+          AppNavigator.showDialog({
+            screen: QRVoucher,
+            isFullScreen: true,
+            data: {
+              amountText: t('payment_offline.qr_balance_text', {
+                amount: formatCurrency(currentWallet?.balance),
+              }),
+              qrImageBase64: data?.qrImageBase64,
+              headerBadge: t('payment_offline.qr_header_badge'),
+              name: t('payment_offline.qr_customer_name'),
+            },
+            durationSeconds: data?.expiresIn,
+            onRefresh: onRefreshQRCode,
+          });
+        },
+      }),
+    );
+  }, [
+    t,
+    usePoints,
+    amount,
+    pointUsed,
+    currentWallet?.balance,
+    selectedMethodId,
+  ]);
 
   return {
     onChangePointUsed,
