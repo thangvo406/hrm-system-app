@@ -1,7 +1,7 @@
 import { AppButton, Counter, HeaderDetail, Image } from '@components';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ScaleSize } from '@kits/core';
-import { useQRCodePayment } from '@hooks';
+import { useQRCodeMember } from '@hooks';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
 import QRCode from 'react-native-qrcode-svg';
@@ -31,7 +31,7 @@ function ButtonScan({ onPressScan, title }: ButtonScanProps) {
     <AppButton
       onPress={onPressScan}
       style={styles.scanButton}
-      testID="qr-code-payment-scan"
+      testID="qr-code-member-scan"
     >
       <Image
         name={imageNames.ic_camera}
@@ -43,7 +43,7 @@ function ButtonScan({ onPressScan, title }: ButtonScanProps) {
   );
 }
 
-function QRCodePayment() {
+function QRCodeMember() {
   const { t } = useTranslation();
   const {
     onPressQR,
@@ -53,11 +53,11 @@ function QRCodePayment() {
     onPressBarcode,
     data,
     currentWallet,
-  } = useQRCodePayment();
+  } = useQRCodeMember();
 
   return (
     <View style={styles.safeArea}>
-      <HeaderDetail hideBtnBack title={t('qr_code_payment.title')} />
+      <HeaderDetail hideBtnBack title={t('qr_code_member.title')} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -83,7 +83,7 @@ function QRCodePayment() {
               />
               <View style={styles.expiredOverlay}>
                 <ButtonScan
-                  title={t('qr_code_payment.refresh_button')}
+                  title={t('qr_code_member.refresh_button')}
                   onPressScan={onRefreshQrCode}
                 />
               </View>
@@ -92,7 +92,7 @@ function QRCodePayment() {
           <AppButton
             onPress={onPressBarcode}
             style={styles.barcodeContainer}
-            testID="qr-code-payment-barcode"
+            testID="qr-code-member-barcode"
           >
             <BarcodeCreatorView
               background={Colors.white}
@@ -106,7 +106,7 @@ function QRCodePayment() {
           <AppButton
             onPress={onPressQR}
             style={styles.qrContainer}
-            testID="qr-code-payment-qr"
+            testID="qr-code-member-qr"
           >
             <QRCode
               size={QR_SIZE}
@@ -118,14 +118,14 @@ function QRCodePayment() {
         </View>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>
-            {t('qr_code_payment.card_title')}
+            {t('qr_code_member.card_title')}
           </Text>
 
           <View style={styles.cardDivider} />
 
           <View style={styles.cardRow}>
             <Text style={styles.cardLabel}>
-              {t('qr_code_payment.pay_balance_label')}
+              {t('qr_code_member.pay_balance_label')}
             </Text>
             <Text style={styles.cardAmount}>
               {formatCurrency(currentWallet?.balance)}
@@ -134,14 +134,14 @@ function QRCodePayment() {
 
           <View style={styles.cardRow}>
             <Text style={styles.cardLabel}>
-              {t('qr_code_payment.point_label')}
+              {t('qr_code_member.point_label')}
             </Text>
             <Text style={styles.cardAmount}>{currentWallet?.pointBalance}</Text>
           </View>
         </View>
 
         <ButtonScan
-          title={t('qr_code_payment.scan_button')}
+          title={t('qr_code_member.scan_button')}
           onPressScan={onPressScan}
         />
       </ScrollView>
@@ -149,7 +149,7 @@ function QRCodePayment() {
   );
 }
 
-export default QRCodePayment;
+export default QRCodeMember;
 
 const styles = StyleSheet.create({
   barcodeContainer: {

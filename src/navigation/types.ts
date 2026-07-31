@@ -14,7 +14,7 @@ export type TransactionResultStatus = 'FAILED' | 'PENDING' | 'SUCCESS';
 export type TabParamList = {
   [Paths.Vouchers]: undefined;
   [Paths.Home]: undefined;
-  [Paths.QRCodePayment]: undefined;
+  [Paths.QRCodeMember]: undefined;
   [Paths.Carts]: undefined;
   [Paths.Profile]: undefined;
 };
@@ -90,7 +90,7 @@ export type RootStackParamList = {
     | undefined;
   [Paths.PaymentOffline]: undefined;
   [Paths.CartDetail]: undefined;
-  [Paths.QRCodePayment]: undefined;
+  [Paths.QRCodeMember]: undefined;
   [Paths.RegisterCompleted]: { goFrom: 'forgot_pass' } | undefined;
   [Paths.ProductDetail]: { id: number; storeId: number } | undefined;
   [Paths.Products]: { data: IStoreItem } | undefined;

@@ -715,7 +715,7 @@
       "title": "주문 내역",
       "reorder": "재주문"
     },
-    "qr_code_payment": {
+    "qr_code_member": {
       "title": "QR 코드 결제",
       "card_title": "COOPPay",
       "pay_balance_label": "페이 머니 잔액",

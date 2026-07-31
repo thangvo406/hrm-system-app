@@ -25,7 +25,7 @@ export { useOrderHistories } from './useOrderHistories';
 export { useOrderHistoryDetail } from './useOrderHistoryDetail';
 export { useTransactionDetail } from './useTransactionDetail';
 export { useTopUp } from './useTopUp';
-export { useQRCodePayment } from './useQRCodePayment';
+export { useQRCodeMember } from './useQRCodeMember';
 export { useInputAddress } from './useInputAddress';
 export { useProfile } from './useProfile';
 export { useSchoolSelection } from './useSchoolSelection';

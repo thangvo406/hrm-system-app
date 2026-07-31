@@ -21,7 +21,7 @@ type CounterProps = {
 function Counter({
   expiresIn,
   onOTPExpired,
-  desc = 'qr_code_payment.expires_in',
+  desc = 'qr_code_member.expires_in',
   ref,
 }: CounterProps) {
   const { t } = useTranslation();

@@ -719,7 +719,7 @@
       "title": "Order History",
       "reorder": "Reorder"
     },
-    "qr_code_payment": {
+    "qr_code_member": {
       "title": "QR Code Payment",
       "card_title": "COOPPay",
       "pay_balance_label": "Pay money balance",

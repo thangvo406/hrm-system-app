@@ -29,7 +29,7 @@ const onPressScan = () => {
   // TODO: navigate to QR scanner screen
 };
 
-export const useQRCodePayment = () => {
+export const useQRCodeMember = () => {
   const dispatch = useAppDispatch();
   const [data, setData] = useState<IGenerateQRCodeResponse | undefined>();
   const timeOutExpired = useRef<ReturnType<typeof setTimeout> | undefined>(

@@ -54,7 +54,7 @@ const TABS: readonly TabItem[] = [
   {
     icon: 'ic_wallet',
     isCenter: true,
-    key: Paths.QRCodePayment,
+    key: Paths.QRCodeMember,
     labelKey: 'home.tab_pay',
   },
   { icon: 'ic_star', key: Paths.Vouchers, labelKey: 'home.tab_vouchers' },
