@@ -241,6 +241,7 @@ export const useCartDetail = (props: any) => {
   const onPressOrder = () => {
     AppNavigator.showDialog({
       screen: Shipping,
+      data,
       isFullScreen: true,
       addressOrderRecent,
       overlayColor: '#F2F2F2',

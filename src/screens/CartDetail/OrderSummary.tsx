@@ -9,20 +9,23 @@ const TEXT_DARK = '#1A1A1A';
 
 type OrderSummaryProperties = {
   readonly deliveryFee?: number;
+  readonly totalProduct?: number;
   readonly subTotal: number | undefined;
 };
 
-function OrderSummary({ deliveryFee, subTotal }: OrderSummaryProperties) {
+function OrderSummary({
+  deliveryFee,
+  subTotal,
+  totalProduct,
+}: OrderSummaryProperties) {
   const { t } = useTranslation();
   const hasFee = typeof deliveryFee === 'number';
-  const subtotalAmount = t('common.display_price', {
-    amount: formatCurrency(subTotal),
-  });
-  const feeAmount = deliveryFee
-    ? t('common.display_price', {
-        amount: formatCurrency(deliveryFee),
-      })
-    : t('order_history_detail.shipping_fee_free');
+
+  // const feeAmount = deliveryFee
+  //   ? t('common.display_price', {
+  //       amount: formatCurrency(deliveryFee),
+  //     })
+  //   : t('order_history_detail.shipping_fee_free');
   const totalAmount = t('common.display_price', {
     amount: formatCurrency((subTotal ?? 0) + (hasFee ? deliveryFee : 0)),
   });
@@ -33,16 +36,8 @@ function OrderSummary({ deliveryFee, subTotal }: OrderSummaryProperties) {
       <View style={styles.divider} />
       <View style={styles.row}>
         <Text style={styles.label}>{t('payment_cart.summary_subtotal')}</Text>
-        <Text style={styles.value}>{subtotalAmount}</Text>
+        <Text style={styles.value}>{totalProduct}</Text>
       </View>
-      {hasFee ? (
-        <View style={[styles.row, styles.feeRow]}>
-          <Text style={styles.label}>
-            {t('payment_cart.summary_delivery_fee')}
-          </Text>
-          <Text style={styles.value}>{feeAmount}</Text>
-        </View>
-      ) : undefined}
       <View style={styles.divider} />
       <View style={styles.row}>
         <Text style={styles.totalLabel}>{t('payment_cart.summary_total')}</Text>

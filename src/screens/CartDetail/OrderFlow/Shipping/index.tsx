@@ -17,7 +17,7 @@ const ICON_TINT = '#6B6B6B';
 const METHOD_ICON_SIZE = ScaleSize(34);
 
 type OrderMethod = 'DELIVERY' | 'DINE_IN' | 'PICKUP';
-const { ifAndroid } = DeviceUtils;
+const { isAndroid } = DeviceUtils;
 const ORDER_METHODS: readonly {
   readonly desc: string;
   readonly icon: IconName;
@@ -44,16 +44,12 @@ const ORDER_METHODS: readonly {
   },
 ];
 
-// Placeholder store/address data — wire to cart data when the flow is connected.
-const STORE_NAME = 'Cafe Coop';
-const STORE_LOCATION = '학생회관 1층';
-const STORE_HOURS = '09:00~17:00';
-
 type ShippingProperties = {
   readonly onSelectMethod?: (method: OrderMethod) => void;
   readonly onSubmit?: (data: any) => void;
   readonly onRequestClose: () => void;
   readonly addressOrderRecent: any;
+  readonly data: any;
 };
 
 function Shipping({
@@ -61,6 +57,7 @@ function Shipping({
   addressOrderRecent,
   onSubmit,
   onSelectMethod,
+  data,
 }: ShippingProperties) {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<OrderMethod>('DELIVERY');
@@ -71,13 +68,21 @@ function Shipping({
     return (
       addressDelivery?.address?.roadAddress ||
       addressDelivery?.address?.landAddress ||
-      addressDelivery?.address_name
+      addressDelivery?.address_name ||
+      '--'
     );
   };
 
   const disableBtn = useMemo(() => {
     return selected == 'DELIVERY' && !getAddressDisplay();
   }, [addressDelivery, selected]);
+
+  const orderMethods = useMemo(() => {
+    return data?.storeReceiveMethod?.map((item: any) => {
+      const it = ORDER_METHODS?.find(it => it.id == item);
+      return it;
+    });
+  }, [data]);
 
   const onUpdateAddress = (address: any) => {
     setAddressDelivery(address);
@@ -107,6 +112,13 @@ function Shipping({
 
   const selectedLabel = ORDER_METHODS.find(it => it.id === selected)?.label;
 
+  const bottomBtnSubmit = useMemo(() => {
+    if (isAndroid()) {
+      return insets.bottom < 48 ? -insets.bottom : 0;
+    }
+    return insets.bottom || 10;
+  }, []);
+
   return (
     <View style={styles.screen}>
       <HeaderDetail
@@ -122,7 +134,7 @@ function Shipping({
         <Text style={styles.subheading}>{t('order_method.subheading')}</Text>
 
         <View style={styles.methodRow}>
-          {ORDER_METHODS.map(method => {
+          {orderMethods?.map(method => {
             const isSelected = selected === method.id;
             return (
               <AppButton
@@ -148,18 +160,11 @@ function Shipping({
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>
-            {t('order_method.wait_time_title')}
-          </Text>
-          <Text style={styles.waitValue}>
-            {t('order_method.wait_time_value')}
-          </Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.storeName}>{STORE_NAME}</Text>
+          <Text style={styles.storeName}>{data?.storeName}</Text>
           <Text style={styles.storeMeta}>
-            {`${STORE_LOCATION}  |  ${STORE_HOURS}`}
+            {/* {`${data?.storeAddress?.address_name || '-'}  |  ${data?.storeOpeningHours || '-'}`} */}
+            {/* TODO: handle show storeOpeningHours */}
+            {`${data?.storeAddress?.address_name || '-'}  |  '-'}`}
           </Text>
           <Text style={styles.storeAvailable}>
             {t('order_method.store_available', {
@@ -190,7 +195,7 @@ function Shipping({
         style={{
           width: '90%',
           alignSelf: 'center',
-          bottom: ifAndroid(-insets.bottom, insets.bottom || 10),
+          bottom: bottomBtnSubmit,
         }}
       />
     </View>

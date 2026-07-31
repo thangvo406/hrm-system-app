@@ -1,4 +1,4 @@
-import { AppButton, Button, EmptyView, HeaderDetail } from '@components';
+import { Button, EmptyView, HeaderDetail } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import {
@@ -75,34 +75,6 @@ function CartDetail(props: any) {
           >
             <StoreHeader method={deliveryTab} storeName={data?.storeName} />
 
-            {isShowConfirmPayment ? (
-              <View style={styles.deliveryCard}>
-                <Text style={styles.deliveryEta}>
-                  {t('payment_cart.confirm_delivery_eta', {
-                    method: methodLabel,
-                  })}
-                </Text>
-                <View style={styles.deliveryAddressRow}>
-                  <View style={styles.deliveryAddressInfo}>
-                    <Text style={styles.deliveryAddressLabel}>
-                      {t('order_method.address_section_title')}
-                    </Text>
-                    <Text style={styles.deliveryAddressValue}>
-                      {addressDelivery}
-                    </Text>
-                  </View>
-                  <AppButton
-                    onPress={onPressSelectAddress}
-                    testID="confirm-change-address"
-                  >
-                    <Text style={styles.changeText}>
-                      {t('order_method.change')}
-                    </Text>
-                  </AppButton>
-                </View>
-              </View>
-            ) : undefined}
-
             {products?.map((item: IProductCart) => (
               <CartProductCard
                 item={item}
@@ -115,6 +87,7 @@ function CartDetail(props: any) {
             <OrderSummary
               deliveryFee={isShowConfirmPayment ? DELIVERY_FEE : undefined}
               subTotal={data?.subTotal}
+              totalProduct={data?.totalQuantity}
             />
           </ScrollView>
 
