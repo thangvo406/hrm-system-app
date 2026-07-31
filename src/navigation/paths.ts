@@ -29,7 +29,7 @@ export enum Paths {
   PaymentCompleted = 'payment_completed',
   PaymentOffline = 'payment_offline',
   CartDetail = 'cart_detail',
-  QRCodeMember = 'qr_code_member',
+  QRCodeViewer = 'qr_code_viewer',
   RegisterCompleted = 'register_completed',
   ProductDetail = 'product_detail',
   Products = 'products',

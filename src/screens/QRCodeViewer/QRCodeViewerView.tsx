@@ -3,7 +3,7 @@ import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import AppButton from '@components/AppButton';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IVoucher } from '@type';
 import {
@@ -18,6 +18,11 @@ const SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 const TICK_INTERVAL_MS = 1000;
 const DEFAULT_DURATION_SECONDS = 120;
 
+/**
+ * Countdown clock that starts at the largest non-zero unit: `01:05:00`,
+ * `05:00`, `09`. Units below the leading one are always kept, so the string
+ * never loses a trailing `:00`.
+ */
 const formatTime = (total: number) => {
   const safeTotal = Math.max(total, 0);
   const hours = Math.floor(safeTotal / SECONDS_PER_HOUR);
@@ -37,35 +42,43 @@ const formatTime = (total: number) => {
   return segments.map(segment => String(segment).padStart(2, '0')).join(':');
 };
 
-type IQRVoucherData = {
-  headerBadge?: string;
-  amountText?: string;
-};
+export type IQRCodeViewerData = {
+  readonly amountText?: string;
+  readonly headerBadge?: string;
+  readonly expiresIn?: number;
+  readonly qrImageBase64?: string;
+} & Partial<IVoucher>;
 
-type QRVoucherProps = {
+export type QRCodeViewerViewProps = {
+  readonly data?: IQRCodeViewerData;
   readonly durationSeconds?: number;
+  readonly titleKey?: string;
+  readonly titleVoucher?: string;
+  readonly showPayOther?: boolean;
   readonly onPayOtherMethod?: () => void;
-  readonly onRefresh?: () => void;
+  readonly onRefresh?: (
+    onRefreshed: (data?: IQRCodeViewerData) => void,
+  ) => void;
   readonly onRequestClose?: () => void;
-  readonly data?: IQRVoucherData & IVoucher;
 };
 
-/**
- * Coupon QR rendered full-screen as a Dialog `screen` (show it with
- * `isFullScreen: true`). Fills the screen: title at the top, the coupon card
- * (label, QR, validity countdown, refresh) centered, and the "pay another
- * way" action pinned to the bottom.
- */
-function QRVoucher({
+function QRCodeViewerView({
   durationSeconds = DEFAULT_DURATION_SECONDS,
   onPayOtherMethod,
   onRefresh,
   onRequestClose,
+  showPayOther,
+  titleVoucher,
+  titleKey = 'qr_voucher.title',
   ...restProps
-}: QRVoucherProps) {
+}: QRCodeViewerViewProps) {
   const { t } = useTranslation();
-  const [remaining, setRemaining] = React.useState(durationSeconds);
-  const [data, setData] = useState<any>(restProps?.data);
+  const incomingData = restProps?.data;
+  const [remaining, setRemaining] = useState(durationSeconds);
+  const [data, setData] = useState<IQRCodeViewerData | undefined>(incomingData);
+  const remainingId = useRef<ReturnType<typeof setInterval> | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     setBrightnessLevel(1);
@@ -74,20 +87,28 @@ function QRVoucher({
     };
   }, []);
 
-  React.useEffect(() => {
-    const timer = setInterval(() => {
+  useEffect(() => {
+    setData(incomingData);
+  }, [incomingData]);
+
+  const startRunningRemaining = useCallback((seconds: number) => {
+    clearInterval(remainingId.current);
+    setRemaining(Math.max(seconds, 0));
+    remainingId.current = setInterval(() => {
       setRemaining(previous => (previous > 0 ? previous - 1 : 0));
     }, TICK_INTERVAL_MS);
-    return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    startRunningRemaining(incomingData?.expiresIn ?? durationSeconds);
+
+    return () => clearInterval(remainingId.current);
+  }, [durationSeconds]);
+
   const onPressRefresh = () => {
-    onRefresh?.(_data => {
-      setRemaining(durationSeconds);
-      setData(prev => ({
-        ...prev,
-        qrImageBase64: _data?.qrImageBase64,
-      }));
+    onRefresh?.(refreshed => {
+      setData(previous => ({ ...previous, ...refreshed }));
+      startRunningRemaining(refreshed?.expiresIn ?? durationSeconds);
     });
   };
 
@@ -102,7 +123,7 @@ function QRVoucher({
         onPressBack={onRequestClose}
         hideNotify
         usePaddingTop={false}
-        title={t('qr_voucher.title')}
+        title={t(titleKey)}
       />
       {!!data?.headerBadge && (
         <View style={styles.headerBadgeContainer}>
@@ -111,39 +132,41 @@ function QRVoucher({
       )}
       <View style={styles.content}>
         <View style={styles.card}>
-          {!!data?.name && <Text style={styles.couponLabel}>{data?.name}</Text>}
+          {!!titleVoucher && (
+            <Text style={styles.couponLabel}>{titleVoucher}</Text>
+          )}
           {!!data?.amountText && (
             <Text style={styles.amountLabel}>{data?.amountText}</Text>
           )}
           <Image
             width={QR_SIZE}
             height={QR_SIZE}
-            base64={data?.qrImageBase64}
+            base64={data?.qrImageBase64 ?? ''}
           />
 
           <Text style={styles.validTime}>
             {t('qr_voucher.valid_time', { time: formatTime(remaining) })}
           </Text>
 
-          <AppButton onPress={onPressRefresh} testID="qr-voucher-refresh">
+          <AppButton onPress={onPressRefresh} testID="qr-code-viewer-refresh">
             <Text style={styles.refresh}>{t('qr_voucher.refresh')}</Text>
           </AppButton>
         </View>
-        <Button
-          onPress={onPressPayOther}
-          testID="qr-voucher-pay-other"
-          title={`‹ ${t('qr_voucher.pay_other_method')}`}
-          type="outline-green"
-          style={{
-            marginTop: ScaleSize(30),
-          }}
-        />
+        {!!showPayOther && (
+          <Button
+            onPress={onPressPayOther}
+            testID="qr-code-viewer-pay-other"
+            title={`‹ ${t('qr_voucher.pay_other_method')}`}
+            type="outline-green"
+            style={styles.payOtherButton}
+          />
+        )}
       </View>
     </View>
   );
 }
 
-export default React.memo(QRVoucher);
+export default React.memo(QRCodeViewerView);
 
 const styles = StyleSheet.create({
   card: {
@@ -193,8 +216,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: ScaleSize(24),
   },
-  footer: {
-    paddingVertical: ScaleSize(16),
+  payOtherButton: {
+    marginTop: ScaleSize(30),
   },
   refresh: {
     color: Colors.gray06,
@@ -204,12 +227,6 @@ const styles = StyleSheet.create({
   safeArea: {
     backgroundColor: '#FFFFFF',
     flex: 1,
-  },
-  title: {
-    color: '#1A1A1A',
-    fontSize: ScaleSize(24),
-    fontWeight: '700',
-    marginTop: ScaleSize(8),
   },
   validTime: {
     color: Colors.green02,

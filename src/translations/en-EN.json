@@ -406,6 +406,7 @@
       "tab_home": "Home",
       "tab_order": "Order",
       "tab_pay": "Pay",
+      "tab_qr_member": "Membership QR Code",
       "tab_vouchers": "Vouchers",
       "tab_mypage": "My Page",
       "member_label": "Member",
@@ -720,7 +721,7 @@
       "reorder": "Reorder"
     },
     "qr_code_member": {
-      "title": "QR Code Payment",
+      "title": "Membership QR Code",
       "card_title": "COOPPay",
       "pay_balance_label": "Pay money balance",
       "point_label": "Point",

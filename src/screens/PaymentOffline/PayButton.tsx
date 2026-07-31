@@ -7,15 +7,17 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Properties = {
   readonly onPay: () => void;
+  readonly disabled: boolean;
 };
 
-function PayButton({ onPay }: Properties) {
+function PayButton({ onPay, disabled }: Properties) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   return (
     <View style={[styles.wrap, { bottom: insets.bottom || 20 }]}>
       <Button
         onPress={onPay}
+        disabled={disabled}
         testID="payment-offline-pay-action"
         title={t('payment_offline.pay_action')}
         type="primary"

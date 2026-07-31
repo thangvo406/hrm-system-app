@@ -2,6 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Profile } from '@services/request/account';
 import type { AddressSuggestion } from '@services/request/account';
 import type {
+  IResponseCreateQRCodeMember,
   IRequestAutoCompleteAddress,
   IRequestGetVouchers,
   IRequestUpdateMembership,
@@ -9,6 +10,7 @@ import type {
   IRequestUpdatePushId,
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
+  IRequestCreateQRCodeMember,
   IVoucher,
 } from '@type/account';
 import type {
@@ -25,6 +27,7 @@ import type { IRequestDeleteAccount } from '@type/auth';
 import {
   activeAccount,
   autoCompleteAddress,
+  createQRCodeMember,
   deleteAccount,
   getProfile,
   getVouchers,
@@ -48,6 +51,7 @@ import {
   activeAccountRequest,
   autoCompleteAddressRequest,
   deleteAccountRequest,
+  generateQRCodeMemberRequest,
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
   getProfileRequest,
@@ -90,6 +94,22 @@ function* getTotalItemCartWorker(
     const data: ITotalItemCart = yield call(getTotalItemCart);
     yield put(getTotalItemCartSuccess(data));
     onSuccess?.(data);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* generateQRCodeMemberWorker(
+  action: PayloadAction<IRequestCreateQRCodeMember>,
+): Generator<unknown, void, IResponseCreateQRCodeMember> {
+  const { onFailure, onSuccess, ...request } = action.payload || {};
+  try {
+    const response: IResponseCreateQRCodeMember = yield call(
+      createQRCodeMember,
+      request,
+    );
+    onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
     onFailure?.(message);
@@ -262,6 +282,10 @@ export function* accountSaga() {
   yield takeLatest(activeAccountRequest.type, activeAccountWorker);
   yield takeLatest(autoCompleteAddressRequest.type, autoCompleteAddressWorker);
   yield takeLatest(deleteAccountRequest.type, deleteAccountWorker);
+  yield takeLatest(
+    generateQRCodeMemberRequest.type,
+    generateQRCodeMemberWorker,
+  );
   yield takeLatest(getTotalItemCartRequest.type, getTotalItemCartWorker);
   // takeEvery (not takeLatest): voucher tabs share one action type, so a new
   // fetch (tab switch / refresh) must not cancel an in-flight one. Duplicate

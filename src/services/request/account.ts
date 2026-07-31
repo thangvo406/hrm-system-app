@@ -1,6 +1,7 @@
 import type { IRequestActiveAccount, IRequestDeleteAccount } from '@type/auth';
 
 import type {
+  IResponseCreateQRCodeMember,
   IRequestAutoCompleteAddress,
   IRequestGetVouchers,
   IRequestUpdateMembership,
@@ -8,6 +9,7 @@ import type {
   IRequestUpdatePushId,
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
+  IRequestCreateQRCodeMember,
   IVoucher,
 } from '@type/account';
 
@@ -138,6 +140,15 @@ export const deletePushId = async (pushId: string): Promise<void> => {
   await httpRequest.delete(EndPoints.ACCOUNT.deletePushId(pushId), {
     loading: false,
   });
+};
+
+export const createQRCodeMember = async (
+  request: IRequestCreateQRCodeMember,
+): Promise<IResponseCreateQRCodeMember> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<IResponseCreateQRCodeMember>
+  >(EndPoints.ACCOUNT.createQRCodeMember, request);
+  return response.data;
 };
 
 export const getVouchers = async (

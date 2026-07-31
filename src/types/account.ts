@@ -22,6 +22,10 @@ export interface IRequestUpdatePushId {
   subscriptionId: string;
 }
 
+export interface IRequestCreateQRCodeMember
+  extends AppCallback<IResponseCreateQRCodeMember> {
+  cpn: string[];
+}
 export interface IUpdateProfileInfoRequest extends AppCallback {
   name?: string;
   fullName?: string;
@@ -41,6 +45,11 @@ export interface IRequestGetVouchers
   size: number;
   orderAmount?: number;
   storeId?: number;
+}
+
+export interface IResponseCreateQRCodeMember {
+  readonly expiresIn: number;
+  readonly qrImageBase64: string;
 }
 
 export type IStoreVoucher = {

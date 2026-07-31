@@ -229,6 +229,7 @@
       "tab_order": "오더",
       "tab_vouchers": "혜택",
       "tab_pay": "결제",
+      "tab_qr_member": "회원QR",
       "tab_benefit": "혜택",
       "tab_mypage": "내정보",
       "member_label": "조합원",
@@ -716,7 +717,7 @@
       "reorder": "재주문"
     },
     "qr_code_member": {
-      "title": "QR 코드 결제",
+      "title": "모바일 회원QR",
       "card_title": "COOPPay",
       "pay_balance_label": "페이 머니 잔액",
       "point_label": "포인트",

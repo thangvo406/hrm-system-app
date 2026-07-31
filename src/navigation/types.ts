@@ -1,5 +1,6 @@
 import type { AppStacks, Paths } from '@navigation/paths';
 import type { BankInformationOrigin } from '@hooks/useBankInformation';
+import type { IQRCodeViewerData } from '@screens/QRCodeViewer/QRCodeViewerView';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { TNotificationItem } from '@type';
 import { IStoreItem } from '@type/store';
@@ -14,7 +15,7 @@ export type TransactionResultStatus = 'FAILED' | 'PENDING' | 'SUCCESS';
 export type TabParamList = {
   [Paths.Vouchers]: undefined;
   [Paths.Home]: undefined;
-  [Paths.QRCodeMember]: undefined;
+  [Paths.QRCodeViewer]: undefined;
   [Paths.Carts]: undefined;
   [Paths.Profile]: undefined;
 };
@@ -90,7 +91,9 @@ export type RootStackParamList = {
     | undefined;
   [Paths.PaymentOffline]: undefined;
   [Paths.CartDetail]: undefined;
-  [Paths.QRCodeMember]: undefined;
+  [Paths.QRCodeViewer]:
+    | { data?: IQRCodeViewerData; durationSeconds?: number }
+    | undefined;
   [Paths.RegisterCompleted]: { goFrom: 'forgot_pass' } | undefined;
   [Paths.ProductDetail]: { id: number; storeId: number } | undefined;
   [Paths.Products]: { data: IStoreItem } | undefined;

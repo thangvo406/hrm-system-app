@@ -166,7 +166,7 @@ export const useAccountManagement = () => {
   // }, [accounts, cards]);
 
   const onUse = useCallback(() => {
-    AppNavigator.navigate(Paths.QRCodeMember);
+    AppNavigator.navigate(Paths.QRCodeViewer);
   }, []);
 
   const onViewAllTransactions = useCallback(() => {

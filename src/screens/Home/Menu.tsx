@@ -75,7 +75,7 @@ const NAV_TARGETS: Readonly<Record<string, Paths>> = {
   survey: Paths.Survey,
   store_search: Paths.Stores,
   order: Paths.OrderHistories,
-  pay: Paths.QRCodeMember,
+  pay: Paths.QRCodeViewer,
   deposit_inquiry: Paths.ContributionHistory,
   deposit_pay: Paths.ContributionInput,
   profile: Paths.Profile,

@@ -4,10 +4,13 @@ import type { ListApiResponse } from '@type/common';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useFocusEffect } from '@react-navigation/native';
-import { getVouchersRequest } from '@services/slices/account/accountSlice';
+import {
+  generateQRCodeMemberRequest,
+  getVouchersRequest,
+} from '@services/slices/account/accountSlice';
 import { useAppDispatch } from '@services/common/storeHooks';
 import AppNavigator from '@navigation/AppNavigator';
-import QRVoucher from '@dialogs/QRVoucher';
+import QRCodeViewerView from '@screens/QRCodeViewer/QRCodeViewerView';
 import { VOUCHERS_STATUSES } from '@constants/config';
 
 const PAGE_SIZE = 20;
@@ -139,15 +142,32 @@ export function useVouchers() {
     fetchVouchers(activeTab, pagination.page + 1);
   }, [activeTab, fetchVouchers]);
 
-  const onRefreshQR = useCallback((callback: any) => {}, []);
+  const onRefreshQR = (voucher: any) => (callback: any) => {
+    dispatch(
+      generateQRCodeMemberRequest({
+        cpn: [voucher.code],
+        onSuccess: response => {
+          callback(response);
+        },
+      }),
+    );
+  };
 
   const onUseVoucher = useCallback((voucher: IVoucher) => {
-    AppNavigator.showDialog({
-      screen: QRVoucher,
-      isFullScreen: true,
-      data: voucher,
-      onRefresh: onRefreshQR,
-    });
+    dispatch(
+      generateQRCodeMemberRequest({
+        cpn: [voucher.code],
+        onSuccess: response => {
+          AppNavigator.showDialog({
+            screen: QRCodeViewerView,
+            isFullScreen: true,
+            titleVoucher: voucher?.name,
+            data: response,
+            onRefresh: onRefreshQR(voucher),
+          });
+        },
+      }),
+    );
   }, []);
 
   return {

@@ -35,6 +35,7 @@ import Ic_order_receiptIcon from './ic_order_receipt.svg';
 import Ic_otp_placeholderIcon from './ic_otp_placeholder.svg';
 import Ic_phoneIcon from './ic_phone.svg';
 import Ic_plus_circleIcon from './ic_plus_circle.svg';
+import Ic_qr_memberIcon from './ic_qr_member.svg';
 import Ic_radio_selectedIcon from './ic_radio_selected.svg';
 import Ic_radio_unselectedIcon from './ic_radio_unselected.svg';
 import Ic_searchIcon from './ic_search.svg';
@@ -93,6 +94,7 @@ const icons = {
   'ic_otp_placeholder': Ic_otp_placeholderIcon,
   'ic_phone': Ic_phoneIcon,
   'ic_plus_circle': Ic_plus_circleIcon,
+  'ic_qr_member': Ic_qr_memberIcon,
   'ic_radio_selected': Ic_radio_selectedIcon,
   'ic_radio_unselected': Ic_radio_unselectedIcon,
   'ic_search': Ic_searchIcon,

@@ -1,18 +1,15 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useRef, useState } from 'react';
-
 import QRCodeViewer, { QRCodeViewerMode } from '@dialogs/QRCodeViewer';
 import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
-import { generateQRCodePayRequest } from '@services/slices/payment/paymentSlice';
-import type { IGenerateQRCodeResponse } from '@type/payment';
+import { generateQRCodeMemberRequest } from '@services/slices/account/accountSlice';
+import type { IResponseCreateQRCodeMember } from '@type/account';
 import {
   setBrightnessLevel,
   resetBrightness,
 } from '@reeq/react-native-device-brightness';
 import { useFocusEffect } from '@react-navigation/native';
-
 
 const showQRCodeViewer = (mode: QRCodeViewerMode, value?: string) => {
   AppNavigator.showDialog({
@@ -31,7 +28,7 @@ const onPressScan = () => {
 
 export const useQRCodeMember = () => {
   const dispatch = useAppDispatch();
-  const [data, setData] = useState<IGenerateQRCodeResponse | undefined>();
+  const [data, setData] = useState<IResponseCreateQRCodeMember | undefined>();
   const timeOutExpired = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
@@ -64,12 +61,16 @@ export const useQRCodeMember = () => {
     };
   }, [data]);
 
-  const onRefreshQrCode = () => {
+  const onRefreshQrCode = (
+    onRefreshed?: (data: IResponseCreateQRCodeMember) => void,
+  ) => {
     dispatch(
-      generateQRCodePayRequest({
+      generateQRCodeMemberRequest({
+        cpn: [],
         onSuccess: response => {
           setIsExpired(false);
           setData(response);
+          onRefreshed?.(response);
         },
       }),
     );
@@ -80,11 +81,11 @@ export const useQRCodeMember = () => {
   }, [dispatch]);
 
   const onPressBarcode = () => {
-    showQRCodeViewer('barcode', data?.qrData);
+    showQRCodeViewer('barcode', data?.qrImageBase64);
   };
 
   const onPressQR = () => {
-    showQRCodeViewer('qr', data?.qrData);
+    showQRCodeViewer('qr', data?.qrImageBase64);
   };
 
   return {
@@ -94,6 +95,6 @@ export const useQRCodeMember = () => {
     onPressBarcode,
     onPressQR,
     onPressScan,
-    onRefreshQrCode,
+    onRefresh: onRefreshQrCode,
   };
 };

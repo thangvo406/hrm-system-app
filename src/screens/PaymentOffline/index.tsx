@@ -22,6 +22,7 @@ function PaymentOffline() {
     selectedMethodId,
     usePoints,
     amount,
+    disabledBtnSubmit,
     onAmountChange,
   } = usePaymentOffline();
 
@@ -60,7 +61,7 @@ function PaymentOffline() {
           />
         </View>
 
-        <PayButton onPay={onPay} />
+        <PayButton onPay={onPay} disabled={disabledBtnSubmit} />
       </ScrollView>
     </View>
   );

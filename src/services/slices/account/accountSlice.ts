@@ -15,6 +15,7 @@ import type {
   IRequestUpdatePushId,
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
+  IRequestCreateQRCodeMember,
 } from '@type/account';
 import type { IRequestDeleteAccount } from '@type/auth';
 
@@ -54,6 +55,12 @@ const accountSlice = createSlice({
     clearProfile: () => initialState,
     deleteAccountRequest: {
       prepare: (payload: IRequestDeleteAccount) => ({ payload }),
+      reducer: () => {},
+    },
+    generateQRCodeMemberRequest: {
+      prepare: (payload: IRequestCreateQRCodeMember) => ({
+        payload,
+      }),
       reducer: () => {},
     },
     getTotalItemCartRequest: {
@@ -119,6 +126,7 @@ export const {
   autoCompleteAddressRequest,
   clearProfile,
   deleteAccountRequest,
+  generateQRCodeMemberRequest,
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
   getProfileRequest,
@@ -136,4 +144,3 @@ export const {
 } = accountSlice.actions;
 
 export const accountReducer = accountSlice.reducer;
-

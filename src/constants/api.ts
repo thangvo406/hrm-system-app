@@ -40,6 +40,7 @@ export const EndPoints = {
     activeAccount: 'activeAccount',
     changePass: 'user/change-password',
     updateProfile: 'user/profile',
+    createQRCodeMember: 'api/v1/membership/qr/generate',
   },
   // Payment-method management (bank accounts). Kept separate from PAYMENT
   // (cart/order/checkout/KCP) — different lifecycle.

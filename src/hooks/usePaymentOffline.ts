@@ -1,4 +1,4 @@
-import QRVoucher from '@dialogs/QRVoucher';
+import QRCodeViewerView from '@screens/QRCodeViewer/QRCodeViewerView';
 import AppNavigator from '@navigation/AppNavigator';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -60,6 +60,10 @@ export const usePaymentOffline = () => {
   );
   const [amount, setAmount] = useState('');
 
+  const disabledBtnSubmit = useMemo(() => {
+    return !(amount && amount > 0);
+  }, [amount]);
+
   const onAmountChange = useCallback((value: string) => {
     setAmount(value.replaceAll(/\D/g, ''));
   }, []);
@@ -94,7 +98,7 @@ export const usePaymentOffline = () => {
         usePoint: usePoints ? pointUsed : 0,
         onSuccess: data => {
           AppNavigator.showDialog({
-            screen: QRVoucher,
+            screen: QRCodeViewerView,
             isFullScreen: true,
             data: {
               amountText: t('payment_offline.qr_balance_text', {
@@ -130,6 +134,7 @@ export const usePaymentOffline = () => {
     pointUsed,
     selectedMethodId,
     usePoints,
+    disabledBtnSubmit,
     bankAccounts,
     isEnablePaymentCard,
     initialIndex: PRIMARY_CARD_INDEX,

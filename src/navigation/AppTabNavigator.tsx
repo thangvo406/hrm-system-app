@@ -15,10 +15,7 @@ export function AppTabNavigator() {
     >
       <Tab.Screen component={Screens.Home} name={Paths.Home} />
       <Tab.Screen component={Screens.Carts} name={Paths.Carts} />
-      <Tab.Screen
-        component={Screens.QRCodeMember}
-        name={Paths.QRCodeMember}
-      />
+      <Tab.Screen component={Screens.QRCodeViewer} name={Paths.QRCodeViewer} />
       <Tab.Screen component={Screens.Vouchers} name={Paths.Vouchers} />
       <Tab.Screen component={Screens.Profile} name={Paths.Profile} />
     </Tab.Navigator>
