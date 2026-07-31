@@ -9,8 +9,6 @@ import type {
   IRequestGetListCart,
   IRequestGetOrderHistories,
   IRequestGetOrderHistoryDetail,
-  IBankInfoTopUp,
-  IRequestCreateBankInfoTopUp,
   IRequestInitCharge,
   IRequestRemoveCartItem,
   IRequestUpdateCartItem,
@@ -170,20 +168,6 @@ export const balanceCharge = async (
     request,
   );
   return response.data;
-};
-
-export const createBankInfoTopUp = async (
-  request: WithoutCallbacks<IRequestCreateBankInfoTopUp>,
-): Promise<IBankInfoTopUp> => {
-  // const response = await httpRequest.post<SingleApiResponse<IBankInfoTopUp>>(
-  //   EndPoints.PAYMENT.createBankInfoTopUp,
-  //   request,
-  // );
-  // return response.data;
-  //TODO: handle call api createBankInfoTopUp
-  return new Promise(resolve => {
-    resolve({});
-  });
 };
 
 export const increaseContribution = async (

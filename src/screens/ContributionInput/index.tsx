@@ -15,6 +15,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DeviceUtils } from '@kits/core/utils';
 import { CardSelection } from '@components';
 import { useTopUp } from '@hooks';
+import AppNavigator from '@navigation/AppNavigator';
+import BankInformationView from '@screens/BankInformation/BankInformationView';
 
 const { ifAndroid } = DeviceUtils;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -35,10 +37,22 @@ function ContributionInput() {
     bankAccounts,
     selectedAccountId,
     enabledBtnSubmit,
+    isEnablePaymentCard,
     onAmountChange,
     onSelectAccount,
     onSubmit,
   } = useTopUp({ isContribute: true });
+
+  if (!isEnablePaymentCard) {
+    return (
+      <BankInformationView
+        showBtnBack
+        onBack={AppNavigator.goBack}
+        onSubmit={AppNavigator.goBack}
+        btnSubmit={t('common.popup.btn_close')}
+      />
+    );
+  }
 
   return (
     <View style={styles.safeArea}>

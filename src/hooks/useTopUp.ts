@@ -11,19 +11,19 @@ import {
 // import { topUpWalletRequest } from '@services/slices/account/accountSlice';
 import {
   balanceChargeRequest,
-  createBankInfoTopUpRequest,
   increaseContributionRequest,
 } from '@services/slices/payment/paymentSlice';
 // import uniqueId from 'lodash/uniqueId';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { IAccount } from '@type';
+import type { IAccount, IResponseBankInfo } from '@type';
 import type { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { WebViewNavigation } from 'react-native-webview';
 import { deepLinkGate } from '@navigation/deepLinkGate';
 import { BANK_ACC_TYPES, PaymentTypes } from '@constants/config';
 import { Paths } from '@navigation/paths';
+import { getBankInfoRequest } from '@services/slices/account/accountSlice';
 
 export type PaymentMethod = 'credit_card' | 'virtual_account';
 
@@ -51,6 +51,7 @@ export const useTopUp = (props?: any) => {
   const [methodPayment, setMethodPayment] = useState(
     AppConstants.PaymentTypes.CARD_SAVE,
   );
+  const [bankInfo, setBankInfo] = useState<IResponseBankInfo>();
   const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
   const rawDataBankAccounts = useAppSelector(
     AccountManagementSelector.getAccountCards,
@@ -95,6 +96,22 @@ export const useTopUp = (props?: any) => {
     setSelectedAccountId(bankAccounts?.[0]?.id);
   }, []);
 
+  useEffect(() => {
+    if (!isEnablePaymentCard) {
+      dispatch(
+        getBankInfoRequest({
+          amount: Number(amountTopUp),
+          onSuccess: data => {
+            setBankInfo(data);
+          },
+          onFailure: message => {
+            AppNavigator.showSnackBar({ message, type: 'failed' });
+          },
+        }),
+      );
+    }
+  }, []);
+
   const bonusAmount = useMemo(
     () => Math.floor(Number(amountTopUp) * BONUS_RATE),
     [amountTopUp],
@@ -106,26 +123,6 @@ export const useTopUp = (props?: any) => {
     }
   };
   const onSubmit = () => {
-    if (!isEnablePaymentCard && !isContribute) {
-      dispatch(
-        createBankInfoTopUpRequest({
-          amount: Number(amountTopUp),
-          onSuccess: data => {
-            AppNavigator.navigate(Paths.BankInformation, {
-              ...data,
-              goFrom: 'topUp',
-            });
-          },
-          onFailure: error => {
-            AppNavigator.showSnackBar({
-              message: error,
-              type: 'failed',
-            });
-          },
-        }),
-      );
-      return;
-    }
     const executorRequest = isContribute
       ? increaseContributionRequest
       : balanceChargeRequest;
@@ -242,6 +239,7 @@ export const useTopUp = (props?: any) => {
     isEnablePaymentCard,
     methodPayment,
     selectedAccountId,
+    bankInfo,
     onAddCard,
     onAmountChange,
     onSelectAccount,

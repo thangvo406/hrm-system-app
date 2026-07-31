@@ -223,19 +223,6 @@ export interface IRequestInitCharge extends AppCallback<IKcpInitParams> {
   payment: IPaymentRequest;
 }
 
-// NOTE: shape is a placeholder — align with the real backend spec.
-export interface IBankInfoTopUp {
-  readonly accountNumber: string;
-  readonly amount: number;
-  readonly bankName: string;
-  readonly schoolName: string;
-}
-
-export interface IRequestCreateBankInfoTopUp
-  extends AppCallback<IBankInfoTopUp> {
-  readonly amount: number;
-}
-
 export interface IRequestGenerateQRCode
   extends AppCallback<IGenerateQRCodeResponse> {
   readonly usePoint?: number;

@@ -1,7 +1,6 @@
 import type { AppCallback } from '@type/common';
 import type {
   ICheckoutInfo,
-  IRequestCreateBankInfoTopUp,
   IRequestCreateOrder,
   IRequestGenerateQRCode,
   IRequestGetCartDetail,
@@ -35,10 +34,6 @@ const paymentSlice = createSlice({
   initialState,
   name: 'payment',
   reducers: {
-    createBankInfoTopUpRequest: {
-      prepare: (payload: IRequestCreateBankInfoTopUp) => ({ payload }),
-      reducer: () => {},
-    },
     createOrderRequest: {
       prepare: (payload: IRequestCreateOrder) => ({ payload }),
       reducer: () => {},
@@ -107,7 +102,6 @@ const paymentSlice = createSlice({
 });
 
 export const {
-  createBankInfoTopUpRequest,
   createOrderRequest,
   generateQRCodePayRequest,
   getAddressOrderRecentRequest,

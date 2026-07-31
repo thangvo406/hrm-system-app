@@ -2,8 +2,6 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   IStoreCartItem,
   ICheckoutInfo,
-  IBankInfoTopUp,
-  IRequestCreateBankInfoTopUp,
   IRequestCreateOrder,
   ICreateOrderResponse,
   IRequestGenerateQRCode,
@@ -34,7 +32,6 @@ import type { AppCallback, ListApiResponse } from '@type/common';
 import { call, takeLatest } from 'redux-saga/effects';
 
 import {
-  createBankInfoTopUp,
   createLinkPaymentOrder,
   createOrder,
   generateQRCodePay,
@@ -264,19 +261,6 @@ function* balanceChargeWorker(
   }
 }
 
-function* createBankInfoTopUpWorker(
-  action: PayloadAction<IRequestCreateBankInfoTopUp>,
-): Generator<unknown, void, IBankInfoTopUp> {
-  const { onFailure, onSuccess, ...request } = action.payload;
-  try {
-    const response: IBankInfoTopUp = yield call(createBankInfoTopUp, request);
-    onSuccess?.(response);
-  } catch (error_) {
-    const message = getErrorMessageApi(error_);
-    onFailure?.(message);
-  }
-}
-
 function* increaseContributionWorker(
   action: PayloadAction<IRequestIncreaseContribute>,
 ): Generator<unknown, void, void> {
@@ -365,7 +349,6 @@ export function* paymentSaga() {
     increaseContributionWorker,
   );
   yield takeLatest(balanceChargeRequest.type, balanceChargeWorker);
-  yield takeLatest(createBankInfoTopUpRequest.type, createBankInfoTopUpWorker);
   yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
   yield takeLatest(updateCartItemRequest.type, updateCartItemWorker);
   yield takeLatest(getCartDetailRequest.type, getCartDetailWorker);

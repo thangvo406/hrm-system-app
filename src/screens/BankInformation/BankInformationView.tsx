@@ -19,8 +19,11 @@ type BankInformationViewProps = {
   readonly bankName?: string;
   readonly disabled?: boolean;
   readonly onSubmit: () => void;
+  readonly onBack?: () => void;
   readonly schoolName?: string;
   readonly titleBtn?: string;
+  readonly btnSubmit?: string;
+  readonly showBtnBack?: boolean;
 };
 
 function BankInformationView({
@@ -29,6 +32,9 @@ function BankInformationView({
   bankName = DEFAULT_BANK_NAME,
   disabled = false,
   onSubmit,
+  showBtnBack,
+  onBack,
+  btnSubmit,
   titleBtn = 'bank_information.next',
   schoolName = DEFAULT_SCHOOL_NAME,
 }: BankInformationViewProps) {
@@ -38,7 +44,7 @@ function BankInformationView({
 
   return (
     <View style={styles.container}>
-      <RegisterHeader />
+      <RegisterHeader showBtnBack={showBtnBack} onBack={onBack} />
 
       <View style={styles.content}>
         <Text style={styles.intro}>{t('bank_information.intro')}</Text>
@@ -58,7 +64,7 @@ function BankInformationView({
           onPress={onSubmit}
           style={styles.submitButton}
           testID="bank-information-next"
-          title={t(titleBtn)}
+          title={btnSubmit || t(titleBtn)}
           type="primary"
         />
       </View>

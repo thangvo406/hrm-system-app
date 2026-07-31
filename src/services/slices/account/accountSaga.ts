@@ -1,9 +1,11 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Profile } from '@services/request/account';
 import type { AddressSuggestion } from '@services/request/account';
+
 import type {
   IResponseCreateQRCodeMember,
   IRequestAutoCompleteAddress,
+  IRequestGetBankInfo,
   IRequestGetVouchers,
   IRequestUpdateMembership,
   IRequestUpdatePassword,
@@ -11,6 +13,7 @@ import type {
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
   IRequestCreateQRCodeMember,
+  IResponseBankInfo,
   IVoucher,
 } from '@type/account';
 import type {
@@ -29,6 +32,7 @@ import {
   autoCompleteAddress,
   createQRCodeMember,
   deleteAccount,
+  getBankInfo,
   getProfile,
   getVouchers,
   updateMembership,
@@ -52,6 +56,7 @@ import {
   autoCompleteAddressRequest,
   deleteAccountRequest,
   generateQRCodeMemberRequest,
+  getBankInfoRequest,
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
   getProfileRequest,
@@ -109,6 +114,19 @@ function* generateQRCodeMemberWorker(
       createQRCodeMember,
       request,
     );
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* getBankInfoWorker(
+  action: PayloadAction<IRequestGetBankInfo>,
+): Generator<unknown, void, IResponseBankInfo> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: IResponseBankInfo = yield call(getBankInfo, request);
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -286,6 +304,7 @@ export function* accountSaga() {
     generateQRCodeMemberRequest.type,
     generateQRCodeMemberWorker,
   );
+  yield takeLatest(getBankInfoRequest.type, getBankInfoWorker);
   yield takeLatest(getTotalItemCartRequest.type, getTotalItemCartWorker);
   // takeEvery (not takeLatest): voucher tabs share one action type, so a new
   // fetch (tab switch / refresh) must not cancel an in-flight one. Duplicate

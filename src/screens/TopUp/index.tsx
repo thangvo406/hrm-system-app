@@ -20,6 +20,7 @@ import { formatCurrency } from '@utils/product';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DeviceUtils } from '@kits/core/utils';
 import AppNavigator from '@navigation/AppNavigator';
+import BankInformationView from '@screens/BankInformation/BankInformationView';
 
 const { ifAndroid } = DeviceUtils;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -48,6 +49,16 @@ function TopUp(props: any) {
     onSubmit,
   } = useTopUp(AppNavigator.getParams(props));
 
+  if (!isEnablePaymentCard) {
+    return (
+      <BankInformationView
+        showBtnBack
+        onBack={AppNavigator.goBack}
+        onSubmit={AppNavigator.goBack}
+        btnSubmit={t('common.popup.btn_close')}
+      />
+    );
+  }
   return (
     <View style={styles.safeArea}>
       <HeaderDetail hideNotify title={t('top_up.title')} />

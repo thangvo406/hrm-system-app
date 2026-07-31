@@ -39,7 +39,7 @@ function* startupAppWorker(action: PayloadAction<AppCallback<boolean>>) {
     const universityId: number | undefined = yield select(
       AuthSelector.getUniversityId,
     );
-    yield put(updateEnablePaymentCard(true));
+    yield put(updateEnablePaymentCard(false));
     const profile: Profile = yield select(AccountSelector.getProfile);
     let isAuthenticated = Boolean(accessToken);
     if (

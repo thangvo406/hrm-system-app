@@ -41,6 +41,8 @@ export const EndPoints = {
     changePass: 'user/change-password',
     updateProfile: 'user/profile',
     createQRCodeMember: 'api/v1/membership/qr/generate',
+    // NOTE: path is a placeholder — replace with the real backend spec.
+    getBankInfo: (request: string) => `balance/virtual-account?${request}`,
   },
   // Payment-method management (bank accounts). Kept separate from PAYMENT
   // (cart/order/checkout/KCP) — different lifecycle.
@@ -97,7 +99,6 @@ export const EndPoints = {
     addressOrderRecent: 'order/recent-address',
     generateQRCodePay: 'api/v1/pay/qr/generate',
     balanceCharge: 'balance/kcp/charge/init',
-    createBankInfoTopUp: 'balance/virtual-account/init',
     cartDetail: (cartId: number) => `app/cart/${cartId}`,
   },
 
