@@ -1,4 +1,4 @@
-import type { IBankOption } from '@hooks/useRefundRequest';
+import type { IBankOption } from '@hooks/useWithdrawal';
 
 import { AppButton, Image } from '@components';
 import { ScaleSize } from '@kits/core';
@@ -37,7 +37,11 @@ function BankSelector({
 
   return (
     <View>
-      <AppButton onPress={onToggle} style={styles.field} testID="refund-bank">
+      <AppButton
+        onPress={onToggle}
+        style={styles.field}
+        testID="withdrawal-bank"
+      >
         <Text
           style={[styles.fieldText, !selectedBank && styles.placeholder]}
           numberOfLines={1}
@@ -62,7 +66,7 @@ function BankSelector({
                 onPickBank(bank);
               }}
               style={styles.option}
-              testID={`refund-bank-${bank.code}`}
+              testID={`withdrawal-bank-${bank.code}`}
             >
               <Text style={styles.optionText}>{bank.name}</Text>
             </AppButton>

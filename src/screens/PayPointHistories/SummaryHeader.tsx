@@ -5,18 +5,18 @@ import { StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from '@utils/product';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
-import type { IPayPointSummary } from '@hooks/usePayPointHistories';
+import { IWallet } from '@type';
 
 type Properties = {
-  readonly onPressRefund: () => void;
-  readonly summary: IPayPointSummary;
+  readonly onPressWithdrawal: () => void;
+  readonly summary: IWallet;
 };
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#707070';
 const TEXT_DANGER = '#E05353';
 
-function SummaryHeader({ onPressRefund, summary }: Properties) {
+function SummaryHeader({ onPressWithdrawal, summary }: Properties) {
   const { t } = useTranslation();
 
   return (
@@ -24,16 +24,16 @@ function SummaryHeader({ onPressRefund, summary }: Properties) {
       <View style={styles.titleRow}>
         <Text style={styles.title}>{t('pay_point.title')}</Text>
         <AppButton
-          onPress={onPressRefund}
-          style={styles.refundButton}
-          testID="pay-point-refund"
+          onPress={onPressWithdrawal}
+          style={styles.withdrawalButton}
+          testID="pay-point-withdrawal"
         >
-          <Text style={styles.refundText}>{t('pay_point.refund')}</Text>
+          <Text style={styles.withdrawalText}>{t('pay_point.withdrawal')}</Text>
         </AppButton>
       </View>
 
       <Text style={styles.balance}>
-        {t('pay_point.balance', { amount: formatCurrency(summary.balance) })}
+        {t('pay_point.balance', { amount: formatCurrency(summary?.balance) })}
       </Text>
 
       <Text style={styles.pointRow}>
@@ -41,14 +41,14 @@ function SummaryHeader({ onPressRefund, summary }: Properties) {
         <Text style={styles.pointSpacer}>{'  '}</Text>
         <Text style={styles.pointBalance}>
           {t('pay_point.point_balance', {
-            amount: formatCurrency(summary.point),
+            amount: formatCurrency(summary?.pointBalance),
           })}
         </Text>
       </Text>
 
       <Text style={styles.expiring}>
         {t('pay_point.point_expiring', {
-          amount: formatCurrency(summary.pointExpiring),
+          amount: formatCurrency(summary.pointBalance),
         })}
       </Text>
     </View>
@@ -90,19 +90,6 @@ const styles = StyleSheet.create({
   pointSpacer: {
     fontSize: ScaleSize(14),
   },
-  refundButton: {
-    alignItems: 'center',
-    backgroundColor: Colors.primary,
-    borderRadius: ScaleSize(18),
-    justifyContent: 'center',
-    paddingHorizontal: ScaleSize(14),
-    paddingVertical: ScaleSize(8),
-  },
-  refundText: {
-    color: '#FFFFFF',
-    fontSize: ScaleSize(13),
-    fontWeight: '700',
-  },
   title: {
     color: TEXT_DARK,
     fontSize: ScaleSize(20),
@@ -112,5 +99,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  withdrawalButton: {
+    alignItems: 'center',
+    backgroundColor: Colors.primary,
+    borderRadius: ScaleSize(18),
+    justifyContent: 'center',
+    paddingHorizontal: ScaleSize(14),
+    paddingVertical: ScaleSize(8),
+  },
+  withdrawalText: {
+    color: '#FFFFFF',
+    fontSize: ScaleSize(13),
+    fontWeight: '700',
   },
 });

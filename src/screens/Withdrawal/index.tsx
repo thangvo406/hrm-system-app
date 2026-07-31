@@ -10,7 +10,7 @@ import {
 import { Colors } from '@constants';
 import { DeviceUtils } from '@kits/core/utils';
 import { formatCurrency } from '@utils/product';
-import { useRefundRequest } from '@hooks/useRefundRequest';
+import { useWithdrawal } from '@hooks/useWithdrawal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import BalanceCard from './BalanceCard';
@@ -22,7 +22,7 @@ const { ifAndroid } = DeviceUtils;
 const TEXT_DARK = '#1A1A1A';
 const BORDER_COLOR = '#E0E0E0';
 
-function RefundRequest() {
+function Withdrawal() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const {
@@ -34,70 +34,70 @@ function RefundRequest() {
     enabledBtnSubmit,
     onAccountNumberChange,
     onAmountChange,
-    onRefundAll,
     onSubmit,
-    refundableAmount,
+    onWithdrawAll,
     selectedBank,
     setAccountHolder,
     setSelectedBank,
     walletBalance,
-  } = useRefundRequest();
+    withdrawableAmount,
+  } = useWithdrawal();
 
   return (
     <View style={styles.safeArea}>
-      <HeaderDetail hideNotify title={t('refund_request.title')} />
+      <HeaderDetail hideNotify title={t('withdrawal.title')} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.heading}>{t('refund_request.title')}</Text>
+        <Text style={styles.heading}>{t('withdrawal.title')}</Text>
 
         <BalanceCard
           bonusAmount={bonusAmount}
-          refundableAmount={refundableAmount}
           walletBalance={walletBalance}
+          withdrawableAmount={withdrawableAmount}
         />
 
         <Text style={styles.sectionLabel}>
-          {t('refund_request.amount_section')}
+          {t('withdrawal.amount_section')}
         </Text>
         <TextField
           keyboardType="numeric"
           onChangeText={onAmountChange}
-          placeholder={t('refund_request.amount_placeholder')}
+          placeholder={t('withdrawal.amount_placeholder')}
           renderRightComponent={() => (
-            <TouchableOpacity onPress={onRefundAll} testID="refund-all">
-              <Text style={styles.refundAll}>
-                {t('refund_request.refund_all')}
+            <TouchableOpacity onPress={onWithdrawAll} testID="withdrawal-all">
+              <Text style={styles.withdrawAll}>
+                {t('withdrawal.withdraw_all')}
               </Text>
             </TouchableOpacity>
           )}
-          testID="refund-amount"
+          testID="withdrawal-amount"
           value={formatCurrency(amount)}
         />
 
         <View style={styles.accountCard}>
           <Text style={styles.accountTitle}>
-            {t('refund_request.account_section')}
+            {t('withdrawal.account_section')}
           </Text>
           <BankSelector
             banks={banks}
             onSelect={setSelectedBank}
-            placeholder={t('refund_request.bank_placeholder')}
+            placeholder={t('withdrawal.bank_placeholder')}
             selectedBank={selectedBank}
           />
           <TextField
             keyboardType="numbers-and-punctuation"
             onChangeText={onAccountNumberChange}
-            placeholder={t('refund_request.account_number_placeholder')}
-            testID="refund-account-number"
+            placeholder={t('withdrawal.account_number_placeholder')}
+            testID="withdrawal-account-number"
             value={accountNumber}
           />
           <TextField
             onChangeText={setAccountHolder}
-            placeholder={t('refund_request.account_holder_placeholder')}
-            testID="refund-account-holder"
+            placeholder={t('withdrawal.account_holder_placeholder')}
+            testID="withdrawal-account-holder"
             value={accountHolder}
           />
         </View>
@@ -114,15 +114,15 @@ function RefundRequest() {
         <Button
           disabled={!enabledBtnSubmit}
           onPress={onSubmit}
-          testID="refund-submit"
-          title={t('refund_request.submit')}
+          testID="withdrawal-submit"
+          title={t('withdrawal.submit')}
         />
       </View>
     </View>
   );
 }
 
-export default RefundRequest;
+export default Withdrawal;
 
 const styles = StyleSheet.create({
   accountCard: {
@@ -151,11 +151,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: ScaleSize(18),
   },
-  refundAll: {
-    color: Colors.primary,
-    fontSize: ScaleSize(14),
-    fontWeight: '700',
-  },
   safeArea: {
     backgroundColor: '#FFFFFF',
     flex: 1,
@@ -172,5 +167,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: ScaleSize(10),
     marginTop: ScaleSize(24),
+  },
+  withdrawAll: {
+    color: Colors.primary,
+    fontSize: ScaleSize(14),
+    fontWeight: '700',
   },
 });

@@ -51,12 +51,19 @@ function TopUp(props: any) {
 
   if (!isEnablePaymentCard) {
     return (
-      <BankInformationView
-        showBtnBack
-        onBack={AppNavigator.goBack}
-        onSubmit={AppNavigator.goBack}
-        btnSubmit={t('common.popup.btn_close')}
-      />
+      <View
+        style={{
+          flex: 1,
+          marginTop: insets.top || 20,
+        }}
+      >
+        <BankInformationView
+          showBtnBack
+          onBack={AppNavigator.goBack}
+          onSubmit={AppNavigator.goBack}
+          btnSubmit={t('common.popup.btn_close')}
+        />
+      </View>
     );
   }
   return (

@@ -7,7 +7,7 @@ import { usePayPointHistories } from '@hooks';
 import { useTranslation } from 'react-i18next';
 import type { TPayPointTab } from '@hooks/usePayPointHistories';
 import HistoryCard from './HistoryCard';
-import PointNotice from './PointNotice';
+// import PointNotice from './PointNotice';
 import SummaryHeader from './SummaryHeader';
 
 const SCREEN_BACKGROUND = '#F2F2F2';
@@ -16,13 +16,13 @@ function PayPointHistories() {
   const { t } = useTranslation();
   const {
     activeTab,
-    expiringNotice,
+    // expiringNotice,
     onChangeTab,
-    onDismissNotice,
-    onPressRefund,
+    // onDismissNotice,
+    onPressWithdrawal,
     payMoneyHistories,
     pointHistories,
-    summary,
+    currentWallet,
   } = usePayPointHistories();
 
   const tabs = useMemo(
@@ -52,7 +52,10 @@ function PayPointHistories() {
         showsVerticalScrollIndicator={false}
         style={styles.scrollView}
       >
-        <SummaryHeader onPressRefund={onPressRefund} summary={summary} />
+        <SummaryHeader
+          onPressWithdrawal={onPressWithdrawal}
+          summary={currentWallet}
+        />
 
         <View style={styles.tabBar}>
           <SegmentedTab
@@ -62,11 +65,11 @@ function PayPointHistories() {
           />
         </View>
 
-        <PointNotice
+        {/* <PointNotice
           amount={expiringNotice.amount}
           days={expiringNotice.days}
           onDismiss={onDismissNotice}
-        />
+        /> */}
 
         <View style={styles.list}>
           {histories.length > 0 ? (

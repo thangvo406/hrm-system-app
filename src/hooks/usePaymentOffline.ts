@@ -48,11 +48,8 @@ export const usePaymentOffline = () => {
   }, []);
 
   const bankAccounts = useMemo(() => {
-    if (isEnablePaymentCard) {
-      return [BALANCE_ITEM, ...rawBankAccounts];
-    }
     return [BALANCE_ITEM];
-  }, [currentWallet?.balance, isEnablePaymentCard, rawBankAccounts, t]);
+  }, [currentWallet?.balance, rawBankAccounts, t]);
   const [usePoints, setUsePoints] = useState(true);
   const [pointUsed, setPointUsed] = useState(0);
   const [selectedMethodId, setSelectedMethodId] = useState<string>(

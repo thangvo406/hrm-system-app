@@ -33,7 +33,7 @@ export { useUpdatePass } from './useUpdatePass';
 export { useVouchers } from './useVouchers';
 export { useVouchersSelection } from './useVouchersSelection';
 export { useRegisterMembership } from './useRegisterMembership';
-export { useRefundRequest } from './useRefundRequest';
+export { useWithdrawal } from './useWithdrawal';
 export { usePayment } from './usePayment';
 export { usePaymentCompleted } from './usePaymentCompleted';
 export { usePaymentOffline } from './usePaymentOffline';

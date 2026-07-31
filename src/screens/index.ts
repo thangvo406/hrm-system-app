@@ -30,7 +30,7 @@ export { default as CartDetail } from './CartDetail';
 export { default as QRCodeViewer } from './QRCodeViewer';
 export { default as ProductDetail } from './ProductDetail';
 export { default as Products } from './Products';
-export { default as RefundRequest } from './RefundRequest';
+export { default as Withdrawal } from './Withdrawal';
 export { default as AccountManagement } from './AccountManagement';
 export { default as Startup } from './Startup/Startup';
 export { default as Stores } from './Stores';

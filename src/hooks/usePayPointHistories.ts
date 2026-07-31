@@ -1,5 +1,7 @@
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
+import { useAppSelector } from '@services/common/storeHooks';
+import { AccountSelector } from '@services/selectors';
 import { useCallback, useMemo, useState } from 'react';
 
 export type TPayPointTab = 'payMoney' | 'point';
@@ -26,18 +28,6 @@ export type IPayPointHistory = {
   readonly id: string;
   readonly tag: TPayPointTagType;
   readonly unit: TPayPointUnit;
-};
-
-export type IPayPointSummary = {
-  readonly balance: number;
-  readonly point: number;
-  readonly pointExpiring: number;
-};
-
-const SUMMARY: IPayPointSummary = {
-  balance: 100_000,
-  point: 11_000,
-  pointExpiring: 1_000,
 };
 
 const POINT_HISTORIES: readonly IPayPointHistory[] = [
@@ -139,13 +129,14 @@ const EXPIRING_NOTICE = {
 
 export const usePayPointHistories = () => {
   const [activeTab, setActiveTab] = useState<TPayPointTab>('point');
+  const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
 
   const onChangeTab = useCallback((tab: TPayPointTab) => {
     setActiveTab(tab);
   }, []);
 
-  const onPressRefund = useCallback(() => {
-    AppNavigator.navigate(Paths.RefundRequest);
+  const onPressWithdrawal = useCallback(() => {
+    AppNavigator.navigate(Paths.Withdrawal);
   }, []);
 
   const onDismissNotice = useCallback(() => {}, []);
@@ -161,9 +152,9 @@ export const usePayPointHistories = () => {
     histories,
     onChangeTab,
     onDismissNotice,
-    onPressRefund,
+    onPressWithdrawal,
     payMoneyHistories: PAY_MONEY_HISTORIES,
     pointHistories: POINT_HISTORIES,
-    summary: SUMMARY,
+    currentWallet,
   };
 };

@@ -13,9 +13,9 @@ const NOTICE_TEXT = '#8A6D3B';
 function NoticeBox() {
   const { t } = useTranslation();
   const notices = [
-    t('refund_request.notice_1'),
-    t('refund_request.notice_2'),
-    t('refund_request.notice_3'),
+    t('withdrawal.notice_1'),
+    t('withdrawal.notice_2'),
+    t('withdrawal.notice_3'),
   ];
 
   return (
@@ -28,7 +28,7 @@ function NoticeBox() {
           type="svg"
           width={ICON_SIZE}
         />
-        <Text style={styles.title}>{t('refund_request.notice_title')}</Text>
+        <Text style={styles.title}>{t('withdrawal.notice_title')}</Text>
       </View>
 
       {notices.map(notice => (

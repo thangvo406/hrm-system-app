@@ -7,7 +7,7 @@ export type IBankOption = {
   readonly name: string;
 };
 
-// Bonus money is excluded from the refundable balance.
+// Bonus money is excluded from the withdrawable balance.
 const WALLET_BALANCE = 100_000;
 const BONUS_AMOUNT = 500;
 
@@ -21,7 +21,7 @@ const BANK_OPTIONS: readonly IBankOption[] = [
   { code: '090', name: '카카오뱅크' },
 ];
 
-export const useRefundRequest = () => {
+export const useWithdrawal = () => {
   const { t } = useTranslation();
   const [amount, setAmount] = useState('');
   const [accountHolder, setAccountHolder] = useState('');
@@ -30,7 +30,7 @@ export const useRefundRequest = () => {
     undefined,
   );
 
-  const refundableAmount = useMemo(
+  const withdrawableAmount = useMemo(
     () => Math.max(WALLET_BALANCE - BONUS_AMOUNT, 0),
     [],
   );
@@ -39,12 +39,12 @@ export const useRefundRequest = () => {
     const numericAmount = Number(amount);
     return (
       numericAmount > 0 &&
-      numericAmount <= refundableAmount &&
+      numericAmount <= withdrawableAmount &&
       selectedBank !== undefined &&
       accountNumber.trim().length > 0 &&
       accountHolder.trim().length > 0
     );
-  }, [accountHolder, accountNumber, amount, refundableAmount, selectedBank]);
+  }, [accountHolder, accountNumber, amount, selectedBank, withdrawableAmount]);
 
   const onAmountChange = (value: string) => {
     setAmount(value.replaceAll(/\D/g, ''));
@@ -54,13 +54,13 @@ export const useRefundRequest = () => {
     setAccountNumber(value.replaceAll(/[^\d-]/g, ''));
   };
 
-  const onRefundAll = () => {
-    setAmount(String(refundableAmount));
+  const onWithdrawAll = () => {
+    setAmount(String(withdrawableAmount));
   };
 
   const onSubmit = () => {
     AppNavigator.showSnackBar({
-      message: t('refund_request.submit'),
+      message: t('withdrawal.submit'),
       type: 'success',
     });
   };
@@ -74,12 +74,12 @@ export const useRefundRequest = () => {
     enabledBtnSubmit,
     onAccountNumberChange,
     onAmountChange,
-    onRefundAll,
     onSubmit,
-    refundableAmount,
+    onWithdrawAll,
     selectedBank,
     setAccountHolder,
     setSelectedBank,
     walletBalance: WALLET_BALANCE,
+    withdrawableAmount,
   };
 };

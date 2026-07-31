@@ -98,7 +98,7 @@ export type RootStackParamList = {
   [Paths.ProductDetail]: { id: number; storeId: number } | undefined;
   [Paths.Products]: { data: IStoreItem } | undefined;
   [Paths.Profile]: undefined;
-  [Paths.RefundRequest]: undefined;
+  [Paths.Withdrawal]: undefined;
   [Paths.AccountManagement]: undefined;
   [Paths.Startup]: undefined;
   [Paths.Stores]: undefined;

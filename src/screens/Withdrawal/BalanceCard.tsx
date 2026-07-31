@@ -11,32 +11,30 @@ const BORDER_COLOR = '#E0E0E0';
 
 type Properties = {
   readonly bonusAmount: number;
-  readonly refundableAmount: number;
   readonly walletBalance: number;
+  readonly withdrawableAmount: number;
 };
 
 function BalanceCard({
   bonusAmount,
-  refundableAmount,
   walletBalance,
+  withdrawableAmount,
 }: Properties) {
   const { t } = useTranslation();
-  const currency = t('refund_request.currency');
+  const currency = t('withdrawal.currency');
 
   return (
     <View style={styles.card}>
       <View style={styles.row}>
-        <Text style={styles.balanceLabel}>
-          {t('refund_request.balance_label')}
-        </Text>
-        <Text style={styles.balanceValue} testID="refund-wallet-balance">
+        <Text style={styles.balanceLabel}>{t('withdrawal.balance_label')}</Text>
+        <Text style={styles.balanceValue} testID="withdrawal-wallet-balance">
           {`${formatCurrency(walletBalance)}${currency}`}
         </Text>
       </View>
 
       <View style={styles.row}>
-        <Text style={styles.mutedLabel}>{t('refund_request.bonus_label')}</Text>
-        <Text style={styles.mutedValue} testID="refund-bonus-amount">
+        <Text style={styles.mutedLabel}>{t('withdrawal.bonus_label')}</Text>
+        <Text style={styles.mutedValue} testID="withdrawal-bonus-amount">
           {`${formatCurrency(bonusAmount)}${currency}`}
         </Text>
       </View>
@@ -44,11 +42,14 @@ function BalanceCard({
       <View style={styles.divider} />
 
       <View style={styles.row}>
-        <Text style={styles.refundableLabel}>
-          {t('refund_request.refundable_label')}
+        <Text style={styles.withdrawableLabel}>
+          {t('withdrawal.withdrawable_label')}
         </Text>
-        <Text style={styles.refundableValue} testID="refund-refundable-amount">
-          {`${formatCurrency(refundableAmount)}${currency}`}
+        <Text
+          style={styles.withdrawableValue}
+          testID="withdrawal-withdrawable-amount"
+        >
+          {`${formatCurrency(withdrawableAmount)}${currency}`}
         </Text>
       </View>
     </View>
@@ -88,19 +89,19 @@ const styles = StyleSheet.create({
     color: TEXT_MUTED,
     fontSize: ScaleSize(14),
   },
-  refundableLabel: {
-    color: TEXT_DARK,
-    fontSize: ScaleSize(16),
-    fontWeight: '700',
-  },
-  refundableValue: {
-    color: Colors.primary,
-    fontSize: ScaleSize(20),
-    fontWeight: '700',
-  },
   row: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  withdrawableLabel: {
+    color: TEXT_DARK,
+    fontSize: ScaleSize(16),
+    fontWeight: '700',
+  },
+  withdrawableValue: {
+    color: Colors.primary,
+    fontSize: ScaleSize(20),
+    fontWeight: '700',
   },
 });

@@ -338,7 +338,6 @@
       "point_balance": "잔여 point : {{amount}} point",
       "point_expiring": "30일 내 소멸예정 point {{amount}} point",
       "point_label": "Point",
-      "refund": "생협페이머니 환불",
       "tab_pay_money": "생협페이머니",
       "tab_point": "포인트",
       "tag_accrue": "적립",
@@ -346,7 +345,8 @@
       "tag_expire": "소멸",
       "tag_use": "사용",
       "tag_welfare": "복지",
-      "title": "생협 Pay"
+      "title": "생협 Pay",
+      "withdrawal": "생협페이머니 환불"
     },
     "payment": {
       "title": "결제수단",
@@ -588,15 +588,15 @@
       "security_note": "안전한 결제를 위해 모든 정보는 암호화되어 보호됩니다.",
       "next": "다음"
     },
-    "refund_request": {
+    "withdrawal": {
       "title": "생협페이머니 환불",
       "balance_label": "생협페이머니 잔액",
       "bonus_label": "보너스머니 (환불 제외)",
-      "refundable_label": "환불 가능 금액",
+      "withdrawable_label": "환불 가능 금액",
       "currency": "원",
       "amount_section": "환불 금액",
       "amount_placeholder": "금액 입력",
-      "refund_all": "전액 환불",
+      "withdraw_all": "전액 환불",
       "account_section": "환불 계좌",
       "bank_placeholder": "은행 선택",
       "account_number_placeholder": "계좌번호 입력",
