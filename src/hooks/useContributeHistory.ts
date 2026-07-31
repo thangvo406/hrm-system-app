@@ -310,6 +310,7 @@ export const useContributeHistory = () => {
     onPressFilter,
     onRefresh,
     refreshing,
+    isEnablePaymentCard,
     filterCount,
     pointTransactions: pointItems,
     summary,

@@ -41,6 +41,7 @@ function PayCard() {
     onRefresh,
     refreshing,
     filterCount,
+    isEnablePaymentCard,
     onChangeTab,
     onPressTranItem,
   } = useContributeHistory();
@@ -131,23 +132,33 @@ function PayCard() {
               type="outline-bordered"
             />
           </View>
-          <Text style={styles.balanceText}>
-            {t('contribute_history.cumulative_dividend', {
-              amount: formatCurrency(summary?.totalDividend),
-            })}
-          </Text>
-          <Text style={styles.balanceText}>
-            {t('contribute_history.expected_dividend', {
-              amount: formatCurrency(summary?.expectedDividend),
-            })}
-          </Text>
-          <Text style={styles.balanceText}>
-            {t('contribute_history.expected_dividend_date', {
-              date: summary?.expectedDividendDate
-                ? dayjs(summary?.expectedDividendDate).format('YYYY-MM-DD')
-                : '-',
-            })}
-          </Text>
+          {isEnablePaymentCard ? (
+            <>
+              <Text style={styles.balanceText}>
+                {t('contribute_history.cumulative_dividend', {
+                  amount: formatCurrency(summary?.totalDividend),
+                })}
+              </Text>
+              <Text style={styles.balanceText}>
+                {t('contribute_history.expected_dividend', {
+                  amount: formatCurrency(summary?.expectedDividend),
+                })}
+              </Text>
+              <Text style={styles.balanceText}>
+                {t('contribute_history.expected_dividend_date', {
+                  date: summary?.expectedDividendDate
+                    ? dayjs(summary?.expectedDividendDate).format('YYYY-MM-DD')
+                    : '-',
+                })}
+              </Text>
+            </>
+          ) : (
+            <Text style={styles.balanceText}>
+              {t('common.display_price', {
+                amount: 0,
+              })}
+            </Text>
+          )}
         </View>
 
         <View style={styles.sectionDivider} />
