@@ -600,7 +600,6 @@
       "currency": "KRW",
       "amount_section": "Refund Amount",
       "amount_placeholder": "Enter amount",
-      "withdraw_all": "Refund All",
       "account_section": "Refund Account",
       "bank_placeholder": "Select bank",
       "account_number_placeholder": "Enter account number",

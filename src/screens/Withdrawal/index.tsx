@@ -1,12 +1,6 @@
 import { Button, HeaderDetail, TextField } from '@components';
 import { ScaleSize } from '@kits/core';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Colors } from '@constants';
 import { DeviceUtils } from '@kits/core/utils';
 import { formatCurrency } from '@utils/product';
@@ -20,6 +14,7 @@ import NoticeBox from './NoticeBox';
 const { ifAndroid } = DeviceUtils;
 
 const TEXT_DARK = '#1A1A1A';
+const TEXT_MUTED = '#9B9B9B';
 const BORDER_COLOR = '#E0E0E0';
 
 function Withdrawal() {
@@ -35,10 +30,9 @@ function Withdrawal() {
     onAccountNumberChange,
     onAmountChange,
     onSubmit,
-    onWithdrawAll,
     selectedBank,
     setAccountHolder,
-    setSelectedBank,
+    onPressBank,
     walletBalance,
     withdrawableAmount,
   } = useWithdrawal();
@@ -55,7 +49,7 @@ function Withdrawal() {
 
         <BalanceCard
           bonusAmount={bonusAmount}
-          walletBalance={walletBalance}
+          walletBalance={walletBalance ?? 0}
           withdrawableAmount={withdrawableAmount}
         />
 
@@ -63,16 +57,17 @@ function Withdrawal() {
           {t('withdrawal.amount_section')}
         </Text>
         <TextField
+          inputWrapperStyle={styles.amountWrapper}
           keyboardType="numeric"
           onChangeText={onAmountChange}
           placeholder={t('withdrawal.amount_placeholder')}
           renderRightComponent={() => (
-            <TouchableOpacity onPress={onWithdrawAll} testID="withdrawal-all">
-              <Text style={styles.withdrawAll}>
-                {t('withdrawal.withdraw_all')}
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.unitGroup}>
+              <View style={styles.unitDivider} />
+              <Text style={styles.unitText}>{t('withdrawal.currency')}</Text>
+            </View>
           )}
+          style={styles.amountInput}
           testID="withdrawal-amount"
           value={formatCurrency(amount)}
         />
@@ -83,7 +78,7 @@ function Withdrawal() {
           </Text>
           <BankSelector
             banks={banks}
-            onSelect={setSelectedBank}
+            onSelect={onPressBank}
             placeholder={t('withdrawal.bank_placeholder')}
             selectedBank={selectedBank}
           />
@@ -125,6 +120,17 @@ function Withdrawal() {
 export default Withdrawal;
 
 const styles = StyleSheet.create({
+  amountInput: {
+    color: TEXT_DARK,
+    fontSize: ScaleSize(20),
+    fontWeight: '700',
+    paddingVertical: ScaleSize(14),
+    textAlign: 'right',
+  },
+  amountWrapper: {
+    borderColor: Colors.primary,
+    borderWidth: 1.5,
+  },
   accountCard: {
     borderColor: BORDER_COLOR,
     borderRadius: ScaleSize(16),
@@ -168,9 +174,18 @@ const styles = StyleSheet.create({
     marginBottom: ScaleSize(10),
     marginTop: ScaleSize(24),
   },
-  withdrawAll: {
-    color: Colors.primary,
-    fontSize: ScaleSize(14),
-    fontWeight: '700',
+  unitDivider: {
+    backgroundColor: Colors.primary,
+    height: ScaleSize(22),
+    width: 1,
+  },
+  unitGroup: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: ScaleSize(10),
+  },
+  unitText: {
+    color: TEXT_MUTED,
+    fontSize: ScaleSize(15),
   },
 });

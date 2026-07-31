@@ -2,6 +2,8 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import { ScaleSize } from '@kits/core';
 import Image from '@components/Image';
+import get from 'lodash/get';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const CHECK_ICON_SIZE = ScaleSize(22);
 const CHECK_COLOR = '#5BB85C';
@@ -20,12 +22,14 @@ type SelectionProps = {
   readonly onSelect: (id: string) => void;
   readonly selectedId?: string;
   readonly title?: string;
+  readonly fieldDisplay?: string;
 };
 
 function Selection({
   items,
   onRequestClose = NOOP,
   onSelect,
+  fieldDisplay = 'label',
   selectedId = undefined,
   title = undefined,
 }: SelectionProps) {
@@ -39,7 +43,7 @@ function Selection({
       {title === undefined ? undefined : (
         <Text style={styles.title}>{title}</Text>
       )}
-      <View style={styles.list}>
+      <ScrollView style={styles.list}>
         {items.map(item => {
           const isSelected = item.id === selectedId;
           return (
@@ -52,7 +56,7 @@ function Selection({
               style={styles.option}
               testID={`selection-option-${item.id}`}
             >
-              <Text style={styles.optionLabel}>{item.label}</Text>
+              <Text style={styles.optionLabel}>{get(item, fieldDisplay)}</Text>
               {isSelected ? (
                 <Image
                   color={CHECK_COLOR}
@@ -65,7 +69,7 @@ function Selection({
             </TouchableOpacity>
           );
         })}
-      </View>
+      </ScrollView>
     </View>
   );
 }

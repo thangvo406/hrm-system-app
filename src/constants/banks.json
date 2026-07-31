@@ -1,0 +1,97 @@
+[
+  {
+    "name": "NH농협은행",
+    "englishName": "NH NongHyup Bank",
+    "color": "#009444"
+  },
+  {
+    "name": "신한은행",
+    "englishName": "Shinhan Bank",
+    "color": "#0046FF"
+  },
+  {
+    "name": "국민은행",
+    "englishName": "KB Kookmin Bank",
+    "color": "#FFBC00"
+  },
+  {
+    "name": "우리은행",
+    "englishName": "Woori Bank",
+    "color": "#0056A6"
+  },
+  {
+    "name": "하나은행",
+    "englishName": "Hana Bank",
+    "color": "#009490"
+  },
+  {
+    "name": "IBK기업은행",
+    "englishName": "IBK Industrial Bank of Korea",
+    "color": "#0066B3"
+  },
+  {
+    "name": "카카오뱅크",
+    "englishName": "KakaoBank",
+    "color": "#FFCD00"
+  },
+  {
+    "name": "토스뱅크",
+    "englishName": "Toss Bank",
+    "color": "#0064FF"
+  },
+  {
+    "name": "케이뱅크",
+    "englishName": "K Bank",
+    "color": "#FF5A00"
+  },
+  {
+    "name": "SC제일은행",
+    "englishName": "Standard Chartered Korea",
+    "color": "#00A651"
+  },
+  {
+    "name": "신한카드",
+    "englishName": "Shinhan Card",
+    "color": "#001E62"
+  },
+  {
+    "name": "삼성카드",
+    "englishName": "Samsung Card",
+    "color": "#0053A6"
+  },
+  {
+    "name": "현대카드",
+    "englishName": "Hyundai Card",
+    "color": "#000000"
+  },
+  {
+    "name": "KB국민카드",
+    "englishName": "KB Kookmin Card",
+    "color": "#776B5D"
+  },
+  {
+    "name": "롯데카드",
+    "englishName": "Lotte Card",
+    "color": "#ED1C24"
+  },
+  {
+    "name": "하나카드",
+    "englishName": "Hana Card",
+    "color": "#009490"
+  },
+  {
+    "name": "우리카드",
+    "englishName": "Woori Card",
+    "color": "#0056A6"
+  },
+  {
+    "name": "NH농협카드",
+    "englishName": "NH NongHyup Card",
+    "color": "#009444"
+  },
+  {
+    "name": "BC카드",
+    "englishName": "BC Card",
+    "color": "#F14B40"
+  }
+]

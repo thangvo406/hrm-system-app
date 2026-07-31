@@ -3,7 +3,7 @@ import type { IBankOption } from '@hooks/useWithdrawal';
 import { AppButton, Image } from '@components';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import React from 'react';
 
 const ICON_SIZE = ScaleSize(20);
 const TEXT_DARK = '#1A1A1A';
@@ -12,33 +12,16 @@ const ICON_COLOR = '#9E9E9E';
 const BORDER_COLOR = '#E0E0E0';
 
 type Properties = {
-  readonly banks: readonly IBankOption[];
-  readonly onSelect: (bank: IBankOption) => void;
+  readonly onSelect: () => void;
   readonly placeholder: string;
   readonly selectedBank?: IBankOption;
 };
 
-function BankSelector({
-  banks,
-  onSelect,
-  placeholder,
-  selectedBank,
-}: Properties) {
-  const [open, setOpen] = useState(false);
-
-  const onToggle = () => {
-    setOpen(previous => !previous);
-  };
-
-  const onPickBank = (bank: IBankOption) => {
-    onSelect(bank);
-    setOpen(false);
-  };
-
+function BankSelector({ onSelect, placeholder, selectedBank }: Properties) {
   return (
     <View>
       <AppButton
-        onPress={onToggle}
+        onPress={onSelect}
         style={styles.field}
         testID="withdrawal-bank"
       >
@@ -56,23 +39,6 @@ function BankSelector({
           width={ICON_SIZE}
         />
       </AppButton>
-
-      {open ? (
-        <View style={styles.dropdown}>
-          {banks.map(bank => (
-            <AppButton
-              key={bank.code}
-              onPress={() => {
-                onPickBank(bank);
-              }}
-              style={styles.option}
-              testID={`withdrawal-bank-${bank.code}`}
-            >
-              <Text style={styles.optionText}>{bank.name}</Text>
-            </AppButton>
-          ))}
-        </View>
-      ) : undefined}
     </View>
   );
 }

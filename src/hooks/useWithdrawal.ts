@@ -1,7 +1,10 @@
 import AppNavigator from '@navigation/AppNavigator';
+import { useAppSelector } from '@services/common/storeHooks';
+import { AccountSelector } from '@services/selectors';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
+import bankData from '@constants/banks.json';
+import Selection from '@dialogs/Selection';
 export type IBankOption = {
   readonly code: string;
   readonly name: string;
@@ -23,6 +26,7 @@ const BANK_OPTIONS: readonly IBankOption[] = [
 
 export const useWithdrawal = () => {
   const { t } = useTranslation();
+  const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const [amount, setAmount] = useState('');
   const [accountHolder, setAccountHolder] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
@@ -54,10 +58,14 @@ export const useWithdrawal = () => {
     setAccountNumber(value.replaceAll(/[^\d-]/g, ''));
   };
 
-  const onWithdrawAll = () => {
-    setAmount(String(withdrawableAmount));
+  const onPressBank = () => {
+    AppNavigator.showDialog({
+      screen: Selection,
+      popupType: 'bottomSheet',
+      items: bankData,
+      fieldDisplay: 'englishName',
+    });
   };
-
   const onSubmit = () => {
     AppNavigator.showSnackBar({
       message: t('withdrawal.submit'),
@@ -73,13 +81,13 @@ export const useWithdrawal = () => {
     bonusAmount: BONUS_AMOUNT,
     enabledBtnSubmit,
     onAccountNumberChange,
+    onPressBank,
     onAmountChange,
     onSubmit,
-    onWithdrawAll,
     selectedBank,
     setAccountHolder,
     setSelectedBank,
-    walletBalance: WALLET_BALANCE,
+    walletBalance: currentWallet?.balance,
     withdrawableAmount,
   };
 };
