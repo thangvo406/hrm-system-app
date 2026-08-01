@@ -1,4 +1,5 @@
 import { Button } from '@components';
+import TextField from '@components/TextField';
 import RegisterHeader from './Header';
 import { useTranslation } from 'react-i18next';
 import {
@@ -24,6 +25,7 @@ export type MembershipOption = {
   readonly id: string;
   readonly label: string;
   readonly desc: string;
+  readonly other?: boolean;
 };
 
 type ChooseMemberShipTypeProps = {
@@ -31,7 +33,7 @@ type ChooseMemberShipTypeProps = {
   readonly showBtnBack?: boolean;
   readonly onBack?: () => void;
   readonly onSelectMembership: (id: string) => void;
-  readonly onSubmit: (data: any) => void;
+  readonly onSubmit: (data: any, reason?: string) => void;
   readonly options: readonly MembershipOption[];
 };
 
@@ -44,10 +46,23 @@ function ChooseMemberShipType({
   showBtnBack = false,
 }: ChooseMemberShipTypeProps) {
   const { t } = useTranslation();
-  const [itemSelected, setItemSelected] = useState('');
+  const [itemSelected, setItemSelected] = useState<
+    MembershipOption | undefined
+  >(undefined);
+  const [otherReason, setOtherReason] = useState('');
+
+  // "Other" memberships need a free-text reason before the flow can continue.
+  const requireReason = itemSelected?.other === true;
+  const enabledSubmit =
+    !disabled &&
+    itemSelected !== undefined &&
+    (!requireReason || !!otherReason.trim());
 
   const handleSubmit = () => {
-    onSubmit?.(itemSelected);
+    onSubmit?.({
+      item: itemSelected,
+      otherReason,
+    });
   };
 
   return (
@@ -61,40 +76,67 @@ function ChooseMemberShipType({
         </Text>
 
         <ScrollView
+          keyboardShouldPersistTaps="handled"
           style={{
             marginTop: ScaleSize(10),
           }}
         >
           {options.map((option, index) => {
-            const isSelected = option.id === itemSelected;
+            const isSelected = option.id === itemSelected?.id;
+            const showReasonInput = isSelected && option.other === true;
             return (
-              <TouchableOpacity
-                activeOpacity={0.8}
-                key={option.id}
-                onPress={() => {
-                  onSelectMembership?.(option.id);
-                  setItemSelected(option.id);
-                }}
-                style={[
-                  styles.option,
-                  index === 0 && styles.optionFirst,
-                  isSelected && styles.optionSelected,
-                ]}
-                testID={`choose-membership-option-${option.id}`}
-              >
-                <View
+              <React.Fragment key={option.id}>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => {
+                    onSelectMembership?.(option.id);
+                    setItemSelected(option);
+                    setOtherReason('');
+                  }}
                   style={[
-                    styles.radioOuter,
-                    isSelected && styles.radioOuterSelected,
+                    styles.option,
+                    index === 0 && styles.optionFirst,
+                    isSelected && styles.optionSelected,
+                    showReasonInput && styles.optionWithReason,
                   ]}
+                  testID={`choose-membership-option-${option.id}`}
                 >
-                  {isSelected ? <View style={styles.radioInner} /> : undefined}
-                </View>
-                <View>
-                  <Text style={styles.optionLabel}>{t(option.label)}</Text>
-                  <Text style={styles.desc}>{t(option.desc)}</Text>
-                </View>
-              </TouchableOpacity>
+                  <View
+                    style={[
+                      styles.radioOuter,
+                      isSelected && styles.radioOuterSelected,
+                    ]}
+                  >
+                    {isSelected ? (
+                      <View style={styles.radioInner} />
+                    ) : undefined}
+                  </View>
+                  <View>
+                    <Text style={styles.optionLabel}>{t(option.label)}</Text>
+                    <Text style={styles.desc}>{t(option.desc)}</Text>
+                  </View>
+                </TouchableOpacity>
+
+                {showReasonInput ? (
+                  <View
+                    style={styles.reasonCard}
+                    testID={`choose-membership-reason-${option.id}`}
+                  >
+                    <Text style={styles.reasonLabel}>
+                      {t('choose_membership.other_reason_label')}
+                    </Text>
+                    <TextField
+                      inputWrapperStyle={styles.reasonInput}
+                      onChangeText={setOtherReason}
+                      placeholder={t(
+                        'choose_membership.other_reason_placeholder',
+                      )}
+                      testID={`choose-membership-reason-input-${option.id}`}
+                      value={otherReason}
+                    />
+                  </View>
+                ) : undefined}
+              </React.Fragment>
             );
           })}
         </ScrollView>
@@ -110,7 +152,7 @@ function ChooseMemberShipType({
           }}
         />
         <Button
-          disabled={disabled || !itemSelected}
+          disabled={!enabledSubmit}
           onPress={handleSubmit}
           style={{
             width: '90%',
@@ -151,6 +193,28 @@ const styles = StyleSheet.create({
   },
   optionFirst: {
     marginTop: ScaleSize(40),
+  },
+  optionWithReason: {
+    // Pull the reason card up so it reads as part of the selected option.
+    marginBottom: ScaleSize(12),
+  },
+  reasonCard: {
+    borderColor: BORDER_COLOR_SELECTED,
+    borderRadius: ScaleSize(12),
+    borderWidth: 1.5,
+    marginBottom: ScaleSize(30),
+    paddingBottom: ScaleSize(10),
+    paddingHorizontal: ScaleSize(20),
+    paddingTop: ScaleSize(16),
+  },
+  reasonInput: {
+    marginBottom: 0,
+  },
+  reasonLabel: {
+    color: PRIMARY_COLOR,
+    fontSize: ScaleSize(16),
+    fontWeight: 'bold',
+    marginBottom: ScaleSize(10),
   },
   optionLabel: {
     color: TEXT_COLOR,

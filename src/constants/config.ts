@@ -77,9 +77,10 @@ export const MEMBER_ID = 'member';
 export const MEMBERSHIP_TYPE = {
   TEACHER: 'TEACHER',
   NON_MEMBER: 'NON_MEMBER',
-  STAFF: 'EMPLOYEE',
+  UNIVERSITY_STAFF: 'EMPLOYEE',
+  COOP_STAFF: 'COOP_EMPLOYEE',
+  OTHER: 'OTHER',
   STUDENT: 'STUDENT',
-  GRADUATE_STUDENT: 'GRADUATE_STUDENT',
 } as const;
 
 export const HISLOP_BUTTON = { top: 10, bottom: 10, left: 10, right: 10 };
@@ -96,14 +97,22 @@ export const MEMBERSHIP_OPTIONS = [
     desc: 'choose_membership.join_teacher_desc',
   },
   {
-    id: MEMBERSHIP_TYPE.STAFF,
-    label: 'choose_membership.join_staff_title',
-    desc: 'choose_membership.join_staff_desc',
+    id: MEMBERSHIP_TYPE.UNIVERSITY_STAFF,
+    label: 'choose_membership.join_university_staff_title',
+    desc: 'choose_membership.join_university_staff_desc',
   },
   {
-    id: MEMBERSHIP_TYPE.GRADUATE_STUDENT,
-    label: 'choose_membership.join_graduate_student_title',
-    desc: 'choose_membership.join_graduate_student_desc',
+    id: MEMBERSHIP_TYPE.COOP_STAFF,
+    label: 'choose_membership.join_coop_staff_title',
+    desc: 'choose_membership.join_coop_staff_desc',
+    other: true,
+  },
+
+  {
+    id: MEMBERSHIP_TYPE.OTHER,
+    label: 'choose_membership.join_other_title',
+    desc: 'choose_membership.join_other_desc',
+    other: true,
   },
   // {
   //   id: MEMBERSHIP_TYPE.NON_MEMBER,

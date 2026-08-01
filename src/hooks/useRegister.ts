@@ -13,6 +13,7 @@ import {
   sendOTPRequest,
   verifyOTPRequest,
   createLinkVerifyUserRequest,
+  membershipRequestManualRequest,
 } from '@services/slices/auth/authSlice';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
@@ -40,7 +41,6 @@ const {
   CARRIER_ITEMS,
   DEFAULT_CARRIER,
   MEMBERSHIP_OPTIONS,
-  MEMBERSHIP_TYPE,
   REGISTER_FLOW_STEP,
 } = AppConstants;
 
@@ -337,15 +337,16 @@ export const useRegister = () => {
     formData.current = { ...formData.current, membershipId: id };
   };
 
-  const onSubmitFormRegister = () => {
-    if (formData.current?.membershipId !== MEMBERSHIP_TYPE.NON_MEMBER) {
-      navigateToStep(REGISTER_FLOW_STEP.INPUT_ACADEMIC_EMAIL);
-    } else {
+  const onSubmitFormRegister = (_data: any) => {
+    const { item, otherReason } = _data || {};
+
+    if (item?.other && otherReason) {
       dispatch(
-        sendOtpVerifyMembershipRequest({
+        membershipRequestManualRequest({
           universityId: formData.current.school?.id,
+          applicationNote: otherReason,
           signupToken: formData.current?.signupToken,
-          membershipType: formData.current?.membershipId,
+          membershipType: item?.id || '',
           onSuccess: () => {
             AppNavigator.navigate(Paths.RegisterCompleted, {
               isHideContribution: true,
@@ -359,7 +360,32 @@ export const useRegister = () => {
           },
         }),
       );
+    } else {
+      formData.current.membershipId = item?.id;
+      navigateToStep(REGISTER_FLOW_STEP.INPUT_ACADEMIC_EMAIL);
     }
+    // if (formData.current?.membershipId !== MEMBERSHIP_TYPE.NON_MEMBER) {
+    //   navigateToStep(REGISTER_FLOW_STEP.INPUT_ACADEMIC_EMAIL);
+    // } else {
+    //   dispatch(
+    //     sendOtpVerifyMembershipRequest({
+    //       universityId: formData.current.school?.id,
+    //       signupToken: formData.current?.signupToken,
+    //       membershipType: formData.current?.membershipId,
+    //       onSuccess: () => {
+    //         AppNavigator.navigate(Paths.RegisterCompleted, {
+    //           isHideContribution: true,
+    //         });
+    //       },
+    //       onFailure(error) {
+    //         AppNavigator.showSnackBar({
+    //           message: error,
+    //           type: 'failed',
+    //         });
+    //       },
+    //     }),
+    //   );
+    // }
   };
 
   const onSelectRole = (id: string) => {
@@ -382,7 +408,7 @@ export const useRegister = () => {
   const handleSubmit = (data?: any) => {
     switch (step) {
       case REGISTER_FLOW_STEP.CHOOSE_MEMBERSHIP: {
-        onSubmitFormRegister();
+        onSubmitFormRegister(data);
         break;
       }
       case REGISTER_FLOW_STEP.VERIFIED_INFO: {

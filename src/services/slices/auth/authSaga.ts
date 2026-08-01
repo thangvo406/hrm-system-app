@@ -32,6 +32,7 @@ import {
   logout as logoutRequest,
   refreshToken,
   createLinkVerifyInfoUser,
+  membershipRequestManual,
 } from '@services/request/auth';
 import { call, delay, put, select, takeLatest } from 'redux-saga/effects';
 
@@ -48,6 +49,7 @@ import {
   loginSocialRequest,
   logout,
   logoutSuccess,
+  membershipRequestManualRequest,
   sendOtpVerifyMembershipRequest,
   refreshTokenRequest,
   registerUserRequest,
@@ -69,6 +71,7 @@ import {
   ISelectSchoolRequest,
   IResponseSendOtpVerifyMembership,
   IResponseConfirmMemberShipVerify,
+  IRequestMembershipRequestManual,
 } from '@type/auth';
 import { Globals } from '@utils';
 import { AccountSelector, AuthSelector } from '@services/selectors';
@@ -253,6 +256,18 @@ function* confirmMemberShipVerifyWorker(
   }
 }
 
+function* membershipRequestManualWorker(
+  action: PayloadAction<IRequestMembershipRequestManual>,
+) {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    yield call(membershipRequestManual, request);
+    onSuccess?.();
+  } catch (error) {
+    onFailure?.(getErrorMessageApi(error));
+  }
+}
+
 function* selectSchoolWorker(action: PayloadAction<ISelectSchoolRequest>) {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
@@ -310,6 +325,10 @@ export function* authSaga() {
   yield takeLatest(
     confirmMemberShipVerifyRequest.type,
     confirmMemberShipVerifyWorker,
+  );
+  yield takeLatest(
+    membershipRequestManualRequest.type,
+    membershipRequestManualWorker,
   );
   yield takeLatest(selectSchoolRequest.type, selectSchoolWorker);
   yield takeLatest(logout.type, logoutWorker);

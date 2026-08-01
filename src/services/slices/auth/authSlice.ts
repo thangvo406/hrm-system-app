@@ -10,6 +10,7 @@ import type {
   IRequestRegisterUser,
   IRequestSendOTP,
   IRequestCreateLinkVerifyForgotPass,
+  IRequestMembershipRequestManual,
   IRequestSendOtpVerifyMembership,
   IRequestSubmitForgotPass,
   IRequestVerifyOTP,
@@ -115,6 +116,11 @@ const authSlice = createSlice({
       prepare: (payload: IRequestConfirmMemberShipVerify) => ({ payload }),
       reducer: () => {},
     },
+
+    membershipRequestManualRequest: {
+      prepare: (payload: IRequestMembershipRequestManual) => ({ payload }),
+      reducer: () => {},
+    },
     // Persist the user's selected university on the session.
     selectSchoolRequest: {
       prepare: (payload: ISelectSchoolRequest) => ({ payload }),
@@ -170,6 +176,7 @@ export const {
   loginSocialRequest,
   logout,
   logoutSuccess,
+  membershipRequestManualRequest,
   sendOtpVerifyMembershipRequest,
   refreshTokenRequest,
   registerUserRequest,

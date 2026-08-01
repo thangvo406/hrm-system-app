@@ -131,7 +131,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
         onReEnterEmailAcademic={onReEnterEmailAcademic}
         onRegisterChange={onRegisterChange}
         onResendEmailAcademic={onResendEmailAcademic}
-        onSelectMembership={onSelectMembership}
+        // onSelectMembership={onSelectMembership}
         onSubmit={handleSubmit}
         onTabBlur={onTabBlur}
         onToggleAgreement={onToggleAgreement}
