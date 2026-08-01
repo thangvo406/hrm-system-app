@@ -64,6 +64,10 @@ const onPressVoucher = () => {
   AppNavigator.navigate(Paths.Vouchers);
 };
 
+const onPressMealTickets = () => {
+  AppNavigator.navigate(Paths.MealTickets);
+};
+
 export const useHome = () => {
   const { t } = useTranslation();
   const profile = useAppSelector(AccountSelector.getProfile);
@@ -172,6 +176,7 @@ export const useHome = () => {
     onPressEmptyStore: onPressStore,
     onPressStore,
     onPressContribution,
+    onPressMealTickets,
     onGoToStore,
     onPressNotice,
     onPressNotification,

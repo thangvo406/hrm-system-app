@@ -17,6 +17,8 @@ export { default as ProductList } from './ProductList';
 export { default as ProductsLoading } from './Loading/Products';
 export { default as StoresLoading } from './Loading/Stores';
 export { default as UniversitiesLoading } from './Loading/Universities';
+export { default as Vouchers } from './Vouchers';
+export { default as VoucherList } from './Vouchers/VoucherList';
 export { default as VouchersLoading } from './Loading/Vouchers';
 export { default as VouchersSelectionLoading } from './Loading/VouchersSelection';
 export { default as ProgressiveImage } from './ProgressiveImage';

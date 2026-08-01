@@ -81,6 +81,7 @@ export type RootStackParamList = {
   [Paths.PayPointHistories]: undefined;
   [Paths.PointMain]: undefined;
   [Paths.Payment]: undefined;
+  [Paths.MealTickets]: undefined;
   [Paths.PaymentCompleted]:
     | {
         amount?: number;

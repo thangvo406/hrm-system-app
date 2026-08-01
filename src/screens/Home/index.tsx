@@ -149,6 +149,7 @@ function Home() {
     onPressEmptyStore,
     onGoToProduct,
     onPressTopup,
+    onPressMealTickets,
   } = useHome();
   const insets = useSafeAreaInsets();
 
@@ -201,7 +202,7 @@ function Home() {
           <FeatureCard
             desc={t('home.meal_ticket_desc')}
             image={imageNames.ic_utensils}
-            // onPress={onPressSurvey}
+            onPress={onPressMealTickets}
             testID="home-meal-ticket"
             title={t('home.meal_ticket_title')}
           />

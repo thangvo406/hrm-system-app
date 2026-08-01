@@ -1,6 +1,9 @@
 import type { IVoucher } from '@type/account';
 
-import { AppButton, Image } from '@components';
+// Direct imports, not the '@components' barrel: this folder is re-exported
+// from that barrel, so going through it would create an import cycle.
+import AppButton from '@components/AppButton';
+import Image from '@components/Image';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
@@ -22,7 +25,13 @@ type Properties = {
   readonly isExpired?: boolean;
 };
 
-function VoucherCard({ onUse, voucher, isExpired }: Properties) {
+function VoucherCard({
+  onUse,
+  voucher,
+  expiredLabel,
+  btnUseLabel,
+  isExpired,
+}: Properties) {
   const { t } = useTranslation();
   const _onUse = () => {
     onUse(voucher);
@@ -100,7 +109,9 @@ function VoucherCard({ onUse, voucher, isExpired }: Properties) {
               style={styles.useButton}
               testID={`voucher-use-${voucher.id}`}
             >
-              <Text style={styles.useButtonText}>{t('vouchers.use_now')}</Text>
+              <Text style={styles.useButtonText}>
+                {btnUseLabel || t('vouchers.use_now')}
+              </Text>
             </AppButton>
           ) : undefined}
         </View>

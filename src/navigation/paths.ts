@@ -38,6 +38,7 @@ export enum Paths {
   AccountManagement = 'account_management',
   Startup = 'startup',
   Stores = 'stores',
+  MealTickets = 'MealTickets',
   Survey = 'survey',
   SurveyDetail = 'survey_detail',
   TopUp = 'top_up',

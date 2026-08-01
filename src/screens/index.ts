@@ -29,6 +29,7 @@ export { default as PaymentOffline } from './PaymentOffline';
 export { default as CartDetail } from './CartDetail';
 export { default as QRCodeViewer } from './QRCodeViewer';
 export { default as ProductDetail } from './ProductDetail';
+export { default as MealTickets } from './MealTickets';
 export { default as Products } from './Products';
 export { default as Withdrawal } from './Withdrawal';
 export { default as AccountManagement } from './AccountManagement';

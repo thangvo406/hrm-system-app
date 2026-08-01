@@ -16,7 +16,7 @@ import React from 'react';
 import VoucherCard from './VoucherCard';
 import EmptyView from '@components/EmptyView';
 import imageNames from '@assets/images/names';
-import { VouchersLoading } from '@components';
+import VouchersLoading from '@components/Loading/Vouchers';
 
 const END_REACHED_THRESHOLD = 0.3;
 
@@ -42,12 +42,20 @@ function VoucherList({
   refreshing = false,
   vouchers,
   isExpired,
+  expiredLabel,
+  btnUseLabel,
 }: Properties) {
   const { t } = useTranslation();
 
   const renderItem = useCallback<ListRenderItem<IVoucher>>(
     ({ item }) => (
-      <VoucherCard onUse={onUse} voucher={item} isExpired={isExpired} />
+      <VoucherCard
+        onUse={onUse}
+        voucher={item}
+        isExpired={isExpired}
+        expiredLabel={expiredLabel}
+        btnUseLabel={btnUseLabel}
+      />
     ),
     [onUse, isExpired],
   );
