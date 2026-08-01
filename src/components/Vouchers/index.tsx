@@ -27,7 +27,10 @@ function Vouchers(props: any) {
     usedVouchers,
     expiredLabel,
     btnUseLabel,
+    backgroundExpired,
   } = props || {};
+
+  console.log('backgroundExpired', backgroundExpired);
 
   const tabs = useMemo(
     () => [
@@ -61,6 +64,9 @@ function Vouchers(props: any) {
             onUse={onUseVoucher}
             refreshing={refreshing}
             vouchers={usedVouchers}
+            backgroundExpired={backgroundExpired}
+            expiredLabel={expiredLabel}
+            btnUseLabel={btnUseLabel}
           />
         ),
         testID: 'vouchers-tab-used',
@@ -78,6 +84,9 @@ function Vouchers(props: any) {
             refreshing={refreshing}
             vouchers={expiredVouchers}
             isExpired
+            backgroundExpired={backgroundExpired}
+            expiredLabel={expiredLabel}
+            btnUseLabel={btnUseLabel}
           />
         ),
         testID: 'vouchers-tab-expired',

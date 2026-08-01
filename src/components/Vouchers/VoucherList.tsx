@@ -44,8 +44,10 @@ function VoucherList({
   isExpired,
   expiredLabel,
   btnUseLabel,
+  backgroundExpired,
 }: Properties) {
   const { t } = useTranslation();
+  console.log('VoucherList', backgroundExpired);
 
   const renderItem = useCallback<ListRenderItem<IVoucher>>(
     ({ item }) => (
@@ -55,6 +57,7 @@ function VoucherList({
         isExpired={isExpired}
         expiredLabel={expiredLabel}
         btnUseLabel={btnUseLabel}
+        backgroundExpired={backgroundExpired}
       />
     ),
     [onUse, isExpired],

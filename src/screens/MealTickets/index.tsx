@@ -9,6 +9,7 @@ function Index() {
       {...propsVoucher}
       expiredLabel="미사용"
       btnUseLabel="식권 QR 보기"
+      backgroundExpired="#3B82F6"
     />
   );
 }

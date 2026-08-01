@@ -31,6 +31,7 @@ function VoucherCard({
   expiredLabel,
   btnUseLabel,
   isExpired,
+  backgroundExpired,
 }: Properties) {
   const { t } = useTranslation();
   const _onUse = () => {
@@ -72,11 +73,18 @@ function VoucherCard({
           <Text numberOfLines={1} style={styles.title}>
             {name}
           </Text>
-          <View style={styles.badge}>
+          <View
+            style={[
+              styles.badge,
+              { backgroundColor: backgroundExpired || BADGE_COLOR },
+            ]}
+          >
             <Text style={styles.badgeText}>
-              {isExpired
-                ? t('vouchers.expired')
-                : t('vouchers.dday', { days: voucher.daysRemaining })}
+              {expiredLabel
+                ? expiredLabel
+                : isExpired
+                  ? t('vouchers.expired')
+                  : t('vouchers.dday', { days: voucher.daysRemaining })}
             </Text>
           </View>
         </View>
