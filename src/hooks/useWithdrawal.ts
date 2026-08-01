@@ -14,16 +14,6 @@ export type IBankOption = {
 const WALLET_BALANCE = 100_000;
 const BONUS_AMOUNT = 500;
 
-// Mock data — replace with the bank-list endpoint once available.
-const BANK_OPTIONS: readonly IBankOption[] = [
-  { code: '088', name: '신한은행' },
-  { code: '004', name: '국민은행' },
-  { code: '020', name: '우리은행' },
-  { code: '003', name: 'IBK기업은행' },
-  { code: '011', name: '농협은행' },
-  { code: '090', name: '카카오뱅크' },
-];
-
 export const useWithdrawal = () => {
   const { t } = useTranslation();
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
@@ -63,7 +53,10 @@ export const useWithdrawal = () => {
       screen: Selection,
       popupType: 'bottomSheet',
       items: bankData,
-      fieldDisplay: 'englishName',
+      onSelect: setSelectedBank,
+      emptyType: 'selection',
+      pathDisplay: 'name',
+      pathSelected: 'name',
     });
   };
   const onSubmit = () => {
@@ -77,7 +70,6 @@ export const useWithdrawal = () => {
     accountHolder,
     accountNumber,
     amount,
-    banks: BANK_OPTIONS,
     bonusAmount: BONUS_AMOUNT,
     enabledBtnSubmit,
     onAccountNumberChange,

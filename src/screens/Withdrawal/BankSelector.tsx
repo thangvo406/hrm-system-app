@@ -3,7 +3,7 @@ import type { IBankOption } from '@hooks/useWithdrawal';
 import { AppButton, Image } from '@components';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 const ICON_SIZE = ScaleSize(20);
 const TEXT_DARK = '#1A1A1A';
@@ -18,6 +18,10 @@ type Properties = {
 };
 
 function BankSelector({ onSelect, placeholder, selectedBank }: Properties) {
+  const bankNameDisplay = useMemo(() => {
+    return typeof selectedBank == 'string' ? selectedBank : selectedBank?.name;
+  }, [selectedBank]);
+
   return (
     <View>
       <AppButton
@@ -29,7 +33,7 @@ function BankSelector({ onSelect, placeholder, selectedBank }: Properties) {
           style={[styles.fieldText, !selectedBank && styles.placeholder]}
           numberOfLines={1}
         >
-          {selectedBank ? selectedBank.name : placeholder}
+          {bankNameDisplay || placeholder}
         </Text>
         <Image
           color={ICON_COLOR}

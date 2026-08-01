@@ -21,10 +21,7 @@ function Withdrawal() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const {
-    accountHolder,
-    accountNumber,
     amount,
-    banks,
     bonusAmount,
     enabledBtnSubmit,
     onAccountNumberChange,
@@ -77,7 +74,6 @@ function Withdrawal() {
             {t('withdrawal.account_section')}
           </Text>
           <BankSelector
-            banks={banks}
             onSelect={onPressBank}
             placeholder={t('withdrawal.bank_placeholder')}
             selectedBank={selectedBank}
@@ -87,13 +83,13 @@ function Withdrawal() {
             onChangeText={onAccountNumberChange}
             placeholder={t('withdrawal.account_number_placeholder')}
             testID="withdrawal-account-number"
-            value={accountNumber}
+            showClear
           />
           <TextField
             onChangeText={setAccountHolder}
             placeholder={t('withdrawal.account_holder_placeholder')}
             testID="withdrawal-account-holder"
-            value={accountHolder}
+            showClear
           />
         </View>
 
