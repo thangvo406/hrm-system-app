@@ -248,7 +248,7 @@
       "error_password_required": "Please enter your password",
       "error_password_min": "Password must be at least 6 characters",
       "error_phone_invalid": "Please enter a valid phone number",
-      "pass_invalid": "Password must be between 8 and 10 and contain at least one letter, one number, and one special character"
+      "pass_invalid": "Password must be at least 8 characters and include at least one letter, one number, and one special character."
     },
     "register_flow": {
       "identity_title": "Please proceed with identity verification to confirm your identity.",

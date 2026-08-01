@@ -146,7 +146,6 @@ export const queryParamsToObject = (query: string): Record<string, unknown> => {
 };
 
 const PASSWORD_MIN_LENGTH = 8;
-const PASSWORD_MAX_LENGTH = 10;
 const RE_HAS_LETTER = /[A-Za-z]/;
 const RE_HAS_NUMBER = /\d/;
 const RE_HAS_SPECIAL = /[!"#$%&'()*+,./:;<=>?@[\\\]^_`{|}~-]/;
@@ -154,7 +153,6 @@ const RE_ALLOWED_CHARS = /^[\w!"#$%&'()*+,./:;<=>?@[\\\]^`{|}~-]+$/;
 
 export const validatePassword = (password: string): boolean =>
   password.length >= PASSWORD_MIN_LENGTH &&
-  password.length <= PASSWORD_MAX_LENGTH &&
   RE_HAS_LETTER.test(password) &&
   RE_HAS_NUMBER.test(password) &&
   RE_HAS_SPECIAL.test(password) &&
