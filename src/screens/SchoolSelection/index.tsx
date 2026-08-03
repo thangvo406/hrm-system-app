@@ -71,7 +71,7 @@ const UniversityItem = React.memo(function UniversityItem({
 });
 
 function SchoolSelection(props: any) {
-  const { topHeader, onBack } = props || {};
+  const { topHeader, title, btnSubmit, onBack } = props || {};
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
@@ -132,7 +132,7 @@ function SchoolSelection(props: any) {
       <RegisterHeader showBtnBack onBack={onPressBack} />
 
       <View style={styles.searchBlock}>
-        <Text style={styles.title}>{t('school_selection.title')}</Text>
+        <Text style={styles.title}>{title || t('school_selection.title')}</Text>
       </View>
       {renderSearchBar()}
       {loading ? (
@@ -172,7 +172,7 @@ function SchoolSelection(props: any) {
               onPress={handleSubmit}
               style={styles.submitButton}
               testID="school-selection-next"
-              title={t('school_selection.next')}
+              title={btnSubmit || t('school_selection.next')}
               type="primary"
             />
           </View>

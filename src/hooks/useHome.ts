@@ -23,8 +23,8 @@ import SocketService from '@services/common/webSocket';
 import imageNames from '@assets/images/names';
 import RequestAddCard from '@dialogs/RequestAddCard';
 import { getAccountCardsRequest } from '@services/slices/accountManagement/accountManagementSlice';
-//TODO: should remove it
-// import RegisterMembership from '@dialogs/RegisterMembership';
+import { SchoolSelection } from '@screens';
+import { selectSchoolRequest } from '@services/slices/auth/authSlice';
 
 export type UseHome = ReturnType<typeof useHome>;
 
@@ -162,6 +162,37 @@ export const useHome = () => {
     }, []),
   );
 
+  const onSwitchSchool = (school: any) => {
+    AppNavigator.hideAllPopup();
+    dispatch(
+      selectSchoolRequest({
+        universityId: school?.id,
+        onSuccess: () => {
+          dispatch(getProfileRequest());
+        },
+        onFailure: error => {
+          AppNavigator.showSnackBar({
+            message: error,
+            type: 'failed',
+          });
+        },
+      }),
+    );
+  };
+  const onPressSwitchSchool = () => {
+    AppNavigator.showDialog({
+      screen: SchoolSelection,
+      isFullScreen: true,
+      topHeader: 0,
+      title: '대학을 선택해주세요',
+      btnSubmit: t('common.confirm'),
+      onSubmit: onSwitchSchool,
+      onBack: () => {
+        AppNavigator.hideAllPopup();
+      },
+    });
+  };
+
   return {
     goToPayCard,
     openMenu,
@@ -180,6 +211,7 @@ export const useHome = () => {
     onGoToStore,
     onPressNotice,
     onPressNotification,
+    onPressSwitchSchool,
     onPressSurvey,
   };
 };

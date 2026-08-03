@@ -20,8 +20,21 @@ import { DeviceUtils } from '@kits/core/utils';
 import { Colors } from '@constants';
 import { Paths } from '@navigation/paths';
 import AppNavigator from '@navigation/AppNavigator';
+import type { ReactNode } from 'react';
+import { useEffect } from 'react';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 const FEATURE_IMAGE_SIZE = ScaleSize(88);
+// Gap between the two cards of the feature row. Applied as an animated margin
+// (not `gap`) so it collapses together with the contribution card.
+const ROW_GAP = ScaleSize(12);
+const FEATURE_COLLAPSE_MS = 260;
+
+const FEATURE_CARD_HEIGHT = ScaleSize(200);
 const { ifAndroid } = DeviceUtils;
 // PLACEHOLDER_MAIN_COMPONENT
 
@@ -90,6 +103,7 @@ type FeatureCardProps = {
   readonly testID: string;
   readonly title: string;
   readonly onPress: any;
+  readonly isCenter?: boolean;
 };
 
 function FeatureCard({
@@ -99,6 +113,7 @@ function FeatureCard({
   ctaRight = '',
   testID,
   title,
+  isCenter,
   isShowCtaRight = false,
 }: FeatureCardProps) {
   return (
@@ -117,7 +132,15 @@ function FeatureCard({
         ) : undefined}
       </View>
       <Text style={styles.featureDesc}>{desc}</Text>
-      <View style={styles.featureImageWrap}>
+      <View
+        style={[
+          styles.featureImageWrap,
+          {
+            alignItems: isCenter ? 'center' : 'flex-end',
+            justifyContent: isCenter ? 'center' : 'flex-end',
+          },
+        ]}
+      >
         <Image
           height={FEATURE_IMAGE_SIZE}
           name={image}
@@ -126,6 +149,42 @@ function FeatureCard({
         />
       </View>
     </TouchableOpacity>
+  );
+}
+
+// Collapsible half of the feature row. `flexGrow` animates 1 -> 0 so the
+// sibling card stretches into the freed space on the same frames, and the
+// trailing margin (the row gap) collapses with it. The card stays mounted
+// while collapsed — an unmounted view cannot animate its width.
+function ContributionSlot({
+  children,
+  isHidden,
+}: {
+  readonly children: ReactNode;
+  readonly isHidden: boolean;
+}) {
+  const progress = useSharedValue(isHidden ? 0 : 1);
+
+  useEffect(() => {
+    progress.value = withTiming(isHidden ? 0 : 1, {
+      duration: FEATURE_COLLAPSE_MS,
+    });
+  }, [isHidden, progress]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    flexGrow: progress.value,
+    marginRight: progress.value * ROW_GAP,
+    opacity: progress.value,
+  }));
+
+  return (
+    <Animated.View
+      importantForAccessibility={isHidden ? 'no-hide-descendants' : 'auto'}
+      pointerEvents={isHidden ? 'none' : 'auto'}
+      style={[styles.featureSlot, animatedStyle]}
+    >
+      {children}
+    </Animated.View>
   );
 }
 
@@ -149,6 +208,7 @@ function Home() {
     onPressEmptyStore,
     onGoToProduct,
     onPressTopup,
+    onPressSwitchSchool,
     onPressMealTickets,
   } = useHome();
   const insets = useSafeAreaInsets();
@@ -160,6 +220,7 @@ function Home() {
         onOpenMenu={openMenu}
         onPressNotification={onPressNotification}
         profile={profile}
+        onPressSwitchSchool={onPressSwitchSchool}
       />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -170,8 +231,8 @@ function Home() {
           data={currentWallet}
           onPressTopup={() => onPressTopup()}
         />
-        <View style={styles.row}>
-          {!isHideContribute && (
+        <View style={styles.featureRow}>
+          <ContributionSlot isHidden={isHideContribute}>
             <FeatureCard
               desc={t('home.dividend_desc')}
               image={imageNames.img_discount}
@@ -181,15 +242,17 @@ function Home() {
               onPress={onPressContribution}
               title={t('home.dividend_title')}
             />
-          )}
-
-          <FeatureCard
-            desc={t('home.order_desc')}
-            image={imageNames.img_place_map}
-            testID="home-order"
-            onPress={onPressStore}
-            title={t('home.order_title')}
-          />
+          </ContributionSlot>
+          <View style={styles.featureSlot}>
+            <FeatureCard
+              desc={t('home.order_desc')}
+              image={imageNames.img_place_map}
+              testID="home-order"
+              isCenter={isHideContribute}
+              onPress={onPressStore}
+              title={t('home.order_title')}
+            />
+          </View>
         </View>
         <View style={styles.row}>
           <FeatureCard
@@ -319,6 +382,22 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     flex: 1,
     justifyContent: 'flex-end',
+  },
+  // Feature row: no `gap` — the spacing lives on ContributionSlot's animated
+  // marginRight so it can collapse along with the card. Fixed height keeps the
+  // section stable while the cards reflow mid-animation.
+  featureRow: {
+    flexDirection: 'row',
+    height: FEATURE_CARD_HEIGHT,
+  },
+  // Row slot: flexBasis 0 + flexGrow means width is driven purely by the
+  // animated grow factor, so 1/1 = half each and 0/1 = full width for the
+  // sibling. overflow hidden clips the card while it is collapsing.
+  featureSlot: {
+    flexBasis: 0,
+    flexGrow: 1,
+    flexShrink: 1,
+    overflow: 'hidden',
   },
   featureLabel: {
     backgroundColor: '#54C158',

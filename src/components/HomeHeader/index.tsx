@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import type { Profile } from '@services/request/account';
 import Image from '@components/Image';
 import imageNames from '@assets/images/names';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { ScaleSize } from '@kits/core';
 import { AppConstants } from '@constants';
@@ -15,6 +15,7 @@ import {
 type HeaderProps = {
   readonly onOpenMenu: () => void;
   readonly onPressNotification?: () => void;
+  readonly onPressSwitchSchool?: () => void;
   readonly profile?: Profile;
   readonly hideIconNotify?: boolean;
   readonly isShowLabelMember?: boolean;
@@ -28,6 +29,7 @@ const PRIMARY_COLOR = '#5BB85C';
 function Header({
   onOpenMenu,
   onPressNotification,
+  onPressSwitchSchool,
   profile,
   isShowLabelMember,
   hideIconNotify,
@@ -85,7 +87,7 @@ function Header({
           <Text style={styles.name}> {` ${profile?.universityName}`}</Text>
         </Text>
         <AppButton
-          onPress={onPressNotification}
+          onPress={onPressSwitchSchool}
           testID="home-notification-button"
           hitSlop={AppConstants.HISLOP_BUTTON}
           style={{
