@@ -1,4 +1,4 @@
-import type { IVoucher, VoucherStatus } from '@type/account';
+import type { IMealTicket, IVoucher, VoucherStatus } from '@type/account';
 import type { ListApiResponse } from '@type/common';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -119,8 +119,6 @@ export function useMealTickets() {
   );
 
   const onChangeTab = useCallback((tab: VoucherStatus) => {
-    // Reset the shared load-more flag so a switched-to tab doesn't inherit
-    // the previous tab's footer spinner.
     setLoadingMore(false);
     setActiveTab(tab);
   }, []);
@@ -132,8 +130,6 @@ export function useMealTickets() {
 
   const onLoadMore = useCallback(() => {
     const pagination = paginations.current[activeTab];
-    // Ignore the mount-time onEndReached (short list) until the first page
-    // has actually loaded, and skip when there is nothing more / already busy.
     if (!pagination.loaded || pagination.isLast || pagination.isLoadingMore) {
       return;
     }
@@ -153,7 +149,7 @@ export function useMealTickets() {
     );
   };
 
-  const onUseVoucher = useCallback((voucher: IVoucher) => {
+  const onUseVoucher = useCallback((voucher: IMealTicket) => {
     dispatch(
       generateQRCodeMemberRequest({
         cpn: [voucher.code],
@@ -161,7 +157,7 @@ export function useMealTickets() {
           AppNavigator.showDialog({
             screen: QRCodeViewerView,
             isFullScreen: true,
-            titleVoucher: voucher?.name,
+            titleVoucher: voucher?.productName,
             data: response,
             onRefresh: onRefreshQR(voucher),
           });

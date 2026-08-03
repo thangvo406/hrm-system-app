@@ -74,7 +74,9 @@
       "pass_invalid": "비밀번호는 8자 이상이며, 영문 1개 이상, 숫자 1개 이상, 특수문자 1개 이상을 포함해야 합니다."
     },
     "meal_ticket": {
-      "title": "식권함"
+      "title": "식권함",
+      "purchase_at": "구매일자: {{date}}",
+      "expired_at": "유효기간: {{date}}"
     },
     "register_flow": {
       "identity_title": "본인확인을 위해 인증을 진행해 주세요",

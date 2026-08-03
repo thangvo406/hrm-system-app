@@ -30,6 +30,7 @@ function Vouchers(props: any) {
     backgroundExpired,
     isHideLabelExpired,
     title,
+    isMealTicket
   } = props || {};
   const tabs = useMemo(
     () => [
@@ -48,6 +49,7 @@ function Vouchers(props: any) {
             expiredLabel={expiredLabel}
             btnUseLabel={btnUseLabel}
             isHideLabelExpired={isHideLabelExpired}
+            isMealTicket={isMealTicket}
           />
         ),
         testID: 'vouchers-tab-available',
@@ -68,6 +70,7 @@ function Vouchers(props: any) {
             expiredLabel={expiredLabel}
             btnUseLabel={btnUseLabel}
             isExpired
+            isMealTicket={isMealTicket}
           />
         ),
         testID: 'vouchers-tab-used',
@@ -88,6 +91,7 @@ function Vouchers(props: any) {
             backgroundExpired={backgroundExpired}
             expiredLabel={expiredLabel}
             btnUseLabel={btnUseLabel}
+            isMealTicket={isMealTicket}
           />
         ),
         testID: 'vouchers-tab-expired',
@@ -104,6 +108,7 @@ function Vouchers(props: any) {
       onRefresh,
       onUseVoucher,
       refreshing,
+      isMealTicket,
     ],
   );
 

@@ -19,6 +19,7 @@ import type {
   IRequestCreateQRCodeMember,
   IResponseBankInfo,
   IVoucher,
+  IMealTicket,
 } from '@type/account';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -200,11 +201,11 @@ export const getVouchers = async (
 
 export const getMealTickets = async (
   request: Omit<IRequestGetVouchers, 'onFailure' | 'onSuccess'>,
-): Promise<ListApiResponse<IVoucher[]>> => {
+): Promise<ListApiResponse<IMealTicket[]>> => {
   const _request = CommonUtils.removeEmptyFieldObject(request, true);
   const params = CommonUtils.objectToQueryParams(_request);
   const response = await httpRequest.get<
-    SingleApiResponse<ListApiResponse<IVoucher[]>>
+    SingleApiResponse<ListApiResponse<IMealTicket[]>>
   >(EndPoints.ACCOUNT.getMealTickets(params ? `?${params}` : ''), {
     loading: false,
   });

@@ -43,11 +43,8 @@ export const EndPoints = {
     confirmOTPRequestMembership: 'user/membership/confirm-otp',
     createQRCodeMember: 'api/v1/membership/qr/generate',
     getBankInfo: (request: string) => `balance/virtual-account?${request}`,
-    getMealTickets: (request: string) => `coupon/my-certificates${request}`,
+    getMealTickets: (request: string) => `order/ticket${request}`,
   },
-  // Payment-method management (bank accounts). Kept separate from PAYMENT
-  // (cart/order/checkout/KCP) — different lifecycle.
-  // NOTE: path is a placeholder — replace with the real backend spec.
   ACCOUNT_MANAGEMENT: {
     addAccount: 'balance/kcp/register/init',
     lockCardAccount: 'balance/payment-method/block',

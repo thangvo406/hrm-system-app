@@ -83,3 +83,18 @@ export type IVoucher = {
   readonly discountRate: number;
   readonly discountAmount: number;
 };
+
+export type IMealTicket = {
+  id: number
+  externalId: number
+  code: string
+  purchaseAt: string
+  expireAt: string
+  usedAt: string
+  status: string
+  orderId: number
+  orderNumber: string
+  productId: number
+  productName: string
+  productDescription: string
+};
