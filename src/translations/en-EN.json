@@ -48,7 +48,9 @@
       }
     },
     "meal_ticket": {
-      "title": "Meal Vouchers"
+      "title": "Meal Vouchers",
+      "purchase_at": "Purchase at {{date}}",
+      "expired_at": "Expired at {{date}}"
     },
     "pay_point": {
       "auto_use_info": "Points closest to expiry are used automatically first",

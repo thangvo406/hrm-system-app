@@ -13,6 +13,7 @@ function Index() {
       btnUseLabel="식권 QR 보기"
       backgroundExpired="#3B82F6"
       isHideLabelExpired
+      isMealTicket
       title={t('meal_ticket.title')}
     />
   );

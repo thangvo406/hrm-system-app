@@ -1,4 +1,4 @@
-import type { IVoucher } from '@type/account';
+import type { IMealTicket, IVoucher } from '@type/account';
 
 // Direct imports, not the '@components' barrel: this folder is re-exported
 // from that barrel, so going through it would create an import cycle.
@@ -21,12 +21,13 @@ const TEXT_MUTED = Colors.gray06;
 
 type Properties = {
   readonly onUse: (voucher: IVoucher) => void;
-  readonly voucher: IVoucher;
+  readonly voucher: IMealTicket & IVoucher;
   readonly isExpired?: boolean;
   readonly isHideLabelExpired?: boolean;
   readonly backgroundExpired?: string;
   readonly btnUseLabel?: string;
   readonly expiredLabel?: string;
+  readonly isMealTicket?: boolean;
 };
 
 function VoucherCard({
@@ -37,6 +38,7 @@ function VoucherCard({
   isExpired,
   backgroundExpired,
   isHideLabelExpired,
+  isMealTicket,
 }: Properties) {
   const { t } = useTranslation();
   const _onUse = () => {
@@ -76,7 +78,7 @@ function VoucherCard({
             width={ICON_SIZE}
           />
           <Text numberOfLines={1} style={styles.title}>
-            {name}
+            {isMealTicket ? voucher?.productName : name}
           </Text>
           {!isHideLabelExpired && (
             <View
@@ -96,17 +98,23 @@ function VoucherCard({
           )}
         </View>
 
-        <Text style={styles.description}>{voucher?.name}</Text>
+        <Text style={styles.description}>{(isMealTicket ? voucher?.productDescription : voucher?.name) || '-'}</Text>
 
         <Text style={styles.metaText}>
-          {t('vouchers.valid_until', {
-            date: dayjs(voucher?.expiredTo).format('YYYY-MM-DD'),
+          {isMealTicket ? t('meal_ticket.purchase_at', {
+            date:  !voucher?.purchaseAt ? '-' : dayjs(voucher.purchaseAt).format('YYYY-MM-DD'),
+          }) : t('vouchers.valid_until', {
+            date: !voucher?.expiredTo ? '-' : dayjs(voucher?.expiredTo).format('YYYY-MM-DD'),
           })}
         </Text>
 
         <View style={styles.metaRow}>
           <Text style={styles.metaText}>
-            {t('vouchers.min_payment', { amount: minPaymentText })}
+            {isMealTicket ? t('meal_ticket.expired_at', {
+              date: !voucher?.expiredTo ? '-' : dayjs(voucher.expireAt).format('YYYY-MM-DD'),
+            }) : t('vouchers.min_payment', {
+              amount: minPaymentText 
+            })}
           </Text>
           {!!storeNames && (
             <Text style={styles.metaText} numberOfLines={2}>

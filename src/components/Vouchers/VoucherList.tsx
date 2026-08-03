@@ -32,6 +32,7 @@ type Properties = {
   readonly expiredLabel?: string;
   readonly btnUseLabel?: string;
   readonly backgroundExpired?: string;
+  readonly isMealTicket?: boolean;
   readonly vouchers: readonly IVoucher[];
 };
 
@@ -50,6 +51,7 @@ function VoucherList({
   btnUseLabel,
   backgroundExpired,
   isHideLabelExpired,
+  isMealTicket
 }: Properties) {
   const { t } = useTranslation();
 
@@ -63,6 +65,7 @@ function VoucherList({
         btnUseLabel={btnUseLabel}
         backgroundExpired={backgroundExpired}
         isHideLabelExpired={isHideLabelExpired}
+        isMealTicket={isMealTicket}
       />
     ),
     [onUse, isHideLabelExpired, isExpired],
