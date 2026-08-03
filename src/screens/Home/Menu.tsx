@@ -289,6 +289,11 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
                 />
               </TouchableOpacity>
             </View>
+            {!!profile?.fullName && (
+              <Text numberOfLines={1} style={styles.university}>
+                {profile?.fullName}
+              </Text>
+            )}
             <View style={styles.headerDivider} />
           </View>
 
@@ -401,6 +406,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: ScaleSize(10),
+  },
+  university: {
+    color: LOGOUT_TEXT,
+    fontSize: ScaleSize(16),
+    fontWeight: '500',
+    marginTop: ScaleSize(15),
+    marginLeft: ScaleSize(15),
   },
   logoutText: {
     color: LOGOUT_TEXT,

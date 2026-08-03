@@ -12,7 +12,7 @@ import useNotification from './useNotification';
 import { getProfileRequest } from '@services/slices/account/accountSlice';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MEMBERSHIP_TYPE } from '@constants/config';
+import { GRADE_MEMBERSHIP_TYPE, MEMBERSHIP_TYPE } from '@constants/config';
 import Information from '@screens/Dialog/components/Information';
 import { useFocusEffect } from '@react-navigation/native';
 import { getCurrentWalletRequest } from '@services/slices/account/accountSlice';
@@ -81,7 +81,7 @@ export const useHome = () => {
   const dispatch = useAppDispatch();
 
   const isHideContribute =
-    profile?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER;
+    profile?.coopMemberGrade == GRADE_MEMBERSHIP_TYPE.GENERAL;
 
   const isShowCtaContribute = useMemo(() => {
     return !(

@@ -409,15 +409,12 @@
       }
     },
     "home": {
-      "greeting": "Nice to meet you!",
-      "greeting_prefix": "",
       "tab_home": "Home",
       "tab_order": "Order",
       "tab_pay": "Pay",
       "tab_qr_member": "Membership QR Code",
       "tab_vouchers": "Vouchers",
       "tab_mypage": "My Page",
-      "member_label": "Member",
       "pay_label": "Coop Pay :",
       "pay_amount": "{{amount}} KRW",
       "point_label": "Point : {{point}}",
@@ -441,6 +438,11 @@
       "meal_ticket_desc": "1,000 KRW Breakfast",
       "survey_title": "Survey",
       "survey_desc": "Survey",
+      "member_labels": {
+        "general": "General",
+        "university": "University",
+        "coop": "Cooperative"
+      },
       "menu": {
         "logout": "Logout",
         "section_life": "Coop Life",

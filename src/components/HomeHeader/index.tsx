@@ -6,6 +6,11 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import { ScaleSize } from '@kits/core';
 import { AppConstants } from '@constants';
+import AppButton from '@components/AppButton';
+import {
+  GRADE_MEMBERSHIP_TYPE,
+  MEMBER_SHIP_TYPE_HOME,
+} from '@constants/config';
 
 type HeaderProps = {
   readonly onOpenMenu: () => void;
@@ -28,14 +33,14 @@ function Header({
   hideIconNotify,
 }: HeaderProps) {
   const { t } = useTranslation();
+
+  const config =
+    MEMBER_SHIP_TYPE_HOME[profile?.coopMemberGrade || ''] ||
+    MEMBER_SHIP_TYPE_HOME[GRADE_MEMBERSHIP_TYPE.GENERAL];
   return (
     <View style={styles.header}>
       <View style={styles.headerLeft}>
-        <TouchableOpacity
-          onPress={onOpenMenu}
-          testID="home-menu-button"
-          hitSlop={AppConstants.HISLOP_BUTTON}
-        >
+        <AppButton onPress={onOpenMenu} testID="home-menu-button">
           <Image
             color="#1A1A1A"
             height={ICON_SIZE}
@@ -43,7 +48,7 @@ function Header({
             type="svg"
             width={ICON_SIZE}
           />
-        </TouchableOpacity>
+        </AppButton>
         <Image
           height={LOGO_HEIGHT}
           name={imageNames.ic_logo_banner}
@@ -51,8 +56,22 @@ function Header({
           width={LOGO_WIDTH}
         />
         {isShowLabelMember ? (
-          <View style={styles.memberBadge}>
-            <Text style={styles.memberBadgeText}>{t('home.member_label')}</Text>
+          <View
+            style={[
+              styles.memberBadge,
+              { backgroundColor: config.backgroundColor },
+            ]}
+          >
+            <Text
+              style={[
+                styles.memberBadgeText,
+                { padding: 3, color: config.color },
+              ]}
+            >
+              {t(
+                `home.member_labels.${profile?.coopMemberGrade?.toLowerCase()}`,
+              )}
+            </Text>
           </View>
         ) : undefined}
       </View>
@@ -62,16 +81,27 @@ function Header({
           flexDirection: 'row',
         }}
       >
-        <Text style={styles.greeting}>
-          {t('home.greeting')}
-          <Text style={styles.name}> {` ${profile?.fullName}`}</Text>
-          {` ${t('home.greeting_prefix')}`}
+        <Text style={styles.greeting} numberOfLines={1}>
+          <Text style={styles.name}> {` ${profile?.universityName}`}</Text>
         </Text>
+        <AppButton
+          onPress={onPressNotification}
+          testID="home-notification-button"
+          hitSlop={AppConstants.HISLOP_BUTTON}
+          style={{
+            marginTop: ScaleSize(-5),
+          }}
+        >
+          <Image
+            height={ICON_SIZE}
+            name={imageNames.ic_swap}
+            width={ICON_SIZE}
+          />
+        </AppButton>
         {!hideIconNotify ? (
-          <TouchableOpacity
+          <AppButton
             onPress={onPressNotification}
             testID="home-notification-button"
-            hitSlop={AppConstants.HISLOP_BUTTON}
             style={{
               marginTop: ScaleSize(-5),
             }}
@@ -81,7 +111,7 @@ function Header({
               name={imageNames.ic_bell_green}
               width={ICON_SIZE}
             />
-          </TouchableOpacity>
+          </AppButton>
         ) : undefined}
       </View>
     </View>
@@ -91,9 +121,10 @@ function Header({
 const styles = StyleSheet.create({
   greeting: {
     color: '#707070',
-    fontSize: 15,
+    fontSize: ScaleSize(12),
     fontWeight: '600',
     marginRight: ScaleSize(10),
+    width: ScaleSize(90),
   },
   name: {
     color: '#1A1A1A',

@@ -31,6 +31,7 @@ const images = {
   ic_store: require('./ic_store.png') as number,
   ic_success_check: require('./ic_success_check.png') as number,
   ic_survey_gray: require('./ic_survey_gray.png') as number,
+  ic_swap: require('./ic_swap.png') as number,
   ic_tag_green: require('./ic_tag_green.png') as number,
   ic_tran_history: require('./ic_tran_history.png') as number,
   ic_user_fill: require('./ic_user_fill.png') as number,

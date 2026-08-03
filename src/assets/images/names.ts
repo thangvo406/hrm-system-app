@@ -33,6 +33,7 @@ const imageNames = {
   ic_store: 'ic_store',
   ic_success_check: 'ic_success_check',
   ic_survey_gray: 'ic_survey_gray',
+  ic_swap: 'ic_swap',
   ic_tag_green: 'ic_tag_green',
   ic_tran_history: 'ic_tran_history',
   ic_user_fill: 'ic_user_fill',

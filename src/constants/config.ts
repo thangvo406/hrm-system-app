@@ -75,6 +75,11 @@ export const REGISTER_FLOW_STEP = {
 
 export const MEMBER_ID = 'member';
 
+export const GRADE_MEMBERSHIP_TYPE = {
+  GENERAL: 'GENERAL',
+  UNIVERSITY: 'UNIVERSITY',
+  COOP: 'COOP',
+};
 export const MEMBERSHIP_TYPE = {
   TEACHER: 'TEACHER',
   NON_MEMBER: 'NON_MEMBER',
@@ -85,6 +90,21 @@ export const MEMBERSHIP_TYPE = {
 } as const;
 
 export const HISLOP_BUTTON = { top: 10, bottom: 10, left: 10, right: 10 };
+
+export const MEMBER_SHIP_TYPE_HOME = {
+  [GRADE_MEMBERSHIP_TYPE.COOP]: {
+    backgroundColor: '#DCFCE7',
+    color: '#15803D',
+  },
+  [GRADE_MEMBERSHIP_TYPE.UNIVERSITY]: {
+    backgroundColor: '#E0F2FE',
+    color: '#0369A1',
+  },
+  [GRADE_MEMBERSHIP_TYPE.GENERAL]: {
+    backgroundColor: '#F3F4F6',
+    color: '#374151',
+  },
+};
 
 export const MEMBERSHIP_OPTIONS = [
   {

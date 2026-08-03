@@ -231,8 +231,6 @@
       }
     },
     "home": {
-      "greeting": "반가워요!",
-      "greeting_prefix": "님",
       "tab_home": "홈",
       "tab_order": "오더",
       "tab_vouchers": "혜택",
@@ -240,7 +238,11 @@
       "tab_qr_member": "회원QR",
       "tab_benefit": "혜택",
       "tab_mypage": "내정보",
-      "member_label": "조합원",
+      "member_labels": {
+        "general": "일반회원",
+        "university": "구성원",
+        "coop": "조합원"
+      },
       "pay_label": "생협Pay :",
       "pay_amount": "{{amount}} 원",
       "point_label": "Point : {{point}}",
