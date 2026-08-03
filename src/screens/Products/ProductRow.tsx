@@ -10,11 +10,13 @@ import isNumber from 'lodash/isNumber';
 import debounce from 'lodash/debounce';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
+import SoldOutRibbon from './SoldOutRibbon';
 const PRODUCT_THUMB_SIZE = ScaleSize(96);
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_PRICE = '#1A1A1A';
 const PRIMARY_COLOR = '#5BB85C';
+const SOLD_OUT_OVERLAY_COLOR = 'rgba(255,255,255,0.4)';
 
 type Properties = {
   readonly item: IProduct;
@@ -38,6 +40,11 @@ function ProductRow({
   const originalPrice = isNumber(item.discountPrice)
     ? item.discountPrice
     : item.sellingPrice || 0;
+
+  const isSoldOut = React.useMemo(
+    () => !isNumber(item.stockQuantity) || item.stockQuantity <= 0,
+    [item.stockQuantity],
+  );
 
   const handlePress = () => {
     onPress(item);
@@ -91,6 +98,7 @@ function ProductRow({
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={handlePress}
+      disabled={isSoldOut}
       style={[styles.productRow, isFirst && { marginTop: 20 }]}
       testID={`product-${item.id}`}
     >
@@ -122,23 +130,29 @@ function ProductRow({
           <Text style={styles.errorMaxQuantity}>{errorMaxQuantity}</Text>
         )}
       </View>
-      {thumbUri ? (
-        <Image
-          height={PRODUCT_THUMB_SIZE}
-          style={styles.productThumb}
-          testID={`product-${item.id}-thumb`}
-          url={thumbUri}
-          width={PRODUCT_THUMB_SIZE}
-        />
-      ) : (
-        <Image
-          height={PRODUCT_THUMB_SIZE}
-          name={imageNames.img_product_default}
-          style={styles.productThumb}
-          testID={`product-${item.id}-thumb`}
-          width={PRODUCT_THUMB_SIZE}
-        />
-      )}
+      <View style={styles.thumbWrap}>
+        {thumbUri ? (
+          <Image
+            height={PRODUCT_THUMB_SIZE}
+            style={styles.productThumb}
+            testID={`product-${item.id}-thumb`}
+            url={thumbUri}
+            width={PRODUCT_THUMB_SIZE}
+          />
+        ) : (
+          <Image
+            height={PRODUCT_THUMB_SIZE}
+            name={imageNames.img_product_default}
+            style={styles.productThumb}
+            testID={`product-${item.id}-thumb`}
+            width={PRODUCT_THUMB_SIZE}
+          />
+        )}
+        {isSoldOut ? <SoldOutRibbon /> : undefined}
+      </View>
+      {isSoldOut ? (
+        <View pointerEvents="none" style={styles.soldOutOverlay} />
+      ) : undefined}
     </TouchableOpacity>
   );
 }
@@ -184,6 +198,12 @@ const styles = StyleSheet.create({
     height: PRODUCT_THUMB_SIZE,
     width: PRODUCT_THUMB_SIZE,
   },
+  thumbWrap: {
+    borderRadius: ScaleSize(10),
+    height: PRODUCT_THUMB_SIZE,
+    overflow: 'hidden',
+    width: PRODUCT_THUMB_SIZE,
+  },
   stepper: {
     alignItems: 'center',
     alignSelf: 'stretch',
@@ -213,6 +233,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: ScaleSize(20),
     flex: 1,
+  },
+  soldOutOverlay: {
+    backgroundColor: SOLD_OUT_OVERLAY_COLOR,
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    zIndex: 10,
   },
   stepperValue: {
     color: TEXT_DARK,

@@ -86,6 +86,7 @@ function Profile() {
             iconName="user"
             label={t('profile.field_name')}
             error={errors.fullName}
+            editable={false}
             onChangeText={onChangeFullName}
             placeholder={t('profile.placeholder_name')}
             value={fullName}
@@ -117,24 +118,24 @@ function Profile() {
             value={membershipType}
           />
         </View>
-      </ScrollView>
 
-      {/* Save button */}
-      <View style={styles.footer}>
-        <Button
-          title={t('profile.save')}
-          type="rounded"
-          onPress={onPressSave}
-        />
-        <Button
-          title={t('profile.change_pass')}
-          type="rounded"
-          style={{
-            marginTop: ScaleSize(12),
-          }}
-          onPress={onPressChangePass}
-        />
-      </View>
+        {/* Save button */}
+        <View style={styles.footer}>
+          <Button
+            title={t('profile.save')}
+            type="rounded"
+            onPress={onPressSave}
+          />
+          <Button
+            title={t('profile.change_pass')}
+            type="rounded"
+            style={{
+              marginTop: ScaleSize(12),
+            }}
+            onPress={onPressChangePass}
+          />
+        </View>
+      </ScrollView>
     </View>
   );
 }

@@ -92,6 +92,7 @@ function Header({
           hitSlop={AppConstants.HISLOP_BUTTON}
           style={{
             marginTop: ScaleSize(-5),
+            marginRight: ScaleSize(10),
           }}
         >
           <Image

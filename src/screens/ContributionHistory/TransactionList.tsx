@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import imageNames from '@assets/images/names';
 import { TransactionHistoriesLoading } from '@components';
+import isNumber from 'lodash/isNumber';
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#7A7A7A';
@@ -46,7 +47,9 @@ function TransactionRow({
     >
       <View style={styles.topRow}>
         <Text style={[styles.amount, { color: amountColor }]}>
-          {`${isCredit ? '+' : '-'} ${formatCurrency(item.amount)}`}
+          {isNumber(item.amount)
+            ? `${isCredit ? '+' : '-'} ${formatCurrency(item.amount)}`
+            : '-'}
         </Text>
         <Text style={styles.date}>
           {dayjs(item.occurredAt).format('YYYY-MM-DD hh:mmA')}
@@ -55,9 +58,11 @@ function TransactionRow({
       <View style={styles.bottomRow}>
         <Text style={styles.description}>{item.displayType}</Text>
         <Text style={styles.balance}>
-          {t('pay_card.balance_after', {
-            amount: formatCurrency(item.balanceAfter),
-          })}
+          {!isNumber(item.balanceAfter)
+            ? '-'
+            : t('pay_card.balance_after', {
+                amount: formatCurrency(item.balanceAfter),
+              })}
         </Text>
       </View>
       {isPending || isSuccess ? undefined : (

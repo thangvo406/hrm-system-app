@@ -545,7 +545,8 @@
     },
     "products": {
       "cart_button": "장바구니 {{amount}}원",
-      "empty": "표시할 상품이 없습니다."
+      "empty": "표시할 상품이 없습니다.",
+      "out_of_stock": "품절"
     },
     "contribution": {
       "title": "마이페이지",
