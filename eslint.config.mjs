@@ -124,6 +124,7 @@ export default defineConfig(
       '@typescript-eslint/consistent-type-definitions': OFF,
       'unicorn/prevent-abbreviations': OFF,
       'perfectionist/sort-enums': OFF,
+      'unicorn/prefer-logical-operator-over-ternary': OFF,
       '@typescript-eslint/no-confusing-void-expression': OFF,
       '@typescript-eslint/non-nullable-type-assertion-style': OFF,
       'react-hooks/use-memo': OFF,

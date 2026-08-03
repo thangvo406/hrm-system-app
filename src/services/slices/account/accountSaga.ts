@@ -33,6 +33,7 @@ import {
   createQRCodeMember,
   deleteAccount,
   getBankInfo,
+  getMealTickets,
   getProfile,
   getVouchers,
   updateMembership,
@@ -59,6 +60,7 @@ import {
   getBankInfoRequest,
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
+  getMealTicketsRequest,
   getProfileRequest,
   getProfileSuccess,
   getTotalItemCartRequest,
@@ -82,6 +84,22 @@ function* getVouchersWorker(
   try {
     const response: ListApiResponse<IVoucher[]> = yield call(
       getVouchers,
+      request,
+    );
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* getMealTicketsWorker(
+  action: PayloadAction<IRequestGetVouchers>,
+): Generator<unknown, void, ListApiResponse<IVoucher[]>> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: ListApiResponse<IVoucher[]> = yield call(
+      getMealTickets,
       request,
     );
     onSuccess?.(response);
@@ -310,6 +328,9 @@ export function* accountSaga() {
   // fetch (tab switch / refresh) must not cancel an in-flight one. Duplicate
   // work is already guarded in the hook (requestedTabs / isLoadingMore).
   yield takeEvery(getVouchersRequest.type, getVouchersWorker);
+  // takeEvery for the same reason as vouchers: meal-ticket tabs share one
+  // action type, so a tab switch / refresh must not cancel an in-flight fetch.
+  yield takeEvery(getMealTicketsRequest.type, getMealTicketsWorker);
   yield takeLatest(getProfileRequest.type, getProfileWorker);
   yield takeLatest(updateMembershipRequest.type, updateMembershipWorker);
   yield takeLatest(updatePasswordRequest.type, updatePasswordWorker);

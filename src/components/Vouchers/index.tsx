@@ -28,10 +28,9 @@ function Vouchers(props: any) {
     expiredLabel,
     btnUseLabel,
     backgroundExpired,
+    isHideLabelExpired,
+    title,
   } = props || {};
-
-  console.log('backgroundExpired', backgroundExpired);
-
   const tabs = useMemo(
     () => [
       {
@@ -48,6 +47,7 @@ function Vouchers(props: any) {
             vouchers={availableVouchers}
             expiredLabel={expiredLabel}
             btnUseLabel={btnUseLabel}
+            isHideLabelExpired={isHideLabelExpired}
           />
         ),
         testID: 'vouchers-tab-available',
@@ -67,6 +67,7 @@ function Vouchers(props: any) {
             backgroundExpired={backgroundExpired}
             expiredLabel={expiredLabel}
             btnUseLabel={btnUseLabel}
+            isExpired
           />
         ),
         testID: 'vouchers-tab-used',
@@ -108,7 +109,7 @@ function Vouchers(props: any) {
 
   return (
     <View style={styles.container}>
-      <HeaderDetail title={t('vouchers.title')} />
+      <HeaderDetail title={title || t('vouchers.title')} />
       <SegmentedTab
         activeTab={activeTab}
         onTabChange={onChangeTab}

@@ -13,7 +13,7 @@ export type RootScreenProps<
 export type TransactionResultStatus = 'FAILED' | 'PENDING' | 'SUCCESS';
 
 export type TabParamList = {
-  [Paths.Vouchers]: undefined;
+  [Paths.PaymentOffline]: undefined;
   [Paths.Home]: undefined;
   [Paths.QRCodeViewer]: undefined;
   [Paths.Carts]: undefined;

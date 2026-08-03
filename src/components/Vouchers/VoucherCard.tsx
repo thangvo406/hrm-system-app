@@ -23,6 +23,10 @@ type Properties = {
   readonly onUse: (voucher: IVoucher) => void;
   readonly voucher: IVoucher;
   readonly isExpired?: boolean;
+  readonly isHideLabelExpired?: boolean;
+  readonly backgroundExpired?: string;
+  readonly btnUseLabel?: string;
+  readonly expiredLabel?: string;
 };
 
 function VoucherCard({
@@ -32,6 +36,7 @@ function VoucherCard({
   btnUseLabel,
   isExpired,
   backgroundExpired,
+  isHideLabelExpired,
 }: Properties) {
   const { t } = useTranslation();
   const _onUse = () => {
@@ -73,20 +78,22 @@ function VoucherCard({
           <Text numberOfLines={1} style={styles.title}>
             {name}
           </Text>
-          <View
-            style={[
-              styles.badge,
-              { backgroundColor: backgroundExpired || BADGE_COLOR },
-            ]}
-          >
-            <Text style={styles.badgeText}>
-              {expiredLabel
-                ? expiredLabel
-                : isExpired
-                  ? t('vouchers.expired')
-                  : t('vouchers.dday', { days: voucher.daysRemaining })}
-            </Text>
-          </View>
+          {!isHideLabelExpired && (
+            <View
+              style={[
+                styles.badge,
+                { backgroundColor: backgroundExpired || BADGE_COLOR },
+              ]}
+            >
+              <Text style={styles.badgeText}>
+                {expiredLabel
+                  ? expiredLabel
+                  : isExpired
+                    ? t('vouchers.expired')
+                    : t('vouchers.dday', { days: voucher.daysRemaining })}
+              </Text>
+            </View>
+          )}
         </View>
 
         <Text style={styles.description}>{voucher?.name}</Text>

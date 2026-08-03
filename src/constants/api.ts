@@ -43,6 +43,7 @@ export const EndPoints = {
     createQRCodeMember: 'api/v1/membership/qr/generate',
     // NOTE: path is a placeholder — replace with the real backend spec.
     getBankInfo: (request: string) => `balance/virtual-account?${request}`,
+    getMealTickets: (request: string) => `coupon/my-certificates${request}`,
   },
   // Payment-method management (bank accounts). Kept separate from PAYMENT
   // (cart/order/checkout/KCP) — different lifecycle.

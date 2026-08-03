@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   generateQRCodeMemberRequest,
-  getVouchersRequest,
+  getMealTicketsRequest,
 } from '@services/slices/account/accountSlice';
 import { useAppDispatch } from '@services/common/storeHooks';
 import AppNavigator from '@navigation/AppNavigator';
@@ -58,7 +58,7 @@ export function useMealTickets() {
     (type: VoucherStatus, page: number) => {
       const pagination = paginations.current[type];
       dispatch(
-        getVouchersRequest({
+        getMealTicketsRequest({
           onFailure: () => {
             pagination.isLoadingMore = false;
             setRefreshing(false);

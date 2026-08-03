@@ -28,6 +28,10 @@ type Properties = {
   readonly onUse: (voucher: IVoucher) => void;
   readonly refreshing?: boolean;
   readonly isExpired?: boolean;
+  readonly isHideLabelExpired?: boolean;
+  readonly expiredLabel?: string;
+  readonly btnUseLabel?: string;
+  readonly backgroundExpired?: string;
   readonly vouchers: readonly IVoucher[];
 };
 
@@ -45,9 +49,9 @@ function VoucherList({
   expiredLabel,
   btnUseLabel,
   backgroundExpired,
+  isHideLabelExpired,
 }: Properties) {
   const { t } = useTranslation();
-  console.log('VoucherList', backgroundExpired);
 
   const renderItem = useCallback<ListRenderItem<IVoucher>>(
     ({ item }) => (
@@ -58,9 +62,10 @@ function VoucherList({
         expiredLabel={expiredLabel}
         btnUseLabel={btnUseLabel}
         backgroundExpired={backgroundExpired}
+        isHideLabelExpired={isHideLabelExpired}
       />
     ),
-    [onUse, isExpired],
+    [onUse, isHideLabelExpired, isExpired],
   );
 
   const renderEmpty = useCallback(

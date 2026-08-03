@@ -177,3 +177,16 @@ export const getVouchers = async (
   >(EndPoints.VOUCHERS.list(params ? `?${params}` : ''), { loading: false });
   return response.data;
 };
+
+export const getMealTickets = async (
+  request: Omit<IRequestGetVouchers, 'onFailure' | 'onSuccess'>,
+): Promise<ListApiResponse<IVoucher[]>> => {
+  const _request = CommonUtils.removeEmptyFieldObject(request, true);
+  const params = CommonUtils.objectToQueryParams(_request);
+  const response = await httpRequest.get<
+    SingleApiResponse<ListApiResponse<IVoucher[]>>
+  >(EndPoints.ACCOUNT.getMealTickets(params ? `?${params}` : ''), {
+    loading: false,
+  });
+  return response.data;
+};

@@ -47,6 +47,9 @@
         "type_label": "Transaction Type"
       }
     },
+    "meal_ticket": {
+      "title": "Meal Vouchers"
+    },
     "pay_point": {
       "auto_use_info": "Points closest to expiry are used automatically first",
       "balance": "Balance: {{amount}} KRW",

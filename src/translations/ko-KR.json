@@ -73,6 +73,9 @@
       "error_phone_invalid": "올바른 휴대폰 번호를 입력해 주세요",
       "pass_invalid": "비밀번호는 8자 이상이며, 영문 1개 이상, 숫자 1개 이상, 특수문자 1개 이상을 포함해야 합니다."
     },
+    "meal_ticket": {
+      "title": "식권함"
+    },
     "register_flow": {
       "identity_title": "본인확인을 위해 인증을 진행해 주세요",
       "agree_label": "본인 인증 서비스 약관 전체 동의",

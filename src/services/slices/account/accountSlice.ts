@@ -82,6 +82,10 @@ const accountSlice = createSlice({
     getCurrentWalletSuccess: (state, action: PayloadAction<IWallet>) => {
       state.currentWallet = action.payload;
     },
+    getMealTicketsRequest: {
+      prepare: (payload: IRequestGetVouchers) => ({ payload }),
+      reducer: () => {},
+    },
     getProfileRequest: {
       prepare: (payload: AppCallback<Profile> = {}) => ({ payload }),
       reducer: () => {},
@@ -135,6 +139,7 @@ export const {
   getBankInfoRequest,
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
+  getMealTicketsRequest,
   getProfileRequest,
   getProfileSuccess,
   getTotalItemCartRequest,
