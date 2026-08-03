@@ -25,11 +25,16 @@ import type {
 import type { AppCallback, IImage, ListApiResponse } from '@type/common';
 import type { TransactionHistory } from '@type/wallet';
 import type { ITotalItemCart } from '@type/payment';
-import type { IRequestDeleteAccount } from '@type/auth';
+import type {
+  IRequestConfirmMemberShipVerify,
+  IRequestDeleteAccount,
+  IResponseConfirmMemberShipVerify,
+} from '@type/auth';
 
 import {
   activeAccount,
   autoCompleteAddress,
+  confirmOTPRequestMembership,
   createQRCodeMember,
   deleteAccount,
   getBankInfo,
@@ -55,6 +60,7 @@ import { getErrorMessageApi } from '@utils/common';
 import {
   activeAccountRequest,
   autoCompleteAddressRequest,
+  confirmOTPRequestMembershipRequest,
   deleteAccountRequest,
   generateQRCodeMemberRequest,
   getBankInfoRequest,
@@ -200,15 +206,31 @@ function* updatePushIdWorker(action: PayloadAction<IRequestUpdatePushId>) {
   }
 }
 
+function* confirmOTPRequestMembershipWorker(
+  action: PayloadAction<IRequestConfirmMemberShipVerify>,
+) {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: IResponseConfirmMemberShipVerify = yield call(
+      confirmOTPRequestMembership,
+      request,
+    );
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 function* updateMembershipWorker(
   action: PayloadAction<IRequestUpdateMembership>,
 ) {
   const { onSuccess, onFailure, ...request } = action.payload;
   try {
-    yield call(updateMembership, request);
-    onSuccess?.();
+    const response = yield call(updateMembership, request);
+    onSuccess?.(response);
   } catch (error_) {
-    const message = error_ instanceof Error ? error_.message : 'Unknown error';
+    const message = getErrorMessageApi(error_);
     onFailure?.(message);
   }
 }
@@ -317,6 +339,10 @@ function* autoCompleteAddressWorker(
 export function* accountSaga() {
   yield takeLatest(activeAccountRequest.type, activeAccountWorker);
   yield takeLatest(autoCompleteAddressRequest.type, autoCompleteAddressWorker);
+  yield takeLatest(
+    confirmOTPRequestMembershipRequest.type,
+    confirmOTPRequestMembershipWorker,
+  );
   yield takeLatest(deleteAccountRequest.type, deleteAccountWorker);
   yield takeLatest(
     generateQRCodeMemberRequest.type,

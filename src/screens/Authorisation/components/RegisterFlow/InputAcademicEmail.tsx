@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import RegisterHeader from './Header';
 import { useTranslation } from 'react-i18next';
@@ -89,6 +89,7 @@ function Index(props: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
   },
   errorApi: {
     color: 'red',

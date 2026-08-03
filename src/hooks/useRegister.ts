@@ -103,7 +103,6 @@ export const useRegister = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const formData = useRef<FormData>({ ...INITIAL_FORM_DATA });
-  const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
   const [timeResendOtpVerifyEmail, setTimeResendOtpVerifyEmail] = useState(0);
   const [emailExpiresIn, setEmailExpiresIn] = useState(0);
 
@@ -430,11 +429,7 @@ export const useRegister = () => {
         break;
       }
       case REGISTER_FLOW_STEP.ACADEMIC_VERIFICATION_COMPLETED: {
-        if (isEnablePaymentCard) {
-          AppNavigator.navigate(Paths.RegisterCompleted);
-        } else {
-          navigateToStep(REGISTER_FLOW_STEP.BANK_INFORMATION);
-        }
+        AppNavigator.navigate(Paths.RegisterCompleted);
         break;
       }
       case REGISTER_FLOW_STEP.ACADEMIC_VERIFICATION: {

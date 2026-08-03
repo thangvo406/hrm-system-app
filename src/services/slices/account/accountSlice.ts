@@ -18,7 +18,10 @@ import type {
   IUpdateProfileInfoRequest,
   IRequestCreateQRCodeMember,
 } from '@type/account';
-import type { IRequestDeleteAccount } from '@type/auth';
+import type {
+  IRequestConfirmMemberShipVerify,
+  IRequestDeleteAccount,
+} from '@type/auth';
 
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -54,6 +57,11 @@ const accountSlice = createSlice({
       reducer: () => {},
     },
     clearProfile: () => initialState,
+    // Fire-and-forget: action này không có callback.
+    confirmOTPRequestMembershipRequest: {
+      prepare: (payload: IRequestConfirmMemberShipVerify) => ({ payload }),
+      reducer: () => {},
+    },
     deleteAccountRequest: {
       prepare: (payload: IRequestDeleteAccount) => ({ payload }),
       reducer: () => {},
@@ -134,6 +142,7 @@ export const {
   activeAccountRequest,
   autoCompleteAddressRequest,
   clearProfile,
+  confirmOTPRequestMembershipRequest,
   deleteAccountRequest,
   generateQRCodeMemberRequest,
   getBankInfoRequest,

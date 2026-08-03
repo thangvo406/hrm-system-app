@@ -25,6 +25,7 @@ import { AppStacks, Paths } from '@navigation/paths';
 import AppNavigator from '@navigation/AppNavigator';
 import Information from '@screens/Dialog/components/Information';
 import { useI18n } from '@hooks';
+import RegisterMembership from '@dialogs/RegisterMembership';
 
 const MENU_WIDTH_RATIO = 0.78;
 const SLIDE_DURATION = 280;
@@ -118,10 +119,6 @@ const sections: readonly MenuSection[] = [
         key: 'academy_verification',
         labelKey: 'home.menu.academy_verification',
       },
-      {
-        key: 'organization_request',
-        labelKey: 'home.menu.organization_request',
-      },
       { key: 'notification', labelKey: 'home.menu.notification' },
     ],
     titleKey: 'home.menu.section_mypage',
@@ -194,6 +191,11 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
         return;
       } else if (itemKey == 'notification') {
         Linking.openSettings().catch(() => undefined);
+      } else if (itemKey == 'academy_verification') {
+        AppNavigator.showDialog({
+          screen: RegisterMembership,
+          isFullScreen: true,
+        });
       } else {
         AppNavigator.showSnackBar({
           message: `menu.${itemKey}`,

@@ -1,21 +1,30 @@
-import { AppConstants } from '@constants';
 import {
   MEMBERSHIP_OPTIONS,
   REGISTER_MEMBER_SHIP_STEP,
 } from '@constants/config';
-import { AppStorage } from '@services/common/storage';
+import Information from '@dialogs/Information';
+import AppNavigator from '@navigation/AppNavigator';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { AccountSelector } from '@services/selectors';
+import {
+  confirmOTPRequestMembershipRequest,
+  getProfileRequest,
+  updateMembershipRequest,
+} from '@services/slices/account/accountSlice';
 import { IResponseUniversity, RegisterMembershipStep } from '@type';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const membershipOptions = MEMBERSHIP_OPTIONS.filter(
   it => it.id != 'NON_MEMBER',
 );
 
 type TFormData = {
+  emailVerificationToken?: string;
   academicEmail?: string;
   school?: IResponseUniversity;
-  membership?: string;
-}
+  membership?: any;
+};
 
 const STEP_SHOW_BTN_BACK = new Set<string>([
   REGISTER_MEMBER_SHIP_STEP.CHOOSE_SCHOOL,
@@ -25,9 +34,18 @@ const STEP_SHOW_BTN_BACK = new Set<string>([
 
 const useRegisterMembership = (props: any) => {
   const { onRequestClose } = props || {};
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation();
+  const profile = useAppSelector(AccountSelector.getProfile);
+
   const [step, setStep] = useState<string>(
     REGISTER_MEMBER_SHIP_STEP.CHOOSE_SCHOOL,
   );
+  const [timeResendOtpVerifyEmail, setTimeResendOtpVerifyEmail] = useState(0);
+  const [emailExpiresIn, setEmailExpiresIn] = useState(0);
+  const dataInfoVerifyMembership = useRef<unknown>(undefined);
+  const [isVerifiedEmailAcademic, setVerifiedEmailAcademic] = useState(false);
+
   const stepStack = useRef<RegisterMembershipStep[]>([]);
   const formData = useRef<TFormData>({});
 
@@ -36,14 +54,47 @@ const useRegisterMembership = (props: any) => {
     return isValid;
   }, [step]);
 
+  const ignoreSchoolId = useMemo(() => {
+    if (profile?.membershipType && profile?.universityId) {
+      return profile?.universityId;
+    }
+    return null;
+  }, [profile]);
+
   const navigateToStep = (nextStep: RegisterMembershipStep) => {
     stepStack.current?.push?.(step);
     setStep(nextStep);
   };
 
+  useEffect(() => {
+    return () => {
+      if (dataInfoVerifyMembership.current) {
+        dispatch(getProfileRequest());
+      }
+    };
+  }, []);
 
-  const onVerifyEmail = () => {};
-  const onSendOtpVerifyEmail = () => {};
+  const onSendOtpVerifyEmail = (callback: any) => {
+    const { item, otherReason } = formData.current.membership || {};
+
+    dispatch(
+      updateMembershipRequest({
+        universityId: formData.current.school?.id || 0,
+        applicationNote: otherReason || '',
+        membershipType: item?.id,
+        universityEmail: formData.current?.academicEmail || '',
+        onSuccess: res => {
+          callback?.(res);
+        },
+        onFailure: error => {
+          AppNavigator.showSnackBar({
+            message: error,
+            type: 'failed',
+          });
+        },
+      }),
+    );
+  };
 
   const onSubmit = (data?: any) => {
     switch (step) {
@@ -59,11 +110,24 @@ const useRegisterMembership = (props: any) => {
       }
       case REGISTER_MEMBER_SHIP_STEP.INPUT_ACADEMIC_EMAIL: {
         formData.current.academicEmail = data;
-        onSendOtpVerifyEmail();
+        onSendOtpVerifyEmail(res => {
+          const { item, otherReason } = formData.current.membership || {};
+          if (item?.other && otherReason) {
+            navigateToStep(REGISTER_MEMBER_SHIP_STEP.REGISTER_COMPLETED);
+          } else {
+            formData.current.emailVerificationToken =
+              res.emailVerificationToken;
+            setTimeResendOtpVerifyEmail(res?.resendAfterMs);
+            setEmailExpiresIn(res?.emailVerificationExpiresIn);
+            navigateToStep(REGISTER_MEMBER_SHIP_STEP.ACADEMIC_VERIFICATION);
+          }
+        });
         break;
       }
       case REGISTER_MEMBER_SHIP_STEP.ACADEMIC_VERIFICATION: {
-        onVerifyEmail();
+        navigateToStep(
+          REGISTER_MEMBER_SHIP_STEP.ACADEMIC_VERIFICATION_COMPLETED,
+        );
         break;
       }
       case REGISTER_MEMBER_SHIP_STEP.ACADEMIC_VERIFICATION_COMPLETED: {
@@ -74,17 +138,45 @@ const useRegisterMembership = (props: any) => {
         onRequestClose?.();
         break;
       }
+      case REGISTER_MEMBER_SHIP_STEP.BANK_INFORMATION: {
+        onRequestClose?.();
+        break;
+      }
       default: {
         break;
       }
     }
   };
 
-  const onPressTopup = () => {
-    AppStorage.set(AppConstants.NEED_CONTRIBUTION_KEY, true);
-    onRequestClose?.();
+  const onPressContribute = () => {
+    navigateToStep(REGISTER_MEMBER_SHIP_STEP.BANK_INFORMATION);
   };
-
+  const onPressVerifyEmailAcademic = (otp: string) => {
+    dispatch(
+      confirmOTPRequestMembershipRequest({
+        otp,
+        emailVerificationToken: formData.current.emailVerificationToken || '',
+        universityEmail: formData.current.academicEmail || '',
+        onSuccess: (response: any) => {
+          dataInfoVerifyMembership.current = response;
+          setVerifiedEmailAcademic(true);
+        },
+        onFailure: error => {
+          AppNavigator.showSnackBar({
+            message: error,
+            type: 'failed',
+          });
+        },
+      }),
+    );
+  };
+  const onReEnterEmailAcademic = () => {
+    onBack();
+    setVerifiedEmailAcademic(false);
+  };
+  const onResendEmailAcademic = () => {
+    onSendOtpVerifyEmail(() => undefined);
+  };
   const onBack = () => {
     const previous = stepStack.current?.pop?.();
     if (previous !== undefined) {
@@ -94,13 +186,36 @@ const useRegisterMembership = (props: any) => {
     }
   };
 
+  const onOTPEmailAcademicExpired = (callback: any) => {
+    AppNavigator.showDialog({
+      screen: Information,
+      title: t('academic_verification.otp_expired_title'),
+      desc: t('academic_verification.otp_expired_desc'),
+      confirmTitle: t('academic_verification.otp_expired_confirm'),
+      onConfirm: () => {
+        onResendEmailAcademic();
+        callback?.();
+      },
+    });
+  };
+
   return {
     step,
     membershipOptions,
     showBtnBack,
+    timeResendOtpVerifyEmail,
+    emailExpiresIn,
+    isVerifiedEmailAcademic,
+    ignoreSchoolId,
+    mailAcademic: formData.current?.academicEmail,
+    dataInfoVerifyMembership: dataInfoVerifyMembership.current,
     onBack,
+    onOTPEmailAcademicExpired,
+    onPressContribute,
     onSubmit,
-    onPressTopup,
+    onResendEmailAcademic,
+    onReEnterEmailAcademic,
+    onPressVerifyEmailAcademic,
   };
 };
 

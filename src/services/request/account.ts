@@ -1,4 +1,10 @@
-import type { IRequestActiveAccount, IRequestDeleteAccount } from '@type/auth';
+import type {
+  IConfirmMembershipVerification,
+  IRequestActiveAccount,
+  IRequestDeleteAccount,
+  IResponseConfirmMemberShipVerify,
+  IResponseSendOtpVerifyMembership,
+} from '@type/auth';
 
 import type {
   IResponseCreateQRCodeMember,
@@ -34,6 +40,7 @@ export interface Profile {
   identityNumber?: string;
   membershipAffiliationType?: string;
   membershipType?: string;
+  universityId?: number;
   registrationStatus?: string;
   name?: string;
   fullName?: string;
@@ -134,8 +141,20 @@ export const updatePushId = async (
 };
 export const updateMembership = async (
   request: IRequestUpdateMembership,
-): Promise<void> => {
-  await httpRequest.post(EndPoints.ACCOUNT.updateMembership, request);
+): Promise<IResponseSendOtpVerifyMembership> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<IResponseSendOtpVerifyMembership>
+  >(EndPoints.ACCOUNT.updateMembership, request);
+  return response.data;
+};
+
+export const confirmOTPRequestMembership = async (
+  request: IConfirmMembershipVerification,
+): Promise<IResponseConfirmMemberShipVerify> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<IResponseConfirmMemberShipVerify>
+  >(EndPoints.ACCOUNT.confirmOTPRequestMembership, request);
+  return response.data;
 };
 
 export const deletePushId = async (pushId: string): Promise<void> => {

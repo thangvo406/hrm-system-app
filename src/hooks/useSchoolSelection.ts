@@ -1,4 +1,4 @@
-import { useDeferredValue, useEffect, useRef, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import {
   getUniversitiesRequest,
@@ -12,17 +12,23 @@ import { AuthSelector } from '@services/selectors/auth';
 
 const PAGE_SIZE = 20;
 
-export const useSchoolSelection = ({ onSubmit }: any) => {
+export const useSchoolSelection = ({ onSubmit, ignoreSchoolId }: any) => {
   const dispatch = useAppDispatch();
 
   // The default (no-keyword) list is owned by the store cache — the hook
   // renders it straight from the selectors, so there is a single source of
   // truth and no store→local copying inside an effect.
   const {
-    content: cachedUniversities,
+    content,
     isLast: cachedIsLast,
     page: cachedPage,
   } = useAppSelector(AuthSelector.getUniversityData);
+
+  const cachedUniversities = useMemo(() => {
+    return !ignoreSchoolId
+      ? content
+      : content.filter(it => it.id != ignoreSchoolId);
+  }, [content]);
 
   // Search results are transient and never cached (the saga only caches the
   // no-keyword list), so they stay in local state.
@@ -78,9 +84,12 @@ export const useSchoolSelection = ({ onSubmit }: any) => {
         onSuccess: (data: ListApiResponse<IResponseUniversity[]>) => {
           searchIsLast.current = data.last;
           isLoadingMore.current = false;
-          setSearchResults(prev =>
-            page === 0 ? data.content : [...prev, ...data.content],
-          );
+          setSearchResults(prev => {
+            const raw = page === 0 ? data.content : [...prev, ...data.content];
+            return !ignoreSchoolId
+              ? raw
+              : raw.filter(it => it.id != ignoreSchoolId);
+          });
         },
         onFailure: () => {
           isLoadingMore.current = false;

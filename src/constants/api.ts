@@ -40,8 +40,8 @@ export const EndPoints = {
     activeAccount: 'activeAccount',
     changePass: 'user/change-password',
     updateProfile: 'user/profile',
+    confirmOTPRequestMembership: 'user/membership/confirm-otp',
     createQRCodeMember: 'api/v1/membership/qr/generate',
-    // NOTE: path is a placeholder — replace with the real backend spec.
     getBankInfo: (request: string) => `balance/virtual-account?${request}`,
     getMealTickets: (request: string) => `coupon/my-certificates${request}`,
   },

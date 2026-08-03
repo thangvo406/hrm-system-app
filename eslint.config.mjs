@@ -123,6 +123,7 @@ export default defineConfig(
       'react/display-name': OFF,
       '@typescript-eslint/consistent-type-definitions': OFF,
       'unicorn/prevent-abbreviations': OFF,
+      'unicorn/no-null': OFF,
       'perfectionist/sort-enums': OFF,
       'unicorn/prefer-logical-operator-over-ternary': OFF,
       '@typescript-eslint/no-confusing-void-expression': OFF,

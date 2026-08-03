@@ -56,6 +56,7 @@ export const REGISTER_MEMBER_SHIP_STEP = {
   ACADEMIC_VERIFICATION_COMPLETED:
     'academic_verification_completed' as RegisterMembershipStep,
   REGISTER_COMPLETED: 'register_completed' as RegisterMembershipStep,
+  BANK_INFORMATION: 'bank_information' as RegisterMembershipStep,
 };
 export const REGISTER_FLOW_STEP = {
   CHOOSE_MEMBERSHIP: 'choose_membership' as AuthStep,

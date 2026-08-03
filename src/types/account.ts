@@ -13,6 +13,9 @@ export interface IRequestUpdatePassword extends AppCallback {
 }
 export interface IRequestUpdateMembership extends AppCallback {
   membershipType: string;
+  universityId: number;
+  universityEmail: string;
+  applicationNote?: string;
 }
 
 // Fire-and-forget: action này không có callback.

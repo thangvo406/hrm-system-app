@@ -25,6 +25,7 @@ export type AuthStep =
   | 'choose_school';
 
 export type RegisterMembershipStep =
+  | 'bank_information'
   | 'choose_school'
   | 'choose_membership'
   | 'input_academic_email'
