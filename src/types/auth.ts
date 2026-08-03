@@ -80,12 +80,6 @@ export interface IResponseCreateLinkVerifyForgotPass {
   ordrIdxx: string;
   certWebViewUrl: string;
 }
-export interface IRequestMembershipRequestManual extends AppCallback {
-  membershipType: string;
-  universityId?: number;
-  applicationNote?: string;
-  signupToken?: string;
-}
 export interface LogoutRequest {
   refreshToken: string;
 }
@@ -194,6 +188,7 @@ export interface IRequestSendOtpVerifyMembership
   membershipType?: string;
   signupToken?: string;
   universityId?: number;
+  applicationNote?: string;
   universityEmail?: string;
 }
 

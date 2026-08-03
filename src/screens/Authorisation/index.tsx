@@ -63,11 +63,13 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
     onRegisterChange,
     onResendEmailAcademic,
     dataInfoVerifyMembership,
-    onSelectMembership,
+    // onSelectMembership,
     onToggleAgreement,
     onOTPEmailAcademicExpired,
     registerErrors,
     resetRegisterForm,
+    emailExpiresIn,
+    timeResendOtpVerifyEmail,
     selectedMembershipId,
     step,
     titleRegisterCompletedBtnPrimary,
@@ -117,6 +119,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
           clearLoginErrors();
           clearErrors();
         }}
+        emailExpiresIn={emailExpiresIn}
         onOTPEmailAcademicExpired={onOTPEmailAcademicExpired}
         dataVerifiedMembership={dataInfoVerifyMembership}
         onForgotPassword={onForgotPassword}
@@ -131,6 +134,7 @@ function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
         onReEnterEmailAcademic={onReEnterEmailAcademic}
         onRegisterChange={onRegisterChange}
         onResendEmailAcademic={onResendEmailAcademic}
+        timeResendOtpVerifyEmail={timeResendOtpVerifyEmail}
         // onSelectMembership={onSelectMembership}
         onSubmit={handleSubmit}
         onTabBlur={onTabBlur}

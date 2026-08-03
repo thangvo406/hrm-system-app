@@ -10,15 +10,18 @@ import RegisterHeader from './Header';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Colors } from '@constants';
 import debounce from 'lodash/debounce';
+import { formatTime } from '@utils/date';
 
 const RESEND_COLOR = '#0A7340';
 
 type AcademicVerificationProps = {
   readonly mailAcademic: string;
   readonly isVerifiedEmailAcademic: boolean;
+  readonly emailExpiresIn: number;
+  readonly timeResendOtpVerifyEmail: number;
   readonly onResendEmailAcademic: () => void;
   readonly onOTPEmailAcademicExpired: (callback: any) => void;
   readonly onReEnterEmailAcademic: () => void;
@@ -27,12 +30,71 @@ type AcademicVerificationProps = {
 };
 
 const DEFAULT_EXPIRED_OTP = 300;
+const MS_PER_SECOND = 1000;
+
+// `expiresIn` is provided in milliseconds; the countdown state is in seconds.
+const toSeconds = (ms: number) => Math.ceil((ms || 0) / MS_PER_SECOND);
+
+function ResendOTP({ expiresIn, onResend, ref }: any) {
+  const { t } = useTranslation();
+  const [remainingSeconds, setRemainingSeconds] = useState(() =>
+    toSeconds(expiresIn),
+  );
+  const interval = useRef<ReturnType<typeof setInterval> | undefined>(
+    undefined,
+  );
+  const [isAvailable, setAvailable] = useState(false);
+
+  const start = (ms: number) => {
+    setRemainingSeconds(toSeconds(ms));
+    setAvailable(false);
+    clearInterval(interval.current);
+    interval.current = setInterval(() => {
+      setRemainingSeconds(prev => {
+        if (prev <= 1) {
+          clearInterval(interval.current);
+          setAvailable(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, MS_PER_SECOND);
+  };
+
+  useEffect(() => {
+    start(expiresIn);
+    return () => {
+      clearInterval(interval.current);
+    };
+  }, [expiresIn]);
+
+  useImperativeHandle<TCounterRef, TCounterRef>(ref, () => ({
+    restart: newExpiresIn => start(newExpiresIn ?? expiresIn),
+  }));
+  return (
+    <AppButton onPress={onResend} disabled={remainingSeconds > 0}>
+      <Text
+        style={[
+          styles.secondText,
+          { color: Colors.gray1 },
+          isAvailable ? styles.textAvailable : undefined,
+        ]}
+      >
+        {t('academic_verification.resend_email')}
+        {remainingSeconds > 0 &&
+          ` ${t('common.display_time', { time: formatTime(remainingSeconds) })}`}
+      </Text>
+    </AppButton>
+  );
+}
 
 function AcademicVerification({
   mailAcademic,
   onResendEmailAcademic,
   onReEnterEmailAcademic,
   isVerifiedEmailAcademic,
+  timeResendOtpVerifyEmail,
+  emailExpiresIn,
   onPressVerifyEmailAcademic,
   onSubmit,
   onOTPEmailAcademicExpired,
@@ -40,10 +102,16 @@ function AcademicVerification({
   const { t } = useTranslation();
   const [otpValue, setOtpValue] = useState('');
   const counterRef = useRef<TCounterRef>(null);
+  const resendOtpRef = useRef<TCounterRef>(null);
   const _onPressVerifyEmailAcademic = () => {
     if (otpValue?.length == 6) {
       onPressVerifyEmailAcademic?.(otpValue);
     }
+  };
+
+  const _onResend = () => {
+    onResendEmailAcademic?.();
+    resendOtpRef.current?.restart();
   };
 
   const onOTPExpired = () => {
@@ -101,7 +169,7 @@ function AcademicVerification({
 
         <Counter
           ref={counterRef}
-          expiresIn={DEFAULT_EXPIRED_OTP}
+          expiresIn={toSeconds(emailExpiresIn)}
           onOTPExpired={onOTPExpired}
           desc="academic_verification.time_remaining"
         />
@@ -117,15 +185,15 @@ function AcademicVerification({
         <View style={styles.linkRow}>
           <TouchableOpacity onPress={onReEnterEmailAcademic}>
             <Text style={styles.secondText}>
-              {t('academic_verification.resend_email')}
-            </Text>
-          </TouchableOpacity>
-          <Text style={styles.secondText}>{`  |  `}</Text>
-          <TouchableOpacity onPress={onResendEmailAcademic}>
-            <Text style={styles.secondText}>
               {t('academic_verification.re_enter_email')}
             </Text>
           </TouchableOpacity>
+          <Text style={styles.secondText}>{`  |  `}</Text>
+          <ResendOTP
+            ref={resendOtpRef}
+            expiresIn={timeResendOtpVerifyEmail}
+            onResend={_onResend}
+          />
         </View>
       </View>
     </View>
@@ -140,8 +208,11 @@ const styles = StyleSheet.create({
   secondText: {
     fontSize: ScaleSize(12),
     color: Colors.primary,
-    textDecorationStyle: 'solid',
-    textDecorationLine: 'underline',
+    // textDecorationStyle: 'solid',
+    // textDecorationLine: 'underline',
+  },
+  textAvailable: {
+    color: Colors.primary,
   },
   textVerify: {
     color: Colors.primary,

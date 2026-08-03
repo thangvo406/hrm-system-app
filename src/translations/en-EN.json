@@ -6,6 +6,7 @@
       "no_data": "No data",
       "payment": "Payment",
       "display_price": "{{amount}} KRW",
+      "display_time": "{{time}}s",
       "popup": {
         "title_error": "Notice",
         "desc_camera_error": "Unable to access the camera. Please enable camera permission in Settings.",

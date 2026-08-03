@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import type { Ref } from 'react';
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
@@ -6,6 +5,7 @@ import { ScaleSize } from '@kits/core';
 import { Colors } from '@constants';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
+import { formatTime } from '@utils/date';
 
 export type TCounterRef = {
   restart: (newExpiresIn?: number) => void;
@@ -57,7 +57,9 @@ function Counter({
   }));
 
   return (
-    <Text style={styles.text}>{t(desc, { seconds: remainingSeconds })}</Text>
+    <Text style={styles.text}>
+      {t(desc, { seconds: formatTime(remainingSeconds) })}
+    </Text>
   );
 }
 

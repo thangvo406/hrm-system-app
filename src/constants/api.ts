@@ -18,7 +18,6 @@ export const EndPoints = {
       'auth/register/membership-verification/confirm-otp',
     selectSchool: 'user/session/university',
     createLinkVerifyInfoUser: 'auth/register/identity/init',
-    membershipRequestManual: 'user/membership/request-manual',
   },
   CONTRIBUTION: {
     increase: 'contribution/increase-request',

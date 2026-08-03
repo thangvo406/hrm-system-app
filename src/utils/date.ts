@@ -327,6 +327,33 @@ export const getLengthOfMonth = (month: any, year: any) => {
   }
 };
 
+/**
+ * Countdown clock that starts at the largest non-zero unit: `01:05:00`,
+ * `05:00`, `09`. Units below the leading one are always kept, so the string
+ * never loses a trailing `:00`.
+ */
+const SECONDS_PER_MINUTE = 60;
+const MINUTES_PER_HOUR = 60;
+const SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
+export const formatTime = (total: number) => {
+  const safeTotal = Math.max(total, 0);
+  const hours = Math.floor(safeTotal / SECONDS_PER_HOUR);
+  const minutes = Math.floor(
+    (safeTotal % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE,
+  );
+  const seconds = safeTotal % SECONDS_PER_MINUTE;
+
+  const segments = [seconds];
+  if (hours > 0 || minutes > 0) {
+    segments.unshift(minutes);
+  }
+  if (hours > 0) {
+    segments.unshift(hours);
+  }
+
+  return segments.map(segment => String(segment).padStart(2, '0')).join(':');
+};
+
 export const isToday = (date: any) => {
   const now = dayjs(Globals.currentTime);
   return (

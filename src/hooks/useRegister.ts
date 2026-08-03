@@ -13,7 +13,6 @@ import {
   sendOTPRequest,
   verifyOTPRequest,
   createLinkVerifyUserRequest,
-  membershipRequestManualRequest,
 } from '@services/slices/auth/authSlice';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
@@ -105,6 +104,8 @@ export const useRegister = () => {
   const dispatch = useAppDispatch();
   const formData = useRef<FormData>({ ...INITIAL_FORM_DATA });
   const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
+  const [timeResendOtpVerifyEmail, setTimeResendOtpVerifyEmail] = useState(0);
+  const [emailExpiresIn, setEmailExpiresIn] = useState(0);
 
   const [errors, setErrors] = useState<{
     email?: boolean;
@@ -337,29 +338,37 @@ export const useRegister = () => {
     formData.current = { ...formData.current, membershipId: id };
   };
 
+  const onSendOtpVerifyMembership = (otherReason: '', callback?: any) => {
+    dispatch(
+      sendOtpVerifyMembershipRequest({
+        universityId: formData.current.school?.id,
+        signupToken: formData.current?.signupToken,
+        applicationNote: otherReason,
+        membershipType: formData.current?.membershipId,
+        universityEmail: formData.current?.mailAcademic,
+        onSuccess: (response: any) => {
+          callback?.(response);
+        },
+        onFailure(error) {
+          AppNavigator.showSnackBar({
+            message: error,
+            type: 'failed',
+          });
+        },
+      }),
+    );
+  };
+
   const onSubmitFormRegister = (_data: any) => {
     const { item, otherReason } = _data || {};
 
     if (item?.other && otherReason) {
-      dispatch(
-        membershipRequestManualRequest({
-          universityId: formData.current.school?.id,
-          applicationNote: otherReason,
-          signupToken: formData.current?.signupToken,
-          membershipType: item?.id || '',
-          onSuccess: () => {
-            AppNavigator.navigate(Paths.RegisterCompleted, {
-              isHideContribution: true,
-            });
-          },
-          onFailure(error) {
-            AppNavigator.showSnackBar({
-              message: error,
-              type: 'failed',
-            });
-          },
-        }),
-      );
+      formData.current.membershipId = item?.id;
+      onSendOtpVerifyMembership?.(otherReason, () => {
+        AppNavigator.navigate(Paths.RegisterCompleted, {
+          isHideContribution: true,
+        });
+      });
     } else {
       formData.current.membershipId = item?.id;
       navigateToStep(REGISTER_FLOW_STEP.INPUT_ACADEMIC_EMAIL);
@@ -477,50 +486,22 @@ export const useRegister = () => {
 
   const onSubmitAcademicEmail = (email: string) => {
     formData.current.mailAcademic = email;
-    dispatch(
-      sendOtpVerifyMembershipRequest({
-        universityId: formData.current.school?.id,
-        signupToken: formData.current?.signupToken,
-        membershipType: formData.current?.membershipId,
-        universityEmail: formData.current?.mailAcademic,
-        onSuccess: (response: any) => {
-          formData.current.emailVerificationToken =
-            response.emailVerificationToken;
-          navigateToStep(REGISTER_FLOW_STEP.ACADEMIC_VERIFICATION);
-        },
-        onFailure(error) {
-          AppNavigator.showSnackBar({
-            message: error,
-            type: 'failed',
-          });
-        },
-      }),
-    );
+    onSendOtpVerifyMembership?.('', (res: any) => {
+      formData.current.emailVerificationToken = res.emailVerificationToken;
+      setTimeResendOtpVerifyEmail(res?.resendAfterMs);
+      setEmailExpiresIn(res?.emailVerificationExpiresIn);
+      navigateToStep(REGISTER_FLOW_STEP.ACADEMIC_VERIFICATION);
+    });
   };
 
   const onResendEmailAcademic = () => {
-    dispatch(
-      sendOtpVerifyMembershipRequest({
-        universityId: formData.current.school?.id,
-        signupToken: formData.current?.signupToken,
-        membershipType: formData.current?.membershipId,
-        universityEmail: formData.current?.mailAcademic,
-        onSuccess: (response: any) => {
-          formData.current.emailVerificationToken =
-            response.emailVerificationToken;
-          AppNavigator.showSnackBar({
-            message: t('input_academic_email.resend_email_success'),
-            type: 'success',
-          });
-        },
-        onFailure(error) {
-          AppNavigator.showSnackBar({
-            message: error,
-            type: 'failed',
-          });
-        },
-      }),
-    );
+    onSendOtpVerifyMembership?.('', (res: any) => {
+      formData.current.emailVerificationToken = res?.emailVerificationToken;
+      AppNavigator.showSnackBar({
+        message: t('input_academic_email.resend_email_success'),
+        type: 'success',
+      });
+    });
   };
 
   const onPressVerify = (callback: any) => {
@@ -564,8 +545,10 @@ export const useRegister = () => {
     onPressSelectSchool,
     onCreateLinkVerifyUser,
     titleRegisterCompletedBtnPrimary,
+    emailExpiresIn,
     titleRegisterCompletedBtnSecondary,
     isVerifiedEmailAcademic,
+    timeResendOtpVerifyEmail,
     dataInfoVerifyMembership: dataInfoVerifyMembership.current,
     onPressVerifyEmailAcademic,
     onPressCarrier,

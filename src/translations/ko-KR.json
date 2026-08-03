@@ -6,6 +6,7 @@
       "no_data": "데이터 없음",
       "payment": "지불",
       "display_price": "{{amount}} 원",
+      "display_time": "{{time}}초",
       "popup": {
         "title_error": "알림",
         "desc_camera_error": "카메라에 접근할 수 없습니다. 설정에서 카메라 권한을 허용해 주세요.",
