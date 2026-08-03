@@ -124,6 +124,43 @@ export interface IResponseInitPayment {
   kcpInitParams: IKcpInitParams;
   virtualAccount: any;
 }
+export interface IResponseContributeManualTransfer {
+  id: number;
+  type: string;
+  displayType: string;
+  amount: any;
+  status: string;
+  paymentCompleted: boolean;
+  adminApproved: boolean;
+  paymentFundingSource: string;
+  paymentType: string;
+  paymentMethod: any;
+  requestedAt: string;
+  processedAt: any;
+  adminNote: any;
+  kcpSessionData: any;
+  virtualAccount: any;
+  stdPaySessionData: any;
+  manualTransfer: IManualTransfer;
+}
+
+export interface IManualTransfer {
+  id: number;
+  purpose: string;
+  paymentIntentId: number;
+  status: string;
+  transferCode: string;
+  declaredAmount: number;
+  approvedAmount: number;
+  bankName: string;
+  bankAccountNumber: string;
+  bankAccountHolder: string;
+  universityId: number;
+  universityName: string;
+  decidedAt: any;
+  adminNote: any;
+  createdDate: string;
+}
 
 export interface IKcpInitParams {
   qtid: string;

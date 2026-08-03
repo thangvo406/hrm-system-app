@@ -78,7 +78,7 @@ export const MEMBER_ID = 'member';
 export const GRADE_MEMBERSHIP_TYPE = {
   GENERAL: 'GENERAL',
   UNIVERSITY: 'UNIVERSITY',
-  COOP: 'COOP',
+  COOP: 'COOPERATIVE',
 };
 export const MEMBERSHIP_TYPE = {
   TEACHER: 'TEACHER',

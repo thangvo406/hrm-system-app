@@ -4,7 +4,7 @@ import type { IQRCodeViewerData } from '@screens/QRCodeViewer/QRCodeViewerView';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { TNotificationItem } from '@type';
 import { IStoreItem } from '@type/store';
-import type { ITransactionDetail } from '@type/payment';
+import type { IManualTransfer, ITransactionDetail } from '@type/payment';
 
 export type RootScreenProps<
   S extends keyof RootStackParamList = keyof RootStackParamList,
@@ -35,11 +35,8 @@ export type RootStackParamList = {
   [Paths.BankAccountManage]: undefined;
   [Paths.BankInformation]:
     | {
-        accountNumber?: string;
-        amount?: number | string;
-        bankName?: string;
+        bankInfo?: IManualTransfer;
         goFrom?: BankInformationOrigin;
-        schoolName?: string;
       }
     | undefined;
   [Paths.SchoolSelection]: undefined;

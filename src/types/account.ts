@@ -55,18 +55,6 @@ export interface IResponseCreateQRCodeMember {
   readonly qrImageBase64: string;
 }
 
-export interface IRequestGetBankInfo extends AppCallback<IResponseBankInfo> {
-  readonly amount: number;
-}
-
-// NOTE: shape is a placeholder — align with the real backend spec.
-export interface IResponseBankInfo {
-  readonly accountNumber: string;
-  readonly amount: number;
-  readonly bankName: string;
-  readonly schoolName: string;
-}
-
 export type IStoreVoucher = {
   storeId: number;
   storeName: string;

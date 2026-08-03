@@ -1,64 +1,82 @@
-import { Button } from '@components';
-import RegisterHeader from '@screens/Authorisation/components/RegisterFlow/Header';
-import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import { Button, Image } from '@components';
 import { ScaleSize } from '@kits/core';
-import { formatCurrency } from '@utils/product';
+import RegisterHeader from '@screens/Authorisation/components/RegisterFlow/Header';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-const TEXT_COLOR = '#1A1A1A';
+import BankInfoCard from './BankInfoCard';
+import { IManualTransfer } from '@type';
 
-const DEFAULT_AMOUNT = 'N';
-const DEFAULT_BANK_NAME = '우리은행';
-const DEFAULT_ACCOUNT_NUMBER = '8888-00-888888';
-const DEFAULT_SCHOOL_NAME = 'OO대학교 생협';
+const TITLE_COLOR = '#2E8540';
+const INTRO_COLOR = '#4B5563';
+
+const HERO_HEIGHT = ScaleSize(122);
+const HERO_WIDTH = ScaleSize(230);
+const BURST_SIZE = ScaleSize(18);
 
 type BankInformationViewProps = {
-  readonly accountNumber?: string;
-  readonly amount?: number | string;
-  readonly bankName?: string;
-  readonly disabled?: boolean;
-  readonly onSubmit: () => void;
-  readonly onBack?: () => void;
-  readonly schoolName?: string;
-  readonly titleBtn?: string;
   readonly btnSubmit?: string;
+  readonly disabled?: boolean;
+  readonly onBack?: () => void;
+  readonly onSubmit: () => void;
   readonly showBtnBack?: boolean;
+  readonly titleBtn?: string;
+  readonly data?: IManualTransfer;
 };
 
 function BankInformationView({
-  accountNumber = DEFAULT_ACCOUNT_NUMBER,
-  amount = DEFAULT_AMOUNT,
-  bankName = DEFAULT_BANK_NAME,
+  btnSubmit,
   disabled = false,
+  onBack,
   onSubmit,
   showBtnBack,
-  onBack,
-  btnSubmit,
+  data,
   titleBtn = 'bank_information.next',
-  schoolName = DEFAULT_SCHOOL_NAME,
 }: BankInformationViewProps) {
   const { t } = useTranslation();
-  const amountText =
-    typeof amount === 'number' ? formatCurrency(amount) : amount;
 
   return (
     <View style={styles.container}>
-      <RegisterHeader showBtnBack={showBtnBack} onBack={onBack} />
+      <RegisterHeader onBack={onBack} showBtnBack={showBtnBack} />
 
-      <View style={styles.content}>
-        <Text style={styles.intro}>{t('bank_information.intro')}</Text>
-        <Text style={styles.intro}>
-          {t('bank_information.instruction', { amount: amountText })}
-        </Text>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <Image
+          height={HERO_HEIGHT}
+          name="ic_header_bank_info"
+          style={styles.hero}
+          width={HERO_WIDTH}
+        />
 
-        <Text style={styles.bankName}>{bankName}</Text>
-        <Text style={styles.accountNumber}>{accountNumber}</Text>
-        <Text style={styles.schoolName}>{schoolName}</Text>
-      </View>
+        <View style={styles.titleRow}>
+          <Image
+            color={TITLE_COLOR}
+            height={BURST_SIZE}
+            name="ic_burst"
+            type="svg"
+            width={BURST_SIZE}
+          />
+          <Text style={styles.title}>
+            {t('bank_information.transfer_title')}
+          </Text>
+          <Image
+            color={TITLE_COLOR}
+            height={BURST_SIZE}
+            name="ic_burst"
+            style={styles.burstRight}
+            type="svg"
+            width={BURST_SIZE}
+          />
+        </View>
+
+        <Text style={styles.intro}>{t('bank_information.transfer_desc')}</Text>
+        <BankInfoCard data={data} />
+      </ScrollView>
 
       <View style={styles.footer}>
-        <View style={styles.footerSeparator} />
         <Button
           disabled={disabled}
           onPress={onSubmit}
@@ -73,54 +91,49 @@ function BankInformationView({
 }
 
 const styles = StyleSheet.create({
-  accountNumber: {
-    color: TEXT_COLOR,
-    fontSize: ScaleSize(28),
-    fontWeight: '700',
-    marginTop: ScaleSize(8),
-    textAlign: 'center',
-  },
-  bankName: {
-    color: TEXT_COLOR,
-    fontSize: ScaleSize(18),
-    marginTop: ScaleSize(40),
-    textAlign: 'center',
+  burstRight: {
+    transform: [{ scaleX: -1 }],
   },
   container: {
     backgroundColor: '#FFFFFF',
     flex: 1,
   },
-  content: {
-    flex: 1,
-    paddingHorizontal: ScaleSize(32),
-    paddingTop: ScaleSize(80),
-  },
   footer: {
     paddingBottom: ScaleSize(24),
     paddingTop: ScaleSize(12),
   },
-  footerSeparator: {
-    backgroundColor: '#F0F0F0',
-    height: ScaleSize(10),
-    marginBottom: ScaleSize(30),
-    width: '100%',
+  hero: {
+    alignSelf: 'center',
+    marginTop: ScaleSize(24),
   },
   intro: {
-    color: TEXT_COLOR,
-    fontSize: ScaleSize(18),
-    lineHeight: ScaleSize(28),
-    marginBottom: ScaleSize(20),
+    color: INTRO_COLOR,
+    fontSize: ScaleSize(15),
+    lineHeight: ScaleSize(23),
+    marginBottom: ScaleSize(24),
+    marginTop: ScaleSize(10),
     textAlign: 'center',
   },
-  schoolName: {
-    color: TEXT_COLOR,
-    fontSize: ScaleSize(15),
-    marginTop: ScaleSize(16),
-    textAlign: 'center',
+  scrollContent: {
+    // paddingBottom: ScaleSize(16),
+    paddingHorizontal: ScaleSize(20),
   },
   submitButton: {
     alignSelf: 'center',
     width: '90%',
+  },
+  title: {
+    color: TITLE_COLOR,
+    fontSize: ScaleSize(23),
+    fontWeight: '800',
+    textAlign: 'center',
+  },
+  titleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: ScaleSize(10),
+    justifyContent: 'center',
+    marginTop: ScaleSize(18),
   },
 });
 

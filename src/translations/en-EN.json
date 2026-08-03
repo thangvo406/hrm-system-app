@@ -382,8 +382,17 @@
       "next": "Next"
     },
     "bank_information": {
-      "intro": "When joining as a member for the first time,\na contribution payment is required.",
-      "instruction": "Pay the initial {{amount}} KRW\nto the account below to complete your application.",
+      "transfer_title": "Please transfer your Coop Pay\ntop-up amount to the account below.",
+      "transfer_desc": "*The deposited amount will be credited\nas Coop Pay money after admin confirmation.\n(Takes 1–3 business days)",
+      "bank_label": "Bank",
+      "account_number": "Account Number",
+      "account_holder": "Account Holder",
+      "note_title": "Transaction Note (Required)",
+      "note_required": "Required when making the payment",
+      "note_format": "Name + 6-digit date of birth",
+      "note_example": "(e.g. HongGildong990101)",
+      "copy": "Copy",
+      "copied": "Copied successfully",
       "next": "Next",
       "go_home": "Go to Home"
     },
@@ -441,7 +450,7 @@
       "member_labels": {
         "general": "General",
         "university": "University",
-        "coop": "Cooperative"
+        "cooperative": "Cooperative"
       },
       "menu": {
         "logout": "Logout",

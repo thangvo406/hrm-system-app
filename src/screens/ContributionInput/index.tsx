@@ -41,6 +41,7 @@ function ContributionInput() {
     onAmountChange,
     onSelectAccount,
     onSubmit,
+    bankInfo,
   } = useTopUp({ isContribute: true });
 
   if (!isEnablePaymentCard) {
@@ -52,9 +53,10 @@ function ContributionInput() {
         }}
       >
         <BankInformationView
+          data={bankInfo}
           showBtnBack
-          onBack={AppNavigator.goBack}
-          onSubmit={AppNavigator.goBack}
+          onBack={() => AppNavigator.goBack()}
+          onSubmit={() => AppNavigator.goBack()}
           btnSubmit={t('common.popup.btn_close')}
         />
       </View>

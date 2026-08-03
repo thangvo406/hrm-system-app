@@ -9,7 +9,6 @@ import type {
 import type {
   IResponseCreateQRCodeMember,
   IRequestAutoCompleteAddress,
-  IRequestGetBankInfo,
   IRequestGetVouchers,
   IRequestUpdateMembership,
   IRequestUpdatePassword,
@@ -17,7 +16,6 @@ import type {
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
   IRequestCreateQRCodeMember,
-  IResponseBankInfo,
   IVoucher,
 } from '@type/account';
 
@@ -171,20 +169,6 @@ export const createQRCodeMember = async (
     SingleApiResponse<IResponseCreateQRCodeMember>
   >(EndPoints.ACCOUNT.createQRCodeMember, request);
   return response.data;
-};
-
-export const getBankInfo = async (
-  request: Omit<IRequestGetBankInfo, 'onFailure' | 'onSuccess'>,
-): Promise<IResponseBankInfo> => {
-  // const _request = CommonUtils.removeEmptyFieldObject(request, true);
-  // const params = CommonUtils.objectToQueryParams(_request);
-  // const response = await httpRequest.get<SingleApiResponse<IResponseBankInfo>>(
-  //   EndPoints.ACCOUNT.getBankInfo(params),
-  // );
-  // return response.data;
-  return new Promise(resolve => {
-    resolve({});
-  });
 };
 
 export const getVouchers = async (

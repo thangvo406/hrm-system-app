@@ -9,7 +9,6 @@ import type {
 import type { ITotalItemCart } from '@type/payment';
 import type {
   IRequestAutoCompleteAddress,
-  IRequestGetBankInfo,
   IRequestGetVouchers,
   IRequestUpdateMembership,
   IRequestUpdatePassword,
@@ -70,10 +69,6 @@ const accountSlice = createSlice({
       prepare: (payload: IRequestCreateQRCodeMember) => ({
         payload,
       }),
-      reducer: () => {},
-    },
-    getBankInfoRequest: {
-      prepare: (payload: IRequestGetBankInfo) => ({ payload }),
       reducer: () => {},
     },
     getTotalItemCartRequest: {
@@ -145,7 +140,6 @@ export const {
   confirmOTPRequestMembershipRequest,
   deleteAccountRequest,
   generateQRCodeMemberRequest,
-  getBankInfoRequest,
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
   getMealTicketsRequest,

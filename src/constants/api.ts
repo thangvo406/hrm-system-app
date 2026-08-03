@@ -42,7 +42,6 @@ export const EndPoints = {
     updateProfile: 'user/profile',
     confirmOTPRequestMembership: 'user/membership/confirm-otp',
     createQRCodeMember: 'api/v1/membership/qr/generate',
-    getBankInfo: (request: string) => `balance/virtual-account?${request}`,
     getMealTickets: (request: string) => `coupon/my-certificates${request}`,
   },
   // Payment-method management (bank accounts). Kept separate from PAYMENT
@@ -99,7 +98,8 @@ export const EndPoints = {
     orderHistoryDetail: (orderId: string) => `order/${orderId}`,
     addressOrderRecent: 'order/recent-address',
     generateQRCodePay: 'api/v1/pay/qr/generate',
-    balanceCharge: 'balance/kcp/charge/init',
+    // balanceCharge: 'balance/kcp/charge/init',
+    balanceCharge: 'balance/charge',
     cartDetail: (cartId: number) => `app/cart/${cartId}`,
   },
 

@@ -10,19 +10,15 @@ const SCREEN_BG = '#FFFFFF';
 
 function BankInformation(props: RootScreenProps<Paths.BankInformation>) {
   const insets = useSafeAreaInsets();
-  const { accountNumber, amount, bankName, goFrom, schoolName } =
-    AppNavigator.getParams(props) || {};
+  const { bankInfo, goFrom } = AppNavigator.getParams(props) || {};
   const { onSubmit } = useBankInformation(goFrom);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <BankInformationView
-        accountNumber={accountNumber}
-        amount={amount}
-        bankName={bankName}
+        data={bankInfo}
         onSubmit={onSubmit}
         titleBtn="bank_information.go_home"
-        schoolName={schoolName}
       />
     </View>
   );

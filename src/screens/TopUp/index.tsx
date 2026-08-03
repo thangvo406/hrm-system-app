@@ -43,6 +43,7 @@ function TopUp(props: any) {
     selectedAccountId,
     enabledBtnSubmit,
     isEnablePaymentCard,
+    bankInfo,
     onAddCard,
     onAmountChange,
     onSelectAccount,
@@ -59,8 +60,9 @@ function TopUp(props: any) {
       >
         <BankInformationView
           showBtnBack
-          onBack={AppNavigator.goBack}
-          onSubmit={AppNavigator.goBack}
+          data={bankInfo}
+          onBack={() => AppNavigator.goBack()}
+          onSubmit={() => AppNavigator.goBack()}
           btnSubmit={t('common.popup.btn_close')}
         />
       </View>

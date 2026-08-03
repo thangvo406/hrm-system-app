@@ -7,6 +7,7 @@ import GoogleIcon from './google.svg';
 import Ic_alert_triangleIcon from './ic_alert_triangle.svg';
 import Ic_arrow_left_grayIcon from './ic_arrow_left_gray.svg';
 import Ic_bankIcon from './ic_bank.svg';
+import Ic_burstIcon from './ic_burst.svg';
 import Ic_calendarIcon from './ic_calendar.svg';
 import Ic_cartIcon from './ic_cart.svg';
 import Ic_checkIcon from './ic_check.svg';
@@ -20,6 +21,7 @@ import Ic_closeIcon from './ic_close.svg';
 import Ic_copyIcon from './ic_copy.svg';
 import Ic_couponIcon from './ic_coupon.svg';
 import Ic_credit_cardIcon from './ic_credit_card.svg';
+import Ic_credit_card_filledIcon from './ic_credit_card_filled.svg';
 import Ic_dots_verticalIcon from './ic_dots_vertical.svg';
 import Ic_filterIcon from './ic_filter.svg';
 import Ic_homeIcon from './ic_home.svg';
@@ -33,6 +35,7 @@ import Ic_notify_grayIcon from './ic_notify_gray.svg';
 import Ic_notify_read_allIcon from './ic_notify_read_all.svg';
 import Ic_order_receiptIcon from './ic_order_receipt.svg';
 import Ic_otp_placeholderIcon from './ic_otp_placeholder.svg';
+import Ic_pencilIcon from './ic_pencil.svg';
 import Ic_phoneIcon from './ic_phone.svg';
 import Ic_plus_circleIcon from './ic_plus_circle.svg';
 import Ic_qr_memberIcon from './ic_qr_member.svg';
@@ -47,6 +50,7 @@ import Ic_storeIcon from './ic_store.svg';
 import Ic_trashIcon from './ic_trash.svg';
 import Ic_truckIcon from './ic_truck.svg';
 import Ic_unlockIcon from './ic_unlock.svg';
+import Ic_user_filledIcon from './ic_user_filled.svg';
 import Ic_walletIcon from './ic_wallet.svg';
 import KakaoIcon from './kakao.svg';
 import LanguageIcon from './language.svg';
@@ -66,6 +70,7 @@ const icons = {
   'ic_alert_triangle': Ic_alert_triangleIcon,
   'ic_arrow_left_gray': Ic_arrow_left_grayIcon,
   'ic_bank': Ic_bankIcon,
+  'ic_burst': Ic_burstIcon,
   'ic_calendar': Ic_calendarIcon,
   'ic_cart': Ic_cartIcon,
   'ic_check': Ic_checkIcon,
@@ -79,6 +84,7 @@ const icons = {
   'ic_copy': Ic_copyIcon,
   'ic_coupon': Ic_couponIcon,
   'ic_credit_card': Ic_credit_cardIcon,
+  'ic_credit_card_filled': Ic_credit_card_filledIcon,
   'ic_dots_vertical': Ic_dots_verticalIcon,
   'ic_filter': Ic_filterIcon,
   'ic_home': Ic_homeIcon,
@@ -92,6 +98,7 @@ const icons = {
   'ic_notify_read_all': Ic_notify_read_allIcon,
   'ic_order_receipt': Ic_order_receiptIcon,
   'ic_otp_placeholder': Ic_otp_placeholderIcon,
+  'ic_pencil': Ic_pencilIcon,
   'ic_phone': Ic_phoneIcon,
   'ic_plus_circle': Ic_plus_circleIcon,
   'ic_qr_member': Ic_qr_memberIcon,
@@ -106,6 +113,7 @@ const icons = {
   'ic_trash': Ic_trashIcon,
   'ic_truck': Ic_truckIcon,
   'ic_unlock': Ic_unlockIcon,
+  'ic_user_filled': Ic_user_filledIcon,
   'ic_wallet': Ic_walletIcon,
   'kakao': KakaoIcon,
   'language': LanguageIcon,

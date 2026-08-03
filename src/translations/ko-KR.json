@@ -204,8 +204,18 @@
       "next": "다음"
     },
     "bank_information": {
+      "transfer_title": "생협페이머니 충전금액을\n아래의 계좌로 입금해주세요.",
+      "transfer_desc": "*입금하신 금액은 관리자 확인 후\n생협페이머니로 지급됩니다.\n(영업일 기준 1~3일 소요)",
       "intro": "조합원 최초 가입시,\n출자금 납부가 필요합니다.",
-      "instruction": "아래 계좌로 최초 {{amount}}원을\n납부하여 신청을 완료하세요.",
+      "bank_label": "은행",
+      "account_number": "계좌번호",
+      "account_holder": "예금주",
+      "note_title": "입금자명 (필수)",
+      "note_required": "입금 시 필수 입력 항목입니다",
+      "note_format": "이름 + 생년월일 6자리",
+      "note_example": "(예: 홍길동990101)",
+      "copy": "복사",
+      "copied": "복사되었습니다",
       "next": "다음",
       "go_home": "홈으로 이동"
     },
@@ -241,7 +251,7 @@
       "member_labels": {
         "general": "일반회원",
         "university": "구성원",
-        "coop": "조합원"
+        "cooperative": "조합원"
       },
       "pay_label": "생협Pay :",
       "pay_amount": "{{amount}} 원",

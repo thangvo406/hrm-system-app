@@ -17,13 +17,13 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { IAccount, IResponseBankInfo } from '@type';
+import type { IAccount, IManualTransfer } from '@type';
 import type { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { WebViewNavigation } from 'react-native-webview';
 import { deepLinkGate } from '@navigation/deepLinkGate';
 import { BANK_ACC_TYPES, PaymentTypes } from '@constants/config';
 import { Paths } from '@navigation/paths';
-import { getBankInfoRequest } from '@services/slices/account/accountSlice';
+import { IResponseContributeManualTransfer } from '@type/payment';
 
 export type PaymentMethod = 'credit_card' | 'virtual_account';
 
@@ -51,7 +51,7 @@ export const useTopUp = (props?: any) => {
   const [methodPayment, setMethodPayment] = useState(
     AppConstants.PaymentTypes.CARD_SAVE,
   );
-  const [bankInfo, setBankInfo] = useState<IResponseBankInfo>();
+  const [bankInfo, setBankInfo] = useState<IManualTransfer>();
   const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
   const rawDataBankAccounts = useAppSelector(
     AccountManagementSelector.getAccountCards,
@@ -98,11 +98,17 @@ export const useTopUp = (props?: any) => {
 
   useEffect(() => {
     if (!isEnablePaymentCard) {
+      const executorRequest = isContribute
+        ? increaseContributionRequest
+        : balanceChargeRequest;
       dispatch(
-        getBankInfoRequest({
-          amount: Number(amountTopUp),
-          onSuccess: data => {
-            setBankInfo(data);
+        executorRequest({
+          // amount: Number(amountTopUp),
+          payment: {
+            paymentType: 'MANUAL_TRANSFER',
+          },
+          onSuccess: (data: IResponseContributeManualTransfer) => {
+            setBankInfo(data.manualTransfer);
           },
           onFailure: message => {
             AppNavigator.showSnackBar({ message, type: 'failed' });
