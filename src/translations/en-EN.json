@@ -98,7 +98,12 @@
       "badge_coop_balance": "COOP MONEY",
       "pay_money_name": "Coop Pay Money",
       "balance_amount": "Balance {{amount}} KRW",
-      "amount_input_placeholder": "Enter amount"
+      "amount_input_placeholder": "Enter amount",
+      "errors": {
+        "balance_title": "Insufficient Balance",
+        "balance_btn_confirm": "Go to Topup",
+        "balance_desc": "Your wallet balance is insufficient to complete this payment. Please top up your wallet or choose another payment method"
+      }
     },
     "point_usage": {
       "use_point": "Use points",

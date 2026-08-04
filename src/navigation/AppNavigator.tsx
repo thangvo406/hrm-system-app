@@ -3,6 +3,7 @@
 import { CommonActions, StackActions } from '@react-navigation/native';
 // import Information from '@dialogs/Information';
 // import { CrashlyticsUtils } from '@utils';
+import type { NavigationState, PartialState } from '@react-navigation/native';
 import type { DialogHandle } from '@screens/Dialog/types';
 import NetworkError from '@dialogs/NetworkError';
 import { Keyboard, Linking } from 'react-native';
@@ -174,6 +175,18 @@ function reset(name: string, params = {}) {
   );
 }
 
+function resetToNestedState(
+  name: string,
+  state: PartialState<NavigationState>,
+) {
+  navigator.dispatch(
+    CommonActions.reset({
+      index: 0,
+      routes: [{ name, state }],
+    }),
+  );
+}
+
 let debounceHideLoading: ReturnType<typeof setTimeout> | undefined = undefined;
 function hideLoading(): Promise<unknown> {
   return new Promise(resolve => {
@@ -304,4 +317,5 @@ export default {
   showDialogNetworkError,
   onTrackScreenChange,
   reset,
+  resetToNestedState,
 };

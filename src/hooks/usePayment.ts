@@ -1,5 +1,5 @@
 import AppNavigator from '@navigation/AppNavigator';
-import { Paths } from '@navigation/paths';
+import { AppStacks, Paths } from '@navigation/paths';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import RequestAddCard from '@dialogs/RequestAddCard';
@@ -15,6 +15,7 @@ import WebViewScreen from '@dialogs/Webview';
 import { PaymentTypes } from '@constants/config';
 import { WebViewNavigation } from 'react-native-webview';
 import { deepLinkGate } from '@navigation/deepLinkGate';
+import Information from '@dialogs/Information';
 
 export type IPaymentCoupon = {
   readonly id: string;
@@ -32,7 +33,6 @@ export type SelectedPaymentMethod = {
 };
 
 // TODO(api): replace mock values with the payment-method summary response.
-const PAY_MONEY_BALANCE = 87_500;
 const SELECTED_COUPON: IPaymentCoupon = {
   id: 'coupon-free-drink',
   name: '음료무료쿠폰',
@@ -197,6 +197,22 @@ export const usePayment = (props: any) => {
   const onPay = useCallback(() => {
     let paymentMethod = {};
     if (selectedMethod.id == BALANCE_ID) {
+      if ((currentWallet?.balance || 0) < payloadRequest?.totalAmount) {
+        AppNavigator.showDialog({
+          screen: Information,
+          title: t('payment.errors.balance_title'),
+          desc: t('payment.errors.balance_desc'),
+          confirmTitle: t('payment.errors.balance_btn_confirm'),
+          cancelTitle: t('common.popup.btn_close'),
+          onConfirm: () => {
+            AppNavigator.resetToNestedState(AppStacks.App, {
+              index: 1,
+              routes: [{ name: Paths.AppTabs }, { name: Paths.TopUp }],
+            });
+          },
+        });
+        return;
+      }
       paymentMethod = {
         paymentType: PaymentTypes.BALANCE,
       };
@@ -251,7 +267,13 @@ export const usePayment = (props: any) => {
         },
       }),
     );
-  }, [selectedMethod, payloadRequest, usePoints, pointUsed]);
+  }, [
+    selectedMethod,
+    payloadRequest,
+    usePoints,
+    pointUsed,
+    currentWallet?.balance,
+  ]);
 
   return {
     initialIndex: PRIMARY_CARD_INDEX,
@@ -266,7 +288,7 @@ export const usePayment = (props: any) => {
     onSelectedEasyPay,
     bankAccounts,
     isEnablePaymentCard,
-    payMoneyBalance: PAY_MONEY_BALANCE,
+    payMoneyBalance: currentWallet?.balance,
     pointHolding: currentWallet?.pointBalance,
     pointUsed,
     disableBtnSubmit,

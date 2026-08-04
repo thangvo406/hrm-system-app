@@ -4,7 +4,7 @@ import { AppButton, Button, HeaderDetail, Image } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AppNavigator from '@navigation/AppNavigator';
 import InputAddress from '@screens/InputAddress';
@@ -60,7 +60,7 @@ function Shipping({
   data,
 }: ShippingProperties) {
   const { t } = useTranslation();
-  const [selected, setSelected] = useState<OrderMethod>('DELIVERY');
+  const [selected, setSelected] = useState<OrderMethod | string>('');
   const [addressDelivery, setAddressDelivery] = useState(addressOrderRecent);
   const insets = useSafeAreaInsets();
 
@@ -68,13 +68,14 @@ function Shipping({
     return (
       addressDelivery?.address?.roadAddress ||
       addressDelivery?.address?.landAddress ||
-      addressDelivery?.address_name ||
-      '--'
+      addressDelivery?.address_name
     );
   };
 
   const disableBtn = useMemo(() => {
-    return selected == 'DELIVERY' && !getAddressDisplay();
+    return (
+      !selected || (selected == 'DELIVERY' && !getAddressDisplay()?.length)
+    );
   }, [addressDelivery, selected]);
 
   const orderMethods = useMemo(() => {
@@ -83,6 +84,10 @@ function Shipping({
       return it;
     });
   }, [data]);
+
+  useEffect(() => {
+    setSelected(prev => (prev ? prev : orderMethods?.[0]?.id));
+  }, [orderMethods]);
 
   const onUpdateAddress = (address: any) => {
     setAddressDelivery(address);
@@ -180,7 +185,9 @@ function Shipping({
               {t('order_method.address_section_title')}
             </Text>
             <View style={[styles.card, styles.addressCard]}>
-              <Text style={styles.addressText}>{getAddressDisplay()}</Text>
+              <Text style={styles.addressText}>
+                {getAddressDisplay() || '--'}
+              </Text>
               <AppButton
                 onPress={onChangeAddress}
                 style={styles.changeBtn}

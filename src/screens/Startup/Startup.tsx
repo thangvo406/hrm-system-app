@@ -29,7 +29,10 @@ function navigateToPendingDeepLink(isAuthenticated: boolean) {
   }
   const { screen, ...params } = data || {};
   if (isAuthenticated && screen?.toLowerCase?.() == 'vouchers') {
-    AppNavigator.replace(AppStacks.App, { destination: Paths.Vouchers });
+    AppNavigator.resetToNestedState(AppStacks.App, {
+      index: 1,
+      routes: [{ name: Paths.AppTabs }, { name: Paths.Vouchers }],
+    });
     return;
   }
   handleNavigateScreen();

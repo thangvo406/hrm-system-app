@@ -395,7 +395,12 @@
       "badge_coop_balance": "COOP MONEY",
       "pay_money_name": "생협페이머니",
       "balance_amount": "잔액 {{amount}}원",
-      "amount_input_placeholder": "금액 입력"
+      "amount_input_placeholder": "금액 입력",
+      "errors": {
+        "balance_title": "잔액 부족",
+        "balance_btn_confirm": "충전하기",
+        "balance_desc": "결제를 완료하기 위한 생협페이머니 잔액이 부족합니다. 생협페이머니를 충전하거나 다른 결제수단을 선택해 주세요."
+      }
     },
     "point_usage": {
       "use_point": "포인트 사용",
