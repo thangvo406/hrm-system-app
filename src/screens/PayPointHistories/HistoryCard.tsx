@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next';
 import React from 'react';
 import dayjs from 'dayjs';
 import type {
-  IPayPointHistory,
   TPayPointAmountTone,
   TPayPointTagType,
 } from '@hooks/usePayPointHistories';
+import { IPointPayHistory } from '@type';
 
 type Properties = {
-  readonly item: IPayPointHistory;
+  readonly item: IPointPayHistory;
 };
 
 const TEXT_DARK = '#1A1A1A';
@@ -36,39 +36,40 @@ const AMOUNT_COLOR: Record<TPayPointAmountTone, string> = {
   positive: '#2DB34A',
 };
 
-const formatSigned = (item: IPayPointHistory) => {
-  const suffix = item.unit === 'won' ? '원' : ' P';
+const formatSigned = (item: IPointPayHistory, type) => {
+  const suffix = type != 'point' ? '원' : ' P';
   const sign = item.amount > 0 ? '+' : '';
   return `${sign}${formatCurrency(item.amount)}${suffix}`;
 };
 
-const formatBalance = (item: IPayPointHistory) => {
-  const suffix = item.unit === 'won' ? '원' : ' P';
-  return `${formatCurrency(item.balance)}${suffix}`;
+const formatBalance = (item: IPointPayHistory, type: string) => {
+  const suffix = type != 'point' ? '원' : ' P';
+  return `${formatCurrency(item.amount)}${suffix}`;
 };
 
-function HistoryCard({ item }: Properties) {
+function HistoryCard({ item, type }: Properties) {
   const { t } = useTranslation();
+  console.log("HistoryCard",item)
   const tag = TAG_STYLE[item.tag];
 
   return (
     <View style={styles.card}>
       <View style={styles.leftColumn}>
-        <View style={[styles.tag, { backgroundColor: tag.color }]}>
-          <Text style={styles.tagText}>{t(`pay_point.${tag.key}`)}</Text>
+        <View style={[styles.tag, { backgroundColor: tag?.color }]}>
+          <Text style={styles.tagText}>{t(`pay_point.${tag?.key}`)}</Text>
         </View>
         <Text style={[styles.amount, { color: AMOUNT_COLOR[item.amountTone] }]}>
-          {formatSigned(item)}
+          {formatSigned(item, type)}
         </Text>
-        <Text style={styles.description}>{item.description}</Text>
+        <Text style={styles.description}>{item.entryType}</Text>
       </View>
 
       <View style={styles.rightColumn}>
         <Text style={styles.date}>
-          {dayjs(item.dateTime).format(DATE_FORMAT)}
+          {dayjs(item.createdDate).format(DATE_FORMAT)}
         </Text>
         <Text style={styles.balance}>
-          {t('pay_point.balance_after', { amount: formatBalance(item) })}
+          {t('pay_point.balance_after', { amount: formatBalance(item, type) })}
         </Text>
         {item.expiry ? (
           <Text

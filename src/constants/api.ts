@@ -44,6 +44,7 @@ export const EndPoints = {
     createQRCodeMember: 'api/v1/membership/qr/generate',
     withdrawalBalance: 'balance/withdrawal',
     getMealTickets: (request: string) => `order/ticket${request}`,
+    payPointHistories: (request: string) => `balance/ledger${request}`,
   },
   ACCOUNT_MANAGEMENT: {
     addAccount: 'balance/kcp/register/init',

@@ -5,6 +5,7 @@ import type { AddressSuggestion } from '@services/request/account';
 import type {
   IResponseCreateQRCodeMember,
   IRequestAutoCompleteAddress,
+  IRequestGetPayPointHistories,
   IRequestGetVouchers,
   IRequestUpdateMembership,
   IRequestUpdatePassword,
@@ -14,6 +15,7 @@ import type {
   IUpdateProfileInfoRequest,
   IRequestCreateQRCodeMember,
   IVoucher,
+  IPointPayHistory,
 } from '@type/account';
 import type {
   IContributeHistory,
@@ -37,6 +39,7 @@ import {
   createQRCodeMember,
   deleteAccount,
   getMealTickets,
+  getPayPointHistories,
   getProfile,
   getVouchers,
   updateMembership,
@@ -65,6 +68,7 @@ import {
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
   getMealTicketsRequest,
+  getPayPointHistoriesRequest,
   getProfileRequest,
   getProfileSuccess,
   getTotalItemCartRequest,
@@ -105,6 +109,22 @@ function* getMealTicketsWorker(
   try {
     const response: ListApiResponse<IVoucher[]> = yield call(
       getMealTickets,
+      request,
+    );
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* getPayPointHistoriesWorker(
+  action: PayloadAction<IRequestGetPayPointHistories>,
+): Generator<unknown, void, ListApiResponse<IPointPayHistory[]>> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: ListApiResponse<IPointPayHistory[]> = yield call(
+      getPayPointHistories,
       request,
     );
     onSuccess?.(response);
@@ -355,6 +375,7 @@ export function* accountSaga() {
   // takeEvery for the same reason as vouchers: meal-ticket tabs share one
   // action type, so a tab switch / refresh must not cancel an in-flight fetch.
   yield takeEvery(getMealTicketsRequest.type, getMealTicketsWorker);
+  yield takeLatest(getPayPointHistoriesRequest.type, getPayPointHistoriesWorker);
   yield takeLatest(getProfileRequest.type, getProfileWorker);
   yield takeLatest(updateMembershipRequest.type, updateMembershipWorker);
   yield takeLatest(updatePasswordRequest.type, updatePasswordWorker);

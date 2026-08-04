@@ -1,13 +1,10 @@
-import { EmptyView, HeaderDetail, SegmentedTab } from '@components';
+import { HeaderDetail, SegmentedTab } from '@components';
 import { ScaleSize } from '@kits/core';
-import imageNames from '@assets/images/names';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useMemo } from 'react';
 import { usePayPointHistories } from '@hooks';
 import { useTranslation } from 'react-i18next';
-import type { TPayPointTab } from '@hooks/usePayPointHistories';
-import HistoryCard from './HistoryCard';
-// import PointNotice from './PointNotice';
+import HistoryList from './HistoryList';
 import SummaryHeader from './SummaryHeader';
 
 const SCREEN_BACKGROUND = '#F2F2F2';
@@ -16,13 +13,16 @@ function PayPointHistories() {
   const { t } = useTranslation();
   const {
     activeTab,
-    // expiringNotice,
+    currentWallet,
+    loading,
+    loadingMore,
     onChangeTab,
-    // onDismissNotice,
+    onLoadMore,
     onPressWithdrawal,
+    onRefresh,
     payMoneyHistories,
     pointHistories,
-    currentWallet,
+    refreshing,
   } = usePayPointHistories();
 
   const tabs = useMemo(
@@ -30,59 +30,61 @@ function PayPointHistories() {
       {
         id: 'payMoney' as const,
         label: t('pay_point.tab_pay_money'),
+        render: () => (
+          <HistoryList
+            histories={payMoneyHistories}
+            loading={loading}
+            loadingMore={loadingMore}
+            onLoadMore={onLoadMore}
+            onRefresh={onRefresh}
+            refreshing={refreshing}
+            type="pay"
+          />
+        ),
         testID: 'pay-point-tab-pay-money',
       },
       {
         id: 'point' as const,
         label: t('pay_point.tab_point'),
+        render: () => (
+          <HistoryList
+            histories={pointHistories}
+            loading={loading}
+            loadingMore={loadingMore}
+            onLoadMore={onLoadMore}
+            onRefresh={onRefresh}
+            refreshing={refreshing}
+            type="point"
+          />
+        ),
         testID: 'pay-point-tab-point',
       },
     ],
-    [t],
+    [
+      t,
+      payMoneyHistories,
+      pointHistories,
+      loading,
+      loadingMore,
+      onLoadMore,
+      onRefresh,
+      refreshing,
+    ],
   );
 
-  const isPointTab = activeTab === 'point';
-  const histories = isPointTab ? pointHistories : payMoneyHistories;
-
   return (
-    <View style={styles.safeArea}>
+    <View style={styles.container}>
       <HeaderDetail title={t('pay_point.title')} />
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        style={styles.scrollView}
-      >
-        <SummaryHeader
-          onPressWithdrawal={onPressWithdrawal}
-          summary={currentWallet}
-        />
-
-        <View style={styles.tabBar}>
-          <SegmentedTab
-            activeTab={activeTab}
-            onTabChange={onChangeTab as (tab: TPayPointTab) => void}
-            tabs={tabs}
-          />
-        </View>
-
-        {/* <PointNotice
-          amount={expiringNotice.amount}
-          days={expiringNotice.days}
-          onDismiss={onDismissNotice}
-        /> */}
-
-        <View style={styles.list}>
-          {histories.length > 0 ? (
-            histories.map(item => <HistoryCard item={item} key={item.id} />)
-          ) : (
-            <EmptyView
-              desc={t('pay_point.empty')}
-              icon={imageNames.ic_package}
-              style={styles.empty}
-            />
-          )}
-        </View>
-      </ScrollView>
+      <SummaryHeader
+        onPressWithdrawal={onPressWithdrawal}
+        summary={currentWallet}
+      />
+      <SegmentedTab
+        activeTab={activeTab}
+        onTabChange={onChangeTab}
+        style={styles.tabs}
+        tabs={tabs}
+      />
     </View>
   );
 }
@@ -90,26 +92,12 @@ function PayPointHistories() {
 export default PayPointHistories;
 
 const styles = StyleSheet.create({
-  empty: {
-    paddingVertical: ScaleSize(40),
-  },
-  list: {
-    paddingBottom: ScaleSize(24),
-    paddingTop: ScaleSize(6),
-  },
-  safeArea: {
+  container: {
     backgroundColor: SCREEN_BACKGROUND,
     flex: 1,
   },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  tabBar: {
-    backgroundColor: '#FFFFFF',
-    paddingBottom: ScaleSize(16),
-    paddingHorizontal: ScaleSize(16),
+  tabs: {
+    marginHorizontal: ScaleSize(16),
+    marginTop: ScaleSize(12),
   },
 });

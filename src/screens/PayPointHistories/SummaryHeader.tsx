@@ -9,7 +9,7 @@ import { IWallet } from '@type';
 
 type Properties = {
   readonly onPressWithdrawal: () => void;
-  readonly summary: IWallet;
+  readonly summary: IWallet | undefined;
 };
 
 const TEXT_DARK = '#1A1A1A';
@@ -48,7 +48,7 @@ function SummaryHeader({ onPressWithdrawal, summary }: Properties) {
 
       <Text style={styles.expiring}>
         {t('pay_point.point_expiring', {
-          amount: formatCurrency(summary.pointBalance),
+          amount: formatCurrency(summary?.pointBalance),
         })}
       </Text>
     </View>
