@@ -42,6 +42,7 @@ export const EndPoints = {
     updateProfile: 'user/profile',
     confirmOTPRequestMembership: 'user/membership/confirm-otp',
     createQRCodeMember: 'api/v1/membership/qr/generate',
+    withdrawalBalance: 'balance/withdrawal',
     getMealTickets: (request: string) => `order/ticket${request}`,
   },
   ACCOUNT_MANAGEMENT: {

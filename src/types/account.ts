@@ -25,6 +25,14 @@ export interface IRequestUpdatePushId {
   subscriptionId: string;
 }
 
+export interface IRequestWithdrawalBalance
+  extends AppCallback {
+    requestedAmount: number;
+    bankName: string;
+    accountNumber: string;
+    accountHolder: string;
+    reason?: string;
+}
 export interface IRequestCreateQRCodeMember
   extends AppCallback<IResponseCreateQRCodeMember> {
   cpn: string[];

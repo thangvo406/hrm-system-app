@@ -13,6 +13,7 @@ import type {
   IRequestUpdateMembership,
   IRequestUpdatePassword,
   IRequestUpdatePushId,
+  IRequestWithdrawalBalance,
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
   IRequestCreateQRCodeMember,
@@ -181,6 +182,12 @@ export const getVouchers = async (
     SingleApiResponse<ListApiResponse<IVoucher[]>>
   >(EndPoints.VOUCHERS.list(params ? `?${params}` : ''), { loading: false });
   return response.data;
+};
+
+export const withdrawalBalance = async (
+  request: Omit<IRequestWithdrawalBalance, 'onFailure' | 'onSuccess'>,
+): Promise<void> => {
+  await httpRequest.post(EndPoints.ACCOUNT.withdrawalBalance, request);
 };
 
 export const getMealTickets = async (

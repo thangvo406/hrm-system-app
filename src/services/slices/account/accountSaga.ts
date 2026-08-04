@@ -9,6 +9,7 @@ import type {
   IRequestUpdateMembership,
   IRequestUpdatePassword,
   IRequestUpdatePushId,
+  IRequestWithdrawalBalance,
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
   IRequestCreateQRCodeMember,
@@ -44,6 +45,7 @@ import {
   updatePushId,
   uploadAvatar,
   uploadFile,
+  withdrawalBalance,
 } from '@services/request/account';
 import {
   getCurrentWallet,
@@ -75,6 +77,7 @@ import {
   updateProfileInfoRequest,
   updatePushIdRequest,
   uploadAvatarRequest,
+  withdrawalBalanceRequest,
 } from './accountSlice';
 import { AccountSelector } from '@services/selectors';
 import { refreshTokenRequest } from '../auth/authSlice';
@@ -306,6 +309,19 @@ function* topUpWalletWorker(
   }
 }
 
+function* withdrawalBalanceWorker(
+  action: PayloadAction<IRequestWithdrawalBalance>,
+) {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    yield call(withdrawalBalance, request);
+    onSuccess?.();
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 function* autoCompleteAddressWorker(
   action: PayloadAction<IRequestAutoCompleteAddress>,
 ): Generator<unknown, void, AddressSuggestion[]> {
@@ -351,4 +367,5 @@ export function* accountSaga() {
     getContributeHistoriesWorker,
   );
   yield takeLatest(topUpWalletRequest.type, topUpWalletWorker);
+  yield takeLatest(withdrawalBalanceRequest.type, withdrawalBalanceWorker);
 }

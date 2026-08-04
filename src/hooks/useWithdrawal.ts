@@ -1,10 +1,11 @@
 import AppNavigator from '@navigation/AppNavigator';
-import { useAppSelector } from '@services/common/storeHooks';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import bankData from '@constants/banks.json';
 import Selection from '@dialogs/Selection';
+import { getCurrentWalletRequest, withdrawalBalanceRequest } from '@services/slices/account/accountSlice';
 export type IBankOption = {
   readonly code: string;
   readonly name: string;
@@ -16,6 +17,7 @@ const BONUS_AMOUNT = 500;
 
 export const useWithdrawal = () => {
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const [amount, setAmount] = useState('');
   const [accountHolder, setAccountHolder] = useState('');
@@ -29,6 +31,8 @@ export const useWithdrawal = () => {
     [],
   );
 
+
+
   const enabledBtnSubmit = useMemo(() => {
     const numericAmount = Number(amount);
     return (
@@ -39,6 +43,7 @@ export const useWithdrawal = () => {
       accountHolder.trim().length > 0
     );
   }, [accountHolder, accountNumber, amount, selectedBank, withdrawableAmount]);
+
 
   const onAmountChange = (value: string) => {
     setAmount(value.replaceAll(/\D/g, ''));
@@ -52,6 +57,7 @@ export const useWithdrawal = () => {
     AppNavigator.showDialog({
       screen: Selection,
       popupType: 'bottomSheet',
+      itemSelected: selectedBank,
       items: bankData,
       onSelect: setSelectedBank,
       emptyType: 'selection',
@@ -60,10 +66,26 @@ export const useWithdrawal = () => {
     });
   };
   const onSubmit = () => {
-    AppNavigator.showSnackBar({
-      message: t('withdrawal.submit'),
-      type: 'success',
-    });
+    dispatch(withdrawalBalanceRequest({
+      requestedAmount: Number(amount),
+      bankName: typeof selectedBank == "string" ? selectedBank : selectedBank?.name ?? '',
+      accountNumber: accountNumber,
+      accountHolder: accountHolder,
+      onSuccess: () => {
+        dispatch(getCurrentWalletRequest());
+        AppNavigator.goBack()
+        AppNavigator.showSnackBar({
+          message: t('withdrawal.submit'),
+          type: 'success',
+        });
+      },
+      onFailure: (error: string) => {
+        AppNavigator.showSnackBar({
+          message: error || '',
+          type: 'failed',
+        });
+      },
+    }));
   };
 
   return {

@@ -13,6 +13,7 @@ import type {
   IRequestUpdateMembership,
   IRequestUpdatePassword,
   IRequestUpdatePushId,
+  IRequestWithdrawalBalance,
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
   IRequestCreateQRCodeMember,
@@ -130,6 +131,10 @@ const accountSlice = createSlice({
         state.pushId = action.payload.subscriptionId;
       },
     },
+    withdrawalBalanceRequest: {
+      prepare: (payload: IRequestWithdrawalBalance) => ({ payload }),
+      reducer: () => {},
+    },
   },
 });
 
@@ -155,6 +160,7 @@ export const {
   updateProfileInfoRequest,
   updatePushIdRequest,
   uploadAvatarRequest,
+  withdrawalBalanceRequest,
 } = accountSlice.actions;
 
 export const accountReducer = accountSlice.reducer;
