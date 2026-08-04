@@ -180,6 +180,7 @@ export const useHome = (props: any) => {
         universityId: school?.id,
         onSuccess: () => {
           dispatch(getProfileRequest());
+          dispatch(getCurrentWalletRequest());
         },
         onFailure: error => {
           AppNavigator.showSnackBar({

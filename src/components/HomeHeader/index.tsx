@@ -5,7 +5,6 @@ import imageNames from '@assets/images/names';
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { ScaleSize } from '@kits/core';
-import { AppConstants } from '@constants';
 import AppButton from '@components/AppButton';
 import {
   GRADE_MEMBERSHIP_TYPE,
@@ -84,12 +83,11 @@ function Header({
         }}
       >
         <Text style={styles.greeting} numberOfLines={1}>
-          <Text style={styles.name}> {` ${profile?.universityName}`}</Text>
+          {profile?.universityName}
         </Text>
         <AppButton
           onPress={onPressSwitchSchool}
           testID="home-notification-button"
-          hitSlop={AppConstants.HISLOP_BUTTON}
           style={{
             marginTop: ScaleSize(-5),
             marginRight: ScaleSize(10),
@@ -123,10 +121,10 @@ function Header({
 
 const styles = StyleSheet.create({
   greeting: {
-    color: '#707070',
+    color: '#1A1A1A',
     fontSize: ScaleSize(12),
     fontWeight: '600',
-    marginRight: ScaleSize(10),
+    // marginRight: ScaleSize(10),
     width: ScaleSize(90),
   },
   name: {

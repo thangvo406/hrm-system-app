@@ -38,18 +38,11 @@ function CartDetail(props: any) {
     loading,
     error,
     isShowConfirmPayment,
-    addressDelivery,
     onBack,
     onPressOrder,
     onPressPayment,
-    onPressSelectAddress,
     onChangeQuantity,
   } = useCartDetail(props);
-
-  const methodLabel = t(
-    METHOD_LABEL_KEYS[deliveryTab ?? 'DELIVERY'] ??
-      'order_method.method_delivery',
-  );
 
   return (
     <View style={styles.safeArea}>

@@ -35,6 +35,7 @@ function Vouchers(props: any) {
   const tabs = useMemo(
     () => [
       {
+        icon: 'ic_coupon' as const,
         id: VOUCHERS_STATUSES.AVAILABLE as VoucherStatus,
         label: t('vouchers.tab_available'),
         render: () => (
@@ -55,6 +56,7 @@ function Vouchers(props: any) {
         testID: 'vouchers-tab-available',
       },
       {
+        icon: 'ic_coupon' as const,
         id: VOUCHERS_STATUSES.USED as VoucherStatus,
         label: t('vouchers.tab_used'),
         render: () => (
@@ -76,6 +78,7 @@ function Vouchers(props: any) {
         testID: 'vouchers-tab-used',
       },
       {
+        icon: 'ic_calendar_x' as const,
         id: VOUCHERS_STATUSES.EXPIRED as VoucherStatus,
         label: t('vouchers.tab_expired'),
         render: () => (

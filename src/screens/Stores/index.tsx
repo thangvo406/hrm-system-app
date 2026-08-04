@@ -2,6 +2,7 @@ import type { ListRenderItem } from 'react-native';
 import type { IStoreItem } from '@type/store';
 
 import { FlatList, StyleSheet, Text, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { ScaleSize } from '@kits/core';
 import { EmptyView, StoresLoading } from '@components';
 import { useStore } from '@hooks';
@@ -11,6 +12,8 @@ import SearchBar from './SearchBar';
 import StoreCard from './StoreCard';
 import HeaderDetail from '@components/HeaderDetail';
 import imageNames from '@assets/images/names';
+
+const LIST_FADE_IN_DURATION_MS = 300;
 
 const keyExtractor = (item: IStoreItem) => String(item.id);
 
@@ -41,7 +44,6 @@ function Stores() {
   const { t } = useTranslation();
   const {
     loading,
-    isShowSearchBar,
     onPressFilter,
     onPressProduct,
     onPressStore,
@@ -67,16 +69,18 @@ function Stores() {
   return (
     <View style={styles.safeArea}>
       <HeaderDetail title={t('stores.title')} onPressBack={onBack} />
-      {(stores?.length > 0 || !!isShowSearchBar) && (
-        <SearchComponent
-          onPressFilter={onPressFilter}
-          setKeyword={onSearchChange}
-        />
-      )}
+
+      <SearchComponent
+        onPressFilter={onPressFilter}
+        setKeyword={onSearchChange}
+      />
       {loading ? (
         <StoresLoading />
       ) : isShowList ? (
-        <>
+        <Animated.View
+          entering={FadeIn.duration(LIST_FADE_IN_DURATION_MS)}
+          style={styles.listWrapper}
+        >
           <FlatList
             ItemSeparatorComponent={ItemSeparator}
             contentContainerStyle={styles.listContent}
@@ -94,7 +98,7 @@ function Stores() {
             renderItem={renderItem}
             showsVerticalScrollIndicator={false}
           />
-        </>
+        </Animated.View>
       ) : (
         <EmptyView icon={imageNames.ic_store} desc={t('common.no_data')} />
       )}
@@ -111,6 +115,9 @@ const styles = StyleSheet.create({
   listHeader: {
     paddingHorizontal: ScaleSize(20),
     paddingTop: ScaleSize(12),
+  },
+  listWrapper: {
+    flex: 1,
   },
   safeArea: {
     backgroundColor: '#FFFFFF',

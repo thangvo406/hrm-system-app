@@ -162,6 +162,7 @@ export function useVouchers() {
             screen: QRCodeViewerView,
             isFullScreen: true,
             titleVoucher: voucher?.name,
+            showBtnVoucher: false,
             data: response,
             onRefresh: onRefreshQR(voucher),
           });

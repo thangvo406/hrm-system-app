@@ -3,19 +3,25 @@ import TextField from '@components/TextField';
 import RegisterHeader from './Header';
 import { useTranslation } from 'react-i18next';
 import {
+  Animated,
+  Keyboard,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import type { KeyboardEvent } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScaleSize } from '@kits/core';
 import { Colors } from '@constants';
+import { DeviceUtils } from '@kits/core/utils';
 
+const { isIOS, isIPadOrTablet } = DeviceUtils;
 const PRIMARY_COLOR = '#5BB85C';
 const BORDER_COLOR_SELECTED = '#5BB85C';
 const BORDER_COLOR_DEFAULT = '#CCCCCC';
+const KEYBOARD_ANIMATION_DURATION_MS = 250;
 const NOOP = () => undefined;
 const RADIO_OUTER_SIZE = ScaleSize(20);
 const RADIO_INNER_SIZE = ScaleSize(10);
@@ -50,6 +56,7 @@ function ChooseMemberShipType({
     MembershipOption | undefined
   >(undefined);
   const [otherReason, setOtherReason] = useState('');
+  const keyboardOffset = useRef(new Animated.Value(0)).current;
 
   // "Other" memberships need a free-text reason before the flow can continue.
   const requireReason = itemSelected?.other === true;
@@ -64,6 +71,40 @@ function ChooseMemberShipType({
       otherReason,
     });
   };
+
+  useEffect(() => {
+    if (isIPadOrTablet()) {
+      return;
+    }
+    const showEvent = isIOS() ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = isIOS() ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    // Shift the content up by exactly the keyboard height so the focused
+    // reason input stays visible.
+    const onShow = (event: KeyboardEvent) => {
+      Animated.timing(keyboardOffset, {
+        toValue: -event.endCoordinates.height / 2,
+        duration: event.duration || KEYBOARD_ANIMATION_DURATION_MS,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const onHide = (event: KeyboardEvent) => {
+      Animated.timing(keyboardOffset, {
+        toValue: 0,
+        duration: event.duration || KEYBOARD_ANIMATION_DURATION_MS,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const showSub = Keyboard.addListener(showEvent, onShow);
+    const hideSub = Keyboard.addListener(hideEvent, onHide);
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -81,64 +122,68 @@ function ChooseMemberShipType({
             marginTop: ScaleSize(10),
           }}
         >
-          {options.map((option, index) => {
-            const isSelected = option.id === itemSelected?.id;
-            const showReasonInput = isSelected && option.other === true;
-            return (
-              <React.Fragment key={option.id}>
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => {
-                    onSelectMembership?.(option.id);
-                    setItemSelected(option);
-                    setOtherReason('');
-                  }}
-                  style={[
-                    styles.option,
-                    index === 0 && styles.optionFirst,
-                    isSelected && styles.optionSelected,
-                    showReasonInput && styles.optionWithReason,
-                  ]}
-                  testID={`choose-membership-option-${option.id}`}
-                >
-                  <View
+          <Animated.View
+            style={[{ flex: 1, transform: [{ translateY: keyboardOffset }] }]}
+          >
+            {options.map((option, index) => {
+              const isSelected = option.id === itemSelected?.id;
+              const showReasonInput = isSelected && option.other === true;
+              return (
+                <React.Fragment key={option.id}>
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() => {
+                      onSelectMembership?.(option.id);
+                      setItemSelected(option);
+                      setOtherReason('');
+                    }}
                     style={[
-                      styles.radioOuter,
-                      isSelected && styles.radioOuterSelected,
+                      styles.option,
+                      index === 0 && styles.optionFirst,
+                      isSelected && styles.optionSelected,
+                      showReasonInput && styles.optionWithReason,
                     ]}
+                    testID={`choose-membership-option-${option.id}`}
                   >
-                    {isSelected ? (
-                      <View style={styles.radioInner} />
-                    ) : undefined}
-                  </View>
-                  <View>
-                    <Text style={styles.optionLabel}>{t(option.label)}</Text>
-                    <Text style={styles.desc}>{t(option.desc)}</Text>
-                  </View>
-                </TouchableOpacity>
+                    <View
+                      style={[
+                        styles.radioOuter,
+                        isSelected && styles.radioOuterSelected,
+                      ]}
+                    >
+                      {isSelected ? (
+                        <View style={styles.radioInner} />
+                      ) : undefined}
+                    </View>
+                    <View>
+                      <Text style={styles.optionLabel}>{t(option.label)}</Text>
+                      <Text style={styles.desc}>{t(option.desc)}</Text>
+                    </View>
+                  </TouchableOpacity>
 
-                {showReasonInput ? (
-                  <View
-                    style={styles.reasonCard}
-                    testID={`choose-membership-reason-${option.id}`}
-                  >
-                    <Text style={styles.reasonLabel}>
-                      {t('choose_membership.other_reason_label')}
-                    </Text>
-                    <TextField
-                      inputWrapperStyle={styles.reasonInput}
-                      onChangeText={setOtherReason}
-                      placeholder={t(
-                        'choose_membership.other_reason_placeholder',
-                      )}
-                      testID={`choose-membership-reason-input-${option.id}`}
-                      value={otherReason}
-                    />
-                  </View>
-                ) : undefined}
-              </React.Fragment>
-            );
-          })}
+                  {showReasonInput ? (
+                    <View
+                      style={styles.reasonCard}
+                      testID={`choose-membership-reason-${option.id}`}
+                    >
+                      <Text style={styles.reasonLabel}>
+                        {t('choose_membership.other_reason_label')}
+                      </Text>
+                      <TextField
+                        inputWrapperStyle={styles.reasonInput}
+                        onChangeText={setOtherReason}
+                        placeholder={t(
+                          'choose_membership.other_reason_placeholder',
+                        )}
+                        testID={`choose-membership-reason-input-${option.id}`}
+                        value={otherReason}
+                      />
+                    </View>
+                  ) : undefined}
+                </React.Fragment>
+              );
+            })}
+          </Animated.View>
         </ScrollView>
       </View>
 

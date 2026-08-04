@@ -99,8 +99,15 @@ const useRegisterMembership = (props: any) => {
   const onSubmit = (data?: any) => {
     switch (step) {
       case REGISTER_MEMBER_SHIP_STEP.CHOOSE_MEMBERSHIP: {
+        const { item, otherReason } = data || {};
         formData.current.membership = data;
-        navigateToStep(REGISTER_MEMBER_SHIP_STEP.INPUT_ACADEMIC_EMAIL);
+        if (item?.other && otherReason) {
+          onSendOtpVerifyEmail?.(() => {
+            navigateToStep(REGISTER_MEMBER_SHIP_STEP.REGISTER_COMPLETED);
+          });
+        } else {
+          navigateToStep(REGISTER_MEMBER_SHIP_STEP.INPUT_ACADEMIC_EMAIL);
+        }
         break;
       }
       case REGISTER_MEMBER_SHIP_STEP.CHOOSE_SCHOOL: {

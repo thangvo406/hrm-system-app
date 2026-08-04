@@ -10,6 +10,7 @@ import {
   resetBrightness,
 } from '@reeq/react-native-device-brightness';
 import { useFocusEffect } from '@react-navigation/native';
+import { Paths } from '@navigation/paths';
 
 const showQRCodeViewer = (mode: QRCodeViewerMode, value?: string) => {
   AppNavigator.showDialog({
@@ -22,8 +23,8 @@ const showQRCodeViewer = (mode: QRCodeViewerMode, value?: string) => {
   });
 };
 
-const onPressScan = () => {
-  // TODO: navigate to QR scanner screen
+const onPressVoucher = () => {
+  AppNavigator.navigate(Paths.Vouchers);
 };
 
 export const useQRCodeMember = () => {
@@ -93,8 +94,8 @@ export const useQRCodeMember = () => {
     data,
     isExpired,
     onPressBarcode,
+    onPressVoucher,
     onPressQR,
-    onPressScan,
     onRefresh: onRefreshQrCode,
   };
 };

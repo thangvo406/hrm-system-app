@@ -5,7 +5,7 @@ import { ValidateUtils } from '@kits/core/utils';
 import { useTranslation } from 'react-i18next';
 import { AuthStep } from '@type/auth';
 
-import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { useAppDispatch } from '@services/common/storeHooks';
 import {
   confirmMemberShipVerifyRequest,
   sendOtpVerifyMembershipRequest,
@@ -34,7 +34,6 @@ import Information from '@dialogs/Information';
 import WebViewScreen from '@dialogs/Webview';
 import { WebViewNavigation } from 'react-native-webview';
 import { deepLinkGate } from '@navigation/deepLinkGate';
-import { AppSelector } from '@services/selectors';
 
 const {
   CARRIER_ITEMS,

@@ -1,3 +1,4 @@
+import type { IconName } from '@assets/icons';
 import type { LayoutChangeEvent, ViewStyle } from 'react-native';
 
 import {
@@ -8,13 +9,24 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Image from '@components/Image';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Colors } from '@constants';
+import { ScaleSize } from '@kits/core';
 
-const TABS_PADDING = 4;
+const ACTIVE_INK = '#FFFFFF';
+const DIVIDER_COLOR = Colors.gray07;
+const DIVIDER_INSET = ScaleSize(11);
+const ICON_GAP = ScaleSize(8);
+const ICON_SIZE = ScaleSize(18);
+const INACTIVE_INK = Colors.gray4;
 const INDICATOR_DURATION = 220;
+const PILL_RADIUS = ScaleSize(100);
+const TABS_PADDING = ScaleSize(4);
+const TRACK_BACKGROUND = '#F5F6F7';
 
 type TabItem<T extends string> = {
+  readonly icon?: IconName;
   readonly id: T;
   readonly label: string;
   readonly render?: () => React.ReactNode;
@@ -95,6 +107,18 @@ function SegmentedTab<T extends string>({
   return (
     <>
       <View onLayout={onTabsLayout} style={[styles.tabs, style]}>
+        {/* Dividers sit under the pill so the selection slides over them. */}
+        {indicatorWidth > 0
+          ? tabs.slice(1).map((tab, index) => (
+              <View
+                key={`divider-${tab.id}`}
+                style={[
+                  styles.divider,
+                  { left: TABS_PADDING + indicatorWidth * (index + 1) },
+                ]}
+              />
+            ))
+          : undefined}
         {indicatorWidth > 0 ? (
           <Animated.View
             style={[
@@ -104,26 +128,36 @@ function SegmentedTab<T extends string>({
             ]}
           />
         ) : undefined}
-        {tabs.map(tab => (
-          <TouchableOpacity
-            activeOpacity={0.8}
-            key={tab.id}
-            onPress={() => {
-              handleTabChange(tab.id);
-            }}
-            style={styles.tab}
-            testID={tab.testID}
-          >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === tab.id && styles.tabTextActive,
-              ]}
+        {tabs.map(tab => {
+          const isActive = activeTab === tab.id;
+          return (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              key={tab.id}
+              onPress={() => {
+                handleTabChange(tab.id);
+              }}
+              style={styles.tab}
+              testID={tab.testID}
             >
-              {tab.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              {tab.icon === undefined ? undefined : (
+                <Image
+                  color={isActive ? ACTIVE_INK : INACTIVE_INK}
+                  height={ICON_SIZE}
+                  name={tab.icon}
+                  type="svg"
+                  width={ICON_SIZE}
+                />
+              )}
+              <Text
+                numberOfLines={1}
+                style={[styles.tabText, isActive && styles.tabTextActive]}
+              >
+                {tab.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
       {tabs.some(tab => tab.render !== undefined) &&
         tabs.map(tab =>
@@ -147,11 +181,21 @@ function SegmentedTab<T extends string>({
 }
 
 const styles = StyleSheet.create({
+  divider: {
+    backgroundColor: DIVIDER_COLOR,
+    bottom: DIVIDER_INSET,
+    position: 'absolute',
+    top: DIVIDER_INSET,
+    width: 1,
+    zIndex: 0,
+  },
   tab: {
     alignItems: 'center',
-    borderRadius: 8,
+    columnGap: ICON_GAP,
     flex: 1,
-    paddingVertical: 11,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: ScaleSize(11),
     zIndex: 2,
   },
   tabContent: {
@@ -161,31 +205,32 @@ const styles = StyleSheet.create({
     display: 'none',
   },
   tabIndicator: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
+    backgroundColor: Colors.green02,
+    borderRadius: PILL_RADIUS,
     bottom: TABS_PADDING,
     left: TABS_PADDING,
     position: 'absolute',
-    shadowColor: '#000000',
-    shadowOffset: { height: 1, width: 0 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
     top: TABS_PADDING,
     zIndex: 1,
   },
   tabs: {
-    backgroundColor: Colors.gray3,
-    borderRadius: 10,
+    backgroundColor: TRACK_BACKGROUND,
+    borderRadius: PILL_RADIUS,
+    elevation: 2,
     flexDirection: 'row',
     padding: TABS_PADDING,
+    shadowColor: '#000000',
+    shadowOffset: { height: 2, width: 0 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
   },
   tabText: {
-    color: '#7A7A7A',
-    fontSize: 15,
-    fontWeight: '500',
+    color: INACTIVE_INK,
+    fontSize: ScaleSize(15),
+    fontWeight: '600',
   },
   tabTextActive: {
-    color: '#1A1A1A',
+    color: ACTIVE_INK,
     fontWeight: '700',
   },
 });

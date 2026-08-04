@@ -11,6 +11,7 @@ import {
 } from '@services/selectors';
 import { IAccount } from '@type';
 import { generateQRCodePayRequest } from '@services/slices/payment/paymentSlice';
+import { ScaleSize } from '@kits/core';
 
 export type PaymentMethodKind = 'bank' | 'card' | 'money';
 
@@ -58,8 +59,8 @@ export const usePaymentOffline = () => {
   const [amount, setAmount] = useState('');
 
   const disabledBtnSubmit = useMemo(() => {
-    return !(amount && amount > 0);
-  }, [amount]);
+    return !amount || Number(amount) > (currentWallet?.balance || 0);
+  }, [amount, currentWallet?.balance]);
 
   const onAmountChange = useCallback((value: string) => {
     setAmount(value.replaceAll(/\D/g, ''));
@@ -97,6 +98,9 @@ export const usePaymentOffline = () => {
           AppNavigator.showDialog({
             screen: QRCodeViewerView,
             isFullScreen: true,
+            contentStyle: {
+              marginTop: ScaleSize(-130),
+            },
             data: {
               amountText: t('payment_offline.qr_balance_text', {
                 amount: formatCurrency(currentWallet?.balance),

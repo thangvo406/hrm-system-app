@@ -12,6 +12,7 @@ import { useAppDispatch } from '@services/common/storeHooks';
 import AppNavigator from '@navigation/AppNavigator';
 import QRCodeViewerView from '@screens/QRCodeViewer/QRCodeViewerView';
 import { VOUCHERS_STATUSES } from '@constants/config';
+import { useTranslation } from 'react-i18next';
 
 const PAGE_SIZE = 20;
 
@@ -40,6 +41,7 @@ export function useMealTickets() {
   const [activeTab, setActiveTab] = useState<VoucherStatus>(
     VOUCHERS_STATUSES.AVAILABLE,
   );
+  const { t } = useTranslation();
   const [vouchers, setVouchers] =
     useState<Record<VoucherStatus, IVoucher[]>>(EMPTY_VOUCHERS);
   const [loadedTabs, setLoadedTabs] = useState<ReadonlySet<VoucherStatus>>(
@@ -157,6 +159,9 @@ export function useMealTickets() {
           AppNavigator.showDialog({
             screen: QRCodeViewerView,
             isFullScreen: true,
+            showBtnVoucher: true,
+            showIconVoucher: false,
+            btnVoucher: `‹${t('meal_ticket.detail.btn_back')}`,
             titleVoucher: voucher?.productName,
             data: response,
             onRefresh: onRefreshQR(voucher),

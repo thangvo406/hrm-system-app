@@ -20,7 +20,7 @@
       "title": "쿠폰 QR",
       "valid_time": "유효시간 {{time}}",
       "refresh": "QR 갱신",
-      "pay_other_method": "다른 수단으로 결제"
+      "btn_return_voucher": "쿠폰 선택"
     },
     "welcome": {
       "login": "로그인",
@@ -76,7 +76,10 @@
     "meal_ticket": {
       "title": "식권함",
       "purchase_at": "구매일자: {{date}}",
-      "expired_at": "유효기간: {{date}}"
+      "expired_at": "유효기간: {{date}}",
+      "detail": {
+        "btn_back": "식권함으로 돌아가기"
+      }
     },
     "register_flow": {
       "identity_title": "본인확인을 위해 인증을 진행해 주세요",
@@ -110,7 +113,7 @@
       }
     },
     "school_selection": {
-      "title": "학적 인증",
+      "title": "대학을 선택해주세요",
       "search_label": "학교 조회",
       "search_placeholder": "학교 이름",
       "empty": "검색 결과가 없습니다.",
@@ -823,6 +826,7 @@
       "wait_time_value": "배달 약 15분 | 포장 약 5분 | 매장 약 10분",
       "store_available": "현재 {{method}} 가능",
       "address_section_title": "배달 주소",
+      "address_delivery_note": "교내 주소를 입력해 주세요.",
       "change": "변경",
       "btn_submit": "계속하기"
     },

@@ -1,7 +1,7 @@
-import { Button, HeaderDetail, Image } from '@components';
+import { HeaderDetail, Image } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import AppButton from '@components/AppButton';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import {
   resetBrightness,
 } from '@reeq/react-native-device-brightness';
 import { formatTime } from '@utils/date';
+import imageNames from '@assets/images/names';
 
 const QR_SIZE = ScaleSize(200);
 const TICK_INTERVAL_MS = 1000;
@@ -27,9 +28,12 @@ export type QRCodeViewerViewProps = {
   readonly data?: IQRCodeViewerData;
   readonly durationSeconds?: number;
   readonly titleKey?: string;
+  readonly contentStyle?: ViewStyle;
   readonly titleVoucher?: string;
-  readonly showPayOther?: boolean;
-  readonly onPayOtherMethod?: () => void;
+  readonly btnVoucher?: string;
+  readonly showBtnVoucher?: boolean;
+  readonly showIconVoucher?: boolean;
+  readonly onPressVoucher?: () => void;
   readonly onRefresh?: (
     onRefreshed: (data?: IQRCodeViewerData) => void,
   ) => void;
@@ -38,12 +42,15 @@ export type QRCodeViewerViewProps = {
 
 function QRCodeViewerView({
   durationSeconds = DEFAULT_DURATION_SECONDS,
-  onPayOtherMethod,
   onRefresh,
   onRequestClose,
-  showPayOther,
+  showBtnVoucher,
   titleVoucher,
+  onPressVoucher,
+  btnVoucher,
   titleKey = 'qr_voucher.title',
+  contentStyle,
+  showIconVoucher = true,
   ...restProps
 }: QRCodeViewerViewProps) {
   const { t } = useTranslation();
@@ -86,9 +93,9 @@ function QRCodeViewerView({
     });
   };
 
-  const onPressPayOther = () => {
-    onPayOtherMethod?.();
+  const _onPressVoucher = () => {
     onRequestClose?.();
+    onPressVoucher?.();
   };
 
   return (
@@ -104,7 +111,7 @@ function QRCodeViewerView({
           <Text style={styles.headerBadge}>{data?.headerBadge}</Text>
         </View>
       )}
-      <View style={styles.content}>
+      <View style={[styles.content, contentStyle]}>
         <View style={styles.card}>
           {!!titleVoucher && (
             <Text style={styles.couponLabel}>{titleVoucher}</Text>
@@ -126,14 +133,20 @@ function QRCodeViewerView({
             <Text style={styles.refresh}>{t('qr_voucher.refresh')}</Text>
           </AppButton>
         </View>
-        {!!showPayOther && (
-          <Button
-            onPress={onPressPayOther}
-            testID="qr-code-viewer-pay-other"
-            title={`‹ ${t('qr_voucher.pay_other_method')}`}
-            type="outline-green"
-            style={styles.payOtherButton}
-          />
+        {!!showBtnVoucher && (
+          <AppButton style={styles.payOtherButton} onPress={_onPressVoucher}>
+            {!!showIconVoucher && (
+              <Image
+                name={imageNames.ic_vouchers}
+                width={ScaleSize(24)}
+                height={ScaleSize(24)}
+                tintColor={Colors.green02}
+              />
+            )}
+            <Text style={styles.btnPayOther}>
+              {btnVoucher || t('qr_voucher.btn_return_voucher')}
+            </Text>
+          </AppButton>
         )}
       </View>
     </View>
@@ -156,6 +169,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 8,
     width: '100%',
+  },
+  btnPayOther: {
+    fontSize: ScaleSize(16),
+    color: Colors.green02,
+    marginLeft: ScaleSize(12),
   },
   content: {
     flex: 1,
@@ -192,6 +210,13 @@ const styles = StyleSheet.create({
   },
   payOtherButton: {
     marginTop: ScaleSize(30),
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderRadius: ScaleSize(8),
+    borderColor: Colors.green02,
+    paddingVertical: ScaleSize(10),
   },
   refresh: {
     color: Colors.gray06,

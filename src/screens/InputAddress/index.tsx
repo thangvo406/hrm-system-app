@@ -99,6 +99,9 @@ function InputAddress(props: any) {
             // value={detailAddress}
           />
         </View>
+        <Text style={styles.addressNote}>
+          {t('order_method.address_delivery_note')}
+        </Text>
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
@@ -173,6 +176,12 @@ const styles = StyleSheet.create({
     marginBottom: ScaleSize(2),
     paddingHorizontal: ScaleSize(16),
     paddingVertical: ScaleSize(16),
+  },
+  addressNote: {
+    color: Colors.green04,
+    fontSize: ScaleSize(14),
+    marginTop: ScaleSize(-10),
+    marginLeft: ScaleSize(20),
   },
   sectionTitle: {
     color: TEXT_COLOR,

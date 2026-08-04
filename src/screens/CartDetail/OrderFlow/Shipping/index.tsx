@@ -122,6 +122,7 @@ function Shipping({
   return (
     <View style={styles.screen}>
       <HeaderDetail
+        hideNotify
         usePaddingTop={false}
         onPressBack={onRequestClose}
         title={t('order_method.title')}
@@ -134,7 +135,7 @@ function Shipping({
         <Text style={styles.subheading}>{t('order_method.subheading')}</Text>
 
         <View style={styles.methodRow}>
-          {orderMethods?.map(method => {
+          {orderMethods?.map((method: any) => {
             const isSelected = selected === method.id;
             return (
               <AppButton
@@ -164,7 +165,7 @@ function Shipping({
           <Text style={styles.storeMeta}>
             {/* {`${data?.storeAddress?.address_name || '-'}  |  ${data?.storeOpeningHours || '-'}`} */}
             {/* TODO: handle show storeOpeningHours */}
-            {`${data?.storeAddress?.address_name || '-'}  |  '-'}`}
+            {`${data?.storeAddress?.address_name || '-'}  | -`}
           </Text>
           <Text style={styles.storeAvailable}>
             {t('order_method.store_available', {
@@ -173,19 +174,28 @@ function Shipping({
           </Text>
         </View>
 
-        <Text style={styles.sectionTitle}>
-          {t('order_method.address_section_title')}
-        </Text>
-        <View style={[styles.card, styles.addressCard]}>
-          <Text style={styles.addressText}>{getAddressDisplay()}</Text>
-          <AppButton
-            onPress={onChangeAddress}
-            style={styles.changeBtn}
-            testID="order-method-change-address"
-          >
-            <Text style={styles.changeText}>{t('order_method.change')}</Text>
-          </AppButton>
-        </View>
+        {selected == 'DELIVERY' && (
+          <>
+            <Text style={styles.sectionTitle}>
+              {t('order_method.address_section_title')}
+            </Text>
+            <View style={[styles.card, styles.addressCard]}>
+              <Text style={styles.addressText}>{getAddressDisplay()}</Text>
+              <AppButton
+                onPress={onChangeAddress}
+                style={styles.changeBtn}
+                testID="order-method-change-address"
+              >
+                <Text style={styles.changeText}>
+                  {t('order_method.change')}
+                </Text>
+              </AppButton>
+            </View>
+            <Text style={styles.addressNote}>
+              {t('order_method.address_delivery_note')}
+            </Text>
+          </>
+        )}
       </ScrollView>
       <Button
         title={t('order_method.btn_submit')}
@@ -297,6 +307,11 @@ const styles = StyleSheet.create({
     backgroundColor: SCREEN_BG,
     flex: 1,
     paddingBottom: ScaleSize(10),
+  },
+  addressNote: {
+    color: Colors.green04,
+    fontSize: ScaleSize(14),
+    marginTop: ScaleSize(16),
   },
   sectionTitle: {
     color: TEXT_DARK,

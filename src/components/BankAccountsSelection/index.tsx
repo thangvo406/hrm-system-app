@@ -72,7 +72,7 @@ const METHOD_STYLES: Record<string, MethodStyle> = {
   COOP_BALANCE: {
     badgeKey: 'payment.badge_coop_balance',
     bg: '#5A62B0',
-    sub: 'rgba(255, 255, 255, 0.85)',
+    sub: 'rgba(255, 255, 255, 0.3)',
     tag: 'rgba(255, 255, 255, 0.22)',
     text: '#FFFFFF',
   },

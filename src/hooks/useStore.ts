@@ -49,10 +49,6 @@ export const useStore = () => {
     [currentPage],
   );
 
-  const isShowSearchBar = useMemo(() => {
-    return !!searchKey;
-  }, [searchKey]);
-
   const handleFailure = useCallback((message: string) => {
     setError(message);
     setLoading(false);
@@ -94,12 +90,15 @@ export const useStore = () => {
     AppNavigator.navigate(Paths.Products, { data: store });
   }, []);
 
-  const onPressProduct = useCallback((_store: IStoreItem, productId: number) => {
-    AppNavigator.navigate(Paths.ProductDetail, {
-      id: productId,
-      storeId: _store?.id,
-    });
-  }, []);
+  const onPressProduct = useCallback(
+    (_store: IStoreItem, productId: number) => {
+      AppNavigator.navigate(Paths.ProductDetail, {
+        id: productId,
+        storeId: _store?.id,
+      });
+    },
+    [],
+  );
 
   const onSearchChange = useCallback((text: string) => {
     setSearchKey(text);
@@ -124,7 +123,6 @@ export const useStore = () => {
     error,
     filter,
     loading,
-    isShowSearchBar,
     storeOrderRecent,
     onLoadMore,
     onPressProduct,
