@@ -551,7 +551,8 @@
     "products": {
       "cart_button": "장바구니 {{amount}}원",
       "empty": "표시할 상품이 없습니다.",
-      "out_of_stock": "품절"
+      "out_of_stock": "품절",
+      "sold_out": "품절"
     },
     "contribution": {
       "title": "마이페이지",
@@ -767,6 +768,13 @@
       "show_less": "접기",
       "reorder": "재주문",
       "contact_support": "고객 지원 문의",
+      "payment_methods": {
+        "pay_money": "생협페이머니",
+        "point": "생협 포인트",
+        "saved_payment_method": "등록된 결제수단",
+        "one_time_gateway": "일회성 결제",
+        "manual": "수동 잔액 조정"
+      },
       "statuses": {
         "pending": "주문 접수",
         "payment_pending": "결제 대기",

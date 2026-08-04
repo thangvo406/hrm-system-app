@@ -42,8 +42,11 @@ function ProductRow({
     : item.sellingPrice || 0;
 
   const isSoldOut = React.useMemo(
-    () => !isNumber(item.stockQuantity) || item.stockQuantity <= 0,
-    [item.stockQuantity],
+    () =>
+      !item.isStockManaged
+        ? false
+        : !isNumber(item.stockQuantity) || item.stockQuantity <= 0,
+    [item.isStockManaged, item.stockQuantity],
   );
 
   const handlePress = () => {
@@ -84,7 +87,7 @@ function ProductRow({
       type === 'plus' ? quantity + 1 : quantity - 1,
     );
 
-    if (newQuantity > item.stockQuantity) {
+    if (item.isStockManaged && newQuantity > item.stockQuantity) {
       setErrorMaxQuantity(
         t('product_detail.max_quantity_error', { count: item.stockQuantity }),
       );

@@ -9,6 +9,10 @@ const changeLanguage = (lang: SupportedLanguages) => {
   AppStorage.set(AppConstants.APP_LANGUAGE_KEY, lang);
 };
 
+const isEn = () => {
+  return i18next.language?.includes('en');
+};
+
 const toggleLanguage = () => {
   const lang =
     i18next.language === (SupportedLanguages.EN_EN as string)
@@ -23,5 +27,5 @@ const toggleLanguage = () => {
 };
 
 export const useI18n = () => {
-  return { changeLanguage, toggleLanguage };
+  return { changeLanguage, toggleLanguage, isEn: isEn() };
 };

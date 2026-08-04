@@ -225,6 +225,7 @@ export interface IOrderHistoryDetailItem {
   storeAddress: IStoreAddress;
   storeLogo: IImage;
   status: string;
+  paymentFundingSource: string;
   note: any;
   products: IProduct[];
   totalAmount: number;

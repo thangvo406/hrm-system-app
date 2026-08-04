@@ -1,3 +1,4 @@
+import { useI18n } from '@hooks';
 import { ScaleSize } from '@kits/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +27,7 @@ const RIBBON_PATH = [
 
 function SoldOutRibbon() {
   const { t } = useTranslation();
+  const { isEn } = useI18n();
 
   return (
     <Svg
@@ -39,7 +41,7 @@ function SoldOutRibbon() {
       <SvgText
         alignmentBaseline="central"
         fill={TEXT_COLOR}
-        fontSize={9.5}
+        fontSize={isEn ? 7.5 : 9.5}
         fontWeight="bold"
         textAnchor="middle"
         transform={`translate(${TEXT_X}, ${TEXT_Y}) rotate(45)`}

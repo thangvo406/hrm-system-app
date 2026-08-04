@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import type {
   AttributeCheckout,
   IAttributeDetail,
@@ -53,7 +52,7 @@ export const useProductDetail = (props: any) => {
   }, [checkoutInfo]);
 
   const disabledBtnSubmit = useMemo(() => {
-    return data?.stockQuantity == 0;
+    return data?.isStockManaged && data?.stockQuantity == 0;
   }, [data]);
 
   useEffect(() => {

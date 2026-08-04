@@ -41,7 +41,7 @@ function SoldOutBadge() {
           y2={ICON_CENTER + ICON_DIAGONAL}
         />
       </Svg>
-      <Text style={styles.label}>{t('products.out_of_stock')}</Text>
+      <Text style={styles.label}>{t('products.sold_out')}</Text>
     </View>
   );
 }

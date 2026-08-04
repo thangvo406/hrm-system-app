@@ -221,9 +221,11 @@ function OrderHistoryDetail(props: any) {
                     },
                   ]}
                 >
-                  {t(
-                    `order_history_detail.statuses.${data?.status.toLowerCase()}`,
-                  )}
+                  {data?.status
+                    ? t(
+                        `order_history_detail.statuses.${data?.status.toLowerCase()}`,
+                      )
+                    : '-'}
                 </Text>
               </View>
               <Text style={styles.totalLabel}>
@@ -232,7 +234,13 @@ function OrderHistoryDetail(props: any) {
               <Text style={styles.totalAmount}>
                 {formatCurrency(data?.summary.totalPrice)}
               </Text>
-              <Text style={styles.paymentMethodNote}>{'paymentMethod'}</Text>
+              <Text style={styles.paymentMethodNote}>
+                {!data?.paymentFundingSource
+                  ? '-'
+                  : t(
+                      `order_history_detail.payment_methods.${data?.paymentFundingSource.toLowerCase()}`,
+                    )}
+              </Text>
             </View>
           </View>
         </View>
@@ -320,7 +328,13 @@ function OrderHistoryDetail(props: any) {
         >
           <InfoRow
             label={t('order_history_detail.payment_method_label')}
-            value={data?.paymentMethod}
+            value={
+              !data?.paymentFundingSource
+                ? '-'
+                : t(
+                    `order_history_detail.payment_methods.${data?.paymentFundingSource.toLowerCase()}`,
+                  )
+            }
           />
           <InfoRow
             label={t('order_history_detail.subtotal_label')}

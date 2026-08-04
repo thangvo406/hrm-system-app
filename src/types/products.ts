@@ -13,6 +13,7 @@ export interface IProduct {
   stockQuantity: number;
   status: string;
   sortOrder: number;
+  isStockManaged: boolean;
   thumbnail: IImage;
   images: IImage[];
   selectedAttributes?: IAttributeCart[];
@@ -36,6 +37,7 @@ export interface IResponseProductDetail {
   sellingPrice: number;
   discountPrice: any;
   stockQuantity: number;
+  isStockManaged: boolean;
   status: string;
   sortOrder: number;
   thumbnail: IImage;

@@ -234,7 +234,8 @@
     "products": {
       "cart_button": "Checkout {{amount}} KRW",
       "empty": "No products to display.",
-      "out_of_stock": "Out of Stock"
+      "out_of_stock": "Sold Out",
+      "sold_out": "Sold Out"
     },
     "authorisation": {
       "tab_login": "Login",
@@ -771,6 +772,13 @@
       "reorder": "Reorder",
       "contact_support": "Contact Support",
       "status_pending": "Pending",
+      "payment_methods": {
+        "pay_money": "COOP pay-money",
+        "point": "Point",
+        "saved_payment_method": "KCP QPay saved method",
+        "one_time_gateway": "One-time Payment",
+        "manual": "Manual Balance Adjustment"
+      },
       "status_completed": "Completed",
       "copy_order_number_success": "Order code copied successfully",
       "statuses": {

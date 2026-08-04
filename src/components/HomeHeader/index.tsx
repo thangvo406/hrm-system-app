@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     // marginRight: ScaleSize(10),
     width: ScaleSize(90),
+    textAlign: 'right',
   },
   name: {
     color: '#1A1A1A',

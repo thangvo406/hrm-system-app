@@ -24,11 +24,14 @@ type Properties = {
 
 function ProductCard({ onPressProduct, product, storeId }: Properties) {
   const thumbUri = product.thumbnail?.fileUrl;
-  const isSoldOut =
-    !isNumber(product.stockQuantity) || product.stockQuantity <= 0;
-  const originalPrice = isNumber(product.discountPrice)
-    ? product.discountPrice
-    : product.sellingPrice || 0;
+  const { isStockManaged, stockQuantity, discountPrice, sellingPrice } =
+    product || {};
+  const isSoldOut = !isStockManaged
+    ? false
+    : !isNumber(stockQuantity) || stockQuantity <= 0;
+  const originalPrice = isNumber(discountPrice)
+    ? discountPrice
+    : sellingPrice || 0;
 
   return (
     <AppButton

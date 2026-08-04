@@ -411,6 +411,7 @@ function ProductDetail(props: any) {
                   quantity={quantity}
                   minChooseQuantity={minChooseQuantity}
                   maxQuantity={data?.stockQuantity}
+                  isStockManaged={data?.isStockManaged}
                 />
               </View>
             </View>

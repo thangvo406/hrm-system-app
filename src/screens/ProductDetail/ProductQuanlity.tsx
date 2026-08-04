@@ -16,7 +16,8 @@ type ProductQuantityProps = {
   readonly onChange: (delta: number) => void;
   readonly quantity: number;
   readonly minChooseQuantity: number;
-  readonly maxQuantity: number;
+  readonly maxQuantity?: number;
+  readonly isStockManaged?: boolean;
 };
 
 function ProductQuantity({
@@ -24,12 +25,13 @@ function ProductQuantity({
   minChooseQuantity,
   quantity,
   maxQuantity,
+  isStockManaged,
 }: ProductQuantityProps) {
   const { t } = useTranslation();
   const canDecrease = quantity > minChooseQuantity;
   const [error, setError] = useState('');
   const _onChangeQuantity = (delta: number) => {
-    if (quantity + delta > maxQuantity) {
+    if (isStockManaged && quantity + delta > (maxQuantity || 0)) {
       setError(t('product_detail.max_quantity_error', { count: maxQuantity }));
       return;
     }
@@ -71,9 +73,11 @@ function ProductQuantity({
         </TouchableOpacity>
       </View>
       {!!error && <Text style={styles.error}>{error}</Text>}
-      <Text style={styles.maxQuantity}>
-        {t('product_detail.max_quantity', { count: maxQuantity })}
-      </Text>
+      {!!isStockManaged && (
+        <Text style={styles.maxQuantity}>
+          {t('product_detail.max_quantity', { count: maxQuantity })}
+        </Text>
+      )}
     </View>
   );
 }
