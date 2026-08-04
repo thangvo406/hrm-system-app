@@ -11,10 +11,11 @@ export function useOrderHistoryDetail(props: any) {
   const { t } = useTranslation();
   const [showAllProducts, setShowAllProducts] = useState(false);
   const [data, setData] = useState<IOrderHistoryDetailItem>();
+  const [loading, setLoading] = useState(true);
   const dispatch = useAppDispatch();
   const toggleShowAllProducts = () => setShowAllProducts(prev => !prev);
 
- const isSuccess =  data?.status === 'COMPLETED'
+  const isSuccess = data?.status === 'COMPLETED';
 
   const onPressCopyOrderNumber = () => {
     Clipboard.setString(data?.orderNumber ?? '');
@@ -30,6 +31,10 @@ export function useOrderHistoryDetail(props: any) {
         orderId: orderItem?.id,
         onSuccess: (_data: any) => {
           setData(_data);
+          setLoading(false);
+        },
+        onFailure: () => {
+          setLoading(false);
         },
       }),
     );
@@ -42,6 +47,8 @@ export function useOrderHistoryDetail(props: any) {
   return {
     data,
     isSuccess,
+    loading,
+    storeName: data?.storeName ?? orderItem?.storeName ?? '',
     onPressCopyOrderNumber,
     showAllProducts,
     toggleShowAllProducts,

@@ -45,6 +45,7 @@ const useRegisterMembership = (props: any) => {
   const [emailExpiresIn, setEmailExpiresIn] = useState(0);
   const dataInfoVerifyMembership = useRef<unknown>(undefined);
   const [isVerifiedEmailAcademic, setVerifiedEmailAcademic] = useState(false);
+  const isShowContributeBtn = useRef(true);
 
   const stepStack = useRef<RegisterMembershipStep[]>([]);
   const formData = useRef<TFormData>({});
@@ -103,6 +104,7 @@ const useRegisterMembership = (props: any) => {
         formData.current.membership = data;
         if (item?.other && otherReason) {
           onSendOtpVerifyEmail?.(() => {
+            isShowContributeBtn.current = false;
             navigateToStep(REGISTER_MEMBER_SHIP_STEP.REGISTER_COMPLETED);
           });
         } else {
@@ -214,6 +216,7 @@ const useRegisterMembership = (props: any) => {
     emailExpiresIn,
     isVerifiedEmailAcademic,
     ignoreSchoolId,
+    isShowContributeBtn: isShowContributeBtn.current,
     mailAcademic: formData.current?.academicEmail,
     dataInfoVerifyMembership: dataInfoVerifyMembership.current,
     onBack,

@@ -66,6 +66,9 @@ function ChooseMemberShipType({
     (!requireReason || !!otherReason.trim());
 
   const handleSubmit = () => {
+    if (!enabledSubmit) {
+      return;
+    }
     onSubmit?.({
       item: itemSelected,
       otherReason,
@@ -172,6 +175,8 @@ function ChooseMemberShipType({
                       <TextField
                         inputWrapperStyle={styles.reasonInput}
                         onChangeText={setOtherReason}
+                        onSubmitEditing={handleSubmit}
+                        returnKeyType="done"
                         placeholder={t(
                           'choose_membership.other_reason_placeholder',
                         )}

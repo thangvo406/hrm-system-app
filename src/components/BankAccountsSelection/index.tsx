@@ -207,6 +207,7 @@ function CardItem({
                     onChangeText={onAmountChange}
                     placeholder={t('payment.amount_input_placeholder')}
                     placeholderTextColor={theme.sub}
+                    returnKeyType="done"
                     style={[styles.amountInput, { color: theme.text }]}
                     testID={`bank-account-amount-${card.id}`}
                     value={formatCurrency(amount)}

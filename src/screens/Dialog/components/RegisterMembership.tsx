@@ -17,6 +17,7 @@ function RegisterMembership(props: any) {
     onBack,
     membershipOptions,
     dataInfoVerifyMembership,
+    isShowContributeBtn,
     onPressContribute,
     ...rest
   } = useRegisterMembership(props);
@@ -39,7 +40,9 @@ function RegisterMembership(props: any) {
     <DetailComponent
       {...rest}
       titleBtnPrimary="register_completed.complete"
-      titleBtnSecondary="register_completed.contribution"
+      titleBtnSecondary={
+        isShowContributeBtn ? 'register_completed.contribution' : ''
+      }
       btnSubmit={t('common.popup.btn_close')}
       desc={t('register_completed.desc')}
       dataVerifiedMembership={dataInfoVerifyMembership}

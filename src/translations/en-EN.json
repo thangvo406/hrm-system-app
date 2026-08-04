@@ -772,7 +772,20 @@
       "contact_support": "Contact Support",
       "status_pending": "Pending",
       "status_completed": "Completed",
-      "copy_order_number_success": "Order code copied successfully"
+      "copy_order_number_success": "Order code copied successfully",
+      "statuses": {
+        "pending": "Pending",
+        "payment_pending": "Payment pending",
+        "payment_completed": "Paid",
+        "shipping": "Shipping",
+        "completed": "Completed",
+        "cancel_requested": "Cancellation Requested",
+        "canceled": "Cancelled"
+      },
+      "shipping_methods": {
+        "pickup": "Pickup",
+        "delivery": "Delivery"
+      }
     },
     "transaction_detail": {
       "title": "Transaction Detail",

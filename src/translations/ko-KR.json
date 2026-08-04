@@ -767,6 +767,19 @@
       "show_less": "접기",
       "reorder": "재주문",
       "contact_support": "고객 지원 문의",
+      "statuses": {
+        "pending": "주문 접수",
+        "payment_pending": "결제 대기",
+        "payment_completed": "결제 완료",
+        "shipping": "배송 중",
+        "completed": "배송 완료",
+        "cancel_requested": "취소 요청",
+        "canceled": "취소 완료"
+      },
+      "shipping_methods": {
+        "pickup": "포장",
+        "delivery": "배달"
+      },
       "status_pending": "대기 중",
       "status_completed": "완료",
       "copy_order_number_success": "주문 코드가 복사되었습니다"

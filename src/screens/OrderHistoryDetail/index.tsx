@@ -7,6 +7,7 @@ import {
   Button,
   HeaderDetail,
   Image,
+  OrderHistoryDetailLoading,
   ProgressiveImage,
 } from '@components';
 import { Colors } from '@constants';
@@ -124,16 +125,27 @@ function OrderHistoryDetail(props: any) {
   const { t } = useTranslation();
   const {
     data,
+    loading,
     showAllProducts,
     toggleShowAllProducts,
     visibleProducts,
     isSuccess,
     onPressCopyOrderNumber,
+    storeName,
   } = useOrderHistoryDetail(props);
+
+  if (loading) {
+    return (
+      <View style={styles.root}>
+        <HeaderDetail title={storeName} />
+        <OrderHistoryDetailLoading />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.root}>
-      <HeaderDetail title={data?.storeName} />
+      <HeaderDetail title={storeName} />
 
       <ScrollView
         contentContainerStyle={[
@@ -159,13 +171,20 @@ function OrderHistoryDetail(props: any) {
                 {t('order_history_detail.order_code_label')}
               </Text>
               <View style={styles.codeRow}>
-                <Text style={[styles.orderCode, {color: isSuccess ? Colors.primary : Colors.yellow01 }]}>{data?.orderNumber}</Text>
+                <Text
+                  style={[
+                    styles.orderCode,
+                    { color: isSuccess ? Colors.primary : Colors.yellow01 },
+                  ]}
+                >
+                  {data?.orderNumber}
+                </Text>
                 <AppButton
                   style={styles.copyIcon}
                   onPress={onPressCopyOrderNumber}
                 >
                   <Image
-                    color={ isSuccess ? Colors.primary : Colors.yellow01}
+                    color={isSuccess ? Colors.primary : Colors.yellow01}
                     height={ScaleSize(18)}
                     name="ic_copy"
                     type="svg"
@@ -182,12 +201,11 @@ function OrderHistoryDetail(props: any) {
                 style={[
                   styles.statusBadge,
                   {
-                    backgroundColor:
-                    isSuccess
-                        ? STATUS_COMPLETED_BG
-                        : data?.status === 'PENDING'
-                          ? STATUS_PENDING_BG
-                          : STATUS_DEFAULT_BG,
+                    backgroundColor: isSuccess
+                      ? STATUS_COMPLETED_BG
+                      : data?.status === 'PENDING'
+                        ? STATUS_PENDING_BG
+                        : STATUS_DEFAULT_BG,
                   },
                 ]}
               >
@@ -195,20 +213,17 @@ function OrderHistoryDetail(props: any) {
                   style={[
                     styles.statusText,
                     {
-                      color:
-                      isSuccess
-                          ? STATUS_COMPLETED_TEXT
-                          : data?.status === 'PENDING'
-                            ? STATUS_PENDING_TEXT
-                            : STATUS_DEFAULT_TEXT,
+                      color: isSuccess
+                        ? STATUS_COMPLETED_TEXT
+                        : data?.status === 'PENDING'
+                          ? STATUS_PENDING_TEXT
+                          : STATUS_DEFAULT_TEXT,
                     },
                   ]}
                 >
-                  {data?.status === 'COMPLETED'
-                    ? t('order_history_detail.status_completed')
-                    : data?.status === 'PENDING'
-                      ? t('order_history_detail.status_pending')
-                      : data?.status}
+                  {t(
+                    `order_history_detail.statuses.${data?.status.toLowerCase()}`,
+                  )}
                 </Text>
               </View>
               <Text style={styles.totalLabel}>
@@ -232,7 +247,7 @@ function OrderHistoryDetail(props: any) {
               <Text style={styles.infoLabel}>
                 {t('order_history_detail.recipient_label')}
               </Text>
-              <Text style={styles.recipientName}>{data?.userName}</Text>
+              <Text style={styles.recipientName}>{data?.userName || '-'}</Text>
             </View>
             <View style={styles.phoneRow}>
               <Image
@@ -251,7 +266,7 @@ function OrderHistoryDetail(props: any) {
             <Text style={styles.deliveryValue}>
               {data?.orderReceiveMethod?.toLowerCase() == 'delivery'
                 ? data?.address?.address_name
-                : data?.storeAddress?.address?.address_name}
+                : data?.storeAddress?.address?.address_name || '-'}
             </Text>
           </View>
           <View style={styles.divider} />
@@ -259,7 +274,11 @@ function OrderHistoryDetail(props: any) {
             <Text style={styles.infoLabel}>
               {t('order_history_detail.shipping_method_label')}
             </Text>
-            <Text style={styles.deliveryValue}>{data?.orderReceiveMethod}</Text>
+            <Text style={styles.deliveryValue}>
+              {t(
+                `order_history_detail.shipping_methods.${data?.orderReceiveMethod?.toLowerCase()}`,
+              )}
+            </Text>
           </View>
         </SectionCard>
 

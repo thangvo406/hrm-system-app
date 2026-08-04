@@ -109,15 +109,17 @@ function SegmentedTab<T extends string>({
       <View onLayout={onTabsLayout} style={[styles.tabs, style]}>
         {/* Dividers sit under the pill so the selection slides over them. */}
         {indicatorWidth > 0
-          ? tabs.slice(1).map((tab, index) => (
-              <View
-                key={`divider-${tab.id}`}
-                style={[
-                  styles.divider,
-                  { left: TABS_PADDING + indicatorWidth * (index + 1) },
-                ]}
-              />
-            ))
+          ? tabs
+              .slice(1)
+              .map((tab, index) => (
+                <View
+                  key={`divider-${tab.id}`}
+                  style={[
+                    styles.divider,
+                    { left: TABS_PADDING + indicatorWidth * (index + 1) },
+                  ]}
+                />
+              ))
           : undefined}
         {indicatorWidth > 0 ? (
           <Animated.View

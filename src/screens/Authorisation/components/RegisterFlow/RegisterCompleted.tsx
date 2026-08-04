@@ -51,13 +51,15 @@ function RegisterCompleted({
           title={t(titleBtnPrimary)}
           type="primary"
         />
-        <Button
-          onPress={onPressSecondary}
-          style={styles.nextButton}
-          testID="register-completed-next"
-          title={t(titleBtnSecondary)}
-          type="outline-bordered-rounded"
-        />
+        {!!titleBtnSecondary && (
+          <Button
+            onPress={onPressSecondary}
+            style={styles.nextButton}
+            testID="register-completed-next"
+            title={t(titleBtnSecondary)}
+            type="outline-bordered-rounded"
+          />
+        )}
       </View>
     </View>
   );
