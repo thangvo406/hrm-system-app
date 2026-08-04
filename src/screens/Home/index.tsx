@@ -188,7 +188,7 @@ function ContributionSlot({
   );
 }
 
-function Home() {
+function Home(props: any) {
   const { t } = useTranslation();
   const {
     goToPayCard,
@@ -210,7 +210,7 @@ function Home() {
     onPressTopup,
     onPressSwitchSchool,
     onPressMealTickets,
-  } = useHome();
+  } = useHome(props);
   const insets = useSafeAreaInsets();
 
   return (

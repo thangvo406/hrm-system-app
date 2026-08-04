@@ -25,6 +25,7 @@ import RequestAddCard from '@dialogs/RequestAddCard';
 import { getAccountCardsRequest } from '@services/slices/accountManagement/accountManagementSlice';
 import { SchoolSelection } from '@screens';
 import { selectSchoolRequest } from '@services/slices/auth/authSlice';
+import { useReturnParams } from './useReturnParams';
 
 export type UseHome = ReturnType<typeof useHome>;
 
@@ -68,7 +69,7 @@ const onPressMealTickets = () => {
   AppNavigator.navigate(Paths.MealTickets);
 };
 
-export const useHome = () => {
+export const useHome = (props: any) => {
   const { t } = useTranslation();
   const profile = useAppSelector(AccountSelector.getProfile);
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
@@ -79,6 +80,16 @@ export const useHome = () => {
 
   useNotification();
   const dispatch = useAppDispatch();
+
+  useReturnParams<{ destination: any }>(
+    props,
+    ['destination'],
+    ({ destination }) => {
+      if (destination) {
+        AppNavigator.navigate(destination);
+      }
+    },
+  );
 
   const isHideContribute =
     profile?.coopMemberGrade == GRADE_MEMBERSHIP_TYPE.GENERAL;

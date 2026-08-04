@@ -3,12 +3,13 @@ import { Paths } from '@navigation/paths';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import {
+  getProfileRequest,
   updateProfileInfoRequest,
   uploadAvatarRequest,
 } from '@services/slices/account/accountSlice';
 import { formatPhoneNumber } from '@utils/common';
 import { ImagePicker } from '@utils/imagePicker';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export function useProfile() {
@@ -62,6 +63,10 @@ export function useProfile() {
         }),
       );
     });
+  }, []);
+
+  useEffect(() => {
+    dispatch(getProfileRequest());
   }, []);
 
   const onPressSave = useCallback(() => {

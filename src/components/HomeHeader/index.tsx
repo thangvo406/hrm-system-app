@@ -149,10 +149,11 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: PRIMARY_COLOR,
     borderRadius: 14,
-    marginLeft: -ScaleSize(8),
-    paddingHorizontal: 10,
+    marginLeft: -ScaleSize(10),
+    paddingHorizontal: 4,
     paddingVertical: 2,
     top: -10,
+    // borderWidth: 1,
   },
   memberBadgeText: {
     color: '#FFFFFF',
