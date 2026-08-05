@@ -2,10 +2,13 @@ import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import bankData from '@constants/banks.json';
 import Selection from '@dialogs/Selection';
-import { getCurrentWalletRequest, withdrawalBalanceRequest } from '@services/slices/account/accountSlice';
+import {
+  getCurrentWalletRequest,
+  withdrawalBalanceRequest,
+} from '@services/slices/account/accountSlice';
+import WithdrawalResult from '@dialogs/WithdrawalResult';
 export type IBankOption = {
   readonly code: string;
   readonly name: string;
@@ -16,7 +19,6 @@ const WALLET_BALANCE = 100_000;
 const BONUS_AMOUNT = 500;
 
 export const useWithdrawal = () => {
-  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const [amount, setAmount] = useState('');
@@ -31,8 +33,6 @@ export const useWithdrawal = () => {
     [],
   );
 
-
-
   const enabledBtnSubmit = useMemo(() => {
     const numericAmount = Number(amount);
     return (
@@ -43,7 +43,6 @@ export const useWithdrawal = () => {
       accountHolder.trim().length > 0
     );
   }, [accountHolder, accountNumber, amount, selectedBank, withdrawableAmount]);
-
 
   const onAmountChange = (value: string) => {
     setAmount(value.replaceAll(/\D/g, ''));
@@ -66,26 +65,35 @@ export const useWithdrawal = () => {
     });
   };
   const onSubmit = () => {
-    dispatch(withdrawalBalanceRequest({
-      requestedAmount: Number(amount),
-      bankName: typeof selectedBank == "string" ? selectedBank : selectedBank?.name ?? '',
-      accountNumber: accountNumber,
-      accountHolder: accountHolder,
-      onSuccess: () => {
-        dispatch(getCurrentWalletRequest());
-        AppNavigator.goBack()
-        AppNavigator.showSnackBar({
-          message: t('withdrawal.submit'),
-          type: 'success',
-        });
-      },
-      onFailure: (error: string) => {
-        AppNavigator.showSnackBar({
-          message: error || '',
-          type: 'failed',
-        });
-      },
-    }));
+    const bankName =
+      typeof selectedBank == 'string'
+        ? selectedBank
+        : (selectedBank?.name ?? '');
+    dispatch(
+      withdrawalBalanceRequest({
+        requestedAmount: Number(amount),
+        bankName,
+        accountNumber: accountNumber,
+        accountHolder: accountHolder,
+        onSuccess: () => {
+          dispatch(getCurrentWalletRequest());
+          AppNavigator.goBack();
+          AppNavigator.showDialog({
+            screen: WithdrawalResult,
+            amount,
+            bankName,
+            accountNumber,
+            isFullScreen: true,
+          });
+        },
+        onFailure: (error: string) => {
+          AppNavigator.showSnackBar({
+            message: error || '',
+            type: 'failed',
+          });
+        },
+      }),
+    );
   };
 
   return {

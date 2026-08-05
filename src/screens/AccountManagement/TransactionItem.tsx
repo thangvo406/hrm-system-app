@@ -8,6 +8,7 @@ import { formatCurrency } from '@utils/product';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
+import dayjs from 'dayjs';
 
 const DIRECTION_CREDIT = 'credit';
 const DIRECTION_DEBIT = 'debit';
@@ -71,7 +72,9 @@ function TransactionItem({ transaction }: Properties) {
           direction={transaction.direction}
           isPoint={isPoint}
         />
-        <Text style={styles.date}>{transaction.occurredAt}</Text>
+        <Text style={styles.date}>
+          {dayjs(transaction.occurredAt).format('YYYY-MM-DD')}
+        </Text>
       </View>
     </View>
   );

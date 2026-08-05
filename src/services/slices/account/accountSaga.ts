@@ -395,7 +395,10 @@ export function* accountSaga() {
   // takeEvery for the same reason as vouchers: meal-ticket tabs share one
   // action type, so a tab switch / refresh must not cancel an in-flight fetch.
   yield takeEvery(getMealTicketsRequest.type, getMealTicketsWorker);
-  yield takeLatest(getPayPointHistoriesRequest.type, getPayPointHistoriesWorker);
+  yield takeLatest(
+    getPayPointHistoriesRequest.type,
+    getPayPointHistoriesWorker,
+  );
   yield takeLatest(getProfileRequest.type, getProfileWorker);
   yield takeLatest(
     getTransactionsMovementRequest.type,

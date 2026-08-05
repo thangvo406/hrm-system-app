@@ -7,12 +7,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 import CardActions from './CardActions';
-import {
-  formatExpiry,
-  isActiveStatus,
-  maskFullNumber,
-  maskShortNumber,
-} from './helpers';
 import Pill from './Pill';
 import {
   ACCENT_INK,
@@ -28,9 +22,13 @@ import {
   WARNING_INK,
   WARNING_SURFACE,
 } from './tokens';
+import { BankUtils } from '@utils';
 
 const THUMBNAIL_WIDTH = ScaleSize(96);
 const THUMBNAIL_HEIGHT = ScaleSize(72);
+
+const { formatExpiry, isActiveStatus, maskFullNumber, maskShortNumber } =
+  BankUtils;
 
 type Properties = {
   readonly card: IAccount;
