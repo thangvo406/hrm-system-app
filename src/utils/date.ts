@@ -99,6 +99,19 @@ export function calculateDaysBetweenDates(startDate: string, endDate: string) {
   return differenceInDays;
 }
 
+export function getDaysUntil(
+  date: dayjs.ConfigType,
+  from: dayjs.ConfigType = Globals.currentTime,
+): number | undefined {
+  const target = dayjs(date);
+  if (!date || !target.isValid()) {
+    return undefined;
+  }
+  // Globals.currentTime is empty until the server time lands: fall back to now.
+  const today = dayjs(from).isValid() ? dayjs(from) : dayjs();
+  return target.startOf('day').diff(today.startOf('day'), 'day');
+}
+
 export function getWeekDate(date: any) {
   const day = date.getDay(); // Get day of week (0=Sunday, 1=Monday, ...)
   const diffToMonday = day === 0 ? -6 : 1 - day; // Adjust if Sunday

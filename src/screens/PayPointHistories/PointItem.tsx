@@ -1,0 +1,187 @@
+import { ScaleSize } from '@kits/core';
+import { StyleSheet, Text, View } from 'react-native';
+import { formatCurrency } from '@utils/product';
+import { useTranslation } from 'react-i18next';
+import React from 'react';
+import dayjs from 'dayjs';
+import type { IPointPayHistory } from '@type';
+import { TRANSACTION_DETAIL_DISPLAY } from '@constants/config';
+import type { TranslationKeys } from '@translations/i18next';
+import { getDaysUntil } from '@utils/date';
+import { Colors } from '@constants';
+import isNumber from 'lodash/isNumber';
+
+type Properties = {
+  readonly item: IPointPayHistory;
+};
+
+const TEXT_DARK = '#1A1A1A';
+const TEXT_MUTED = '#9AA0A6';
+const DATE_FORMAT = 'YYYY-MM-DD hh:mmA';
+const EMPTY_VALUE = '-';
+type PointTagStyle = {
+  readonly background: string;
+  readonly color: string;
+  readonly title: TranslationKeys;
+};
+
+const POINT_TAG_STYLE: Record<string, PointTagStyle | undefined> = {
+  POINT_EXPIRE: {
+    background: '#FBE0E0',
+    color: '#D9534F',
+    title: 'pay_point.tags.point_expired',
+  },
+  POINT_USE: {
+    background: '#ECECEC',
+    color: '#6B6B6B',
+    title: 'pay_point.tags.point_use',
+  },
+  POINT_EARN: {
+    background: '#DFF3E1',
+    color: '#2DB34A',
+    title: 'pay_point.tags.point_accrue',
+  },
+};
+
+const COLORS_AMOUNT: Record<string, string | undefined> = {
+  POINT_EXPIRE: '#D9534F',
+  POINT_USE: TEXT_DARK,
+  POINT_EARN: '#2DB34A',
+};
+
+const formatSigned = (item: IPointPayHistory) => {
+  const sign = item?.transactionDirection == 'CREDIT' ? '+' : '-';
+  return `${sign}${formatCurrency(item.amount)}P`;
+};
+
+const DETAIL_LABELS: Record<string, string | undefined> =
+  TRANSACTION_DETAIL_DISPLAY;
+
+function HistoryCard({ item }: Properties) {
+  const { t } = useTranslation();
+
+  const tag = POINT_TAG_STYLE[item?.entryType];
+
+  const detailLabel = DETAIL_LABELS[item.entryType];
+  const amountColor = COLORS_AMOUNT[item.entryType];
+  const isEarn = item.entryType == 'POINT_EARN';
+  const dayReaming =
+    isEarn && item.pointExpiresAt
+      ? getDaysUntil(item.pointExpiresAt)
+      : undefined;
+  return (
+    <View style={styles.card}>
+      <View style={styles.leftColumn}>
+        {tag ? (
+          <View style={[styles.tag, { backgroundColor: tag.color }]}>
+            <Text style={styles.tagText}>{t(tag.title)}</Text>
+          </View>
+        ) : undefined}
+        <Text style={[styles.amount, { color: amountColor }]}>
+          {formatSigned(item)}
+        </Text>
+        <Text style={styles.description}>
+          {detailLabel ? t(detailLabel as TranslationKeys) : EMPTY_VALUE}
+        </Text>
+      </View>
+
+      <View style={styles.rightColumn}>
+        <Text style={styles.date}>
+          {dayjs(item.createdDate).format(DATE_FORMAT)}
+        </Text>
+        <Text style={styles.balance}>
+          {t('pay_point.balance_after', {
+            amount: isNumber(item.pointAfter)
+              ? formatCurrency(item.pointAfter)
+              : '-',
+          })}
+        </Text>
+        {!!item.pointExpiresAt && (
+          <Text style={styles.expiry}>
+            {t('pay_point.expiry', {
+              value: dayjs(item.pointExpiresAt).format('YYYY-MM-DD'),
+            })}
+          </Text>
+        )}
+
+        {!!dayReaming && (
+          <Text style={styles.dayReaming}>
+            {t('pay_point.point_day_reaming', {
+              value: dayReaming,
+            })}
+          </Text>
+        )}
+      </View>
+    </View>
+  );
+}
+
+export default React.memo(HistoryCard);
+
+const styles = StyleSheet.create({
+  amount: {
+    fontSize: ScaleSize(18),
+    fontWeight: '800',
+    marginTop: ScaleSize(8),
+  },
+  balance: {
+    color: TEXT_MUTED,
+    fontSize: ScaleSize(12),
+    marginTop: ScaleSize(4),
+    textAlign: 'right',
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: ScaleSize(14),
+    elevation: 2,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: ScaleSize(16),
+    marginVertical: ScaleSize(6),
+    padding: ScaleSize(16),
+    shadowColor: '#000000',
+    shadowOffset: { height: 1, width: 0 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+  },
+  date: {
+    color: TEXT_MUTED,
+    fontSize: ScaleSize(12),
+    textAlign: 'right',
+  },
+  description: {
+    color: '#4A4A4A',
+    fontSize: ScaleSize(13),
+    marginTop: ScaleSize(8),
+  },
+  dayReaming: {
+    color: Colors.yellow02,
+    fontSize: ScaleSize(12),
+    marginTop: ScaleSize(4),
+    textAlign: 'right',
+  },
+  expiry: {
+    color: TEXT_MUTED,
+    fontSize: ScaleSize(12),
+    marginTop: ScaleSize(4),
+    textAlign: 'right',
+  },
+  leftColumn: {
+    alignItems: 'flex-start',
+    flex: 1,
+  },
+  rightColumn: {
+    alignItems: 'flex-end',
+    marginLeft: ScaleSize(12),
+  },
+  tag: {
+    borderRadius: ScaleSize(3),
+    paddingHorizontal: ScaleSize(8),
+    paddingVertical: ScaleSize(3),
+  },
+  tagText: {
+    color: '#FFFFFF',
+    fontSize: ScaleSize(12),
+    fontWeight: '700',
+  },
+});

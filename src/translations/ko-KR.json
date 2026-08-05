@@ -373,6 +373,7 @@
       "tag_welfare": "복지",
       "title": "생협 Pay",
       "withdrawal": "생협페이머니 환불",
+      "point_day_reaming": "만료 D-{{value}}",
       "transaction_detail_texts": {
         "pay_money_charge": "페이머니 충전",
         "smart_order_payment": "스마트오더 결제",
@@ -389,12 +390,12 @@
         "usage_dividend_earn": "이용배당",
         "point_expire": "포인트 소멸",
         "pay_money_withdrawal": "페이머니 출금",
-        "pay_money_charge_bonus": "충전 보너스",
-        "tags": {
-          "point_expired": "만료",
-          "point_use": "사용",
-          "point_accrue": "적립"
-        }
+        "pay_money_charge_bonus": "충전 보너스"
+      },
+      "tags": {
+        "point_expired": "만료",
+        "point_use": "사용",
+        "point_accrue": "적립"
       }
     },
     "payment": {

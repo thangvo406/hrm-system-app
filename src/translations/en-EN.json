@@ -76,6 +76,7 @@
       "tag_welfare": "Welfare",
       "title": "Coop Pay",
       "withdrawal": "Refund Coop Pay Money",
+      "point_day_reaming": "Expires in D-{{value}}",
       "transaction_detail_texts": {
         "pay_money_charge": "Pay Money Top-up",
         "smart_order_payment": "Smart Order Payment",
