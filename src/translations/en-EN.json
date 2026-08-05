@@ -13,6 +13,7 @@
         "desc_photo_error": "Unable to access photos. Please enable photo permission in Settings.",
         "btn_open_setting": "Open Settings",
         "btn_close": "Close",
+        "choose_bank": "Choose bank <bold>{{bank}}</bold>",
         "error_limit_size_file": "File size must be less than 50MB"
       }
     },
@@ -92,6 +93,11 @@
         "point_expire": "Points Expired",
         "pay_money_withdrawal": "Pay Money Withdrawal",
         "pay_money_charge_bonus": "Top-up Bonus"
+      },
+      "tags": {
+        "point_expired": "Expired",
+        "point_use": "Used",
+        "point_accrue": "Earn"
       }
     },
     "payment": {

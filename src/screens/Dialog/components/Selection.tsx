@@ -6,7 +6,7 @@ import get from 'lodash/get';
 import { ScrollView } from 'react-native-gesture-handler';
 import TextField from '@components/TextField';
 import Button from '@components/Button';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import AppButton from '@components/AppButton';
 import { DeviceUtils } from '@kits/core/utils';
 import { Colors } from '@constants';
@@ -113,14 +113,12 @@ function Selection({
           }}
         >
           <Text>
-            Choose
-            <Text
-              style={{
-                fontWeight: 'bold',
-              }}
-            >
-              {` ${keySearch}`}
-            </Text>
+            <Trans
+              components={{ bold: <Text style={styles.searchKeyword} /> }}
+              i18nKey="common.popup.choose_bank"
+              shouldUnescape
+              values={{ bank: keySearch }}
+            />
           </Text>
         </AppButton>
       );
@@ -171,7 +169,7 @@ function Selection({
             typeof selected === 'string'
               ? selected == value
               : get(selected, pathSelected) == value;
-          const isLast = index == displayData.length - 1
+          const isLast = index == displayData.length - 1;
           return (
             <AppButton
               activeOpacity={0.8}
@@ -179,7 +177,7 @@ function Selection({
               onPress={() => {
                 handlePick(item);
               }}
-              style={[styles.option, {borderBottomWidth: isLast ? 0 : 1}]}
+              style={[styles.option, { borderBottomWidth: isLast ? 0 : 1 }]}
               testID={`selection-option-${item.id}`}
             >
               <Text style={styles.optionLabel}>{get(item, pathDisplay)}</Text>
@@ -239,11 +237,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: ScaleSize(12),
-    borderColor: Colors.gray2
+    borderColor: Colors.gray2,
   },
   optionLabel: {
     color: TEXT_COLOR,
     fontSize: ScaleSize(16),
+  },
+  searchKeyword: {
+    fontWeight: 'bold',
   },
   title: {
     color: TEXT_COLOR,

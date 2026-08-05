@@ -83,7 +83,6 @@ function Withdrawal() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.heading}>{t('withdrawal.title')}</Text>
         <Animated.View
           style={[{ flex: 1, transform: [{ translateY: keyboardOffset }] }]}
         >

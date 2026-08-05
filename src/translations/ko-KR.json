@@ -13,6 +13,7 @@
         "desc_photo_error": "사진에 접근할 수 없습니다. 설정에서 사진 권한을 허용해 주세요.",
         "btn_open_setting": "설정 열기",
         "btn_close": "닫기",
+        "choose_bank": "<bold>{{bank}}</bold> 은행 선택",
         "error_limit_size_file": "파일 크기는 50MB 미만이어야 합니다"
       }
     },
@@ -388,7 +389,12 @@
         "usage_dividend_earn": "이용배당",
         "point_expire": "포인트 소멸",
         "pay_money_withdrawal": "페이머니 출금",
-        "pay_money_charge_bonus": "충전 보너스"
+        "pay_money_charge_bonus": "충전 보너스",
+        "tags": {
+          "point_expired": "만료",
+          "point_use": "사용",
+          "point_accrue": "적립"
+        }
       }
     },
     "payment": {
