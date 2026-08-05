@@ -18,7 +18,40 @@ export interface IRequestUpdateMembership extends AppCallback {
   applicationNote?: string;
 }
 
-// Fire-and-forget: action này không có callback.
+export interface IRequestGetTransactionMovement
+  extends AppCallback<ListApiResponse<ITransactionMovement[]>> {
+  fromDate?: string;
+  toDate?: string;
+  page?: number;
+  size?: number;
+}
+
+export interface ITransactionMovement {
+  transactionKey: string;
+  sourceType: string;
+  sourceId: number;
+  occurredAt: string;
+  direction: string;
+  amount: number;
+  balanceAfter: number;
+  balanceAccountType: string;
+  entryType: string;
+  fundingSource: string;
+  paymentType: string;
+  easyPayMethod: string;
+  approvalNo: string;
+  storeId: number;
+  storeName: string;
+  orderId: number;
+  orderNumber: string;
+  pointExpiresAt: string;
+  pointRemainingAmount: number;
+  memberGrade: string;
+  storeRate: number;
+  payMoneyRate: number;
+  benefitRate: number;
+  totalRate: number;
+}
 export interface IRequestUpdatePushId {
   optedIn: boolean;
   pushToken: string;
@@ -73,16 +106,16 @@ export type IVoucher = {
 };
 
 export type IMealTicket = {
-  id: number
-  externalId: number
-  code: string
-  purchaseAt: string
-  expireAt: string
-  usedAt: string
-  status: string
-  orderId: number
-  orderNumber: string
-  productId: number
-  productName: string
-  productDescription: string
+  id: number;
+  externalId: number;
+  code: string;
+  purchaseAt: string;
+  expireAt: string;
+  usedAt: string;
+  status: string;
+  orderId: number;
+  orderNumber: string;
+  productId: number;
+  productName: string;
+  productDescription: string;
 };

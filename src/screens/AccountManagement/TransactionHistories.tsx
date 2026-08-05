@@ -1,78 +1,101 @@
-import type { WalletTransaction } from '@hooks/useAccountManagement';
-
 import { AppButton } from '@components';
 import { ScaleSize } from '@kits/core';
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
-import { formatCurrency } from '@utils/product';
+import { useAppDispatch } from '@services/common/storeHooks';
+import { getTransactionsMovementRequest } from '@services/slices/account/accountSlice';
+import { ITransactionMovement, ListApiResponse } from '@type';
 
-const AMOUNT_COLORS: Record<WalletTransaction['type'], string> = {
-  charge: '#2F7CF6',
-  point: '#2E8B4A',
-  spend: '#E14B4B',
+import TransactionItem from './TransactionItem';
+
+const useTransaction = () => {
+  const dispatch = useAppDispatch();
+  const [currentPage, setCurrentPage] = useState(0);
+  const isLast = useRef(false);
+  const [data, setData] = useState<ITransactionMovement[]>([]);
+  const isLoadingMore = useRef(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | undefined>(undefined);
+
+  const handleSuccess = (data: ListApiResponse<ITransactionMovement[]>) => {
+    isLast.current = data.last;
+    setLoading(false);
+    setData(prev => {
+      let results = [];
+      results =
+        currentPage != 0
+          ? (prev || [])?.concat?.(data?.content)
+          : data?.content;
+      isLoadingMore.current = false;
+      return results;
+    });
+  };
+
+  const onLoadMore = useCallback(() => {
+    if (isLast.current || isLoadingMore.current) {
+      return;
+    }
+    isLoadingMore.current = true;
+    setCurrentPage(prev => prev + 1);
+  }, []);
+
+  const handleFailure = (message: string) => {
+    setError(message);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    dispatch(
+      getTransactionsMovementRequest({
+        page: currentPage,
+        size: 10,
+        onFailure: handleFailure,
+        onSuccess: handleSuccess,
+      }),
+    );
+  }, [dispatch, currentPage]);
+
+  return {
+    onLoadMore,
+    data,
+    loading,
+    error,
+  };
 };
-
-function formatAmount(transaction: WalletTransaction): string {
-  const { amount, type } = transaction;
-  const sign = amount > 0 ? '+' : '';
-  if (type === 'point') {
-    return `${sign}${formatCurrency(amount)}P`;
-  }
-  return `${sign}${formatCurrency(amount)}원`;
-}
-
-function TransactionRow({
-  transaction,
-}: {
-  readonly transaction: WalletTransaction;
-}) {
-  return (
-    <View style={styles.row}>
-      <View style={styles.left}>
-        <Text style={styles.rowTitle}>{transaction.title}</Text>
-        <Text style={styles.method}>{transaction.method}</Text>
-      </View>
-      <View style={styles.right}>
-        <Text
-          style={[styles.amount, { color: AMOUNT_COLORS[transaction.type] }]}
-        >
-          {formatAmount(transaction)}
-        </Text>
-        <Text style={styles.date}>{transaction.date}</Text>
-      </View>
-    </View>
-  );
-}
 
 type Properties = {
   readonly onViewAllTransactions: () => void;
-  readonly transactions: readonly WalletTransaction[];
 };
 
-function TransactionHistories({
-  onViewAllTransactions,
-  transactions,
-}: Properties) {
+function TransactionHistories({ onViewAllTransactions }: Properties) {
   const { t } = useTranslation();
+  const { data } = useTransaction();
 
   return (
     <>
       <View style={styles.header}>
-        <Text style={styles.title}>{t('account_management.recent_history')}</Text>
+        <Text style={styles.title}>
+          {t('account_management.recent_history')}
+        </Text>
         <AppButton
           onPress={onViewAllTransactions}
           style={styles.manageButton}
           testID="account-management-view-all"
         >
-          <Text style={styles.manageText}>{t('account_management.view_all')}</Text>
+          <Text style={styles.manageText}>
+            {t('account_management.view_all')}
+          </Text>
         </AppButton>
       </View>
 
       <View style={styles.list}>
-        {transactions?.length > 0 ? (
-          transactions.map(transaction => (
-            <TransactionRow key={transaction.id} transaction={transaction} />
+        {data?.length > 0 ? (
+          data.map(transaction => (
+            <TransactionItem
+              key={transaction.transactionKey}
+              transaction={transaction}
+            />
           ))
         ) : (
           <Text style={styles.desc}>{t('account_management.no_history')}</Text>
@@ -85,15 +108,6 @@ function TransactionHistories({
 export default React.memo(TransactionHistories);
 
 const styles = StyleSheet.create({
-  amount: {
-    fontSize: ScaleSize(15),
-    fontWeight: '700',
-  },
-  date: {
-    color: '#9B9B9B',
-    fontSize: ScaleSize(12),
-    marginTop: ScaleSize(6),
-  },
   desc: {
     color: '#718096',
     fontSize: ScaleSize(14),
@@ -110,9 +124,6 @@ const styles = StyleSheet.create({
     marginTop: ScaleSize(28),
     paddingHorizontal: ScaleSize(20),
   },
-  left: {
-    flex: 1,
-  },
   list: {
     paddingHorizontal: ScaleSize(20),
   },
@@ -127,27 +138,6 @@ const styles = StyleSheet.create({
     color: '#717171',
     fontSize: ScaleSize(12),
     fontWeight: '600',
-  },
-  method: {
-    color: '#9B9B9B',
-    fontSize: ScaleSize(13),
-    marginTop: ScaleSize(6),
-  },
-  right: {
-    alignItems: 'flex-end',
-  },
-  row: {
-    alignItems: 'center',
-    borderBottomColor: '#EFEFEF',
-    borderBottomWidth: ScaleSize(1),
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: ScaleSize(16),
-  },
-  rowTitle: {
-    color: '#1A1A1A',
-    fontSize: ScaleSize(15),
-    fontWeight: '700',
   },
   title: {
     color: '#1A1A1A',

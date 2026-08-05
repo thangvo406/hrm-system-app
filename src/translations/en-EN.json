@@ -74,7 +74,25 @@
       "tag_use": "Use",
       "tag_welfare": "Welfare",
       "title": "Coop Pay",
-      "withdrawal": "Refund Coop Pay Money"
+      "withdrawal": "Refund Coop Pay Money",
+      "transaction_detail_texts": {
+        "pay_money_charge": "Pay Money Top-up",
+        "smart_order_payment": "Smart Order Payment",
+        "pos_payment": "Store Payment",
+        "refund": "Refund",
+        "manual_adjustment": "Manual Adjustment",
+        "point_earn": "Points Earned",
+        "point_use": "Points Used",
+        "contribution_earn": "Capital Contribution",
+        "contribution_decrease": "Contribution Withdrawal",
+        "contribution_payment": "Contribution Payment",
+        "dividend_earn": "Dividend Earned",
+        "contribution_dividend_earn": "Contribution Dividend",
+        "usage_dividend_earn": "Usage Dividend",
+        "point_expire": "Points Expired",
+        "pay_money_withdrawal": "Pay Money Withdrawal",
+        "pay_money_charge_bonus": "Top-up Bonus"
+      }
     },
     "payment": {
       "title": "Payment method",

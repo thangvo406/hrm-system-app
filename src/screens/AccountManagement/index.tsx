@@ -28,12 +28,11 @@ function AccountManagement() {
     onChargeHistory,
     onManagePaymentMethods,
     onRegisterAccount,
-    onRegisterCard,
+    // onRegisterCard,
     onUse,
     onViewAllTransactions,
     toggleUnRegister,
     point,
-    transactions,
     isShowUnRegister,
     isEmptyBankAccount,
     isEnablePaymentCard,
@@ -109,10 +108,7 @@ function AccountManagement() {
           // onRegisterCard={onRegisterCard}
         />
 
-        <TransactionHistories
-          onViewAllTransactions={onViewAllTransactions}
-          transactions={transactions}
-        />
+        <TransactionHistories onViewAllTransactions={onViewAllTransactions} />
       </ScrollView>
     </View>
   );

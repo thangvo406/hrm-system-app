@@ -16,6 +16,8 @@ import type {
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
   IRequestCreateQRCodeMember,
+  IRequestGetTransactionMovement,
+  ITransactionMovement,
   IVoucher,
   IMealTicket,
 } from '@type/account';
@@ -180,6 +182,19 @@ export const getVouchers = async (
   const response = await httpRequest.get<
     SingleApiResponse<ListApiResponse<IVoucher[]>>
   >(EndPoints.VOUCHERS.list(params ? `?${params}` : ''), { loading: false });
+  return response.data;
+};
+
+export const getTransactionsMovement = async (
+  request: Omit<IRequestGetTransactionMovement, 'onFailure' | 'onSuccess'>,
+): Promise<ListApiResponse<ITransactionMovement[]>> => {
+  const _request = CommonUtils.removeEmptyFieldObject(request, true);
+  const params = CommonUtils.objectToQueryParams(_request);
+  const response = await httpRequest.get<
+    SingleApiResponse<ListApiResponse<ITransactionMovement[]>>
+  >(EndPoints.ACCOUNT.getTransactionsMovement(params ? `?${params}` : ''), {
+    loading: false,
+  });
   return response.data;
 };
 

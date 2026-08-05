@@ -105,6 +105,71 @@ export const MEMBER_SHIP_TYPE_HOME = {
     color: '#374151',
   },
 };
+enum TransactionType {
+  PAY_MONEY_CHARGE = 'PAY_MONEY_CHARGE',
+  SMART_ORDER_PAYMENT = 'SMART_ORDER_PAYMENT',
+  POS_PAYMENT = 'POS_PAYMENT',
+  REFUND = 'REFUND',
+  MANUAL_ADJUSTMENT = 'MANUAL_ADJUSTMENT',
+  POINT_EARN = 'POINT_EARN',
+  POINT_USE = 'POINT_USE',
+  CONTRIBUTION_EARN = 'CONTRIBUTION_EARN',
+  CONTRIBUTION_DECREASE = 'CONTRIBUTION_DECREASE',
+  CONTRIBUTION_PAYMENT = 'CONTRIBUTION_PAYMENT',
+  DIVIDEND_EARN = 'DIVIDEND_EARN',
+  CONTRIBUTION_DIVIDEND_EARN = 'CONTRIBUTION_DIVIDEND_EARN',
+  USAGE_DIVIDEND_EARN = 'USAGE_DIVIDEND_EARN',
+  POINT_EXPIRE = 'POINT_EXPIRE',
+  PAY_MONEY_WITHDRAWAL = 'PAY_MONEY_WITHDRAWAL',
+  PAY_MONEY_CHARGE_BONUS = 'PAY_MONEY_CHARGE_BONUS',
+}
+
+export const TRANSACTION_DETAIL_DISPLAY: Record<TransactionType, string> = {
+  [TransactionType.PAY_MONEY_CHARGE]:
+    'pay_point.transaction_detail_texts.pay_money_charge',
+
+  [TransactionType.SMART_ORDER_PAYMENT]:
+    'pay_point.transaction_detail_texts.smart_order_payment',
+
+  [TransactionType.POS_PAYMENT]:
+    'pay_point.transaction_detail_texts.pos_payment',
+
+  [TransactionType.REFUND]: 'pay_point.transaction_detail_texts.refund',
+
+  [TransactionType.MANUAL_ADJUSTMENT]:
+    'pay_point.transaction_detail_texts.manual_adjustment',
+
+  [TransactionType.POINT_EARN]: 'pay_point.transaction_detail_texts.point_earn',
+
+  [TransactionType.POINT_USE]: 'pay_point.transaction_detail_texts.point_use',
+
+  [TransactionType.CONTRIBUTION_EARN]:
+    'pay_point.transaction_detail_texts.contribution_earn',
+
+  [TransactionType.CONTRIBUTION_DECREASE]:
+    'pay_point.transaction_detail_texts.contribution_decrease',
+
+  [TransactionType.CONTRIBUTION_PAYMENT]:
+    'pay_point.transaction_detail_texts.contribution_payment',
+
+  [TransactionType.DIVIDEND_EARN]:
+    'pay_point.transaction_detail_texts.dividend_earn',
+
+  [TransactionType.CONTRIBUTION_DIVIDEND_EARN]:
+    'pay_point.transaction_detail_texts.contribution_dividend_earn',
+
+  [TransactionType.USAGE_DIVIDEND_EARN]:
+    'pay_point.transaction_detail_texts.usage_dividend_earn',
+
+  [TransactionType.POINT_EXPIRE]:
+    'pay_point.transaction_detail_texts.point_expire',
+
+  [TransactionType.PAY_MONEY_WITHDRAWAL]:
+    'pay_point.transaction_detail_texts.pay_money_withdrawal',
+
+  [TransactionType.PAY_MONEY_CHARGE_BONUS]:
+    'pay_point.transaction_detail_texts.pay_money_charge_bonus',
+};
 
 export const MEMBERSHIP_OPTIONS = [
   {

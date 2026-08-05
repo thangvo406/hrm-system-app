@@ -371,7 +371,25 @@
       "tag_use": "사용",
       "tag_welfare": "복지",
       "title": "생협 Pay",
-      "withdrawal": "생협페이머니 환불"
+      "withdrawal": "생협페이머니 환불",
+      "transaction_detail_texts": {
+        "pay_money_charge": "페이머니 충전",
+        "smart_order_payment": "스마트오더 결제",
+        "pos_payment": "매장 결제",
+        "refund": "환불",
+        "manual_adjustment": "수동 조정",
+        "point_earn": "포인트 적립",
+        "point_use": "포인트 사용",
+        "contribution_earn": "출자금 적립",
+        "contribution_decrease": "출자금 감소",
+        "contribution_payment": "출자금 납입",
+        "dividend_earn": "배당금 적립",
+        "contribution_dividend_earn": "출자배당",
+        "usage_dividend_earn": "이용배당",
+        "point_expire": "포인트 소멸",
+        "pay_money_withdrawal": "페이머니 출금",
+        "pay_money_charge_bonus": "충전 보너스"
+      }
     },
     "payment": {
       "title": "결제수단",

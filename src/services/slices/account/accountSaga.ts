@@ -12,6 +12,8 @@ import type {
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
   IRequestCreateQRCodeMember,
+  IRequestGetTransactionMovement,
+  ITransactionMovement,
   IVoucher,
 } from '@type/account';
 import type {
@@ -37,6 +39,7 @@ import {
   deleteAccount,
   getMealTickets,
   getProfile,
+  getTransactionsMovement,
   getVouchers,
   updateMembership,
   updatePassword,
@@ -67,6 +70,7 @@ import {
   getProfileSuccess,
   getTotalItemCartRequest,
   getTotalItemCartSuccess,
+  getTransactionsMovementRequest,
   getVouchersRequest,
   getContributeHistoriesRequest,
   topUpWalletRequest,
@@ -86,6 +90,22 @@ function* getVouchersWorker(
   try {
     const response: ListApiResponse<IVoucher[]> = yield call(
       getVouchers,
+      request,
+    );
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* getTransactionsMovementWorker(
+  action: PayloadAction<IRequestGetTransactionMovement>,
+): Generator<unknown, void, ListApiResponse<ITransactionMovement[]>> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: ListApiResponse<ITransactionMovement[]> = yield call(
+      getTransactionsMovement,
       request,
     );
     onSuccess?.(response);
@@ -340,6 +360,10 @@ export function* accountSaga() {
   // action type, so a tab switch / refresh must not cancel an in-flight fetch.
   yield takeEvery(getMealTicketsRequest.type, getMealTicketsWorker);
   yield takeLatest(getProfileRequest.type, getProfileWorker);
+  yield takeLatest(
+    getTransactionsMovementRequest.type,
+    getTransactionsMovementWorker,
+  );
   yield takeLatest(updateMembershipRequest.type, updateMembershipWorker);
   yield takeLatest(updatePasswordRequest.type, updatePasswordWorker);
   yield takeLatest(updateProfileInfoRequest.type, updateProfileInfoWorker);
