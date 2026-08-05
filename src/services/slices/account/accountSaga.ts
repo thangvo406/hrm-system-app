@@ -5,16 +5,19 @@ import type { AddressSuggestion } from '@services/request/account';
 import type {
   IResponseCreateQRCodeMember,
   IRequestAutoCompleteAddress,
+  IRequestGetPayPointHistories,
   IRequestGetVouchers,
   IRequestUpdateMembership,
   IRequestUpdatePassword,
   IRequestUpdatePushId,
+  IRequestWithdrawalBalance,
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
   IRequestCreateQRCodeMember,
   IRequestGetTransactionMovement,
   ITransactionMovement,
   IVoucher,
+  IPointPayHistory,
 } from '@type/account';
 import type {
   IContributeHistory,
@@ -38,6 +41,7 @@ import {
   createQRCodeMember,
   deleteAccount,
   getMealTickets,
+  getPayPointHistories,
   getProfile,
   getTransactionsMovement,
   getVouchers,
@@ -47,6 +51,7 @@ import {
   updatePushId,
   uploadAvatar,
   uploadFile,
+  withdrawalBalance,
 } from '@services/request/account';
 import {
   getCurrentWallet,
@@ -66,6 +71,7 @@ import {
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
   getMealTicketsRequest,
+  getPayPointHistoriesRequest,
   getProfileRequest,
   getProfileSuccess,
   getTotalItemCartRequest,
@@ -79,6 +85,7 @@ import {
   updateProfileInfoRequest,
   updatePushIdRequest,
   uploadAvatarRequest,
+  withdrawalBalanceRequest,
 } from './accountSlice';
 import { AccountSelector } from '@services/selectors';
 import { refreshTokenRequest } from '../auth/authSlice';
@@ -122,6 +129,22 @@ function* getMealTicketsWorker(
   try {
     const response: ListApiResponse<IVoucher[]> = yield call(
       getMealTickets,
+      request,
+    );
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* getPayPointHistoriesWorker(
+  action: PayloadAction<IRequestGetPayPointHistories>,
+): Generator<unknown, void, ListApiResponse<IPointPayHistory[]>> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: ListApiResponse<IPointPayHistory[]> = yield call(
+      getPayPointHistories,
       request,
     );
     onSuccess?.(response);
@@ -326,6 +349,19 @@ function* topUpWalletWorker(
   }
 }
 
+function* withdrawalBalanceWorker(
+  action: PayloadAction<IRequestWithdrawalBalance>,
+) {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    yield call(withdrawalBalance, request);
+    onSuccess?.();
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 function* autoCompleteAddressWorker(
   action: PayloadAction<IRequestAutoCompleteAddress>,
 ): Generator<unknown, void, AddressSuggestion[]> {
@@ -359,6 +395,7 @@ export function* accountSaga() {
   // takeEvery for the same reason as vouchers: meal-ticket tabs share one
   // action type, so a tab switch / refresh must not cancel an in-flight fetch.
   yield takeEvery(getMealTicketsRequest.type, getMealTicketsWorker);
+  yield takeLatest(getPayPointHistoriesRequest.type, getPayPointHistoriesWorker);
   yield takeLatest(getProfileRequest.type, getProfileWorker);
   yield takeLatest(
     getTransactionsMovementRequest.type,
@@ -375,4 +412,5 @@ export function* accountSaga() {
     getContributeHistoriesWorker,
   );
   yield takeLatest(topUpWalletRequest.type, topUpWalletWorker);
+  yield takeLatest(withdrawalBalanceRequest.type, withdrawalBalanceWorker);
 }

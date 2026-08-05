@@ -42,8 +42,10 @@ export const EndPoints = {
     updateProfile: 'user/profile',
     confirmOTPRequestMembership: 'user/membership/confirm-otp',
     createQRCodeMember: 'api/v1/membership/qr/generate',
+    withdrawalBalance: 'balance/withdrawal',
     getMealTickets: (request: string) => `order/ticket${request}`,
     getTransactionsMovement: (request: string) => `balance/movement${request}`,
+    payPointHistories: (request: string) => `balance/ledger${request}`,
   },
   ACCOUNT_MANAGEMENT: {
     addAccount: 'balance/kcp/register/init',

@@ -642,22 +642,22 @@
       "next": "Next"
     },
     "withdrawal": {
-      "title": "Coop Pay Money Refund",
+      "title": "Withdrawal Coop Pay Money",
       "balance_label": "Coop Pay Money Balance",
-      "bonus_label": "Bonus Money (Excluded from Refund)",
-      "withdrawable_label": "Refundable Amount",
+      "bonus_label": "Bonus Money (Excluded from Withdrawal)",
+      "withdrawable_label": "Withdrawable Amount",
       "currency": "KRW",
-      "amount_section": "Refund Amount",
+      "amount_section": "Withdrawal Amount",
       "amount_placeholder": "Enter amount",
-      "account_section": "Refund Account",
+      "account_section": "Withdrawal Account",
       "bank_placeholder": "Select bank",
       "account_number_placeholder": "Enter account number",
       "account_holder_placeholder": "Enter account holder",
       "notice_title": "Notice",
-      "notice_1": "Bonus money is excluded from the refund.",
-      "notice_2": "Refund processing takes 1-3 business days.",
-      "notice_3": "Coop Pay Money cannot be used after a refund.",
-      "submit": "Apply for Refund"
+      "notice_1": "Bonus money is excluded from the withdrawal.",
+      "notice_2": "Withdrawal processing takes 1-3 business days.",
+      "notice_3": "Coop Pay Money cannot be used after a withdrawal.",
+      "submit": "Apply for Withdrawal"
     },
     "account_management": {
       "title": "Coop Pay",

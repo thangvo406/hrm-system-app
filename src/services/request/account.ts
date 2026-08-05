@@ -9,10 +9,12 @@ import type {
 import type {
   IResponseCreateQRCodeMember,
   IRequestAutoCompleteAddress,
+  IRequestGetPayPointHistories,
   IRequestGetVouchers,
   IRequestUpdateMembership,
   IRequestUpdatePassword,
   IRequestUpdatePushId,
+  IRequestWithdrawalBalance,
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
   IRequestCreateQRCodeMember,
@@ -20,6 +22,7 @@ import type {
   ITransactionMovement,
   IVoucher,
   IMealTicket,
+  IPointPayHistory,
 } from '@type/account';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -94,6 +97,25 @@ export const uploadAvatar = async (
     request,
   );
   return response.data;
+};
+
+export const getPayPointHistories = async (
+  request: Omit<IRequestGetPayPointHistories, 'onFailure' | 'onSuccess'>,
+): Promise<ListApiResponse<IPointPayHistory[]>> => {
+  const _request = CommonUtils.removeEmptyFieldObject(request, true);
+  const params = CommonUtils.objectToQueryParams(_request);
+  const response = await httpRequest.get<
+    SingleApiResponse<ListApiResponse<IPointPayHistory[]>>
+  >(EndPoints.ACCOUNT.payPointHistories(params ? `?${params}` : ''), {
+    loading: false,
+  });
+  return response.data;
+};
+
+export const withdrawalBalance = async (
+  request: Omit<IRequestWithdrawalBalance, 'onFailure' | 'onSuccess'>,
+): Promise<void> => {
+  await httpRequest.post(EndPoints.ACCOUNT.withdrawalBalance, request);
 };
 
 export const updateProfileInfo = async (

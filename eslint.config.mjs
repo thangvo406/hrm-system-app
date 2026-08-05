@@ -121,6 +121,7 @@ export default defineConfig(
       'unicorn/prefer-ternary': OFF,
       '@typescript-eslint/no-unsafe-enum-comparison': OFF,
       'react/display-name': OFF,
+      'react/no-array-index-key': OFF,
       '@typescript-eslint/consistent-type-definitions': OFF,
       'unicorn/prevent-abbreviations': OFF,
       'unicorn/no-null': OFF,

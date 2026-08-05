@@ -1,6 +1,7 @@
 import type { AddressSuggestion } from '@services/request/account';
 
 import type { AppCallback, ListApiResponse } from './common';
+import type { IContributeHistory } from './wallet';
 
 export interface IRequestAutoCompleteAddress
   extends AppCallback<AddressSuggestion[]> {
@@ -58,6 +59,58 @@ export interface IRequestUpdatePushId {
   subscriptionId: string;
 }
 
+export interface IRequestWithdrawalBalance
+  extends AppCallback {
+    requestedAmount: number;
+    bankName: string;
+    accountNumber: string;
+    accountHolder: string;
+    reason?: string;
+}
+
+export interface IPointPayHistory {
+  id: number
+  userId: number
+  transactionType: string
+  balanceAccountType: string
+  entryType: string
+  transactionDirection: string
+  amount: number
+  bonusAmount: number
+  chargeBonusAmount: number
+  moneyBonusAmount: number
+  pointBonusAmount: number
+  totalAmount: number
+  balanceBefore: number
+  balanceAfter: number
+  referenceType?: string
+  referenceId?: number
+  paymentProvider?: string
+  paymentTransactionId: string
+  paymentMethod: any
+  memberGrade?: string
+  storeRate: any
+  payMoneyRate?: number
+  benefitRate?: number
+  totalRate?: number
+  storeId?: number
+  storeName?: string
+  orderId?: number
+  orderNumber?: string
+  order: any
+  pointExpiresAt: any
+  pointRemainingAmount: any
+  status: string
+  createdDate: string
+}
+export interface IRequestGetPayPointHistories
+  extends AppCallback<ListApiResponse<IPointPayHistory[]>> {
+    balanceAccountType: string;
+    fromDate?: string;
+    toDate?: string;
+    page: number;
+    size: number;
+}
 export interface IRequestCreateQRCodeMember
   extends AppCallback<IResponseCreateQRCodeMember> {
   cpn: string[];

@@ -78,7 +78,7 @@ function Selection({
       return items;
     }
     const newData = items?.filter(it =>
-      get(it, pathDisplay).includes(keySearch),
+      get(it, pathDisplay)?.toLowerCase().includes(keySearch?.toLowerCase()),
     );
     return newData;
   }, [keySearch, items]);
@@ -165,12 +165,13 @@ function Selection({
         style={styles.list}
       >
         {displayData?.length == 0 && renderEmptyList()}
-        {displayData?.map(item => {
+        {displayData?.map((item, index) => {
           const value = get(item, pathSelected);
           const isSelected =
             typeof selected === 'string'
               ? selected == value
               : get(selected, pathSelected) == value;
+          const isLast = index == displayData.length - 1
           return (
             <AppButton
               activeOpacity={0.8}
@@ -178,19 +179,21 @@ function Selection({
               onPress={() => {
                 handlePick(item);
               }}
-              style={styles.option}
+              style={[styles.option, {borderBottomWidth: isLast ? 0 : 1}]}
               testID={`selection-option-${item.id}`}
             >
               <Text style={styles.optionLabel}>{get(item, pathDisplay)}</Text>
-              {isSelected ? (
-                <Image
-                  color={CHECK_COLOR}
-                  height={CHECK_ICON_SIZE}
-                  name="ic_check"
-                  type="svg"
-                  width={CHECK_ICON_SIZE}
-                />
-              ) : undefined}
+              <View style={styles.checkSlot}>
+                {isSelected ? (
+                  <Image
+                    color={CHECK_COLOR}
+                    height={CHECK_ICON_SIZE}
+                    name="ic_check"
+                    type="svg"
+                    width={CHECK_ICON_SIZE}
+                  />
+                ) : undefined}
+              </View>
             </AppButton>
           );
         })}
@@ -211,6 +214,10 @@ function Selection({
 }
 
 const styles = StyleSheet.create({
+  checkSlot: {
+    height: CHECK_ICON_SIZE,
+    width: CHECK_ICON_SIZE,
+  },
   container: {
     // Shrink inside the bottom sheet card's maxHeight so the list gets a
     // bounded height and can actually scroll to the last item.
@@ -232,6 +239,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: ScaleSize(12),
+    borderColor: Colors.gray2
   },
   optionLabel: {
     color: TEXT_COLOR,

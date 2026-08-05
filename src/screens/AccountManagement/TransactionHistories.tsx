@@ -91,11 +91,8 @@ function TransactionHistories({ onViewAllTransactions }: Properties) {
 
       <View style={styles.list}>
         {data?.length > 0 ? (
-          data.map(transaction => (
-            <TransactionItem
-              key={transaction.transactionKey}
-              transaction={transaction}
-            />
+          data.map((transaction, index) => (
+            <TransactionItem key={`${index}`} transaction={transaction} />
           ))
         ) : (
           <Text style={styles.desc}>{t('account_management.no_history')}</Text>

@@ -10,10 +10,12 @@ import type { ITotalItemCart } from '@type/payment';
 import type {
   IRequestAutoCompleteAddress,
   IRequestGetTransactionMovement,
+  IRequestGetPayPointHistories,
   IRequestGetVouchers,
   IRequestUpdateMembership,
   IRequestUpdatePassword,
   IRequestUpdatePushId,
+  IRequestWithdrawalBalance,
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
   IRequestCreateQRCodeMember,
@@ -90,6 +92,10 @@ const accountSlice = createSlice({
       prepare: (payload: IRequestGetVouchers) => ({ payload }),
       reducer: () => {},
     },
+    getPayPointHistoriesRequest: {
+      prepare: (payload: IRequestGetPayPointHistories) => ({ payload }),
+      reducer: () => {},
+    },
     getProfileRequest: {
       prepare: (payload: AppCallback<Profile> = {}) => ({ payload }),
       reducer: () => {},
@@ -135,6 +141,10 @@ const accountSlice = createSlice({
         state.pushId = action.payload.subscriptionId;
       },
     },
+    withdrawalBalanceRequest: {
+      prepare: (payload: IRequestWithdrawalBalance) => ({ payload }),
+      reducer: () => {},
+    },
   },
 });
 
@@ -148,6 +158,7 @@ export const {
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
   getMealTicketsRequest,
+  getPayPointHistoriesRequest,
   getProfileRequest,
   getProfileSuccess,
   getTotalItemCartRequest,
@@ -161,6 +172,7 @@ export const {
   updateProfileInfoRequest,
   updatePushIdRequest,
   uploadAvatarRequest,
+  withdrawalBalanceRequest,
 } = accountSlice.actions;
 
 export const accountReducer = accountSlice.reducer;
