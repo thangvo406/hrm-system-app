@@ -7,7 +7,6 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import BankThumbnail from './BankThumbnail';
 import CardActions from './CardActions';
-import { maskFullNumber } from './helpers';
 import Pill from './Pill';
 import {
   ACCENT_INK,
@@ -19,6 +18,7 @@ import {
   ROW_SURFACE,
   TITLE_INK,
 } from './tokens';
+import { BankUtils } from '@utils';
 
 type Properties = {
   readonly account: IAccount;
@@ -44,7 +44,7 @@ function BankAccountRow({ account, onRemove, onSettings }: Properties) {
             </Text>
           ) : undefined}
           <Text numberOfLines={1} style={styles.number}>
-            {maskFullNumber(account.displayNumber)}
+            {BankUtils.maskFullNumber(account.displayNumber)}
           </Text>
         </View>
 

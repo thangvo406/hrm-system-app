@@ -3,8 +3,8 @@ import { ScaleSize } from '@kits/core';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { getInitials } from './helpers';
 import { ACCENT_INK, HAIRLINE } from './tokens';
+import { BankUtils } from '@utils';
 
 const THUMBNAIL_SIZE = ScaleSize(46);
 const ICON_SIZE = ScaleSize(22);
@@ -18,7 +18,7 @@ type Properties = {
  * itself — initials, falling back to the generic bank mark.
  */
 function BankThumbnail({ displayName }: Properties) {
-  const initials = getInitials(displayName);
+  const initials = BankUtils.getInitials(displayName);
 
   return (
     <View style={styles.thumbnail}>
