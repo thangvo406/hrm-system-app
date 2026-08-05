@@ -86,17 +86,17 @@ function WithdrawalResult({
             />
           </View>
         </View>
+        <View style={styles.footer}>
+          <View style={styles.footerSeparator} />
+          <Button
+            onPress={onSubmit}
+            style={styles.nextButton}
+            testID="withdrawal-result-primary"
+            title={t('withdrawal.result.confirm')}
+            type="primary"
+          />
+        </View>
       </ScrollView>
-      <View style={styles.footer}>
-        <View style={styles.footerSeparator} />
-        <Button
-          onPress={onSubmit}
-          style={styles.nextButton}
-          testID="withdrawal-result-primary"
-          title={t('withdrawal.result.confirm')}
-          type="primary"
-        />
-      </View>
     </View>
   );
 }

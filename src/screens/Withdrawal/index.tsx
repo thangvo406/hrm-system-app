@@ -1,6 +1,13 @@
 import { Button, HeaderDetail, TextField } from '@components';
 import { ScaleSize } from '@kits/core';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Animated,
+  Keyboard,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { Colors } from '@constants';
 import { DeviceUtils } from '@kits/core/utils';
 import { formatCurrency } from '@utils/product';
@@ -10,29 +17,63 @@ import { useTranslation } from 'react-i18next';
 import BalanceCard from './BalanceCard';
 import BankSelector from './BankSelector';
 import NoticeBox from './NoticeBox';
+import { useEffect, useRef } from 'react';
+import type { KeyboardEvent } from 'react-native';
 
-const { ifAndroid } = DeviceUtils;
+const { ifAndroid, isIOS } = DeviceUtils;
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#9B9B9B';
 const BORDER_COLOR = '#E0E0E0';
+const KEYBOARD_ANIMATION_DURATION_MS = 250;
 
 function Withdrawal() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const {
     amount,
-    bonusAmount,
     enabledBtnSubmit,
     onAccountNumberChange,
     onAmountChange,
     onSubmit,
     selectedBank,
+    currentWallet,
     setAccountHolder,
     onPressBank,
-    walletBalance,
-    withdrawableAmount,
   } = useWithdrawal();
+
+  const keyboardOffset = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const showEvent = isIOS() ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = isIOS() ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    // Shift the content up by exactly the keyboard height so the focused
+    // reason input stays visible.
+    const onShow = (event: KeyboardEvent) => {
+      Animated.timing(keyboardOffset, {
+        toValue: -event.endCoordinates.height / 2,
+        duration: event.duration || KEYBOARD_ANIMATION_DURATION_MS,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const onHide = (event: KeyboardEvent) => {
+      Animated.timing(keyboardOffset, {
+        toValue: 0,
+        duration: event.duration || KEYBOARD_ANIMATION_DURATION_MS,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const showSub = Keyboard.addListener(showEvent, onShow);
+    const hideSub = Keyboard.addListener(hideEvent, onHide);
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   return (
     <View style={styles.safeArea}>
@@ -43,56 +84,57 @@ function Withdrawal() {
         showsVerticalScrollIndicator={false}
       >
         <Text style={styles.heading}>{t('withdrawal.title')}</Text>
+        <Animated.View
+          style={[{ flex: 1, transform: [{ translateY: keyboardOffset }] }]}
+        >
+          <BalanceCard walletBalance={currentWallet} />
 
-        <BalanceCard
-          bonusAmount={bonusAmount}
-          walletBalance={walletBalance ?? 0}
-          withdrawableAmount={withdrawableAmount}
-        />
-
-        <Text style={styles.sectionLabel}>
-          {t('withdrawal.amount_section')}
-        </Text>
-        <TextField
-          inputWrapperStyle={styles.amountWrapper}
-          keyboardType="numeric"
-          onChangeText={onAmountChange}
-          placeholder={t('withdrawal.amount_placeholder')}
-          renderRightComponent={() => (
-            <View style={styles.unitGroup}>
-              <View style={styles.unitDivider} />
-              <Text style={styles.unitText}>{t('withdrawal.currency')}</Text>
-            </View>
-          )}
-          style={styles.amountInput}
-          testID="withdrawal-amount"
-          value={formatCurrency(amount)}
-        />
-
-        <View style={styles.accountCard}>
-          <Text style={styles.accountTitle}>
-            {t('withdrawal.account_section')}
+          <Text style={styles.sectionLabel}>
+            {t('withdrawal.amount_section')}
           </Text>
-          <BankSelector
-            onSelect={onPressBank}
-            placeholder={t('withdrawal.bank_placeholder')}
-            selectedBank={selectedBank}
-          />
           <TextField
-            keyboardType="numbers-and-punctuation"
-            onChangeText={onAccountNumberChange}
-            placeholder={t('withdrawal.account_number_placeholder')}
-            testID="withdrawal-account-number"
-            showClear
+            inputWrapperStyle={styles.amountWrapper}
+            keyboardType="numeric"
+            onChangeText={onAmountChange}
+            returnKeyType="done"
+            placeholder={t('withdrawal.amount_placeholder')}
+            renderRightComponent={() => (
+              <View style={styles.unitGroup}>
+                <View style={styles.unitDivider} />
+                <Text style={styles.unitText}>{t('withdrawal.currency')}</Text>
+              </View>
+            )}
+            style={styles.amountInput}
+            testID="withdrawal-amount"
+            value={formatCurrency(amount)}
           />
-          <TextField
-            onChangeText={setAccountHolder}
-            placeholder={t('withdrawal.account_holder_placeholder')}
-            testID="withdrawal-account-holder"
-            showClear
-          />
-        </View>
 
+          <View style={styles.accountCard}>
+            <Text style={styles.accountTitle}>
+              {t('withdrawal.account_section')}
+            </Text>
+            <BankSelector
+              onSelect={onPressBank}
+              placeholder={t('withdrawal.bank_placeholder')}
+              selectedBank={selectedBank}
+            />
+            <TextField
+              onChangeText={onAccountNumberChange}
+              placeholder={t('withdrawal.account_number_placeholder')}
+              testID="withdrawal-account-number"
+              showClear
+              returnKeyType="done"
+              keyboardType="number-pad"
+            />
+            <TextField
+              onChangeText={setAccountHolder}
+              placeholder={t('withdrawal.account_holder_placeholder')}
+              testID="withdrawal-account-holder"
+              returnKeyType="done"
+              showClear
+            />
+          </View>
+        </Animated.View>
         <NoticeBox />
       </ScrollView>
 

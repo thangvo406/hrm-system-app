@@ -45,12 +45,6 @@ function SummaryHeader({ onPressWithdrawal, summary }: Properties) {
           })}
         </Text>
       </Text>
-
-      <Text style={styles.expiring}>
-        {t('pay_point.point_expiring', {
-          amount: formatCurrency(summary?.pointBalance),
-        })}
-      </Text>
     </View>
   );
 }

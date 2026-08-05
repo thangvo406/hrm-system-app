@@ -4,38 +4,36 @@ import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 import { formatCurrency } from '@utils/product';
 import { useTranslation } from 'react-i18next';
+import { IWallet } from '@type';
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#9B9B9B';
 const BORDER_COLOR = '#E0E0E0';
 
 type Properties = {
-  readonly bonusAmount: number;
-  readonly walletBalance: number;
-  readonly withdrawableAmount: number;
+  readonly walletBalance: IWallet;
 };
 
-function BalanceCard({
-  bonusAmount,
-  walletBalance,
-  withdrawableAmount,
-}: Properties) {
+function BalanceCard({ walletBalance }: Properties) {
   const { t } = useTranslation();
-  const currency = t('withdrawal.currency');
 
   return (
     <View style={styles.card}>
       <View style={styles.row}>
         <Text style={styles.balanceLabel}>{t('withdrawal.balance_label')}</Text>
         <Text style={styles.balanceValue} testID="withdrawal-wallet-balance">
-          {`${formatCurrency(walletBalance)}${currency}`}
+          {t('common.display_price', {
+            amount: formatCurrency(walletBalance?.balance),
+          })}
         </Text>
       </View>
 
       <View style={styles.row}>
         <Text style={styles.mutedLabel}>{t('withdrawal.bonus_label')}</Text>
         <Text style={styles.mutedValue} testID="withdrawal-bonus-amount">
-          {`${formatCurrency(bonusAmount)}${currency}`}
+          {t('common.display_price', {
+            amount: formatCurrency(walletBalance?.bonusBalance),
+          })}
         </Text>
       </View>
 
@@ -49,7 +47,9 @@ function BalanceCard({
           style={styles.withdrawableValue}
           testID="withdrawal-withdrawable-amount"
         >
-          {`${formatCurrency(withdrawableAmount)}${currency}`}
+          {t('common.display_price', {
+            amount: formatCurrency(walletBalance?.withdrawableBalance),
+          })}
         </Text>
       </View>
     </View>

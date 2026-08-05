@@ -117,6 +117,8 @@ export interface IWallet {
   balance: number;
   pointBalance: number;
   status: string;
+  withdrawableBalance: number;
+  bonusBalance: number;
 }
 
 export interface IRequestLockCard extends AppCallback {

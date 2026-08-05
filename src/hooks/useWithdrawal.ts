@@ -14,10 +14,6 @@ export type IBankOption = {
   readonly name: string;
 };
 
-// Bonus money is excluded from the withdrawable balance.
-const WALLET_BALANCE = 100_000;
-const BONUS_AMOUNT = 500;
-
 export const useWithdrawal = () => {
   const dispatch = useAppDispatch();
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
@@ -28,21 +24,16 @@ export const useWithdrawal = () => {
     undefined,
   );
 
-  const withdrawableAmount = useMemo(
-    () => Math.max(WALLET_BALANCE - BONUS_AMOUNT, 0),
-    [],
-  );
-
   const enabledBtnSubmit = useMemo(() => {
     const numericAmount = Number(amount);
     return (
       numericAmount > 0 &&
-      numericAmount <= withdrawableAmount &&
+      numericAmount <= (currentWallet?.withdrawableBalance || 0) &&
       selectedBank !== undefined &&
       accountNumber.trim().length > 0 &&
       accountHolder.trim().length > 0
     );
-  }, [accountHolder, accountNumber, amount, selectedBank, withdrawableAmount]);
+  }, [accountHolder, accountNumber, amount, selectedBank, currentWallet]);
 
   const onAmountChange = (value: string) => {
     setAmount(value.replaceAll(/\D/g, ''));
@@ -100,7 +91,6 @@ export const useWithdrawal = () => {
     accountHolder,
     accountNumber,
     amount,
-    bonusAmount: BONUS_AMOUNT,
     enabledBtnSubmit,
     onAccountNumberChange,
     onPressBank,
@@ -109,7 +99,6 @@ export const useWithdrawal = () => {
     selectedBank,
     setAccountHolder,
     setSelectedBank,
-    walletBalance: currentWallet?.balance,
-    withdrawableAmount,
+    currentWallet,
   };
 };
