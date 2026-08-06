@@ -46,6 +46,7 @@ export const EndPoints = {
     getMealTickets: (request: string) => `order/ticket${request}`,
     getTransactionsMovement: (request: string) => `balance/movement${request}`,
     payPointHistories: (request: string) => `balance/ledger${request}`,
+    transactionDetail: (id: number) => `transaction/${id}`,
   },
   ACCOUNT_MANAGEMENT: {
     addAccount: 'balance/kcp/register/init',

@@ -161,6 +161,7 @@ export function useMealTickets() {
             isFullScreen: true,
             showBtnVoucher: true,
             showIconVoucher: false,
+            titleKey: 'meal_ticket.detail.title',
             btnVoucher: `‹${t('meal_ticket.detail.btn_back')}`,
             titleVoucher: voucher?.productName,
             data: response,

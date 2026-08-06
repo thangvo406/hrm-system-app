@@ -14,11 +14,13 @@ import type {
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
   IRequestCreateQRCodeMember,
+  IRequestGetTransactionDetail,
   IRequestGetTransactionMovement,
   ITransactionMovement,
   IVoucher,
   IPointPayHistory,
 } from '@type/account';
+import type { ITransactionDetail } from '@type/payment';
 import type {
   IContributeHistory,
   IRequestGetTransactionHistories,
@@ -43,6 +45,7 @@ import {
   getMealTickets,
   getPayPointHistories,
   getProfile,
+  getTransactionDetail,
   getTransactionsMovement,
   getVouchers,
   updateMembership,
@@ -76,6 +79,7 @@ import {
   getProfileSuccess,
   getTotalItemCartRequest,
   getTotalItemCartSuccess,
+  getTransactionDetailRequest,
   getTransactionsMovementRequest,
   getVouchersRequest,
   getContributeHistoriesRequest,
@@ -113,6 +117,22 @@ function* getTransactionsMovementWorker(
   try {
     const response: ListApiResponse<ITransactionMovement[]> = yield call(
       getTransactionsMovement,
+      request,
+    );
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* getTransactionDetailWorker(
+  action: PayloadAction<IRequestGetTransactionDetail>,
+): Generator<unknown, void, ITransactionDetail> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: ITransactionDetail = yield call(
+      getTransactionDetail,
       request,
     );
     onSuccess?.(response);
@@ -400,6 +420,10 @@ export function* accountSaga() {
     getPayPointHistoriesWorker,
   );
   yield takeLatest(getProfileRequest.type, getProfileWorker);
+  yield takeLatest(
+    getTransactionDetailRequest.type,
+    getTransactionDetailWorker,
+  );
   yield takeLatest(
     getTransactionsMovementRequest.type,
     getTransactionsMovementWorker,

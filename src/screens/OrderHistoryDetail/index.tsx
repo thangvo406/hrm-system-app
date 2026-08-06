@@ -134,251 +134,249 @@ function OrderHistoryDetail(props: any) {
     storeName,
   } = useOrderHistoryDetail(props);
 
-  if (loading) {
-    return (
-      <View style={styles.root}>
-        <HeaderDetail title={storeName} />
-        <OrderHistoryDetailLoading />
-      </View>
-    );
-  }
-
   return (
     <View style={styles.root}>
       <HeaderDetail title={storeName} />
-
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: insets.bottom + ScaleSize(80) },
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Order summary card */}
-        <View style={styles.card}>
-          <View style={styles.summaryRow}>
-            <View style={styles.summaryIconWrap}>
-              <Image
-                color={Colors.primary}
-                height={ScaleSize(28)}
-                name="ic_order_receipt"
-                type="svg"
-                width={ScaleSize(28)}
-              />
-            </View>
-            <View style={styles.summaryMeta}>
-              <Text style={styles.summaryMetaLabel}>
-                {t('order_history_detail.order_code_label')}
-              </Text>
-              <View style={styles.codeRow}>
-                <Text
-                  style={[
-                    styles.orderCode,
-                    { color: isSuccess ? Colors.primary : Colors.yellow01 },
-                  ]}
-                >
-                  {data?.orderNumber}
-                </Text>
-                <AppButton
-                  style={styles.copyIcon}
-                  onPress={onPressCopyOrderNumber}
-                >
+      {loading ? (
+        <OrderHistoryDetailLoading />
+      ) : (
+        <>
+          <ScrollView
+            contentContainerStyle={[
+              styles.scrollContent,
+              { paddingBottom: insets.bottom + ScaleSize(80) },
+            ]}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Order summary card */}
+            <View style={styles.card}>
+              <View style={styles.summaryRow}>
+                <View style={styles.summaryIconWrap}>
                   <Image
-                    color={isSuccess ? Colors.primary : Colors.yellow01}
-                    height={ScaleSize(18)}
-                    name="ic_copy"
+                    color={Colors.primary}
+                    height={ScaleSize(28)}
+                    name="ic_order_receipt"
                     type="svg"
-                    width={ScaleSize(18)}
+                    width={ScaleSize(28)}
                   />
-                </AppButton>
+                </View>
+                <View style={styles.summaryMeta}>
+                  <Text style={styles.summaryMetaLabel}>
+                    {t('order_history_detail.order_code_label')}
+                  </Text>
+                  <View style={styles.codeRow}>
+                    <Text
+                      style={[
+                        styles.orderCode,
+                        { color: isSuccess ? Colors.primary : Colors.yellow01 },
+                      ]}
+                    >
+                      {data?.orderNumber}
+                    </Text>
+                    <AppButton
+                      style={styles.copyIcon}
+                      onPress={onPressCopyOrderNumber}
+                    >
+                      <Image
+                        color={isSuccess ? Colors.primary : Colors.yellow01}
+                        height={ScaleSize(18)}
+                        name="ic_copy"
+                        type="svg"
+                        width={ScaleSize(18)}
+                      />
+                    </AppButton>
+                  </View>
+                  <Text style={styles.orderTime}>
+                    {dayjs(data?.orderedAt).format('YYYY-MM-DD hh:mmA')}
+                  </Text>
+                </View>
+                <View style={styles.summaryRight}>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      {
+                        backgroundColor: isSuccess
+                          ? STATUS_COMPLETED_BG
+                          : data?.status === 'PENDING'
+                            ? STATUS_PENDING_BG
+                            : STATUS_DEFAULT_BG,
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.statusText,
+                        {
+                          color: isSuccess
+                            ? STATUS_COMPLETED_TEXT
+                            : data?.status === 'PENDING'
+                              ? STATUS_PENDING_TEXT
+                              : STATUS_DEFAULT_TEXT,
+                        },
+                      ]}
+                    >
+                      {data?.status
+                        ? t(
+                            `order_history_detail.statuses.${data?.status.toLowerCase()}`,
+                          )
+                        : '-'}
+                    </Text>
+                  </View>
+                  <Text style={styles.totalLabel}>
+                    {t('order_history_detail.total_label')}
+                  </Text>
+                  <Text style={styles.totalAmount}>
+                    {formatCurrency(data?.summary.totalPrice)}
+                  </Text>
+                  <Text style={styles.paymentMethodNote}>
+                    {!data?.paymentFundingSource
+                      ? '-'
+                      : t(
+                          `order_history_detail.payment_methods.${data?.paymentFundingSource.toLowerCase()}`,
+                        )}
+                  </Text>
+                </View>
               </View>
-              <Text style={styles.orderTime}>
-                {dayjs(data?.orderedAt).format('YYYY-MM-DD hh:mmA')}
-              </Text>
             </View>
-            <View style={styles.summaryRight}>
-              <View
-                style={[
-                  styles.statusBadge,
-                  {
-                    backgroundColor: isSuccess
-                      ? STATUS_COMPLETED_BG
-                      : data?.status === 'PENDING'
-                        ? STATUS_PENDING_BG
-                        : STATUS_DEFAULT_BG,
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.statusText,
-                    {
-                      color: isSuccess
-                        ? STATUS_COMPLETED_TEXT
-                        : data?.status === 'PENDING'
-                          ? STATUS_PENDING_TEXT
-                          : STATUS_DEFAULT_TEXT,
-                    },
-                  ]}
-                >
-                  {data?.status
-                    ? t(
-                        `order_history_detail.statuses.${data?.status.toLowerCase()}`,
-                      )
-                    : '-'}
+
+            {/* Delivery info */}
+            <SectionCard
+              iconName="ic_map_pin"
+              title={t('order_history_detail.delivery_section_title')}
+            >
+              <View style={styles.deliveryRecipientRow}>
+                <View>
+                  <Text style={styles.infoLabel}>
+                    {t('order_history_detail.recipient_label')}
+                  </Text>
+                  <Text style={styles.recipientName}>
+                    {data?.userName || '-'}
+                  </Text>
+                </View>
+                <View style={styles.phoneRow}>
+                  <Image
+                    name={imageNames.ic_phone}
+                    width={ScaleSize(16)}
+                    height={ScaleSize(16)}
+                  />
+                  <Text style={styles.phoneText}>{data?.userPhone}</Text>
+                </View>
+              </View>
+              <View style={styles.divider} />
+              <View style={styles.deliveryFieldBlock}>
+                <Text style={styles.infoLabel}>
+                  {t('order_history_detail.delivery_address_label')}
+                </Text>
+                <Text style={styles.deliveryValue}>
+                  {data?.orderReceiveMethod?.toLowerCase() == 'delivery'
+                    ? data?.address?.address_name
+                    : data?.storeAddress?.address?.address_name || '-'}
                 </Text>
               </View>
-              <Text style={styles.totalLabel}>
-                {t('order_history_detail.total_label')}
-              </Text>
-              <Text style={styles.totalAmount}>
-                {formatCurrency(data?.summary.totalPrice)}
-              </Text>
-              <Text style={styles.paymentMethodNote}>
-                {!data?.paymentFundingSource
-                  ? '-'
-                  : t(
-                      `order_history_detail.payment_methods.${data?.paymentFundingSource.toLowerCase()}`,
-                    )}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Delivery info */}
-        <SectionCard
-          iconName="ic_map_pin"
-          title={t('order_history_detail.delivery_section_title')}
-        >
-          <View style={styles.deliveryRecipientRow}>
-            <View>
-              <Text style={styles.infoLabel}>
-                {t('order_history_detail.recipient_label')}
-              </Text>
-              <Text style={styles.recipientName}>{data?.userName || '-'}</Text>
-            </View>
-            <View style={styles.phoneRow}>
-              <Image
-                name={imageNames.ic_phone}
-                width={ScaleSize(16)}
-                height={ScaleSize(16)}
-              />
-              <Text style={styles.phoneText}>{data?.userPhone}</Text>
-            </View>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.deliveryFieldBlock}>
-            <Text style={styles.infoLabel}>
-              {t('order_history_detail.delivery_address_label')}
-            </Text>
-            <Text style={styles.deliveryValue}>
-              {data?.orderReceiveMethod?.toLowerCase() == 'delivery'
-                ? data?.address?.address_name
-                : data?.storeAddress?.address?.address_name || '-'}
-            </Text>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.deliveryFieldBlock}>
-            <Text style={styles.infoLabel}>
-              {t('order_history_detail.shipping_method_label')}
-            </Text>
-            <Text style={styles.deliveryValue}>
-              {t(
-                `order_history_detail.shipping_methods.${data?.orderReceiveMethod?.toLowerCase()}`,
-              )}
-            </Text>
-          </View>
-        </SectionCard>
-
-        {/* Products */}
-        <SectionCard
-          iconName="ic_shopping_bag"
-          title={t('order_history_detail.products_label')}
-        >
-          {visibleProducts?.map(product => (
-            <ProductRow key={product.id} product={product} />
-          ))}
-          {data?.products?.length > 3 ? (
-            <AppButton
-              onPress={toggleShowAllProducts}
-              style={styles.showMoreBtn}
-            >
-              <Text style={styles.showMoreLabel}>
-                {showAllProducts
-                  ? t('order_history_detail.show_less')
-                  : t('order_history_detail.show_more')}
-              </Text>
-              <View style={showAllProducts ? styles.chevronUp : undefined}>
-                <Image
-                  color={Colors.primary}
-                  height={ScaleSize(16)}
-                  name="ic_chevron_down"
-                  type="svg"
-                  width={ScaleSize(16)}
-                />
+              <View style={styles.divider} />
+              <View style={styles.deliveryFieldBlock}>
+                <Text style={styles.infoLabel}>
+                  {t('order_history_detail.shipping_method_label')}
+                </Text>
+                <Text style={styles.deliveryValue}>
+                  {t(
+                    `order_history_detail.shipping_methods.${data?.orderReceiveMethod?.toLowerCase()}`,
+                  )}
+                </Text>
               </View>
-            </AppButton>
-          ) : undefined}
-        </SectionCard>
+            </SectionCard>
 
-        {/* Payment info */}
-        <SectionCard
-          iconName="ic_wallet"
-          title={t('order_history_detail.payment_section_title')}
-        >
-          <InfoRow
-            label={t('order_history_detail.payment_method_label')}
-            value={
-              !data?.paymentFundingSource
-                ? '-'
-                : t(
-                    `order_history_detail.payment_methods.${data?.paymentFundingSource.toLowerCase()}`,
-                  )
-            }
-          />
-          <InfoRow
-            label={t('order_history_detail.subtotal_label')}
-            value={formatCurrency(data?.summary?.totalPrice)}
-          />
-          <InfoRow
-            label={t('order_history_detail.shipping_fee_label')}
-            value={t('order_history_detail.shipping_fee_free')}
-            showDivider={false}
-          />
-          <View style={[styles.divider, { marginTop: ScaleSize(12) }]} />
-          <View style={styles.totalRow}>
-            <Text style={styles.totalRowLabel}>
-              {t('order_history_detail.total_label')}
-            </Text>
-            <Text style={styles.totalRowAmount}>
-              {formatCurrency(data?.summary?.finalPrice)}
-            </Text>
+            {/* Products */}
+            <SectionCard
+              iconName="ic_shopping_bag"
+              title={t('order_history_detail.products_label')}
+            >
+              {visibleProducts?.map(product => (
+                <ProductRow key={product.id} product={product} />
+              ))}
+              {data?.products?.length > 3 ? (
+                <AppButton
+                  onPress={toggleShowAllProducts}
+                  style={styles.showMoreBtn}
+                >
+                  <Text style={styles.showMoreLabel}>
+                    {showAllProducts
+                      ? t('order_history_detail.show_less')
+                      : t('order_history_detail.show_more')}
+                  </Text>
+                  <View style={showAllProducts ? styles.chevronUp : undefined}>
+                    <Image
+                      color={Colors.primary}
+                      height={ScaleSize(16)}
+                      name="ic_chevron_down"
+                      type="svg"
+                      width={ScaleSize(16)}
+                    />
+                  </View>
+                </AppButton>
+              ) : undefined}
+            </SectionCard>
+
+            {/* Payment info */}
+            <SectionCard
+              iconName="ic_wallet"
+              title={t('order_history_detail.payment_section_title')}
+            >
+              <InfoRow
+                label={t('order_history_detail.payment_method_label')}
+                value={
+                  !data?.paymentFundingSource
+                    ? '-'
+                    : t(
+                        `order_history_detail.payment_methods.${data?.paymentFundingSource.toLowerCase()}`,
+                      )
+                }
+              />
+              <InfoRow
+                label={t('order_history_detail.subtotal_label')}
+                value={formatCurrency(data?.summary?.totalPrice)}
+              />
+              <InfoRow
+                label={t('order_history_detail.shipping_fee_label')}
+                value={t('order_history_detail.shipping_fee_free')}
+                showDivider={false}
+              />
+              <View style={[styles.divider, { marginTop: ScaleSize(12) }]} />
+              <View style={styles.totalRow}>
+                <Text style={styles.totalRowLabel}>
+                  {t('order_history_detail.total_label')}
+                </Text>
+                <Text style={styles.totalRowAmount}>
+                  {formatCurrency(data?.summary?.finalPrice)}
+                </Text>
+              </View>
+            </SectionCard>
+          </ScrollView>
+
+          {/* Bottom actions */}
+          <View
+            style={[
+              styles.bottomBar,
+              { paddingBottom: ifAndroid(16, insets.bottom + ScaleSize(8)) },
+            ]}
+          >
+            <Button
+              onPress={() => {}}
+              style={styles.reorderBtn}
+              testID="order-detail-reorder"
+              title={t('order_history_detail.reorder')}
+              type="outline-bordered"
+            />
+            <Button
+              onPress={() => {}}
+              style={styles.supportBtn}
+              testID="order-detail-support"
+              title={t('order_history_detail.contact_support')}
+              type="rounded"
+            />
           </View>
-        </SectionCard>
-      </ScrollView>
-
-      {/* Bottom actions */}
-      <View
-        style={[
-          styles.bottomBar,
-          { paddingBottom: ifAndroid(16, insets.bottom + ScaleSize(8)) },
-        ]}
-      >
-        <Button
-          onPress={() => {}}
-          style={styles.reorderBtn}
-          testID="order-detail-reorder"
-          title={t('order_history_detail.reorder')}
-          type="outline-bordered"
-        />
-        <Button
-          onPress={() => {}}
-          style={styles.supportBtn}
-          testID="order-detail-support"
-          title={t('order_history_detail.contact_support')}
-          type="rounded"
-        />
-      </View>
+        </>
+      )}
     </View>
   );
 }

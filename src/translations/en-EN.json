@@ -53,7 +53,8 @@
       "purchase_at": "Purchase at {{date}}",
       "expired_at": "Expired at {{date}}",
       "detail": {
-        "btn_back": "Return to meal box"
+        "btn_back": "Return to meal box",
+        "title": "Meal ticket QR"
       }
     },
     "pay_point": {
@@ -660,6 +661,7 @@
       "bank_placeholder": "Select bank",
       "account_number_placeholder": "Enter account number",
       "account_holder_placeholder": "Enter account holder",
+      "error_amount_exceed": "The withdrawal amount cannot exceed your withdrawable balance",
       "notice_title": "Notice",
       "notice_1": "Bonus money is excluded from the withdrawal.",
       "notice_2": "Withdrawal processing takes 1-3 business days.",
@@ -839,6 +841,7 @@
       "payment_amount_label": "Payment Amount",
       "coupon_discount_label": "Coupon Discount",
       "point_used_label": "Points Used",
+      "payment_summary_section_title": "Payment Summary",
       "final_payment_label": "Actual Payment",
       "pay_money_label": "Coop Pay Money",
       "point_section_title": "Point",

@@ -2,6 +2,7 @@ import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import bankData from '@constants/banks.json';
 import Selection from '@dialogs/Selection';
 import {
@@ -15,6 +16,7 @@ export type IBankOption = {
 };
 
 export const useWithdrawal = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const [amount, setAmount] = useState('');
@@ -23,6 +25,7 @@ export const useWithdrawal = () => {
   const [selectedBank, setSelectedBank] = useState<IBankOption | undefined>(
     undefined,
   );
+  const [errorAmount, setErrorAmount] = useState('');
 
   const enabledBtnSubmit = useMemo(() => {
     const numericAmount = Number(amount);
@@ -36,7 +39,13 @@ export const useWithdrawal = () => {
   }, [accountHolder, accountNumber, amount, selectedBank, currentWallet]);
 
   const onAmountChange = (value: string) => {
-    setAmount(value.replaceAll(/\D/g, ''));
+    const digits = value.replaceAll(/\D/g, '');
+    setAmount(digits);
+    setErrorAmount(
+      Number(digits) > (currentWallet?.withdrawableBalance ?? 0)
+        ? t('withdrawal.error_amount_exceed')
+        : '',
+    );
   };
 
   const onAccountNumberChange = (value: string) => {
@@ -92,6 +101,7 @@ export const useWithdrawal = () => {
     accountNumber,
     amount,
     enabledBtnSubmit,
+    errorAmount,
     onAccountNumberChange,
     onPressBank,
     onAmountChange,

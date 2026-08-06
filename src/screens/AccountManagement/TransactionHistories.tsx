@@ -8,6 +8,8 @@ import { getTransactionsMovementRequest } from '@services/slices/account/account
 import { ITransactionMovement, ListApiResponse } from '@type';
 
 import TransactionItem from './TransactionItem';
+import AppNavigator from '@navigation/AppNavigator';
+import { Paths } from '@navigation/paths';
 
 const useTransaction = () => {
   const dispatch = useAppDispatch();
@@ -56,8 +58,13 @@ const useTransaction = () => {
     );
   }, [dispatch, currentPage]);
 
+  const onPressTransaction = (item: any) => {
+    AppNavigator.navigate(Paths.TransactionDetail, { transactionId: item?.id });
+  };
+
   return {
     onLoadMore,
+    onPressTransaction,
     data,
     loading,
     error,
@@ -70,7 +77,7 @@ type Properties = {
 
 function TransactionHistories({ onViewAllTransactions }: Properties) {
   const { t } = useTranslation();
-  const { data } = useTransaction();
+  const { data, onPressTransaction } = useTransaction();
 
   return (
     <>
@@ -92,7 +99,11 @@ function TransactionHistories({ onViewAllTransactions }: Properties) {
       <View style={styles.list}>
         {data?.length > 0 ? (
           data.map((transaction, index) => (
-            <TransactionItem key={`${index}`} transaction={transaction} />
+            <TransactionItem
+              key={`${index}`}
+              transaction={transaction}
+              onPress={onPressTransaction}
+            />
           ))
         ) : (
           <Text style={styles.desc}>{t('account_management.no_history')}</Text>

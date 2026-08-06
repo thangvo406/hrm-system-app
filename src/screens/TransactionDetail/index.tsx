@@ -1,118 +1,118 @@
-import { HeaderDetail } from '@components';
+import type { Paths } from '@navigation/paths';
+import type { RootScreenProps } from '@navigation/types';
+
+import { Colors } from '@constants';
+import { HeaderDetail, TransactionDetailLoading } from '@components';
 import { ScaleSize } from '@kits/core';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { formatCurrency } from '@utils/product';
 import { useTransactionDetail } from '@hooks';
 import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
 
-const SCREEN_BG = '#F5F5F5';
-const CARD_BG = '#FFFFFF';
-const TEXT_DARK = '#1A1A1A';
-const TEXT_GRAY = '#9B9B9B';
-const TEXT_LABEL = '#6B6B6B';
-const NEGATIVE_COLOR = '#E05353';
-const POSITIVE_COLOR = '#2DB34A';
-const DIVIDER = '#E5E7EB';
+import AmountRow from './AmountRow';
+import DashedDivider from './DashedDivider';
+import PointRow from './PointRow';
+import SectionCard from './SectionCard';
+import SummaryHeader from './SummaryHeader';
 
-type AmountRowProps = {
-  readonly bold?: boolean;
-  readonly caption?: string;
-  readonly label: string;
-  readonly value: string;
-  readonly valueColor?: string;
-};
+const DATE_FORMAT = 'YYYY-MM-DD hh:mmA';
+const MINUS_SIGN = '-';
+const POINT_BADGE = 'P';
+const POINT_SUFFIX = ' P';
 
-function AmountRow({ bold, caption, label, value, valueColor }: AmountRowProps) {
-  return (
-    <View style={styles.row}>
-      <View style={styles.rowLabelWrap}>
-        <Text style={[styles.rowLabel, bold && styles.rowLabelBold]}>
-          {label}
-        </Text>
-        {caption ? <Text style={styles.rowCaption}>{caption}</Text> : undefined}
-      </View>
-      <Text
-        style={[
-          styles.rowValue,
-          bold && styles.rowValueBold,
-          valueColor ? { color: valueColor } : undefined,
-        ]}
-      >
-        {value}
-      </Text>
-    </View>
-  );
-}
+const formatWon = (t: any, value: number | undefined, negative = false) =>
+  `${negative ? MINUS_SIGN : ''}${t('common.display_price', { amount: formatCurrency(value) })}`;
 
-function TransactionDetail(props: any) {
+const formatPoint = (value: number | undefined, negative = false) =>
+  `${negative ? MINUS_SIGN : ''}${formatCurrency(value)}${POINT_SUFFIX}`;
+
+function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { data, formattedDate } = useTransactionDetail(props);
+  const { data, loading } = useTransactionDetail(props);
+
+  const headerTitle = data
+    ? `${data.productName} ${formatWon(t, data.paymentAmount)}`
+    : '';
+  const headerDate = data?.paidAt ? dayjs(data.paidAt).format(DATE_FORMAT) : '';
 
   return (
     <View style={styles.root}>
       <HeaderDetail hideNotify title={t('transaction_detail.title')} />
+      {loading ? (
+        <TransactionDetailLoading />
+      ) : (
+        <ScrollView
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingBottom: insets.bottom + ScaleSize(24) },
+          ]}
+          showsVerticalScrollIndicator={false}
+        >
+          <SummaryHeader date={headerDate} title={headerTitle} />
 
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: insets.bottom + ScaleSize(24) },
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={styles.heading}>{t('transaction_detail.title')}</Text>
-        <Text style={styles.date}>{formattedDate}</Text>
-        <Text style={styles.productTitle}>
-          {`${data.productName} ${formatCurrency(data.paymentAmount)}원`}
-        </Text>
+          <View style={styles.section}>
+            <SectionCard
+              icon="ic_wallet"
+              title={t('transaction_detail.payment_summary_section_title')}
+            >
+              <AmountRow
+                bold
+                label={t('transaction_detail.payment_amount_label')}
+                value={formatWon(t, data?.paymentAmount)}
+              />
 
-        <View style={styles.card}>
-          <AmountRow
-            bold
-            label={t('transaction_detail.payment_amount_label')}
-            value={`${formatCurrency(data.paymentAmount)}원`}
-          />
-          <AmountRow
-            caption={data.couponName}
-            label={t('transaction_detail.coupon_discount_label')}
-            value={`-${formatCurrency(data.couponDiscount)}원`}
-            valueColor={NEGATIVE_COLOR}
-          />
-          <AmountRow
-            label={t('transaction_detail.point_used_label')}
-            value={`-${formatCurrency(data.pointUsed)} P`}
-            valueColor={NEGATIVE_COLOR}
-          />
+              <View style={styles.divider} />
 
-          <View style={styles.divider} />
+              <AmountRow
+                caption={data?.couponName}
+                label={t('transaction_detail.coupon_discount_label')}
+                value={formatWon(t, data?.couponDiscount, true)}
+                valueColor={Colors.red01}
+              />
+              <AmountRow
+                label={t('transaction_detail.point_used_label')}
+                value={formatPoint(data?.pointUsed, true)}
+                valueColor={Colors.red01}
+              />
 
-          <AmountRow
-            bold
-            label={t('transaction_detail.final_payment_label')}
-            value={`${formatCurrency(data.finalPaymentAmount)}원`}
-          />
-          <AmountRow
-            label={t('transaction_detail.pay_money_label')}
-            value={`-${formatCurrency(data.payMoneyAmount)}원`}
-            valueColor={POSITIVE_COLOR}
-          />
-        </View>
+              <DashedDivider />
 
-        <Text style={styles.sectionTitle}>
-          {t('transaction_detail.point_section_title')}
-        </Text>
-        <View style={styles.card}>
-          <AmountRow
-            label={t('transaction_detail.point_used_label')}
-            value={`-${formatCurrency(data.pointUsed)} P`}
-          />
-          <AmountRow
-            label={t('transaction_detail.point_earned_label')}
-            value={`${formatCurrency(data.pointEarned)} P`}
-          />
-        </View>
-      </ScrollView>
+              <AmountRow
+                highlight
+                label={t('transaction_detail.final_payment_label')}
+                value={formatWon(t, data?.finalPaymentAmount)}
+                valueColor={Colors.green02}
+              />
+              <AmountRow
+                label={t('transaction_detail.pay_money_label')}
+                value={formatWon(t, data?.payMoneyAmount, true)}
+                valueColor={Colors.green02}
+              />
+            </SectionCard>
+          </View>
+
+          <View style={styles.section}>
+            <SectionCard
+              badge={POINT_BADGE}
+              title={t('transaction_detail.point_section_title')}
+            >
+              <PointRow
+                direction="used"
+                label={t('transaction_detail.point_used_label')}
+                value={formatPoint(data?.pointUsed, true)}
+              />
+              <PointRow
+                direction="earned"
+                label={t('transaction_detail.point_earned_label')}
+                value={formatPoint(data?.pointEarned)}
+              />
+            </SectionCard>
+          </View>
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -120,83 +120,18 @@ function TransactionDetail(props: any) {
 export default TransactionDetail;
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: CARD_BG,
-    borderRadius: ScaleSize(14),
-    marginHorizontal: ScaleSize(16),
-    paddingHorizontal: ScaleSize(18),
-    paddingVertical: ScaleSize(6),
-  },
-  date: {
-    color: TEXT_GRAY,
-    fontSize: ScaleSize(13),
-    marginTop: ScaleSize(8),
-    textAlign: 'center',
-  },
   divider: {
-    backgroundColor: DIVIDER,
+    backgroundColor: Colors.gray16,
     height: 1,
-    marginVertical: ScaleSize(4),
-  },
-  heading: {
-    color: TEXT_DARK,
-    fontSize: ScaleSize(18),
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  productTitle: {
-    color: TEXT_DARK,
-    fontSize: ScaleSize(20),
-    fontWeight: '700',
-    marginBottom: ScaleSize(20),
-    marginTop: ScaleSize(6),
-    textAlign: 'center',
   },
   root: {
-    backgroundColor: SCREEN_BG,
+    backgroundColor: Colors.white,
     flex: 1,
-  },
-  row: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: ScaleSize(12),
-  },
-  rowCaption: {
-    color: TEXT_GRAY,
-    fontSize: ScaleSize(11),
-    marginTop: ScaleSize(2),
-  },
-  rowLabel: {
-    color: TEXT_LABEL,
-    fontSize: ScaleSize(14),
-  },
-  rowLabelBold: {
-    color: TEXT_DARK,
-    fontWeight: '700',
-  },
-  rowLabelWrap: {
-    flex: 1,
-  },
-  rowValue: {
-    color: TEXT_DARK,
-    fontSize: ScaleSize(14),
-    fontWeight: '500',
-    marginLeft: ScaleSize(12),
-  },
-  rowValueBold: {
-    fontSize: ScaleSize(16),
-    fontWeight: '700',
   },
   scrollContent: {
-    paddingTop: ScaleSize(16),
+    paddingTop: ScaleSize(12),
   },
-  sectionTitle: {
-    color: TEXT_DARK,
-    fontSize: ScaleSize(15),
-    fontWeight: '700',
-    marginBottom: ScaleSize(10),
-    marginHorizontal: ScaleSize(16),
-    marginTop: ScaleSize(24),
+  section: {
+    marginTop: ScaleSize(16),
   },
 });

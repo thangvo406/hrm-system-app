@@ -5,7 +5,9 @@ import EyeIcon from './eye.svg';
 import FireIcon from './fire.svg';
 import GoogleIcon from './google.svg';
 import Ic_alert_triangleIcon from './ic_alert_triangle.svg';
+import Ic_arrow_downIcon from './ic_arrow_down.svg';
 import Ic_arrow_left_grayIcon from './ic_arrow_left_gray.svg';
+import Ic_arrow_upIcon from './ic_arrow_up.svg';
 import Ic_bankIcon from './ic_bank.svg';
 import Ic_burstIcon from './ic_burst.svg';
 import Ic_calendarIcon from './ic_calendar.svg';
@@ -16,6 +18,7 @@ import Ic_check_circleIcon from './ic_check_circle.svg';
 import Ic_check_filledIcon from './ic_check_filled.svg';
 import Ic_chevron_downIcon from './ic_chevron_down.svg';
 import Ic_chevron_rightIcon from './ic_chevron_right.svg';
+import Ic_chevron_upIcon from './ic_chevron_up.svg';
 import Ic_clockIcon from './ic_clock.svg';
 import Ic_clock_filledIcon from './ic_clock_filled.svg';
 import Ic_closeIcon from './ic_close.svg';
@@ -69,7 +72,9 @@ const icons = {
   'fire': FireIcon,
   'google': GoogleIcon,
   'ic_alert_triangle': Ic_alert_triangleIcon,
+  'ic_arrow_down': Ic_arrow_downIcon,
   'ic_arrow_left_gray': Ic_arrow_left_grayIcon,
+  'ic_arrow_up': Ic_arrow_upIcon,
   'ic_bank': Ic_bankIcon,
   'ic_burst': Ic_burstIcon,
   'ic_calendar': Ic_calendarIcon,
@@ -80,6 +85,7 @@ const icons = {
   'ic_check_filled': Ic_check_filledIcon,
   'ic_chevron_down': Ic_chevron_downIcon,
   'ic_chevron_right': Ic_chevron_rightIcon,
+  'ic_chevron_up': Ic_chevron_upIcon,
   'ic_clock': Ic_clockIcon,
   'ic_clock_filled': Ic_clock_filledIcon,
   'ic_close': Ic_closeIcon,

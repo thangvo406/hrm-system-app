@@ -37,6 +37,7 @@ function Withdrawal() {
     onAmountChange,
     onSubmit,
     selectedBank,
+    errorAmount,
     currentWallet,
     setAccountHolder,
     onPressBank,
@@ -96,6 +97,7 @@ function Withdrawal() {
             keyboardType="numeric"
             onChangeText={onAmountChange}
             returnKeyType="done"
+            error={errorAmount}
             placeholder={t('withdrawal.amount_placeholder')}
             renderRightComponent={() => (
               <View style={styles.unitGroup}>

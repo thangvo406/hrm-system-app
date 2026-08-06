@@ -79,7 +79,8 @@
       "purchase_at": "구매일자: {{date}}",
       "expired_at": "유효기간: {{date}}",
       "detail": {
-        "btn_back": "식권함으로 돌아가기"
+        "btn_back": "식권함으로 돌아가기",
+        "title": "식권 QR"
       }
     },
     "register_flow": {
@@ -657,6 +658,7 @@
       "bank_placeholder": "은행 선택",
       "account_number_placeholder": "계좌번호 입력",
       "account_holder_placeholder": "예금주 입력",
+      "error_amount_exceed": "환불 금액은 환불 가능 금액을 초과할 수 없습니다",
       "notice_title": "주의사항",
       "notice_1": "보너스머니는 환불 대상에서 제외됩니다",
       "notice_2": "환불 처리는 영업일 기준 1~3일 소요됩니다",
@@ -836,6 +838,7 @@
       "payment_amount_label": "결제 금액",
       "coupon_discount_label": "쿠폰 할인",
       "point_used_label": "포인트 사용",
+      "payment_summary_section_title": "결제 요약",
       "final_payment_label": "실결제 금액",
       "pay_money_label": "생협페이머니",
       "point_section_title": "포인트",

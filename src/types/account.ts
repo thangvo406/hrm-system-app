@@ -1,6 +1,7 @@
 import type { AddressSuggestion } from '@services/request/account';
 
 import type { AppCallback, ListApiResponse } from './common';
+import type { ITransactionDetail } from './payment';
 
 export interface IRequestAutoCompleteAddress
   extends AppCallback<AddressSuggestion[]> {
@@ -24,6 +25,11 @@ export interface IRequestGetTransactionMovement
   toDate?: string;
   page?: number;
   size?: number;
+}
+
+export interface IRequestGetTransactionDetail
+  extends AppCallback<ITransactionDetail> {
+  transactionId: number;
 }
 
 export interface ITransactionMovement {

@@ -1,26 +1,28 @@
 import AppNavigator from '@navigation/AppNavigator';
+import { useAppDispatch } from '@services/common/storeHooks';
+import { getTransactionDetailRequest } from '@services/slices/account/accountSlice';
 import type { ITransactionDetail } from '@type/payment';
-import dayjs from 'dayjs';
-
-const DATE_FORMAT = 'YYYY-MM-DD hh:mmA';
-
-const MOCK_TRANSACTION_DETAIL: ITransactionDetail = {
-  couponDiscount: 3000,
-  couponName: '음료무료쿠폰',
-  finalPaymentAmount: 25_900,
-  id: 'txn-mock-001',
-  paidAt: '2026-04-12T10:00:00',
-  paymentAmount: 29_900,
-  payMoneyAmount: 25_900,
-  pointEarned: 0,
-  pointUsed: 1000,
-  productName: '스마트 오더',
-};
+import { useEffect, useState } from 'react';
 
 export function useTransactionDetail(props: any) {
-  const params = AppNavigator.getParams(props);
-  const data: ITransactionDetail = params?.data ?? MOCK_TRANSACTION_DETAIL;
-  const formattedDate = dayjs(data.paidAt).format(DATE_FORMAT);
+  const { transId } = AppNavigator.getParams(props);
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<ITransactionDetail>();
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(
+      getTransactionDetailRequest({
+        transactionId: transId,
+        onSuccess: _data => {
+          setData(_data);
+          setLoading(false);
+        },
+        onFailure: () => {
+          setLoading(false);
+        },
+      }),
+    );
+  }, []);
 
-  return { data, formattedDate };
+  return { data, loading };
 }

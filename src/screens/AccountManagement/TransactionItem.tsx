@@ -9,6 +9,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import dayjs from 'dayjs';
+import AppButton from '@components/AppButton';
 
 const DIRECTION_CREDIT = 'credit';
 const DIRECTION_DEBIT = 'debit';
@@ -16,8 +17,8 @@ const POINT_AMOUNT_COLOR = '#2E8B4A';
 const EMPTY_VALUE = '-';
 
 const AMOUNT_COLORS: Record<string, string | undefined> = {
-  [DIRECTION_CREDIT]: '#E14B4B',
-  [DIRECTION_DEBIT]: '#2F7CF6',
+  [DIRECTION_DEBIT]: '#E14B4B',
+  [DIRECTION_CREDIT]: '#2F7CF6',
 };
 
 const DETAIL_LABELS: Record<string, string | undefined> =
@@ -31,33 +32,40 @@ type AmountProps = {
 
 /** Signed amount, colored by direction (point entries get their own color). */
 function TransactionAmount({ amount, direction, isPoint }: AmountProps) {
+  const { t } = useTranslation();
   const normalizedDirection = direction?.toLowerCase();
-  const sign = normalizedDirection === DIRECTION_CREDIT ? '-' : '+';
-  const color =
-    isPoint && normalizedDirection === DIRECTION_DEBIT
-      ? POINT_AMOUNT_COLOR
-      : (AMOUNT_COLORS[normalizedDirection] ?? Colors.black);
+  const sign = normalizedDirection === DIRECTION_CREDIT ? '+' : '-';
+  let color;
+  if (isPoint) {
+    color =
+      normalizedDirection === DIRECTION_DEBIT
+        ? AMOUNT_COLORS[normalizedDirection]
+        : POINT_AMOUNT_COLOR;
+  } else {
+    color = AMOUNT_COLORS[normalizedDirection] ?? Colors.black;
+  }
 
   return (
     <Text style={[styles.amount, { color }]}>
-      {`${sign}${formatCurrency(amount)}${isPoint ? 'P' : '원'}`}
+      {isPoint
+        ? `${sign}${formatCurrency(amount)}P`
+        : `${sign}${t('common.display_price', { amount: formatCurrency(amount) })}`}
     </Text>
   );
 }
 
 type Properties = {
   readonly transaction: ITransactionMovement;
+  readonly onPress: (data: any) => void;
 };
 
-/** One row of the wallet transaction list: store + funding source on the left,
- * signed amount + date on the right. */
-function TransactionItem({ transaction }: Properties) {
+function TransactionItem({ transaction, onPress }: Properties) {
   const { t } = useTranslation();
   const isPoint = transaction.entryType?.includes('POINT');
   const detailLabel = DETAIL_LABELS[transaction.entryType];
 
   return (
-    <View style={styles.row}>
+    <AppButton style={styles.row} onPress={() => onPress?.(transaction)}>
       <View style={styles.left}>
         <Text style={styles.rowTitle}>
           {transaction.storeName || EMPTY_VALUE}
@@ -76,7 +84,7 @@ function TransactionItem({ transaction }: Properties) {
           {dayjs(transaction.occurredAt).format('YYYY-MM-DD')}
         </Text>
       </View>
-    </View>
+    </AppButton>
   );
 }
 

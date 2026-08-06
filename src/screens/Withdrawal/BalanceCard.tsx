@@ -11,7 +11,7 @@ const TEXT_MUTED = '#9B9B9B';
 const BORDER_COLOR = '#E0E0E0';
 
 type Properties = {
-  readonly walletBalance: IWallet;
+  readonly walletBalance?: IWallet;
 };
 
 function BalanceCard({ walletBalance }: Properties) {

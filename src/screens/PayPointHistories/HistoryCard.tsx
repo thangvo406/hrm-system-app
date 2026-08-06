@@ -9,6 +9,9 @@ import type {
   TPayPointTagType,
 } from '@hooks/usePayPointHistories';
 import { IPointPayHistory } from '@type';
+import { TRANSACTION_DETAIL_DISPLAY } from '@constants/config';
+import { TranslationKeys } from '@translations/i18next';
+import PointItem from './PointItem';
 
 type Properties = {
   readonly item: IPointPayHistory;
@@ -18,7 +21,7 @@ const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#9AA0A6';
 const EXPIRY_HIGHLIGHT = '#E0872B';
 const DATE_FORMAT = 'YYYY-MM-DD hh:mmA';
-
+const EMPTY_VALUE = '-';
 const TAG_STYLE: Record<
   TPayPointTagType,
   { readonly background: string; readonly color: string; readonly key: string }
@@ -30,10 +33,38 @@ const TAG_STYLE: Record<
   welfare: { background: '#DEEBFB', color: '#3B82C4', key: 'tag_welfare' },
 };
 
-const AMOUNT_COLOR: Record<TPayPointAmountTone, string> = {
-  negative: '#E05353',
-  neutral: TEXT_DARK,
-  positive: '#2DB34A',
+const POINT_TAG_STYLE = {
+  POINT_EXPIRE: {
+    background: '#FBE0E0',
+    color: '#D9534F',
+    title: 'pay_point.tags.point_expired',
+  },
+  POINT_USE: {
+    background: '#ECECEC',
+    color: '#6B6B6B',
+    title: 'pay_point.tags.point_use',
+  },
+  POINT_EARN: {
+    background: '#DFF3E1',
+    color: '#2DB34A',
+    title: 'pay_point.tags.point_accrue',
+  },
+};
+
+const COLORS_AMOUNT = {
+  POINT_EXPIRE: '#D9534F',
+  POINT_USE: '#6B6B6B',
+  POINT_EARN: '#2DB34A',
+};
+
+const PointTagItem = ({ entryType }: any) => {
+  const { t } = useTranslation();
+  const tag = POINT_TAG_STYLE[entryType];
+  return (
+    <View style={[styles.tag, { backgroundColor: tag?.color }]}>
+      <Text style={styles.tagText}>{t(tag?.title)}</Text>
+    </View>
+  );
 };
 
 const formatSigned = (item: IPointPayHistory, type) => {
@@ -42,26 +73,31 @@ const formatSigned = (item: IPointPayHistory, type) => {
   return `${sign}${formatCurrency(item.amount)}${suffix}`;
 };
 
-const formatBalance = (item: IPointPayHistory, type: string) => {
-  const suffix = type != 'point' ? '원' : ' P';
-  return `${formatCurrency(item.amount)}${suffix}`;
-};
+const DETAIL_LABELS: Record<string, string | undefined> =
+  TRANSACTION_DETAIL_DISPLAY;
 
 function HistoryCard({ item, type }: Properties) {
   const { t } = useTranslation();
-  console.log("HistoryCard",item)
-  const tag = TAG_STYLE[item.tag];
 
+  if (type == 'point') {
+    return <PointItem item={item} />;
+  }
+
+  // const tag = TAG_STYLE[item.tag];
+  const TagComponent = type == 'point' ? PointTagItem : PointTagItem;
+
+  const detailLabel = DETAIL_LABELS[item.entryType];
+  const amountColor = COLORS_AMOUNT[item.entryType];
   return (
     <View style={styles.card}>
       <View style={styles.leftColumn}>
-        <View style={[styles.tag, { backgroundColor: tag?.color }]}>
-          <Text style={styles.tagText}>{t(`pay_point.${tag?.key}`)}</Text>
-        </View>
-        <Text style={[styles.amount, { color: AMOUNT_COLOR[item.amountTone] }]}>
+        <TagComponent entryType={item?.entryType} />
+        <Text style={[styles.amount, { color: amountColor }]}>
           {formatSigned(item, type)}
         </Text>
-        <Text style={styles.description}>{item.entryType}</Text>
+        <Text style={styles.description}>
+          {detailLabel ? t(detailLabel as TranslationKeys) : EMPTY_VALUE}
+        </Text>
       </View>
 
       <View style={styles.rightColumn}>
@@ -69,7 +105,9 @@ function HistoryCard({ item, type }: Properties) {
           {dayjs(item.createdDate).format(DATE_FORMAT)}
         </Text>
         <Text style={styles.balance}>
-          {t('pay_point.balance_after', { amount: formatBalance(item, type) })}
+          {t('pay_point.balance_after', {
+            amount: formatCurrency(item.balanceAfter),
+          })}
         </Text>
         {item.expiry ? (
           <Text

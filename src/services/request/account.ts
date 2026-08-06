@@ -18,12 +18,14 @@ import type {
   IUpdateAvatarRequest,
   IUpdateProfileInfoRequest,
   IRequestCreateQRCodeMember,
+  IRequestGetTransactionDetail,
   IRequestGetTransactionMovement,
   ITransactionMovement,
   IVoucher,
   IMealTicket,
   IPointPayHistory,
 } from '@type/account';
+import type { ITransactionDetail } from '@type/payment';
 
 import { httpRequest } from '@services/common/httpRequest';
 import { z } from 'zod';
@@ -218,6 +220,30 @@ export const getTransactionsMovement = async (
     loading: false,
   });
   return response.data;
+};
+const MOCK_TRANSACTION_DETAIL: ITransactionDetail = {
+  couponDiscount: 3000,
+  couponName: '음료무료쿠폰',
+  finalPaymentAmount: 25_900,
+  id: 'txn-mock-001',
+  paidAt: '2026-04-12T10:00:00',
+  paymentAmount: 29_900,
+  payMoneyAmount: 25_900,
+  pointEarned: 0,
+  pointUsed: 1000,
+  productName: '스마트 오더',
+};
+export const getTransactionDetail = async (
+  request: Omit<IRequestGetTransactionDetail, 'onFailure' | 'onSuccess'>,
+): Promise<ITransactionDetail> => {
+  return new Promise(resolve => {
+    resolve(MOCK_TRANSACTION_DETAIL);
+  });
+  // const response = await httpRequest.get<SingleApiResponse<ITransactionDetail>>(
+  //   EndPoints.ACCOUNT.transactionDetail(request.transactionId),
+  //   { loading: false },
+  // );
+  // return response.data;
 };
 
 export const getMealTickets = async (

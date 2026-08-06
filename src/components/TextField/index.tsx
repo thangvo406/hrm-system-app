@@ -72,7 +72,7 @@ function TextField({
   ...textInputProps
 }: TextFieldProps) {
   const [secure, setSecure] = useState(secureTextEntry);
-  const hasError = error !== undefined;
+  const hasError = !!error;
   const textInputRef = useRef(null);
   const fakeValue = useRef('');
 
@@ -91,9 +91,9 @@ function TextField({
         style={[
           styles.inputWrapper,
           !editable && styles.inputWrapperEditable,
+          inputWrapperStyle,
           hasError && styles.inputWrapperError,
           multiLine && styles.inputWrapperMultiline,
-          inputWrapperStyle,
         ]}
       >
         {!!iconName && (

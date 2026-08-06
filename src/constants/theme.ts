@@ -14,12 +14,22 @@ export const Colors = {
   gray10: '#F9FAFB',
   gray11: '#b6b6b6',
   gray12: '#d4d7dd',
+  gray13: '#5F6368',
+  gray14: '#9B9B9B',
+  gray15: '#D5DBE1',
+  gray16: '#EEF0F2',
+  black01: '#1A1A1A',
   yellow01: '#F5A623',
   yellow02: '#F6AD55',
   green01: '#1A6633',
   green02: '#2DB34A',
   green03: '#E5F5E8',
   green04: '#2B8C0E',
+  green05: '#D8F0DE',
+  green06: '#E7F6EB',
+  green07: '#EAF7EE',
+  red01: '#E05353',
+  red02: '#FCE8E8',
 } as const;
 
 export const Fonts = {} as const;
