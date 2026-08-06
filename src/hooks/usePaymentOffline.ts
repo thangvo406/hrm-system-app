@@ -59,7 +59,8 @@ export const usePaymentOffline = () => {
   const [amount, setAmount] = useState('');
 
   const disabledBtnSubmit = useMemo(() => {
-    return !amount || Number(amount) > (currentWallet?.balance || 0);
+    // return !amount || Number(amount) > (currentWallet?.balance || 0);
+    return false
   }, [amount, currentWallet?.balance]);
 
   const onAmountChange = useCallback((value: string) => {
@@ -92,7 +93,7 @@ export const usePaymentOffline = () => {
   const onPay = useCallback(() => {
     dispatch(
       generateQRCodePayRequest({
-        useMoney: Number(amount),
+        // useMoney: Number(amount),
         usePoint: usePoints ? pointUsed : 0,
         onSuccess: data => {
           AppNavigator.showDialog({

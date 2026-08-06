@@ -1,9 +1,9 @@
-import { AppButton, Image } from '@components';
+import { AppButton, Image, PaginationDots } from '@components';
 import { ScaleSize } from '@kits/core';
 import type { IResponseOrganizationInfo } from '@type';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import type { LayoutChangeEvent } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
@@ -12,9 +12,11 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import type { CarouselRenderItem } from 'react-native-reanimated-carousel';
+import Carousel from 'react-native-reanimated-carousel';
 
+import { Globals } from '@utils';
 import { formatCurrency } from '@utils/product';
-import imageNames from '@assets/images/names';
 
 // const CARD_GRADIENT = ['#2E8B4A', '#1F6E38'];
 const CARD_GRADIENT = ['#1F6E38', '#1F6E38'];
@@ -31,6 +33,15 @@ const HANDLE_BAR_HEIGHT = ScaleSize(19);
 // 60 below the card bottom edge; the visible handle already fills part of it.
 const ORGANIZATION_SECTION_GAP =
   ScaleSize(60) - HANDLE_IMAGE_HEIGHT + HANDLE_BAR_HEIGHT;
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+// Matches the walletWrap inner width (screen minus paddingHorizontal 20 x2).
+const ORGANIZATION_ITEM_WIDTH = SCREEN_WIDTH - ScaleSize(40);
+const ORGANIZATION_CARD_WIDTH = ORGANIZATION_ITEM_WIDTH - ScaleSize(16);
+const ORGANIZATION_CARD_HEIGHT = ScaleSize(220);
+const DOT_SIZE = ScaleSize(6);
+const DOT_ACTIVE_WIDTH = ScaleSize(18);
+const DOT_GAP = ScaleSize(3);
 
 type Properties = {
   readonly balance: number;
@@ -54,7 +65,7 @@ const OrganizationInfo = ({
   const { t } = useTranslation();
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, styles.organizationCard]}>
         <LinearGradient
           colors={CARD_GRADIENT}
           end={{ x: 1, y: 1 }}
@@ -162,6 +173,31 @@ function WalletCard({
     [organizationHeight],
   );
 
+  const carouselProgress = useSharedValue(0);
+
+  const renderOrganize = useCallback<
+    CarouselRenderItem<IResponseOrganizationInfo>
+  >(
+    ({ item }) => (
+      <View style={styles.organizationSlot}>
+        <OrganizationInfo info={item} onUse={onUseOrganize} />
+      </View>
+    ),
+    [onUseOrganize],
+  );
+
+  const onTouchStart = useCallback(() => {
+    if (Globals.isScrollingRef) {
+      Globals.isScrollingRef.current = true;
+    }
+  }, []);
+
+  const onTouchEnd = useCallback(() => {
+    if (Globals.isScrollingRef) {
+      Globals.isScrollingRef.current = false;
+    }
+  }, []);
+
   return (
     <View
       style={{
@@ -243,7 +279,7 @@ function WalletCard({
             <Image
               color={HANDLE_COLOR}
               height={HANDLE_IMAGE_HEIGHT}
-              name={imageNames.ic_expand_wallet}
+              name='ic_expand_wallet'
               style={styles.expandHandleIcon}
               type="svg"
               width={HANDLE_IMAGE_WIDTH}
@@ -266,13 +302,37 @@ function WalletCard({
           pointerEvents={isExpandedOrganization ? 'auto' : 'none'}
           style={[styles.organizationClip, organizationStyle]}
         >
-          <View
-            onLayout={onOrganizationLayout}
-            style={styles.organizationContent}
-          >
-            {organizationInfo?.map((info, index) => (
-              <OrganizationInfo info={info} key={index} onUse={onUseOrganize} />
-            ))}
+            <View
+              onTouchCancel={onTouchEnd}
+              onTouchEnd={onTouchEnd}
+              onTouchStart={onTouchStart}
+              onLayout={onOrganizationLayout}
+              style={styles.organizationContent}
+            >
+              <Carousel
+                data={organizationInfo || []}
+                height={ORGANIZATION_CARD_HEIGHT}
+                loop={false}
+                onProgressChange={(_, absoluteProgress) => {
+                  carouselProgress.value = absoluteProgress;
+                }}
+                pagingEnabled
+                renderItem={renderOrganize}
+                style={styles.organizationCarousel}
+                testID="account-management-organization-carousel"
+                width={ORGANIZATION_ITEM_WIDTH}
+              />
+         
+            {(organizationInfo?.length || 0) > 1 ? (
+              <PaginationDots
+                activeWidth={DOT_ACTIVE_WIDTH}
+                count={organizationInfo?.length || 0}
+                gap={DOT_GAP}
+                progress={carouselProgress}
+                size={DOT_SIZE}
+                style={styles.paginationRow}
+              />
+            ) : undefined}
           </View>
         </Animated.View>
       ) : undefined}
@@ -290,6 +350,9 @@ const styles = StyleSheet.create({
     flex: 1,
     height: ScaleSize(46),
     justifyContent: 'center',
+  },
+  bannerWrap: {
+    alignItems: 'center',
   },
   actionButtonText: {
     color: '#FFFFFF',
@@ -354,6 +417,15 @@ const styles = StyleSheet.create({
   expandHandleIcon: {
     marginTop: -HANDLE_BAR_HEIGHT,
   },
+  organizationCard: {
+    height: '100%',
+    width: ORGANIZATION_CARD_WIDTH,
+  },
+  organizationCarousel: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: ORGANIZATION_ITEM_WIDTH,
+  },
   organizationClip: {
     overflow: 'hidden',
   },
@@ -395,6 +467,17 @@ const styles = StyleSheet.create({
     gap: ScaleSize(10),
     marginTop: ORGANIZATION_SECTION_GAP,
     padding: ScaleSize(20),
+  },
+  organizationSlot: {
+    alignItems: 'center',
+    height: ORGANIZATION_CARD_HEIGHT,
+    justifyContent: 'center',
+    width: ORGANIZATION_ITEM_WIDTH,
+  },
+  paginationRow: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    flexDirection: 'row',
   },
   organizationTag: {
     backgroundColor: 'rgba(0, 0, 0, 0.3)',

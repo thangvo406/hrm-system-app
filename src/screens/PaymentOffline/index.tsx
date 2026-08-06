@@ -51,7 +51,7 @@ function PaymentOffline() {
         <View style={styles.fullBleed}>
           <BankAccountsSelection
             cards={bankAccounts}
-            showAmountInput
+            // showAmountInput
             amount={amount}
             onAmountChange={onAmountChange}
             hideAddCard={!isEnablePaymentCard}
