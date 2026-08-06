@@ -43,14 +43,6 @@ export type RootStackParamList = {
   [Paths.Carts]: undefined;
   [Paths.Contribution]: undefined;
   [Paths.ContributionInput]: undefined;
-  [Paths.ConfirmPaymentContribution]: { amount: number } | undefined;
-  [Paths.PaymentConfirmContributeFinish]:
-    | {
-        amount: number;
-        paymentMethod: string;
-        paymentTime: string;
-      }
-    | undefined;
   [Paths.Example]: undefined;
   [Paths.ForgotPass]: undefined;
   [Paths.Home]: undefined;
@@ -79,14 +71,6 @@ export type RootStackParamList = {
   [Paths.PointMain]: undefined;
   [Paths.Payment]: undefined;
   [Paths.MealTickets]: undefined;
-  [Paths.PaymentCompleted]:
-    | {
-        amount?: number;
-        paymentAt?: string;
-        paymentMethod?: string;
-        storeName?: string;
-      }
-    | undefined;
   [Paths.PaymentOffline]: undefined;
   [Paths.CartDetail]: undefined;
   [Paths.QRCodeViewer]:
