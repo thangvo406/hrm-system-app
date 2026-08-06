@@ -1,6 +1,6 @@
 import AppNavigator from '@navigation/AppNavigator';
 import { AppStacks, Paths } from '@navigation/paths';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import RequestAddCard from '@dialogs/RequestAddCard';
 import VouchersSelection from '@dialogs/VouchersSelection';
@@ -10,12 +10,17 @@ import {
   AccountSelector,
   AppSelector,
 } from '@services/selectors';
-import { createOrderRequest } from '@services/slices/payment/paymentSlice';
+import {
+  calculatePriceRequest,
+  createOrderRequest,
+} from '@services/slices/payment/paymentSlice';
 import WebViewScreen from '@dialogs/Webview';
 import { PaymentTypes } from '@constants/config';
 import { WebViewNavigation } from 'react-native-webview';
 import { deepLinkGate } from '@navigation/deepLinkGate';
 import Information from '@dialogs/Information';
+import { IPriceDetail } from '@type';
+import debounce from 'lodash/debounce';
 
 export type IPaymentCoupon = {
   readonly id: string;
@@ -32,12 +37,6 @@ export type SelectedPaymentMethod = {
   readonly type: PaymentMethodType;
 };
 
-// TODO(api): replace mock values with the payment-method summary response.
-const SELECTED_COUPON: IPaymentCoupon = {
-  id: 'coupon-free-drink',
-  name: '음료무료쿠폰',
-};
-
 export const PRIMARY_CARD_INDEX = 0;
 
 export const usePayment = (props: any) => {
@@ -47,10 +46,12 @@ export const usePayment = (props: any) => {
     {} as SelectedPaymentMethod,
   );
   const [usePoints, setUsePoints] = useState(true);
-
+  const isFirst = useRef(true);
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
   const [pointUsed, setPointUsed] = useState(0);
+  const [priceDetail, setPriceDetail] = useState<IPriceDetail>();
+  const [voucherSelected, setVoucherSelected] = useState();
   const onToggleUsePoints = () => {
     setUsePoints(previous => !previous);
   };
@@ -98,6 +99,47 @@ export const usePayment = (props: any) => {
     setSelectedMethod({ id, cardType: 'easyPay', type: 'easy' });
   }, []);
 
+  const onSubmitVoucher = () => {
+    dispatch(
+      calculatePriceRequest({
+        storeId: payloadRequest?.storeId,
+        totalMoney: payloadRequest?.totalAmount,
+        point: usePoints ? pointUsed : 0,
+        couponId: voucherSelected?.couponId,
+        onSuccess: (response: IPriceDetail) => {
+          setPriceDetail(response);
+        },
+        onFailure: () => {
+          setPriceDetail(prev =>
+            prev
+              ? prev
+              : ({ totalMoney: payloadRequest?.totalAmount } as IPriceDetail),
+          );
+        },
+      }),
+    );
+  };
+
+  useEffect(() => {
+    if (isFirst.current) {
+      isFirst.current = false;
+      return;
+    }
+    const debounceId = debounce(() => {
+      onSubmitVoucher();
+    }, 350);
+
+    debounceId();
+
+    return () => {
+      debounceId.cancel();
+    };
+  }, [usePoints, pointUsed]);
+
+  useEffect(() => {
+    onSubmitVoucher();
+  }, [voucherSelected]);
+
   useEffect(() => {
     onSelectCard(bankAccounts?.[0]);
   }, []);
@@ -106,6 +148,8 @@ export const usePayment = (props: any) => {
     AppNavigator.showDialog({
       screen: VouchersSelection,
       isFullScreen: true,
+      onSubmit: (item: any) => setVoucherSelected(item),
+      itemSelected: voucherSelected,
       storeId: payloadRequest?.storeId,
       orderAmount: payloadRequest?.totalAmount,
       // popupType: 'bottomSheet',
@@ -230,6 +274,7 @@ export const usePayment = (props: any) => {
     dispatch(
       createOrderRequest({
         ...payloadRequest,
+        couponId: voucherSelected?.couponId,
         createLinkRequest: {
           payment: paymentMethod,
           pointAmount: usePoints ? pointUsed : 0,
@@ -278,6 +323,7 @@ export const usePayment = (props: any) => {
   return {
     initialIndex: PRIMARY_CARD_INDEX,
     payloadRequest,
+    priceDetail,
     onPay,
     selectedEasyPayId,
     onSelectCard,
@@ -294,6 +340,6 @@ export const usePayment = (props: any) => {
     disableBtnSubmit,
     usePoints,
     selectedCardId,
-    selectedCoupon: SELECTED_COUPON,
+    voucherSelected,
   };
 };

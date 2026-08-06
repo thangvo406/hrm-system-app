@@ -14,6 +14,8 @@ import type {
   IRequestInitCharge,
   IOrderHistoryDetailItem,
   IOrderHistoryItem,
+  IPriceDetail,
+  IRequestCalculatePrice,
   IRequestRemoveCartItem,
   IRequestUpdateCartItem,
   IResponseInitPayment,
@@ -32,6 +34,7 @@ import type { AppCallback, ListApiResponse } from '@type/common';
 import { call, takeLatest } from 'redux-saga/effects';
 
 import {
+  calculatePrice,
   createLinkPaymentOrder,
   createOrder,
   generateQRCodePay,
@@ -53,7 +56,7 @@ import {
 import { getErrorMessageApi } from '@utils/common';
 
 import {
-  createBankInfoTopUpRequest,
+  calculatePriceRequest,
   createOrderRequest,
   generateQRCodePayRequest,
   getAddressOrderRecentRequest,
@@ -261,6 +264,19 @@ function* balanceChargeWorker(
   }
 }
 
+function* calculatePriceWorker(
+  action: PayloadAction<IRequestCalculatePrice>,
+): Generator<unknown, void, IPriceDetail> {
+  const { onFailure, onSuccess, ...request } = action.payload || {};
+  try {
+    const response: IPriceDetail = yield call(calculatePrice, request);
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 function* increaseContributionWorker(
   action: PayloadAction<IRequestIncreaseContribute>,
 ): Generator<unknown, void, void> {
@@ -319,6 +335,7 @@ function* getDividendDetailWorker(
 }
 
 export function* paymentSaga() {
+  yield takeLatest(calculatePriceRequest.type, calculatePriceWorker);
   yield takeLatest(createOrderRequest.type, createOrderWorker);
   yield takeLatest(generateQRCodePayRequest.type, generateQRCodeWorker);
   yield takeLatest(

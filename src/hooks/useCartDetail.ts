@@ -223,7 +223,6 @@ export const useCartDetail = (props: any) => {
         addressDetail: addressDelivery?.detail || '',
         receiveMethod: deliveryTab,
         products: items,
-        vouchers: [],
         totalAmount: data?.subTotal,
         goFrom: 'order_product',
       },

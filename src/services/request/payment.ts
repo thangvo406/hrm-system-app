@@ -14,6 +14,8 @@ import type {
   IRequestUpdateCartItem,
   IOrderHistoryDetailItem,
   IOrderHistoryItem,
+  IPriceDetail,
+  IRequestCalculatePrice,
   ITotalItemCart,
   ICreateOrderResponse,
   ICreateLinkPaymentOrderRequest,
@@ -108,6 +110,17 @@ export const createOrder = async (
   const response = await httpRequest.post<
     SingleApiResponse<ICreateOrderResponse>
   >(EndPoints.PAYMENT.createOrder, request);
+  return response.data;
+};
+
+export const calculatePrice = async (
+  request: WithoutCallbacks<IRequestCalculatePrice>,
+): Promise<IPriceDetail> => {
+  const response = await httpRequest.post<SingleApiResponse<IPriceDetail>>(
+    EndPoints.PAYMENT.calculatePrice,
+    request,
+    { loading: false },
+  );
   return response.data;
 };
 

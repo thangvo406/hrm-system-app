@@ -114,7 +114,7 @@ export interface IRequestCreateOrder extends AppCallback<ICallbackCreateOrder> {
   receiveMethod?: string;
   products: IProductCreateOrder[];
   storeId: number;
-  vouchers: IVoucherOrder[];
+  couponId?: number;
 }
 
 export interface IResponseInitPayment {
@@ -204,6 +204,7 @@ export interface IOrderHistoryItem {
   readonly storeName: string;
   readonly orderNumber: string;
   readonly orderedAt: string;
+  readonly summary: IOrderSummary;
 }
 
 export interface IRequestGetOrderHistories
@@ -237,6 +238,21 @@ export interface IOrderHistoryDetailItem {
   updatedDate: string;
 }
 
+export interface IPriceDetail {
+  totalMoney: number;
+  couponMoney: number;
+  membershipDiscount: number;
+  pointDiscount: number;
+  totalDiscount: number;
+  finalMoney: number;
+}
+
+export interface IRequestCalculatePrice extends AppCallback<IPriceDetail> {
+  point: number;
+  couponId: number;
+  storeId: number;
+  totalMoney: number;
+}
 export interface IOrderSummary {
   productPrice: number;
   attributePrice: number;
@@ -244,6 +260,9 @@ export interface IOrderSummary {
   totalPrice: number;
   discountPrice: number;
   finalPrice: number;
+  couponPrice?: number;
+  membershipDiscount?: number;
+  usedPointPrice?: number;
 }
 
 export interface IRequestGetOrderHistoryDetail

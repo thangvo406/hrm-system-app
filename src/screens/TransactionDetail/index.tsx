@@ -2,7 +2,12 @@ import type { Paths } from '@navigation/paths';
 import type { RootScreenProps } from '@navigation/types';
 
 import { Colors } from '@constants';
-import { HeaderDetail, TransactionDetailLoading } from '@components';
+import {
+  AmountRow,
+  DashedDivider,
+  HeaderDetail,
+  TransactionDetailLoading,
+} from '@components';
 import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,8 +16,6 @@ import { useTransactionDetail } from '@hooks';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 
-import AmountRow from './AmountRow';
-import DashedDivider from './DashedDivider';
 import PointRow from './PointRow';
 import SectionCard from './SectionCard';
 import SummaryHeader from './SummaryHeader';

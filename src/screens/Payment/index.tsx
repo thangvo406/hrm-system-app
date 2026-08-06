@@ -28,8 +28,9 @@ function Payment(props: any) {
     isEnablePaymentCard,
     selectedCardId,
     selectedEasyPayId,
-    selectedCoupon,
+    voucherSelected,
     payloadRequest,
+    priceDetail,
     disableBtnSubmit,
     onSelectCoupon,
     onChangePointUsed,
@@ -46,7 +47,7 @@ function Payment(props: any) {
         <PayMoneyCard balance={payloadRequest?.totalAmount} />
 
         <PointCouponCard
-          coupon={selectedCoupon}
+          coupon={voucherSelected}
           onSelectCoupon={onSelectCoupon}
         />
 
@@ -82,7 +83,7 @@ function Payment(props: any) {
       </ScrollView>
       <PayButton
         onPay={onPay}
-        totalAmount={payloadRequest?.totalAmount}
+        priceDetail={priceDetail}
         disableBtn={disableBtnSubmit}
       />
     </View>

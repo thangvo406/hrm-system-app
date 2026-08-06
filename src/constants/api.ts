@@ -102,6 +102,7 @@ export const EndPoints = {
     // balanceCharge: 'balance/kcp/charge/init',
     balanceCharge: 'balance/charge',
     cartDetail: (cartId: number) => `app/cart/${cartId}`,
+    calculatePrice: 'order/total',
   },
 
   WALLET: {

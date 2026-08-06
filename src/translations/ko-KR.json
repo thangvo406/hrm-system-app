@@ -406,6 +406,12 @@
       "coop_pay_label": "생협페이",
       "order_amount": "주문 금액",
       "final_amount": "최종 결제금액",
+      "price_detail": {
+        "totaldiscount": "총 할인금액",
+        "couponmoney": "쿠폰 할인",
+        "membershipdiscount": "조합원 할인",
+        "pointdiscount": "포인트 할인"
+      },
       "select_coupon": "쿠폰 선택",
       "general_payment_label": "일반결제",
       "credit_check_card": "신용카드 · 체크카드 (PG)",
@@ -790,7 +796,16 @@
       "delivery_address_label": "배송 주소",
       "shipping_method_label": "배송 방법",
       "payment_method_label": "결제 수단",
-      "subtotal_label": "소계",
+      "price_detail": {
+        "couponPrice": "쿠폰 할인",
+        "usedPointPrice": "포인트 할인",
+        "memberDiscountPrice": "조합원 할인",
+        "paymentMethod": "{{method}} 결제"
+      },
+      "original_total_label": "결제 금액 (정상가)",
+      "actual_payment_label": "실결제 금액",
+      "payment_summary_section_title": "결제 요약",
+      "total_amount": "총 금액",
       "shipping_fee_label": "배송비",
       "shipping_fee_free": "무료 배송",
       "total_label": "합계",
@@ -1018,7 +1033,8 @@
       "select_title": "쿠폰 선택",
       "search_code_placeholder": "쿠폰 코드 입력",
       "check": "확인",
-      "apply": "적용하기",
+      "btn_apply": "적용하기",
+      "btn_skip": "쿠폰 없이 계속하기",
       "name_rate": "{{rate}}% 할인 쿠폰",
       "name_amount": "{{amount}}원 할인 쿠폰"
     }

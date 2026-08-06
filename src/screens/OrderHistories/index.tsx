@@ -26,7 +26,7 @@ function OrderHistories() {
 
   const renderItem: ListRenderItem<IOrderHistoryItem> = ({ item }) => (
     <OrderHistoryRow
-      price={item.totalAmount}
+      price={item.summary?.finalPrice}
       storeName={item.storeName}
       orderCode={item.orderNumber}
       time={item.orderedAt || ''}

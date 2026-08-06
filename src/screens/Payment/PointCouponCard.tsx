@@ -11,7 +11,7 @@ const CHEVRON_SIZE = ScaleSize(16);
 const ACCENT_COLOR = '#2DB34A';
 
 type Properties = {
-  readonly coupon: IPaymentCoupon;
+  readonly coupon?: IPaymentCoupon;
   readonly onSelectCoupon: () => void;
 };
 
@@ -39,7 +39,7 @@ function PointCouponCard({ coupon, onSelectCoupon }: Properties) {
             <Text style={styles.rowLabel}>{t('payment.select_coupon')}</Text>
           </View>
           <View style={styles.rowRight}>
-            <Text style={styles.couponValue}>{coupon.name}</Text>
+            {!!coupon && <Text style={styles.couponValue}>{coupon?.name}</Text>}
             <Image
               color={ACCENT_COLOR}
               height={CHEVRON_SIZE}

@@ -8,16 +8,20 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DeviceUtils } from '@kits/core/utils';
 import { formatCurrency } from '@utils/product';
 import LinearGradient from 'react-native-linear-gradient';
+
+import DiscountSummary from './DiscountSummary';
+import { IPriceDetail } from '@type';
+
 const { ifAndroid } = DeviceUtils;
 
 const SHADOW_GRADIENT = ['rgba(0,0,0,0)', 'rgba(0,0,0,0.08)'];
 type Properties = {
+  readonly priceDetail?: IPriceDetail;
   readonly onPay: () => void;
-  readonly totalAmount: number;
   readonly disableBtn: boolean;
 };
 
-function PayButton({ disableBtn, onPay, totalAmount }: Properties) {
+function PayButton({ disableBtn, onPay, priceDetail }: Properties) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
@@ -35,6 +39,7 @@ function PayButton({ disableBtn, onPay, totalAmount }: Properties) {
         pointerEvents="none"
         style={styles.topShadow}
       />
+      <DiscountSummary data={priceDetail} />
       <View
         style={{
           flexDirection: 'row',
@@ -44,7 +49,9 @@ function PayButton({ disableBtn, onPay, totalAmount }: Properties) {
       >
         <Text style={styles.labelAmount}>{t('payment.final_amount')}</Text>
         <Text style={styles.amount}>
-          {t('common.display_price', { amount: formatCurrency(totalAmount) })}
+          {t('common.display_price', {
+            amount: formatCurrency(priceDetail?.finalMoney),
+          })}
         </Text>
       </View>
       <Button

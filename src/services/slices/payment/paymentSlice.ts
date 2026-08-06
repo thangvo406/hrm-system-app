@@ -1,6 +1,7 @@
 import type { AppCallback } from '@type/common';
 import type {
   ICheckoutInfo,
+  IRequestCalculatePrice,
   IRequestCreateOrder,
   IRequestGenerateQRCode,
   IRequestGetCartDetail,
@@ -34,6 +35,10 @@ const paymentSlice = createSlice({
   initialState,
   name: 'payment',
   reducers: {
+    calculatePriceRequest: {
+      prepare: (payload: IRequestCalculatePrice) => ({ payload }),
+      reducer: () => {},
+    },
     createOrderRequest: {
       prepare: (payload: IRequestCreateOrder) => ({ payload }),
       reducer: () => {},
@@ -102,6 +107,7 @@ const paymentSlice = createSlice({
 });
 
 export const {
+  calculatePriceRequest,
   createOrderRequest,
   generateQRCodePayRequest,
   getAddressOrderRecentRequest,

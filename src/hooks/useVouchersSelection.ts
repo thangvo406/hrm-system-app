@@ -2,7 +2,8 @@ import { VOUCHERS_STATUSES } from '@constants/config';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getVouchersRequest } from '@services/slices/account/accountSlice';
 import { IVoucher, ListApiResponse } from '@type';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type UseVouchersSelectionParams = {
   readonly storeId?: number;
@@ -11,15 +12,17 @@ type UseVouchersSelectionParams = {
 };
 
 export function useVouchersSelection(params: UseVouchersSelectionParams) {
-  const { onSubmit, storeId, orderAmount } = params;
+  const { onSubmit, storeId, orderAmount, onRequestClose, itemSelected } =
+    params;
   const [voucherCode, setVoucherCode] = useState('');
-  const [voucherSelected, setVoucherSelected] = useState<any>();
+  const [voucherSelected, setVoucherSelected] = useState<any>(itemSelected);
   const [data, setData] = useState([]);
   const dispatch = useAppDispatch();
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const { t } = useTranslation();
 
   const handleSuccess = useCallback(
     (response: ListApiResponse<IVoucher[]>) => {
@@ -31,6 +34,19 @@ export function useVouchersSelection(params: UseVouchersSelectionParams) {
     },
     [currentPage],
   );
+
+  const btnConfig = useMemo(() => {
+    if (voucherSelected) {
+      return {
+        title: t('vouchers.btn_apply'),
+        type: 'primary',
+      };
+    }
+    return {
+      title: t('vouchers.btn_skip'),
+      type: 'outline-bordered-rounded',
+    };
+  }, [voucherSelected]);
 
   const onLoadMore = useCallback(() => {
     if (isLast.current || isLoadingMore.current) {
@@ -64,6 +80,7 @@ export function useVouchersSelection(params: UseVouchersSelectionParams) {
   };
 
   const onApply = useCallback(() => {
+    onRequestClose?.();
     onSubmit?.(voucherSelected);
   }, [onSubmit, voucherSelected]);
 
@@ -72,6 +89,7 @@ export function useVouchersSelection(params: UseVouchersSelectionParams) {
     onApply,
     onLoadMore,
     loading,
+    btnConfig,
     onCheckVoucher,
     setVoucherSelected,
     voucherCode,

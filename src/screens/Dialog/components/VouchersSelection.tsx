@@ -70,10 +70,14 @@ const VoucherItem = ({ data, selected, onSelect }: any) => {
     return '';
   }, [data]);
 
+  const _onSelect = () => {
+    onSelect(selected ? null : data);
+  };
+
   return (
     <View style={styles.card}>
       <View style={styles.accentBar} />
-      <AppButton style={styles.content} onPress={() => onSelect(data)}>
+      <AppButton style={styles.content} onPress={_onSelect}>
         <View
           style={{
             flex: 1,
@@ -96,7 +100,7 @@ const VoucherItem = ({ data, selected, onSelect }: any) => {
           <Text style={styles.description}>{data?.name}</Text>
         </View>
 
-        <CheckBox selected={selected} />
+        <CheckBox onPress={_onSelect} selected={selected} />
       </AppButton>
     </View>
   );
@@ -113,6 +117,7 @@ function VouchersSelection(props: any) {
     onCheckVoucher,
     setVoucherSelected,
     onLoadMore,
+    btnConfig,
     loading,
     voucherSelected,
   } = useVouchersSelection(props);
@@ -160,8 +165,8 @@ function VouchersSelection(props: any) {
       )}
 
       <Button
-        title={t('vouchers.apply')}
-        disabled={!voucherSelected}
+        title={btnConfig.title}
+        type={btnConfig.type}
         onPress={onApply}
         style={{
           width: '90%',

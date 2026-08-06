@@ -35,7 +35,7 @@ export function useOrderHistories() {
     });
   };
 
-  const onReOrder = () => {
+  const onReOrder = (item: any) => {
     //   dispatch(checkoutProductRequest({
     //      productId: number;
     // quantity: number;

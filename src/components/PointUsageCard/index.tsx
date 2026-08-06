@@ -14,7 +14,7 @@ const ACCENT_COLOR = '#2DB34A';
 type Properties = {
   readonly onChangePointUsed: (text: number) => void;
   readonly onToggleUsePoints: () => void;
-  readonly pointHolding: number;
+  readonly pointHolding?: number;
   readonly pointUsed: number;
   readonly usePoints: boolean;
 };
@@ -76,6 +76,7 @@ function PointUsageCard({
           keyboardType="number-pad"
           onChangeText={onChangePoint}
           placeholder="0"
+          returnKeyType="done"
           style={styles.pointPillText}
           testID="point-usage-input"
           value={`${formatCurrency(pointUsed)} ${t('point_usage.point_unit')}`}

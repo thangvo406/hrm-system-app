@@ -109,6 +109,12 @@
       "coop_pay_label": "Coop Pay",
       "order_amount": "Order amount",
       "final_amount": "Final payment amount",
+      "price_detail": {
+        "totaldiscount": "Total discount",
+        "couponmoney": "Coupon discount",
+        "membershipdiscount": "Membership discount",
+        "pointdiscount": "Point discount"
+      },
       "select_coupon": "Select coupon",
       "general_payment_label": "General payment",
       "credit_check_card": "Credit card · Check card (PG)",
@@ -793,7 +799,16 @@
       "delivery_address_label": "Delivery Address",
       "shipping_method_label": "Shipping Method",
       "payment_method_label": "Payment Method",
-      "subtotal_label": "Subtotal",
+      "price_detail": {
+        "couponPrice": "Coupon Discount",
+        "usedPointPrice": "Point Discount",
+        "memberDiscountPrice": "Membership Discount",
+        "paymentMethod": "Pay with {{method}}"
+      },
+      "original_total_label": "Payment Amount (Original)",
+      "actual_payment_label": "Actual Payment",
+      "payment_summary_section_title": "Payment Summary",
+      "total_amount": "Total Amount",
       "shipping_fee_label": "Shipping Fee",
       "shipping_fee_free": "Free shipping",
       "total_label": "Total",
@@ -1021,7 +1036,8 @@
       "select_title": "Select coupon",
       "search_code_placeholder": "Enter voucher code",
       "check": "Check",
-      "apply": "Apply",
+      "btn_apply": "Apply",
+      "btn_skip": "Continue Without Coupon",
       "name_rate": "{{rate}}% discount coupon",
       "name_amount": "{{amount}}KRW discount coupon"
     }
