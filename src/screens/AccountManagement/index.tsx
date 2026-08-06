@@ -31,16 +31,15 @@ function AccountManagement() {
     // onRegisterCard,
     onUse,
     onViewAllTransactions,
-    toggleOrganization,
     toggleUnRegister,
+    onUseOrganize,
     point,
-    isExpandedOrganization,
     organizationInfo,
     isShowUnRegister,
     isEmptyBankAccount,
     isEnablePaymentCard,
   } = useAccountManagement();
-
+  
   return (
     <View style={styles.safeArea}>
       <HeaderDetail hideNotify title={t('account_management.title')} />
@@ -51,13 +50,12 @@ function AccountManagement() {
         <View style={styles.walletWrap}>
           <WalletCard
             balance={balance}
-            isExpandedOrganization={isExpandedOrganization}
             onCharge={onCharge}
+            onUseOrganize={onUseOrganize}
             onChargeHistory={onChargeHistory}
             onUse={onUse}
             organizationInfo={organizationInfo}
             point={point}
-            toggleOrganization={toggleOrganization}
             toggleUnRegister={toggleUnRegister}
             isShowUnRegister={isShowUnRegister}
           />

@@ -10,7 +10,7 @@ import {
 } from '@services/slices/account/accountSlice';
 import { useAppDispatch } from '@services/common/storeHooks';
 import AppNavigator from '@navigation/AppNavigator';
-import QRCodeViewerView from '@screens/QRCodeViewer/QRCodeViewerView';
+import QRCodeViewerView from '@components/QRCodeViewerView';
 import { VOUCHERS_STATUSES } from '@constants/config';
 
 const PAGE_SIZE = 20;

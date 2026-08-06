@@ -1,4 +1,5 @@
-import { HeaderDetail, Image } from '@components';
+import HeaderDetail from '@components/HeaderDetail';
+import Image from '@components/Image';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
@@ -12,6 +13,8 @@ import {
 } from '@reeq/react-native-device-brightness';
 import { formatTime } from '@utils/date';
 import imageNames from '@assets/images/names';
+import QRCode from 'react-native-qrcode-svg';
+
 
 const QR_SIZE = ScaleSize(200);
 const TICK_INTERVAL_MS = 1000;
@@ -119,11 +122,15 @@ function QRCodeViewerView({
           {!!data?.amountText && (
             <Text style={styles.amountLabel}>{data?.amountText}</Text>
           )}
-          <Image
+          {
+            data?.qrImageBase64 ? 
+            <Image
             width={QR_SIZE}
             height={QR_SIZE}
             base64={data?.qrImageBase64 ?? ''}
-          />
+          /> : <QRCode size={QR_SIZE} value={data?.code} />
+          }
+         
 
           <Text style={styles.validTime}>
             {t('qr_voucher.valid_time', { time: formatTime(remaining) })}

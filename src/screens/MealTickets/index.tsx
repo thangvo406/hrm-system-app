@@ -9,8 +9,8 @@ function Index() {
   return (
     <Vouchers
       {...propsVoucher}
-      expiredLabel="미사용"
-      btnUseLabel="식권 QR 보기"
+      expiredLabel={t('meal_ticket.unused')}
+      btnUseLabel={t('meal_ticket.view_qr')}
       backgroundExpired="#3B82F6"
       isHideLabelExpired
       isMealTicket

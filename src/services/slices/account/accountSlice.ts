@@ -95,7 +95,7 @@ const accountSlice = createSlice({
       reducer: () => {},
     },
     getOrganizationInfoRequest: {
-      prepare: (payload: AppCallback<IResponseOrganizationInfo> = {}) => ({
+      prepare: (payload: AppCallback<IResponseOrganizationInfo[]> = {}) => ({
         payload,
       }),
       reducer: () => {},

@@ -1,4 +1,5 @@
 import imageNames from '@assets/images/names';
+import QRCodeViewerView from '@components/QRCodeViewerView';
 import { BANK_ACC_TYPES } from '@constants/config';
 import Information from '@dialogs/Information';
 import RequestAddCard from '@dialogs/RequestAddCard';
@@ -50,8 +51,7 @@ export const useAccountManagement = () => {
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
   const [organizationInfo, setOrganizationInfo] =
-    useState<IResponseOrganizationInfo>();
-  const [isExpandedOrganization, setIsExpandedOrganization] = useState(false);
+    useState<IResponseOrganizationInfo[]>();
   const accounts = useMemo(() => {
     return rawData?.filter(it => it.type == BANK_ACC_TYPES.ACCOUNT);
   }, [rawData]);
@@ -68,10 +68,6 @@ export const useAccountManagement = () => {
     return rawData?.length == 0;
   }, [rawData]);
 
-  const toggleOrganization = useCallback(() => {
-    setIsExpandedOrganization(previous => !previous);
-  }, []);
-
   const toggleUnRegister = () => {
     // setShowUnRegister(prev => !prev);
     AppNavigator.navigate(Paths.PointMain);
@@ -82,7 +78,7 @@ export const useAccountManagement = () => {
       dispatch(getCurrentWalletRequest());
       dispatch(
         getOrganizationInfoRequest({
-          onSuccess(data) {
+          onSuccess: (data) => {
             setOrganizationInfo(data);
           },
         }),
@@ -139,6 +135,25 @@ export const useAccountManagement = () => {
     AppNavigator.navigate(Paths.BankAccountManage);
   }, []);
 
+  const onUseOrganize = useCallback((info: IResponseOrganizationInfo) => {
+    AppNavigator.showDialog({
+      screen: QRCodeViewerView,
+      isFullScreen: true,
+      showBtnVoucher: true,
+      showIconVoucher: true,
+      titleKey: 'qr_code_member.title',
+      titleVoucher: info?.name,
+      onPressVoucher: () => {
+        AppNavigator.navigate(Paths.Vouchers)
+      },
+      data: {
+        expiresIn: 3000,
+        code: info.name,
+      },
+      // onRefresh: onRefreshQR(voucher),
+    })
+  }, []);
+
   // const onRegisterCard = useCallback(() => {
   //   AppNavigator.showDialog({
   //     screen: RequestAddCard,
@@ -160,7 +175,6 @@ export const useAccountManagement = () => {
     cards,
     isEmptyBankAccount,
     isEnablePaymentCard,
-    isExpandedOrganization,
     organizationInfo,
     isShowUnRegister,
     onCharge,
@@ -170,8 +184,8 @@ export const useAccountManagement = () => {
     // onRegisterCard,
     onUse,
     onViewAllTransactions,
-    toggleOrganization,
     toggleUnRegister,
+    onUseOrganize,
     point: currentWallet?.pointBalance,
   };
 };

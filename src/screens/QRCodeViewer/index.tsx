@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import QRCodeViewerView from './QRCodeViewerView';
+import QRCodeViewerView from '@components/QRCodeViewerView';
 import { useQRCodeMember } from '@hooks';
 
 const SCREEN_BG = '#FFFFFF';

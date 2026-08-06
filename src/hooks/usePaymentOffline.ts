@@ -1,4 +1,4 @@
-import QRCodeViewerView from '@screens/QRCodeViewer/QRCodeViewerView';
+import QRCodeViewerView from '@components/QRCodeViewerView';
 import AppNavigator from '@navigation/AppNavigator';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

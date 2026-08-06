@@ -1,6 +1,6 @@
 import type { AppStacks, Paths } from '@navigation/paths';
 import type { BankInformationOrigin } from '@hooks/useBankInformation';
-import type { IQRCodeViewerData } from '@screens/QRCodeViewer/QRCodeViewerView';
+import type { IQRCodeViewerData } from '@components/QRCodeViewerView';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { TNotificationItem } from '@type';
 import { IStoreItem } from '@type/store';

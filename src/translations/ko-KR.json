@@ -76,6 +76,8 @@
     },
     "meal_ticket": {
       "title": "식권함",
+      "unused": "미사용",
+      "view_qr": "식권 QR 보기",
       "purchase_at": "구매일자: {{date}}",
       "expired_at": "유효기간: {{date}}",
       "detail": {

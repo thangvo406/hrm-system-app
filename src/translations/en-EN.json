@@ -50,6 +50,8 @@
     },
     "meal_ticket": {
       "title": "Meal Vouchers",
+      "unused": "Unused",
+      "view_qr": "View meal ticket QR",
       "purchase_at": "Purchase at {{date}}",
       "expired_at": "Expired at {{date}}",
       "detail": {

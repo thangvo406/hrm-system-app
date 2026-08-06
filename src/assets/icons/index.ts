@@ -27,6 +27,7 @@ import Ic_couponIcon from './ic_coupon.svg';
 import Ic_credit_cardIcon from './ic_credit_card.svg';
 import Ic_credit_card_filledIcon from './ic_credit_card_filled.svg';
 import Ic_dots_verticalIcon from './ic_dots_vertical.svg';
+import Ic_expand_walletIcon from './ic_expand_wallet.svg';
 import Ic_filterIcon from './ic_filter.svg';
 import Ic_homeIcon from './ic_home.svg';
 import Ic_hourglassIcon from './ic_hourglass.svg';
@@ -94,6 +95,7 @@ const icons = {
   'ic_credit_card': Ic_credit_cardIcon,
   'ic_credit_card_filled': Ic_credit_card_filledIcon,
   'ic_dots_vertical': Ic_dots_verticalIcon,
+  'ic_expand_wallet': Ic_expand_walletIcon,
   'ic_filter': Ic_filterIcon,
   'ic_home': Ic_homeIcon,
   'ic_hourglass': Ic_hourglassIcon,

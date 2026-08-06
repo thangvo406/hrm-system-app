@@ -24,6 +24,7 @@ export { default as VoucherList } from './Vouchers/VoucherList';
 export { default as VouchersLoading } from './Loading/Vouchers';
 export { default as VouchersSelectionLoading } from './Loading/VouchersSelection';
 export { default as ProgressiveImage } from './ProgressiveImage';
+export { default as QRCodeViewerView } from './QRCodeViewerView';
 export { default as RadioButton } from './RadioButton';
 export { default as SegmentedTab } from './SegmentedTab';
 export { default as TextField } from './TextField';
