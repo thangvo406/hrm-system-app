@@ -9,6 +9,7 @@ import type {
 import type { ITotalItemCart } from '@type/payment';
 import type {
   IRequestAutoCompleteAddress,
+  IResponseOrganizationInfo,
   IRequestGetTransactionDetail,
   IRequestGetTransactionMovement,
   IRequestGetPayPointHistories,
@@ -93,6 +94,12 @@ const accountSlice = createSlice({
       prepare: (payload: IRequestGetVouchers) => ({ payload }),
       reducer: () => {},
     },
+    getOrganizationInfoRequest: {
+      prepare: (payload: AppCallback<IResponseOrganizationInfo> = {}) => ({
+        payload,
+      }),
+      reducer: () => {},
+    },
     getPayPointHistoriesRequest: {
       prepare: (payload: IRequestGetPayPointHistories) => ({ payload }),
       reducer: () => {},
@@ -163,6 +170,7 @@ export const {
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
   getMealTicketsRequest,
+  getOrganizationInfoRequest,
   getPayPointHistoriesRequest,
   getProfileRequest,
   getProfileSuccess,

@@ -732,6 +732,12 @@
         "set_default_desc": "이 카드/계좌를 {{wallet}}의 기본 결제 수단으로 설정합니다.",
         "close": "닫기",
         "title": "카드/계좌 설정"
+      },
+      "organization": {
+        "balance": "단체 잔액",
+        "credit_limit": "여신 한도",
+        "spendable_amount": "사용 가능 금액",
+        "tag": "단체"
       }
     },
     "request_add_card": {

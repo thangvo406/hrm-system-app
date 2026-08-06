@@ -4,6 +4,7 @@ import type { AddressSuggestion } from '@services/request/account';
 
 import type {
   IResponseCreateQRCodeMember,
+  IResponseOrganizationInfo,
   IRequestAutoCompleteAddress,
   IRequestGetPayPointHistories,
   IRequestGetVouchers,
@@ -43,6 +44,7 @@ import {
   createQRCodeMember,
   deleteAccount,
   getMealTickets,
+  getOrganizationInfo,
   getPayPointHistories,
   getProfile,
   getTransactionDetail,
@@ -74,6 +76,7 @@ import {
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
   getMealTicketsRequest,
+  getOrganizationInfoRequest,
   getPayPointHistoriesRequest,
   getProfileRequest,
   getProfileSuccess,
@@ -151,6 +154,19 @@ function* getMealTicketsWorker(
       getMealTickets,
       request,
     );
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* getOrganizationInfoWorker(
+  action: PayloadAction<AppCallback<IResponseOrganizationInfo>>,
+): Generator<unknown, void, IResponseOrganizationInfo> {
+  const { onFailure, onSuccess } = action.payload || {};
+  try {
+    const response: IResponseOrganizationInfo = yield call(getOrganizationInfo);
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -415,6 +431,7 @@ export function* accountSaga() {
   // takeEvery for the same reason as vouchers: meal-ticket tabs share one
   // action type, so a tab switch / refresh must not cancel an in-flight fetch.
   yield takeEvery(getMealTicketsRequest.type, getMealTicketsWorker);
+  yield takeLatest(getOrganizationInfoRequest.type, getOrganizationInfoWorker);
   yield takeLatest(
     getPayPointHistoriesRequest.type,
     getPayPointHistoriesWorker,

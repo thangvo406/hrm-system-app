@@ -47,6 +47,7 @@ export const EndPoints = {
     getTransactionsMovement: (request: string) => `balance/movement${request}`,
     payPointHistories: (request: string) => `balance/ledger${request}`,
     transactionDetail: (id: number) => `transaction/${id}`,
+    getOrganizationInfo: 'organization',
   },
   ACCOUNT_MANAGEMENT: {
     addAccount: 'balance/kcp/register/init',

@@ -8,8 +8,12 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector, AppSelector } from '@services/selectors';
 import { AccountManagementSelector } from '@services/selectors/accountManagement';
-import { getCurrentWalletRequest } from '@services/slices/account/accountSlice';
+import {
+  getCurrentWalletRequest,
+  getOrganizationInfoRequest,
+} from '@services/slices/account/accountSlice';
 import { getAccountCardsRequest } from '@services/slices/accountManagement/accountManagementSlice';
+import { IResponseOrganizationInfo } from '@type';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -39,49 +43,15 @@ export type WalletTransaction = {
 
 export const PRIMARY_CARD_INDEX = 1;
 
-const TRANSACTIONS: readonly WalletTransaction[] = [
-  {
-    amount: -3500,
-    date: '2026-07-13',
-    id: 'tx-1',
-    method: '카드 결제',
-    title: '학생회관 1호점',
-    type: 'spend',
-  },
-  {
-    amount: 35,
-    date: '2026-07-13',
-    id: 'tx-2',
-    method: '생협페이 결제',
-    title: '포인트 적립',
-    type: 'point',
-  },
-  {
-    amount: -8200,
-    date: '2026-07-12',
-    id: 'tx-3',
-    method: '카드 결제',
-    title: '도서관 2호점',
-    type: 'spend',
-  },
-  {
-    amount: 30_000,
-    date: '2026-07-11',
-    id: 'tx-4',
-    method: '생협페이머니',
-    title: '충전',
-    type: 'charge',
-  },
-];
-
 export const useAccountManagement = () => {
-  const [transactions, setTransactions] = useState([]);
   const rawData = useAppSelector(AccountManagementSelector.getAccountCards);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
-
+  const [organizationInfo, setOrganizationInfo] =
+    useState<IResponseOrganizationInfo>();
+  const [isExpandedOrganization, setIsExpandedOrganization] = useState(false);
   const accounts = useMemo(() => {
     return rawData?.filter(it => it.type == BANK_ACC_TYPES.ACCOUNT);
   }, [rawData]);
@@ -98,6 +68,10 @@ export const useAccountManagement = () => {
     return rawData?.length == 0;
   }, [rawData]);
 
+  const toggleOrganization = useCallback(() => {
+    setIsExpandedOrganization(previous => !previous);
+  }, []);
+
   const toggleUnRegister = () => {
     // setShowUnRegister(prev => !prev);
     AppNavigator.navigate(Paths.PointMain);
@@ -106,6 +80,13 @@ export const useAccountManagement = () => {
   useFocusEffect(
     useCallback(() => {
       dispatch(getCurrentWalletRequest());
+      dispatch(
+        getOrganizationInfoRequest({
+          onSuccess(data) {
+            setOrganizationInfo(data);
+          },
+        }),
+      );
     }, []),
   );
 
@@ -179,6 +160,8 @@ export const useAccountManagement = () => {
     cards,
     isEmptyBankAccount,
     isEnablePaymentCard,
+    isExpandedOrganization,
+    organizationInfo,
     isShowUnRegister,
     onCharge,
     onChargeHistory,
@@ -187,8 +170,8 @@ export const useAccountManagement = () => {
     // onRegisterCard,
     onUse,
     onViewAllTransactions,
+    toggleOrganization,
     toggleUnRegister,
     point: currentWallet?.pointBalance,
-    transactions,
   };
 };

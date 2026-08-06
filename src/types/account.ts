@@ -1,6 +1,6 @@
 import type { AddressSuggestion } from '@services/request/account';
 
-import type { AppCallback, ListApiResponse } from './common';
+import type { AppCallback, IImage, ListApiResponse } from './common';
 import type { ITransactionDetail } from './payment';
 
 export interface IRequestAutoCompleteAddress
@@ -108,6 +108,17 @@ export interface IPointPayHistory {
   status: string;
   createdDate: string;
 }
+
+export interface IResponseOrganizationInfo {
+  organizationId: number;
+  name: string;
+  logo: IImage;
+  balance: number;
+  creditAllowed: boolean;
+  creditLimit: number;
+  spendableAmount: number;
+}
+
 export interface IRequestGetPayPointHistories
   extends AppCallback<ListApiResponse<IPointPayHistory[]>> {
   balanceAccountType: string;

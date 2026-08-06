@@ -8,6 +8,7 @@ import type {
 
 import type {
   IResponseCreateQRCodeMember,
+  IResponseOrganizationInfo,
   IRequestAutoCompleteAddress,
   IRequestGetPayPointHistories,
   IRequestGetVouchers,
@@ -72,6 +73,14 @@ export const getProfile = async (): Promise<Profile> => {
   );
   return response.data;
 };
+
+export const getOrganizationInfo =
+  async (): Promise<IResponseOrganizationInfo> => {
+    const response = await httpRequest.get<
+      SingleApiResponse<IResponseOrganizationInfo>
+    >(EndPoints.ACCOUNT.getOrganizationInfo, { loading: false });
+    return response.data;
+  };
 
 export const deleteAccount = async (
   request: IRequestDeleteAccount,

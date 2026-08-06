@@ -31,8 +31,11 @@ function AccountManagement() {
     // onRegisterCard,
     onUse,
     onViewAllTransactions,
+    toggleOrganization,
     toggleUnRegister,
     point,
+    isExpandedOrganization,
+    organizationInfo,
     isShowUnRegister,
     isEmptyBankAccount,
     isEnablePaymentCard,
@@ -48,10 +51,13 @@ function AccountManagement() {
         <View style={styles.walletWrap}>
           <WalletCard
             balance={balance}
+            isExpandedOrganization={isExpandedOrganization}
             onCharge={onCharge}
             onChargeHistory={onChargeHistory}
             onUse={onUse}
+            organizationInfo={organizationInfo}
             point={point}
+            toggleOrganization={toggleOrganization}
             toggleUnRegister={toggleUnRegister}
             isShowUnRegister={isShowUnRegister}
           />

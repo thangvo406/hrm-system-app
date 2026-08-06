@@ -734,9 +734,14 @@
         "set_default_desc": "Use this card/account as the default payment method for {{wallet}}.",
         "close": "Close",
         "title": "Card/Account Bank Settings"
+      },
+      "organization": {
+        "balance": "Organization balance",
+        "credit_limit": "Credit limit",
+        "spendable_amount": "Spendable amount",
+        "tag": "Organization"
       }
     },
-
     "request_add_card": {
       "title": "Register payment method",
       "payment_methods": "My payment methods",
