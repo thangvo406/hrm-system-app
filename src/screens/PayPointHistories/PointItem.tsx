@@ -5,56 +5,22 @@ import { useTranslation } from 'react-i18next';
 import React from 'react';
 import dayjs from 'dayjs';
 import type { IPointPayHistory } from '@type';
-import { TRANSACTION_DETAIL_DISPLAY } from '@constants/config';
+import { COLORS_POINT_AMOUNT, EMPTY_VALUE, POINT_TAG_STYLE, TRANSACTION_DETAIL_DISPLAY } from '@constants/config';
 import type { TranslationKeys } from '@translations/i18next';
 import { getDaysUntil } from '@utils/date';
 import { Colors } from '@constants';
 import isNumber from 'lodash/isNumber';
 import AppButton from '@components/AppButton';
+import { formatTransactionPoint } from '@utils/common';
 
 type Properties = {
   readonly item: IPointPayHistory;
   readonly onPressItem: (item: any) => void;
 };
 
-const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#9AA0A6';
 const DATE_FORMAT = 'YYYY-MM-DD hh:mmA';
-const EMPTY_VALUE = '-';
-type PointTagStyle = {
-  readonly background: string;
-  readonly color: string;
-  readonly title: TranslationKeys;
-};
 
-const POINT_TAG_STYLE: Record<string, PointTagStyle | undefined> = {
-  POINT_EXPIRE: {
-    background: '#FBE0E0',
-    color: '#D9534F',
-    title: 'pay_point.tags.point_expired',
-  },
-  POINT_USE: {
-    background: '#ECECEC',
-    color: '#6B6B6B',
-    title: 'pay_point.tags.point_use',
-  },
-  POINT_EARN: {
-    background: '#DFF3E1',
-    color: '#2DB34A',
-    title: 'pay_point.tags.point_accrue',
-  },
-};
-
-const COLORS_AMOUNT: Record<string, string | undefined> = {
-  POINT_EXPIRE: '#D9534F',
-  POINT_USE: TEXT_DARK,
-  POINT_EARN: '#2DB34A',
-};
-
-const formatSigned = (item: IPointPayHistory) => {
-  const sign = item?.transactionDirection == 'CREDIT' ? '+' : '-';
-  return `${sign}${formatCurrency(item.amount)}P`;
-};
 
 const DETAIL_LABELS: Record<string, string | undefined> =
   TRANSACTION_DETAIL_DISPLAY;
@@ -65,7 +31,7 @@ function HistoryCard({ item, onPressItem }: Properties) {
   const tag = POINT_TAG_STYLE[item?.entryType];
 
   const detailLabel = DETAIL_LABELS[item.entryType];
-  const amountColor = COLORS_AMOUNT[item.entryType];
+  const amountColor = COLORS_POINT_AMOUNT[item.entryType];
   const isEarn = item.entryType == 'POINT_EARN';
   const dayReaming =
     isEarn && item.pointExpiresAt
@@ -80,7 +46,7 @@ function HistoryCard({ item, onPressItem }: Properties) {
           </View>
         ) : undefined}
         <Text style={[styles.amount, { color: amountColor }]}>
-          {formatSigned(item)}
+          {formatTransactionPoint(item)}
         </Text>
         <Text style={styles.description}>
           {detailLabel ? t(detailLabel as TranslationKeys) : EMPTY_VALUE}

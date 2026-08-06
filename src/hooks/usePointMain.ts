@@ -1,23 +1,15 @@
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { AccountSelector } from '@services/selectors';
+import { getPayPointHistoriesRequest } from '@services/slices/account/accountSlice';
+import { IPointPayHistory, ListApiResponse } from '@type';
+import { useEffect, useState } from 'react';
 
 export type TPointHistoryType = 'accrue' | 'expire' | 'use';
 
-export type IPointHistory = {
-  readonly amount: number;
-  readonly date: string;
-  readonly id: string;
-  readonly type: TPointHistoryType;
-};
-
-const POINT_BALANCE = 1000;
 const EXPIRING_AMOUNT = 200;
 
-const POINT_HISTORIES: readonly IPointHistory[] = [
-  { amount: 35, date: '2026-07-13', id: 'point-1', type: 'accrue' },
-  { amount: -500, date: '2026-07-10', id: 'point-2', type: 'use' },
-  { amount: -300, date: '2026-06-30', id: 'point-3', type: 'expire' },
-];
 
 const onUsePoint = () => {
   AppNavigator.navigate(Paths.PayPointHistories);
@@ -27,6 +19,9 @@ const onViewExpireDetail = () => {
   AppNavigator.navigate(Paths.PayPointHistories);
 };
 
+const onPressItemHistory = (item: any) => () => {
+  AppNavigator.navigate(Paths.TransactionDetail, { transId: item?.id });
+}
 const onViewAllHistory = () => {
   AppNavigator.navigate(Paths.PayPointHistories);
 };
@@ -36,11 +31,37 @@ const onLegacyLookup = () => {
 };
 
 export const usePointMain = () => {
+
+  const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
+  const dispatch = useAppDispatch();
+  const [histories, setHistories] = useState([])
+
+  useEffect(() => {
+    dispatch(
+      getPayPointHistoriesRequest({
+        balanceAccountType:'POINT',
+        onFailure: () => {
+          // pagination.isLoadingMore = false;
+          // setRefreshing(false);
+          // setLoadingMore(false);
+        },
+        onSuccess: (data: ListApiResponse<IPointPayHistory[]>) => {
+          setHistories(data?.content)
+        },
+        page: 0,
+        size: 10,
+      }),
+    );
+  }, [])
+
+  
+
   return {
-    balance: POINT_BALANCE,
+    balance: currentWallet?.pointBalance,
     expiringAmount: EXPIRING_AMOUNT,
-    histories: POINT_HISTORIES,
+    histories,
     onLegacyLookup,
+    onPressItemHistory,
     onUsePoint,
     onViewAllHistory,
     onViewExpireDetail,

@@ -1,4 +1,4 @@
-import { RegisterMembershipStep, AuthStep } from '@type/auth';
+import { RegisterMembershipStep, AuthStep, PointTagStyle } from '@type';
 
 export const initialLoginForm = {
   email: '',
@@ -21,6 +21,33 @@ export const DayOfWeek = {
   FRIDAY: 'FRIDAY',
   SATURDAY: 'SATURDAY',
   SUNDAY: 'SUNDAY',
+};
+export const EMPTY_VALUE = '-';
+
+export const COLORS_POINT_AMOUNT: Record<string, string | undefined> = {
+  POINT_EXPIRE: '#D9534F',
+  POINT_USE: '#1A1A1A',
+  POINT_EARN: '#2DB34A',
+};
+
+
+
+export const POINT_TAG_STYLE: Record<string, PointTagStyle | undefined> = {
+  POINT_EXPIRE: {
+    background: '#FBE0E0',
+    color: '#D9534F',
+    title: 'pay_point.tags.point_expired',
+  },
+  POINT_USE: {
+    background: '#ECECEC',
+    color: '#6B6B6B',
+    title: 'pay_point.tags.point_use',
+  },
+  POINT_EARN: {
+    background: '#DFF3E1',
+    color: '#2DB34A',
+    title: 'pay_point.tags.point_accrue',
+  },
 };
 
 export const REQUEST_ADD_CARD_METHOD_TYPES = {

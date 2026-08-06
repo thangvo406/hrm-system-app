@@ -1,4 +1,4 @@
-import { AppButton, HeaderDetail, Image } from '@components';
+import { AppButton, HeaderDetail } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -8,33 +8,30 @@ import React from 'react';
 import PointBalanceCard from './PointBalanceCard';
 import PointHistoryRow from './PointHistoryRow';
 
-const CHEVRON_SIZE = ScaleSize(16);
 const TEXT_COLOR_WARNING = '#B8730D';
 function PointMain() {
   const { t } = useTranslation();
   const {
     balance,
-    expiringAmount,
     histories,
-    onLegacyLookup,
+    onPressItemHistory,
     onUsePoint,
     onViewAllHistory,
-    onViewExpireDetail,
   } = usePointMain();
 
   return (
     <View style={styles.safeArea}>
-      <HeaderDetail hideNotify title="" usePaddingTop />
+      <HeaderDetail hideNotify title={t('point_main.title')} usePaddingTop />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.title}>{t('point_main.title')}</Text>
+
         <Text style={styles.subtitle}>{t('point_main.subtitle')}</Text>
         <PointBalanceCard balance={balance} onUse={onUsePoint} />
 
-        <View style={styles.warningBanner}>
+        {/* <View style={styles.warningBanner}>
           <Text style={styles.warningIcon}>⚠️</Text>
           <Text style={styles.warningText}>
             {t('point_main.expire_warning', { amount: expiringAmount })}
@@ -44,7 +41,7 @@ function PointMain() {
               {`${t('point_main.expire_detail')} ›`}
             </Text>
           </AppButton>
-        </View>
+        </View> */}
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
@@ -61,7 +58,7 @@ function PointMain() {
           {histories.map((item, index) => (
             <React.Fragment key={item.id}>
               {index > 0 && <View style={styles.separator} />}
-              <PointHistoryRow item={item} />
+              <PointHistoryRow item={item} onPressItem={onPressItemHistory} />
             </React.Fragment>
           ))}
         </View>
@@ -70,21 +67,6 @@ function PointMain() {
           <Text style={styles.infoIcon}>💡</Text>
           <Text style={styles.infoText}>{t('point_main.info')}</Text>
         </View>
-
-        <AppButton
-          onPress={onLegacyLookup}
-          style={styles.legacyCard}
-          testID="point-main-legacy"
-        >
-          <Text style={styles.legacyText}>{t('point_main.legacy_lookup')}</Text>
-          <Image
-            color={Colors.gray08}
-            height={CHEVRON_SIZE}
-            name="ic_chevron_right"
-            type="svg"
-            width={CHEVRON_SIZE}
-          />
-        </AppButton>
       </ScrollView>
     </View>
   );
@@ -170,7 +152,7 @@ const styles = StyleSheet.create({
     color: '#8A8F94',
     fontSize: ScaleSize(13),
     marginBottom: ScaleSize(20),
-    marginTop: ScaleSize(4),
+    marginTop: ScaleSize(14),
   },
   title: {
     color: '#1A1A1A',

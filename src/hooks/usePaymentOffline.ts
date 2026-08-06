@@ -114,6 +114,12 @@ export const usePaymentOffline = () => {
             onRefresh: onRefreshQRCode,
           });
         },
+        onFailure: (error) => {
+          AppNavigator.showSnackBar({
+            message: error,
+            type: 'failed'
+          })
+        },
       }),
     );
   }, [

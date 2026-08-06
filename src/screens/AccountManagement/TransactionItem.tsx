@@ -2,7 +2,7 @@ import type { TranslationKeys } from '@translations/i18next';
 import type { ITransactionMovement } from '@type';
 
 import { Colors } from '@constants';
-import { TRANSACTION_DETAIL_DISPLAY } from '@constants/config';
+import { COLORS_POINT_AMOUNT, TRANSACTION_DETAIL_DISPLAY } from '@constants/config';
 import { ScaleSize } from '@kits/core';
 import { formatCurrency } from '@utils/product';
 import React from 'react';
@@ -13,7 +13,6 @@ import AppButton from '@components/AppButton';
 
 const DIRECTION_CREDIT = 'credit';
 const DIRECTION_DEBIT = 'debit';
-const POINT_AMOUNT_COLOR = '#2E8B4A';
 const EMPTY_VALUE = '-';
 
 const AMOUNT_COLORS: Record<string, string | undefined> = {
@@ -27,20 +26,18 @@ const DETAIL_LABELS: Record<string, string | undefined> =
 type AmountProps = {
   readonly amount: number;
   readonly direction: string;
+  readonly entryType: string;
   readonly isPoint: boolean;
 };
 
 /** Signed amount, colored by direction (point entries get their own color). */
-function TransactionAmount({ amount, direction, isPoint }: AmountProps) {
+function TransactionAmount({ amount, direction, isPoint, entryType }: AmountProps) {
   const { t } = useTranslation();
   const normalizedDirection = direction?.toLowerCase();
   const sign = normalizedDirection === DIRECTION_CREDIT ? '+' : '-';
   let color;
   if (isPoint) {
-    color =
-      normalizedDirection === DIRECTION_DEBIT
-        ? AMOUNT_COLORS[normalizedDirection]
-        : POINT_AMOUNT_COLOR;
+    color = COLORS_POINT_AMOUNT[entryType]
   } else {
     color = AMOUNT_COLORS[normalizedDirection] ?? Colors.black;
   }
@@ -79,6 +76,7 @@ function TransactionItem({ transaction, onPress }: Properties) {
           amount={transaction.amount}
           direction={transaction.direction}
           isPoint={isPoint}
+          entryType={transaction.entryType}
         />
         <Text style={styles.date}>
           {dayjs(transaction.occurredAt).format('YYYY-MM-DD')}

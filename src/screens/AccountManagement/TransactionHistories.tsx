@@ -11,6 +11,11 @@ import TransactionItem from './TransactionItem';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 
+const onPressTransaction = (item: any) => {
+  AppNavigator.navigate(Paths.TransactionDetail, { transId: item?.id });
+};
+
+
 const useTransaction = () => {
   const dispatch = useAppDispatch();
   const [currentPage, setCurrentPage] = useState(0);
@@ -58,9 +63,6 @@ const useTransaction = () => {
     );
   }, [dispatch, currentPage]);
 
-  const onPressTransaction = (item: any) => {
-    AppNavigator.navigate(Paths.TransactionDetail, { transId: item?.id });
-  };
 
   return {
     onLoadMore,

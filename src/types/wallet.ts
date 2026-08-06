@@ -1,3 +1,4 @@
+import { TranslationKeys } from '@translations/i18next';
 import type { AppCallback, ListApiResponse } from './common';
 import { IKcpInitParams, IPaymentRequest } from './payment';
 
@@ -124,6 +125,13 @@ export interface IWallet {
 export interface IRequestLockCard extends AppCallback {
   paymentMethodId: number;
 }
+
+export type PointTagStyle = {
+  readonly background: string;
+  readonly color: string;
+  readonly title: TranslationKeys;
+};
+
 export interface IRequestRemoveCard extends AppCallback<IKcpInitParams> {
   paymentMethodId: number;
   reqType: string;

@@ -59,6 +59,7 @@ export const useCart = () => {
           },
         }),
       );
+      dispatch(getTotalItemCartRequest())
     }, [dispatch]),
   );
 

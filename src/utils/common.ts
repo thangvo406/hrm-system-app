@@ -1,5 +1,6 @@
-import { KakaoDocument, SearchAddressItem } from '@type';
+import { IPointPayHistory, KakaoDocument, SearchAddressItem } from '@type';
 import isNumber from 'lodash/isNumber';
+import { formatCurrency } from './product';
 
 const PHONE_AREA_CODE_LENGTH = 3;
 const PHONE_MIDDLE_LENGTH = 4;
@@ -191,3 +192,8 @@ export function mapKakaoAddress(doc: KakaoDocument): SearchAddressItem {
     detail: doc,
   };
 }
+
+export const formatTransactionPoint = (item: IPointPayHistory) => {
+  const sign = item?.transactionDirection == 'CREDIT' ? '+' : '-';
+  return `${sign}${formatCurrency(item?.amount)}P`;
+};
