@@ -99,7 +99,9 @@
       "tags": {
         "point_expired": "Expired",
         "point_use": "Used",
-        "point_accrue": "Earn"
+        "point_accrue": "Earn",
+        "money_use": "Use",
+        "money_charge": "Top-up"
       }
     },
     "payment": {

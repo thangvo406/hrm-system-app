@@ -50,7 +50,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   };
   const handleSuccess = (data: ListApiResponse<IProduct[]>) => {
     // setData(items);
-    setLoading(false);
+
     isLast.current = data.last;
     setData(prev => {
       let results = [];
@@ -59,6 +59,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
           ? (prev || [])?.concat?.(data?.content)
           : data?.content;
       isLoadingMore.current = false;
+      setLoading(false);
       return results;
     });
   };
@@ -118,10 +119,12 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   };
   const handleFailure = () => {
     setLoading(false);
-    setData([]);
   };
 
   useEffect(() => {
+    if (!storeInfo) {
+      return;
+    }
     dispatch(
       getProductsRequest({
         storeId: storeInfo?.id || 1,
@@ -145,7 +148,6 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
           },
           onFailure: () => {
             setLoading(false);
-            setData([]);
           },
         }),
       );

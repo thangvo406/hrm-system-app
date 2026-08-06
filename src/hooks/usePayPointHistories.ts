@@ -1,8 +1,5 @@
-import type { IContributeHistory } from '@type/wallet';
 import type { ListApiResponse } from '@type/common';
-
 import { useCallback, useEffect, useRef, useState } from 'react';
-
 import { useFocusEffect } from '@react-navigation/native';
 import {
   getCurrentWalletRequest,
@@ -17,18 +14,6 @@ import { IPointPayHistory } from '@type';
 const PAGE_SIZE = 20;
 
 export type TPayPointTab = 'payMoney' | 'point';
-
-export type TPayPointTagType =
-  | 'accrue'
-  | 'event'
-  | 'expire'
-  | 'use'
-  | 'welfare';
-
-export type TPayPointUnit = 'point' | 'won';
-
-export type TPayPointAmountTone = 'negative' | 'neutral' | 'positive';
-
 
 const BALANCE_ACCOUNT_TYPES: Record<TPayPointTab, string> = {
   payMoney: 'PAY_MONEY',
@@ -54,38 +39,8 @@ const EMPTY_HISTORIES: Record<TPayPointTab, IPointPayHistory[]> = {
   point: [],
 };
 
-const resolveTag = (type: string, isPositive: boolean): TPayPointTagType => {
-  const upperType = type?.toUpperCase() ?? '';
-  if (upperType.includes('EXPIRE')) {
-    return 'expire';
-  }
-  if (upperType.includes('EVENT')) {
-    return 'event';
-  }
-  if (upperType.includes('WELFARE')) {
-    return 'welfare';
-  }
-  return isPositive ? 'accrue' : 'use';
-};
-
-const toPayPointHistory = (
-  item: IContributeHistory,
-  tab: TPayPointTab,
-): IPayPointHistory => {
-  // The ledger's `amount` can come back unsigned; the balance delta is the
-  // actual signed change, so prefer it when the two disagree.
-  const delta = item.balanceAfter - item.balanceBefore;
-  const amount = delta === 0 ? item.amount : delta;
-  return {
-    amount,
-    amountTone: amount > 0 ? 'positive' : amount < 0 ? 'negative' : 'neutral',
-    balance: item.balanceAfter,
-    dateTime: item.occurredAt,
-    description: item.displayType || item.type,
-    id: String(item.id),
-    tag: resolveTag(item.type, amount > 0),
-    unit: tab === 'point' ? 'point' : 'won',
-  };
+const onPressTransaction = (item: any) => {
+  AppNavigator.navigate(Paths.TransactionDetail, { transId: item?.id });
 };
 
 export const usePayPointHistories = () => {
@@ -126,7 +81,8 @@ export const usePayPointHistories = () => {
             pagination.page = page;
             setHistories(prev => ({
               ...prev,
-              [tab]: page === 0 ? data?.content : [...prev[tab], ...data.content],
+              [tab]:
+                page === 0 ? data?.content : [...prev[tab], ...data.content],
             }));
             setLoadedTabs(prev => new Set(prev).add(tab));
             setRefreshing(false);
@@ -207,6 +163,7 @@ export const usePayPointHistories = () => {
     loading: !loadedTabs.has(activeTab),
     loadingMore,
     onChangeTab,
+    onPressTransaction,
     onLoadMore,
     onPressWithdrawal,
     onRefresh,

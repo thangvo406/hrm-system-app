@@ -24,6 +24,8 @@ export const Colors = {
   gray20: '#F0F0F0',
   gray21: '#F3F4F6',
   gray22: '#F7F7F7',
+  gray23: '#4A4A4A',
+  gray24: '#9AA0A6',
   black01: '#1A1A1A',
   yellow01: '#F5A623',
   yellow02: '#F6AD55',
@@ -41,6 +43,7 @@ export const Colors = {
   green09: '#E8F5E8',
   red01: '#E05353',
   red02: '#FCE8E8',
+  red03: '#D9534F',
 } as const;
 
 export const Fonts = {} as const;

@@ -20,6 +20,7 @@ function PayPointHistories() {
     onLoadMore,
     onPressWithdrawal,
     onRefresh,
+    onPressTransaction,
     payMoneyHistories,
     pointHistories,
     refreshing,
@@ -37,6 +38,7 @@ function PayPointHistories() {
             loadingMore={loadingMore}
             onLoadMore={onLoadMore}
             onRefresh={onRefresh}
+            onPressItem={onPressTransaction}
             refreshing={refreshing}
             type="pay"
           />
@@ -53,6 +55,7 @@ function PayPointHistories() {
             loadingMore={loadingMore}
             onLoadMore={onLoadMore}
             onRefresh={onRefresh}
+            onPressItem={onPressTransaction}
             refreshing={refreshing}
             type="point"
           />

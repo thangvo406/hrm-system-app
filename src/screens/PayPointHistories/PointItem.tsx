@@ -10,9 +10,11 @@ import type { TranslationKeys } from '@translations/i18next';
 import { getDaysUntil } from '@utils/date';
 import { Colors } from '@constants';
 import isNumber from 'lodash/isNumber';
+import AppButton from '@components/AppButton';
 
 type Properties = {
   readonly item: IPointPayHistory;
+  readonly onPressItem: (item: any) => void;
 };
 
 const TEXT_DARK = '#1A1A1A';
@@ -57,7 +59,7 @@ const formatSigned = (item: IPointPayHistory) => {
 const DETAIL_LABELS: Record<string, string | undefined> =
   TRANSACTION_DETAIL_DISPLAY;
 
-function HistoryCard({ item }: Properties) {
+function HistoryCard({ item, onPressItem }: Properties) {
   const { t } = useTranslation();
 
   const tag = POINT_TAG_STYLE[item?.entryType];
@@ -70,7 +72,7 @@ function HistoryCard({ item }: Properties) {
       ? getDaysUntil(item.pointExpiresAt)
       : undefined;
   return (
-    <View style={styles.card}>
+    <AppButton style={styles.card} onPress={() => onPressItem?.(item)}>
       <View style={styles.leftColumn}>
         {tag ? (
           <View style={[styles.tag, { backgroundColor: tag.color }]}>
@@ -112,7 +114,7 @@ function HistoryCard({ item }: Properties) {
           </Text>
         )}
       </View>
-    </View>
+    </AppButton>
   );
 }
 

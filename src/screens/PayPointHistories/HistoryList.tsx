@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import React from 'react';
 import EmptyView from '@components/EmptyView';
 import imageNames from '@assets/images/names';
-import HistoryCard from './HistoryCard';
+import HistoryCard, { type PayPointHistoryType } from './HistoryCard';
 import { IPointPayHistory } from '@type';
 
 const END_REACHED_THRESHOLD = 0.3;
@@ -24,12 +24,12 @@ type Properties = {
   readonly loadingMore?: boolean;
   readonly onLoadMore?: () => void;
   readonly onRefresh?: () => void;
+  readonly onPressItem: (item: any) => void;
   readonly refreshing?: boolean;
+  readonly type: PayPointHistoryType;
 };
 
-const keyExtractor = (item: IPointPayHistory) => item.id;
-
-
+const keyExtractor = (item: IPointPayHistory) => String(item.id);
 
 function HistoryList({
   histories,
@@ -37,13 +37,14 @@ function HistoryList({
   loadingMore = false,
   onLoadMore,
   onRefresh,
+  onPressItem,
   type,
   refreshing = false,
 }: Properties) {
   const { t } = useTranslation();
-  
+
   const renderItem: ListRenderItem<IPointPayHistory> = ({ item }) => (
-    <HistoryCard item={item} type={type} />
+    <HistoryCard onPressItem={onPressItem} item={item} type={type} />
   );
   const renderEmpty = useCallback(
     () =>
@@ -69,9 +70,7 @@ function HistoryList({
   );
 
   if (loading && histories.length === 0) {
-    return (
-      <ActivityIndicator color={Colors.primary} style={styles.loading} />
-    );
+    return <ActivityIndicator color={Colors.primary} style={styles.loading} />;
   }
 
   return (

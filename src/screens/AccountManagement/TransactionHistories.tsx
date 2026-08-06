@@ -59,7 +59,7 @@ const useTransaction = () => {
   }, [dispatch, currentPage]);
 
   const onPressTransaction = (item: any) => {
-    AppNavigator.navigate(Paths.TransactionDetail, { transactionId: item?.id });
+    AppNavigator.navigate(Paths.TransactionDetail, { transId: item?.id });
   };
 
   return {
@@ -134,6 +134,7 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingHorizontal: ScaleSize(20),
+    marginTop: ScaleSize(13),
   },
   manageButton: {
     borderColor: '#DBDBDB',

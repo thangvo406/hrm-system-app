@@ -396,7 +396,9 @@
       "tags": {
         "point_expired": "만료",
         "point_use": "사용",
-        "point_accrue": "적립"
+        "point_accrue": "적립",
+        "money_use": "사용",
+        "money_charge": "충전"
       }
     },
     "payment": {

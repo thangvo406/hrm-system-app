@@ -249,19 +249,19 @@ function ProductInfo({
             <Text
               style={[
                 styles.originalPrice,
-                isNumber(discountPrice) && {
-                  textDecorationLine: 'line-through',
-                },
+                // isNumber(discountPrice) && {
+                //   textDecorationLine: 'line-through',
+                // },
               ]}
             >
               {ProductUtils.formatCurrency(originalPrice)}
             </Text>
           )}
-          {isNumber(discountPrice) && (
+          {/* {isNumber(discountPrice) && (
             <Text style={styles.priceValue}>
               {ProductUtils.formatCurrency(discountPrice)}
             </Text>
-          )}
+          )} */}
         </View>
       </View>
     </View>

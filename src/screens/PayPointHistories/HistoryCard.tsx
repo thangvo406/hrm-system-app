@@ -1,103 +1,72 @@
+import type { IPointPayHistory } from '@type';
+import type { TranslationKeys } from '@translations/i18next';
+
+import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from '@utils/product';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
 import dayjs from 'dayjs';
-import type {
-  TPayPointAmountTone,
-  TPayPointTagType,
-} from '@hooks/usePayPointHistories';
-import { IPointPayHistory } from '@type';
-import { TRANSACTION_DETAIL_DISPLAY } from '@constants/config';
-import { TranslationKeys } from '@translations/i18next';
+
 import PointItem from './PointItem';
+import AppButton from '@components/AppButton';
+
+export type PayPointHistoryType = 'pay' | 'point';
 
 type Properties = {
   readonly item: IPointPayHistory;
+  readonly type: PayPointHistoryType;
+  readonly onPressItem: (item: any) => void;
 };
 
-const TEXT_DARK = '#1A1A1A';
-const TEXT_MUTED = '#9AA0A6';
-const EXPIRY_HIGHLIGHT = '#E0872B';
+type PayItemProperties = {
+  readonly item: IPointPayHistory;
+  readonly onPressItem: (item: any) => void;
+};
+
 const DATE_FORMAT = 'YYYY-MM-DD hh:mmA';
 const EMPTY_VALUE = '-';
+const MINUS_SIGN = '-';
+const PLUS_SIGN = '+';
+const POINT_TYPE: PayPointHistoryType = 'point';
+const TOP_UP_DIRECTION = 'DEBIT';
+
+// Tag label + colour per ledger direction: money spent vs money topped up.
 const TAG_STYLE: Record<
-  TPayPointTagType,
-  { readonly background: string; readonly color: string; readonly key: string }
+  string,
+  { readonly color: string; readonly title: TranslationKeys }
 > = {
-  accrue: { background: '#DFF3E1', color: '#2DB34A', key: 'tag_accrue' },
-  event: { background: '#FBEAD7', color: '#D98A2B', key: 'tag_event' },
-  expire: { background: '#FBE0E0', color: '#D9534F', key: 'tag_expire' },
-  use: { background: '#ECECEC', color: '#6B6B6B', key: 'tag_use' },
-  welfare: { background: '#DEEBFB', color: '#3B82C4', key: 'tag_welfare' },
+  CREDIT: { color: Colors.red03, title: 'pay_point.tags.money_use' },
+  DEBIT: { color: Colors.green02, title: 'pay_point.tags.money_charge' },
 };
 
-const POINT_TAG_STYLE = {
-  POINT_EXPIRE: {
-    background: '#FBE0E0',
-    color: '#D9534F',
-    title: 'pay_point.tags.point_expired',
-  },
-  POINT_USE: {
-    background: '#ECECEC',
-    color: '#6B6B6B',
-    title: 'pay_point.tags.point_use',
-  },
-  POINT_EARN: {
-    background: '#DFF3E1',
-    color: '#2DB34A',
-    title: 'pay_point.tags.point_accrue',
-  },
+const COLORS_AMOUNT: Record<string, string> = {
+  CREDIT: Colors.red03,
+  DEBIT: Colors.green02,
 };
 
-const COLORS_AMOUNT = {
-  POINT_EXPIRE: '#D9534F',
-  POINT_USE: '#6B6B6B',
-  POINT_EARN: '#2DB34A',
-};
-
-const PointTagItem = ({ entryType }: any) => {
+function PayItem({ item, onPressItem }: PayItemProperties) {
   const { t } = useTranslation();
-  const tag = POINT_TAG_STYLE[entryType];
+  const tag = TAG_STYLE[item?.transactionDirection];
+  const amountColor = COLORS_AMOUNT[item?.transactionDirection];
+  const sign =
+    item?.transactionDirection === TOP_UP_DIRECTION ? PLUS_SIGN : MINUS_SIGN;
+
   return (
-    <View style={[styles.tag, { backgroundColor: tag?.color }]}>
-      <Text style={styles.tagText}>{t(tag?.title)}</Text>
-    </View>
-  );
-};
-
-const formatSigned = (item: IPointPayHistory, type) => {
-  const suffix = type != 'point' ? '원' : ' P';
-  const sign = item.amount > 0 ? '+' : '';
-  return `${sign}${formatCurrency(item.amount)}${suffix}`;
-};
-
-const DETAIL_LABELS: Record<string, string | undefined> =
-  TRANSACTION_DETAIL_DISPLAY;
-
-function HistoryCard({ item, type }: Properties) {
-  const { t } = useTranslation();
-
-  if (type == 'point') {
-    return <PointItem item={item} />;
-  }
-
-  // const tag = TAG_STYLE[item.tag];
-  const TagComponent = type == 'point' ? PointTagItem : PointTagItem;
-
-  const detailLabel = DETAIL_LABELS[item.entryType];
-  const amountColor = COLORS_AMOUNT[item.entryType];
-  return (
-    <View style={styles.card}>
+    <AppButton style={styles.card} onPress={() => onPressItem?.(item)}>
       <View style={styles.leftColumn}>
-        <TagComponent entryType={item?.entryType} />
+        {tag ? (
+          <View style={[styles.tag, { backgroundColor: tag.color }]}>
+            <Text style={styles.tagText}>{t(tag.title)}</Text>
+          </View>
+        ) : undefined}
         <Text style={[styles.amount, { color: amountColor }]}>
-          {formatSigned(item, type)}
+          {`${sign}${t('common.display_price', {
+            amount: formatCurrency(item.amount),
+          })}`}
         </Text>
-        <Text style={styles.description}>
-          {detailLabel ? t(detailLabel as TranslationKeys) : EMPTY_VALUE}
-        </Text>
+        <Text style={styles.description}>{item?.storeName || EMPTY_VALUE}</Text>
       </View>
 
       <View style={styles.rightColumn}>
@@ -109,16 +78,16 @@ function HistoryCard({ item, type }: Properties) {
             amount: formatCurrency(item.balanceAfter),
           })}
         </Text>
-        {item.expiry ? (
-          <Text
-            style={[styles.expiry, item.expiryHighlight && styles.expiryStrong]}
-          >
-            {t('pay_point.expiry', { value: item.expiry })}
-          </Text>
-        ) : undefined}
       </View>
-    </View>
+    </AppButton>
   );
+}
+
+function HistoryCard({ item, type, onPressItem }: Properties) {
+  if (type === POINT_TYPE) {
+    return <PointItem item={item} onPressItem={onPressItem} />;
+  }
+  return <PayItem item={item} onPressItem={onPressItem} />;
 }
 
 export default React.memo(HistoryCard);
@@ -130,13 +99,13 @@ const styles = StyleSheet.create({
     marginTop: ScaleSize(8),
   },
   balance: {
-    color: TEXT_MUTED,
+    color: Colors.gray24,
     fontSize: ScaleSize(12),
     marginTop: ScaleSize(4),
     textAlign: 'right',
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.white,
     borderRadius: ScaleSize(14),
     elevation: 2,
     flexDirection: 'row',
@@ -144,30 +113,20 @@ const styles = StyleSheet.create({
     marginHorizontal: ScaleSize(16),
     marginVertical: ScaleSize(6),
     padding: ScaleSize(16),
-    shadowColor: '#000000',
+    shadowColor: Colors.black,
     shadowOffset: { height: 1, width: 0 },
     shadowOpacity: 0.08,
     shadowRadius: 4,
   },
   date: {
-    color: TEXT_MUTED,
+    color: Colors.gray24,
     fontSize: ScaleSize(12),
     textAlign: 'right',
   },
   description: {
-    color: '#4A4A4A',
+    color: Colors.gray23,
     fontSize: ScaleSize(13),
     marginTop: ScaleSize(8),
-  },
-  expiry: {
-    color: TEXT_MUTED,
-    fontSize: ScaleSize(12),
-    marginTop: ScaleSize(4),
-    textAlign: 'right',
-  },
-  expiryStrong: {
-    color: EXPIRY_HIGHLIGHT,
-    fontWeight: '700',
   },
   leftColumn: {
     alignItems: 'flex-start',
@@ -183,7 +142,7 @@ const styles = StyleSheet.create({
     paddingVertical: ScaleSize(3),
   },
   tagText: {
-    color: '#FFFFFF',
+    color: Colors.white,
     fontSize: ScaleSize(12),
     fontWeight: '700',
   },
