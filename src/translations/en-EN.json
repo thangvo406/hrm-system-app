@@ -20,6 +20,9 @@
     "qr_voucher": {
       "title": "Coupon QR",
       "valid_time": "Valid time {{time}}",
+      "valid_label": "Valid time",
+      "show_to_staff": "Show this QR to the store staff",
+      "auto_expire_notice": "The QR code stops working automatically once the valid time runs out.",
       "refresh": "Refresh QR",
       "btn_return_voucher": "Select Coupon"
     },
@@ -153,7 +156,7 @@
       "coop_pay_label": "Coop Pay",
       "add_method": "Card/Account",
       "pay_action": "Pay",
-      "qr_header_badge": "💰 Coop Pay Money payment",
+      "qr_header_badge": "Coop Pay Money payment",
       "qr_balance_text": "Balance {{amount}} KRW",
       "qr_customer_name": "John Doe"
     },

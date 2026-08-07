@@ -33,6 +33,7 @@ import Ic_homeIcon from './ic_home.svg';
 import Ic_hourglassIcon from './ic_hourglass.svg';
 import Ic_id_cardIcon from './ic_id_card.svg';
 import Ic_infoIcon from './ic_info.svg';
+import Ic_leafIcon from './ic_leaf.svg';
 import Ic_lock_closedIcon from './ic_lock_closed.svg';
 import Ic_map_pinIcon from './ic_map_pin.svg';
 import Ic_menuIcon from './ic_menu.svg';
@@ -46,10 +47,12 @@ import Ic_plus_circleIcon from './ic_plus_circle.svg';
 import Ic_qr_memberIcon from './ic_qr_member.svg';
 import Ic_radio_selectedIcon from './ic_radio_selected.svg';
 import Ic_radio_unselectedIcon from './ic_radio_unselected.svg';
+import Ic_refreshIcon from './ic_refresh.svg';
 import Ic_searchIcon from './ic_search.svg';
 import Ic_settingsIcon from './ic_settings.svg';
 import Ic_shield_checkIcon from './ic_shield_check.svg';
 import Ic_shopping_bagIcon from './ic_shopping_bag.svg';
+import Ic_sparkleIcon from './ic_sparkle.svg';
 import Ic_starIcon from './ic_star.svg';
 import Ic_storeIcon from './ic_store.svg';
 import Ic_trashIcon from './ic_trash.svg';
@@ -101,6 +104,7 @@ const icons = {
   'ic_hourglass': Ic_hourglassIcon,
   'ic_id_card': Ic_id_cardIcon,
   'ic_info': Ic_infoIcon,
+  'ic_leaf': Ic_leafIcon,
   'ic_lock_closed': Ic_lock_closedIcon,
   'ic_map_pin': Ic_map_pinIcon,
   'ic_menu': Ic_menuIcon,
@@ -114,10 +118,12 @@ const icons = {
   'ic_qr_member': Ic_qr_memberIcon,
   'ic_radio_selected': Ic_radio_selectedIcon,
   'ic_radio_unselected': Ic_radio_unselectedIcon,
+  'ic_refresh': Ic_refreshIcon,
   'ic_search': Ic_searchIcon,
   'ic_settings': Ic_settingsIcon,
   'ic_shield_check': Ic_shield_checkIcon,
   'ic_shopping_bag': Ic_shopping_bagIcon,
+  'ic_sparkle': Ic_sparkleIcon,
   'ic_star': Ic_starIcon,
   'ic_store': Ic_storeIcon,
   'ic_trash': Ic_trashIcon,

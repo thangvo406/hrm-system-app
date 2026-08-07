@@ -1,24 +1,42 @@
+import AppButton from '@components/AppButton';
 import HeaderDetail from '@components/HeaderDetail';
 import Image from '@components/Image';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
-import AppButton from '@components/AppButton';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { IVoucher } from '@type';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import {
-  setBrightnessLevel,
   resetBrightness,
+  setBrightnessLevel,
 } from '@reeq/react-native-device-brightness';
-import { formatTime } from '@utils/date';
+
 import imageNames from '@assets/images/names';
-import QRCode from 'react-native-qrcode-svg';
+import type { IVoucher } from '@type';
+import { formatTime } from '@utils/date';
 
-
-const QR_SIZE = ScaleSize(200);
+import NoticeBar from './NoticeBar';
+import ScanFrame from './ScanFrame';
+import TicketHead from './TicketHead';
+import ValidityMeter from './ValidityMeter';
+import { DeviceUtils } from '@kits/core/utils';
+const { ifIOS } = DeviceUtils;
+const QR_SIZE = ScaleSize(240);
 const TICK_INTERVAL_MS = 1000;
 const DEFAULT_DURATION_SECONDS = 120;
+
+const BADGE_SIZE = ScaleSize(54);
+const FOOT_NOTCH_SIZE = ScaleSize(26);
+const TICKET_RADIUS = ScaleSize(24);
+const VOUCHER_ICON_SIZE = ScaleSize(24);
+// Diameter of the two circles bitten out of the ticket's waist.
+const WAIST_NOTCH_SIZE = ScaleSize(22);
+
+const BADGE_SHADOW_OFFSET = { height: ScaleSize(4), width: 0 };
+// Whisper-thin rim in the ticket's own green, so the punched notches read as
+// a cut edge catching a hint of shadow rather than a flat painted dot.
+const NOTCH_RIM_COLOR = 'rgba(15, 75, 37, 0.06)';
 
 export type IQRCodeViewerData = {
   readonly amountText?: string;
@@ -102,60 +120,106 @@ function QRCodeViewerView({
   };
 
   return (
-    <View style={styles.safeArea}>
+    <View style={styles.screen}>
       <HeaderDetail
-        onPressBack={onRequestClose}
         hideNotify
-        usePaddingTop={false}
+        onPressBack={onRequestClose}
         title={t(titleKey)}
+        transparent
+        usePaddingTop={false}
       />
-      {!!data?.headerBadge && (
-        <View style={styles.headerBadgeContainer}>
-          <Text style={styles.headerBadge}>{data?.headerBadge}</Text>
-        </View>
-      )}
-      <View style={[styles.content, contentStyle]}>
-        <View style={styles.card}>
-          {!!titleVoucher && (
-            <Text style={styles.couponLabel}>{titleVoucher}</Text>
-          )}
-          {!!data?.amountText && (
-            <Text style={styles.amountLabel}>{data?.amountText}</Text>
-          )}
-          {
-            data?.qrImageBase64 ? 
+
+      <ScrollView
+        contentContainerStyle={[styles.content, contentStyle]}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.ticketWrap}>
+          {/* Sits in the wrap's top padding, so it straddles the ticket edge
+              without ever drawing outside its parent (Android clips that). */}
+          {/* <View style={styles.badge}>
             <Image
-            width={QR_SIZE}
-            height={QR_SIZE}
-            base64={data?.qrImageBase64 ?? ''}
-          /> : <QRCode size={QR_SIZE} value={data?.code} />
-          }
-         
+              color={Colors.green08}
+              height={BADGE_ICON_SIZE}
+              name="ic_leaf"
+              type="svg"
+              width={BADGE_ICON_SIZE}
+            />
+          </View> */}
 
-          <Text style={styles.validTime}>
-            {t('qr_voucher.valid_time', { time: formatTime(remaining) })}
-          </Text>
+          <View style={styles.ticket}>
+            <TicketHead
+              amountText={data?.amountText}
+              badge={data?.headerBadge}
+              subtitle={t('qr_voucher.show_to_staff')}
+              title={titleVoucher}
+            />
 
-          <AppButton onPress={onPressRefresh} testID="qr-code-viewer-refresh">
-            <Text style={styles.refresh}>{t('qr_voucher.refresh')}</Text>
-          </AppButton>
-        </View>
-        {!!showBtnVoucher && (
-          <AppButton style={styles.payOtherButton} onPress={_onPressVoucher}>
-            {!!showIconVoucher && (
-              <Image
-                name={imageNames.ic_vouchers}
-                width={ScaleSize(24)}
-                height={ScaleSize(24)}
-                tintColor={Colors.green02}
+            {/* Collapsed row: the notches ride the seam wherever the head ends. */}
+            <View style={styles.waist}>
+              <View style={[styles.notch, styles.notchLeft]} />
+              <View style={[styles.notch, styles.notchRight]} />
+            </View>
+
+            <View style={styles.stub}>
+              <ScanFrame value={data?.token} size={QR_SIZE} />
+
+              <ValidityMeter
+                label={t('qr_voucher.valid_label')}
+                onPressRefresh={onPressRefresh}
+                value={formatTime(remaining)}
               />
-            )}
-            <Text style={styles.btnPayOther}>
-              {btnVoucher || t('qr_voucher.btn_return_voucher')}
-            </Text>
-          </AppButton>
-        )}
-      </View>
+
+              <View style={styles.divider}>
+                <View style={styles.dividerDash} />
+              </View>
+              <View>
+                <View
+                  style={[
+                    styles.notch,
+                    styles.notchLeft,
+                    {
+                      left: ScaleSize(-28),
+                      top: ScaleSize(-30),
+                    },
+                  ]}
+                />
+                <View
+                  style={[
+                    styles.notch,
+                    styles.notchRight,
+                    {
+                      right: ScaleSize(-28),
+                      top: ScaleSize(-30),
+                    },
+                  ]}
+                />
+              </View>
+              {!!showBtnVoucher && (
+                <AppButton
+                  onPress={_onPressVoucher}
+                  style={styles.voucherButton}
+                  testID="qr-code-viewer-voucher"
+                >
+                  {!!showIconVoucher && (
+                    <Image
+                      height={VOUCHER_ICON_SIZE}
+                      name={imageNames.ic_vouchers}
+                      tintColor={Colors.green02}
+                      width={VOUCHER_ICON_SIZE}
+                    />
+                  )}
+                  <Text style={styles.voucherLabel}>
+                    {btnVoucher || t('qr_voucher.btn_return_voucher')}
+                  </Text>
+                </AppButton>
+              )}
+              <NoticeBar text={t('qr_voucher.auto_expire_notice')} />
+            </View>
+
+            <View style={styles.footNotch} />
+          </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -163,81 +227,113 @@ function QRCodeViewerView({
 export default React.memo(QRCodeViewerView);
 
 const styles = StyleSheet.create({
-  card: {
+  badge: {
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderColor: '#EFEFEF',
-    borderRadius: ScaleSize(16),
-    borderWidth: 1,
-    paddingHorizontal: ScaleSize(24),
-    paddingVertical: ScaleSize(32),
-    shadowColor: '#000000',
-    shadowOffset: { height: 2, width: 0 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    width: '100%',
-  },
-  btnPayOther: {
-    fontSize: ScaleSize(16),
-    color: Colors.green02,
-    marginLeft: ScaleSize(12),
+    alignSelf: 'center',
+    backgroundColor: Colors.white,
+    borderRadius: ScaleSize(17),
+    height: BADGE_SIZE,
+    justifyContent: 'center',
+    position: 'absolute',
+    shadowColor: Colors.black,
+    shadowOffset: BADGE_SHADOW_OFFSET,
+    shadowOpacity: 0.12,
+    shadowRadius: ScaleSize(6),
+    top: 0,
+    width: BADGE_SIZE,
+    zIndex: 3,
   },
   content: {
+    flexGrow: 1,
+    // justifyContent: 'center',
+    paddingBottom: ScaleSize(28),
+    paddingHorizontal: ScaleSize(20),
+  },
+  // A one-pixel window onto a fully dashed box, so only its top edge shows —
+  // RN will not draw a dashed border on a single side.
+  divider: {
+    height: ScaleSize(1),
+    marginVertical: ScaleSize(18),
+    overflow: 'hidden',
+  },
+  dividerDash: {
+    borderColor: Colors.green05,
+    borderRadius: ScaleSize(1),
+    borderStyle: 'dashed',
+    borderWidth: ScaleSize(1),
+    height: ScaleSize(3),
+  },
+  footNotch: {
+    backgroundColor: Colors.green11,
+    borderColor: NOTCH_RIM_COLOR,
+    borderRadius: FOOT_NOTCH_SIZE / 2,
+    bottom: -FOOT_NOTCH_SIZE / 2,
+    height: FOOT_NOTCH_SIZE,
+    left: '50%',
+    marginLeft: -FOOT_NOTCH_SIZE / 2,
+    position: 'absolute',
+    width: FOOT_NOTCH_SIZE,
+  },
+  notch: {
+    backgroundColor: Colors.green11,
+    // borderColor: NOTCH_RIM_COLOR,
+    borderRadius: WAIST_NOTCH_SIZE / 2,
+    // borderWidth: ScaleSize(1),
+    height: WAIST_NOTCH_SIZE,
+    position: 'absolute',
+    top: 0,
+    width: WAIST_NOTCH_SIZE,
+  },
+  notchLeft: {
+    left: -WAIST_NOTCH_SIZE / 2,
+  },
+  notchRight: {
+    right: -WAIST_NOTCH_SIZE / 2,
+  },
+
+  screen: {
+    backgroundColor: Colors.green11,
     flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: ScaleSize(24),
   },
-  headerBadgeContainer: {
-    paddingVertical: ScaleSize(8),
-    paddingHorizontal: ScaleSize(15),
-    borderRadius: ScaleSize(20),
-    backgroundColor: Colors.green03,
-    flexWrap: 'wrap',
-    alignSelf: 'baseline',
-    marginTop: ScaleSize(10),
-    marginLeft: ScaleSize(20),
+  stub: {
+    borderBottomLeftRadius: TICKET_RADIUS,
+    borderBottomRightRadius: TICKET_RADIUS,
+    paddingBottom: ScaleSize(24),
+    paddingHorizontal: ScaleSize(20),
+    paddingTop: ScaleSize(20),
   },
-  headerBadge: {
-    color: Colors.green02,
-    fontSize: ScaleSize(12),
-    fontWeight: '700',
+  ticket: {
+    backgroundColor: Colors.white,
+    borderRadius: TICKET_RADIUS,
   },
-  amountLabel: {
-    color: Colors.gray09,
-    fontSize: ScaleSize(12),
-    fontWeight: '700',
-    marginBottom: ScaleSize(24),
-    marginTop: ScaleSize(-15),
+
+  ticketWrap: {
+    marginTop: ScaleSize(ifIOS(12, 40)),
+    // paddingTop: BADGE_SIZE / 2,
   },
-  couponLabel: {
-    color: '#1A1A1A',
-    fontSize: ScaleSize(16),
-    fontWeight: '700',
-    marginBottom: ScaleSize(24),
-  },
-  payOtherButton: {
-    marginTop: ScaleSize(30),
-    flexDirection: 'row',
+  voucherButton: {
     alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderRadius: ScaleSize(8),
     borderColor: Colors.green02,
-    paddingVertical: ScaleSize(10),
+    borderRadius: ScaleSize(12),
+    borderWidth: ScaleSize(1),
+    flexDirection: 'row',
+    gap: ScaleSize(10),
+    justifyContent: 'center',
+    // marginTop: ScaleSize(28),
+    paddingVertical: ScaleSize(8),
+    marginBottom: ScaleSize(15),
   },
-  refresh: {
-    color: Colors.gray06,
-    fontSize: ScaleSize(14),
-    marginTop: ScaleSize(10),
-  },
-  safeArea: {
-    backgroundColor: '#FFFFFF',
-    flex: 1,
-  },
-  validTime: {
+  voucherLabel: {
     color: Colors.green02,
     fontSize: ScaleSize(16),
-    fontWeight: '700',
-    marginTop: ScaleSize(24),
+    fontWeight: '600',
+  },
+  // Full-height so the circles stay within it vertically, then pulled back to
+  // zero net height by the margins.
+  waist: {
+    height: WAIST_NOTCH_SIZE,
+    marginBottom: -WAIST_NOTCH_SIZE / 2,
+    marginTop: -WAIST_NOTCH_SIZE / 2,
+    zIndex: 2,
   },
 });

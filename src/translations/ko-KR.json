@@ -20,6 +20,9 @@
     "qr_voucher": {
       "title": "쿠폰 QR",
       "valid_time": "유효시간 {{time}}",
+      "valid_label": "유효시간",
+      "show_to_staff": "매장 직원에게 QR을 보여주세요",
+      "auto_expire_notice": "QR 코드는 유효시간이 지나면 자동으로 사용이 불가능합니다.",
       "refresh": "QR 갱신",
       "btn_return_voucher": "쿠폰 선택"
     },
@@ -459,7 +462,7 @@
       "coop_pay_label": "생협페이",
       "add_method": "카드/계좌",
       "pay_action": "결제하기",
-      "qr_header_badge": "💰 생협페이머니 결제",
+      "qr_header_badge": "생협페이머니 결제",
       "qr_balance_text": "잔액 {{amount}}원",
       "qr_customer_name": "홍길동"
     },

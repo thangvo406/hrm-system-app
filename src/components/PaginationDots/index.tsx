@@ -80,7 +80,6 @@ function PaginationDots({
           index={index}
           progress={progress}
           size={size}
-          // eslint-disable-next-line react/no-array-index-key -- static positions, no reordering
           key={`dot-${index}`}
         />
       ))}

@@ -11,7 +11,6 @@ import {
 } from '@services/selectors';
 import { IAccount } from '@type';
 import { generateQRCodePayRequest } from '@services/slices/payment/paymentSlice';
-import { ScaleSize } from '@kits/core';
 
 export type PaymentMethodKind = 'bank' | 'card' | 'money';
 
@@ -60,7 +59,7 @@ export const usePaymentOffline = () => {
 
   const disabledBtnSubmit = useMemo(() => {
     // return !amount || Number(amount) > (currentWallet?.balance || 0);
-    return false
+    return false;
   }, [amount, currentWallet?.balance]);
 
   const onAmountChange = useCallback((value: string) => {
@@ -93,32 +92,30 @@ export const usePaymentOffline = () => {
   const onPay = useCallback(() => {
     dispatch(
       generateQRCodePayRequest({
-        // useMoney: Number(amount),
+        useMoney: Number(amount),
         usePoint: usePoints ? pointUsed : 0,
-        onSuccess: data => {
+        onSuccess: (data: any) => {
           AppNavigator.showDialog({
             screen: QRCodeViewerView,
             isFullScreen: true,
-            contentStyle: {
-              marginTop: ScaleSize(-130),
-            },
             data: {
               amountText: t('payment_offline.qr_balance_text', {
                 amount: formatCurrency(currentWallet?.balance),
               }),
-              qrImageBase64: data?.qrImageBase64,
-              headerBadge: t('payment_offline.qr_header_badge'),
+              token: data?.token,
+
               name: t('payment_offline.qr_customer_name'),
             },
+            titleVoucher: t('payment_offline.qr_header_badge'),
             durationSeconds: data?.expiresIn,
             onRefresh: onRefreshQRCode,
           });
         },
-        onFailure: (error) => {
+        onFailure: error => {
           AppNavigator.showSnackBar({
             message: error,
-            type: 'failed'
-          })
+            type: 'failed',
+          });
         },
       }),
     );
