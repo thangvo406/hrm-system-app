@@ -37,6 +37,7 @@ function DatePicker({
   const datePickerRef = useRef<any>(null);
   const { t } = useTranslation();
   const [filterValue, setFilterValue] = useState();
+  const [isShowBtnBottom, setShowBtnBottom] = useState(true);
 
   const onFilterChanged = (value: number) => {
     setFilterValue(value);
@@ -62,10 +63,13 @@ function DatePicker({
     return dates;
   };
 
+  const onHideBtnBottom = (isHide: boolean) => {
+    setShowBtnBottom(!isHide);
+  };
   const _onCancel = () => {
     onRequestClose?.();
-    onCancel?.()
-  }
+    onCancel?.();
+  };
   const _onSubmit = () => {
     const dates = getDateValue();
     const lastWeek = dates.at(-1);
@@ -117,45 +121,47 @@ function DatePicker({
             dataInit={dateRangeInit}
             ref={datePickerRef}
             type={type}
+            onHideBtnBottom={onHideBtnBottom}
           />
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            gap: ScaleSize(10),
-            marginTop: ScaleSize(10),
-            marginHorizontal: ScaleSize(20),
-            paddingBottom: ScaleSize(20),
-          }}
-        >
-          {!!buttonCancelTitle && (
+        {!!isShowBtnBottom && (
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: ScaleSize(10),
+              marginTop: ScaleSize(10),
+              marginHorizontal: ScaleSize(20),
+              paddingBottom: ScaleSize(20),
+            }}
+          >
+            {!!buttonCancelTitle && (
+              <Button
+                type="outline-bordered"
+                title={buttonCancelTitle}
+                onPress={_onCancel}
+                style={{
+                  flex: 1,
+                  alignSelf: 'center',
+                  // zIndex: 1,
+                }}
+              />
+            )}
+
             <Button
-              type="outline-bordered"
-              title={buttonCancelTitle}
-              onPress={_onCancel}
+              type="rounded"
+              title={buttonSubmitTitle || t('date.date_picker.button_submit')}
+              onPress={_onSubmit}
               style={{
-            
+                // position: 'absolute',
+                // bottom: 0,
                 flex: 1,
+                gap: 10,
                 alignSelf: 'center',
                 // zIndex: 1,
               }}
             />
-          )}
-
-          <Button
-            type="rounded"
-            title={buttonSubmitTitle || t('date.date_picker.button_submit')}
-            onPress={_onSubmit}
-            style={{
-              // position: 'absolute',
-              // bottom: 0,
-              flex: 1,
-              gap: 10,
-              alignSelf: 'center',
-              // zIndex: 1,
-            }}
-          />
-        </View>
+          </View>
+        )}
       </View>
     </TouchableWithoutFeedback>
   );

@@ -178,6 +178,7 @@ function PayCard() {
                 name="ic_filter"
                 width={ScaleSize(24)}
                 height={ScaleSize(24)}
+                color={Colors.gray06}
                 type="svg"
               />
               {filterCount > 0 ? (

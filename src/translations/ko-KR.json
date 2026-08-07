@@ -30,6 +30,12 @@
       "login": "로그인",
       "register": "신규 가입"
     },
+    "date_range_filter": {
+      "title": "조회 기간",
+      "one": "1개월",
+      "three": "3개월",
+      "custom": "직접 설정"
+    },
     "date": {
       "date_range": {
         "sun_day_long": "일요일",

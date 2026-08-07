@@ -30,7 +30,7 @@ import { Colors } from '@constants';
 import AppButton from '../AppButton';
 import { ScrollView } from 'react-native-gesture-handler';
 import Image from '../Image';
-const { ifIPadOrTablet, ifIphoneX } = DeviceUtils;
+const { ifIPadOrTablet, ifIOS } = DeviceUtils;
 
 export interface DatePickerRef {
   reset: () => void;
@@ -292,9 +292,8 @@ const MonthYearSelection = memo(
           }}
         >
           <Button
-            type="rounded"
+            type="outline-bordered"
             title={t('common.popup.btn_close')}
-            outlet
             onPress={onClose}
             style={{
               width: ifIPadOrTablet('20%', '47%'),
@@ -302,7 +301,7 @@ const MonthYearSelection = memo(
           />
           <Button
             type="rounded"
-            title={t('common.popup.btn_done')}
+            title={t('common.confirm')}
             onPress={onConfirm}
             style={{
               width: ifIPadOrTablet('78%', '47%'),
@@ -468,8 +467,15 @@ function Header({
 }
 
 const DatePicker = React.forwardRef<DatePickerRef, any>((props, ref) => {
-  const { onDateChange, maxDate, onRangeChange, dataInit, type, title } =
-    props || {};
+  const {
+    onDateChange,
+    onHideBtnBottom,
+    maxDate,
+    onRangeChange,
+    dataInit,
+    type,
+    title,
+  } = props || {};
   const [currentDate, setCurrentDate] = useState(
     maxDate ||
       dataInit?.from?.format?.('YYYY-MM-DD') ||
@@ -597,6 +603,10 @@ const DatePicker = React.forwardRef<DatePickerRef, any>((props, ref) => {
 
   const [showYearPicker, setShowYearPicker] = useState(false);
 
+  useEffect(() => {
+    onHideBtnBottom?.(showYearPicker);
+  }, [showYearPicker]);
+
   const onDayChange = (day: any) => {
     let temp = [...selectedDates];
 
@@ -710,7 +720,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     right: 0,
-    bottom: ScaleSize(ifIphoneX(-35, 0), -20),
+    bottom: ScaleSize(ifIOS(0, 0)),
     backgroundColor: Colors.white, // Or a semi-transparent background
     zIndex: 10, // Ensure it's above the calendar
     borderColor: Colors.gray12,
