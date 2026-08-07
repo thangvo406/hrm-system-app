@@ -101,7 +101,7 @@ function DatePicker({
         style={[
           {
             backgroundColor: 'white',
-            height: ScaleSize(600),
+            height: ScaleSize(ifAndroid(650, 600)),
           },
           containerStyle,
         ]}

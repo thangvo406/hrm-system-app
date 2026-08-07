@@ -297,4 +297,5 @@ export interface ITransactionDetail {
   readonly finalPaymentAmount: number;
   readonly payMoneyAmount: number;
   readonly pointEarned: number;
+  readonly paymentMethod: number;
 }

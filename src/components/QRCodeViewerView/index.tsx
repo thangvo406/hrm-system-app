@@ -125,7 +125,6 @@ function QRCodeViewerView({
         hideNotify
         onPressBack={onRequestClose}
         title={t(titleKey)}
-        transparent
         usePaddingTop={false}
       />
 

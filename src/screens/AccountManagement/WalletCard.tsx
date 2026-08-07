@@ -44,14 +44,14 @@ const DOT_ACTIVE_WIDTH = ScaleSize(18);
 const DOT_GAP = ScaleSize(3);
 
 type Properties = {
-  readonly balance: number;
+  readonly balance?: number;
   readonly isShowUnRegister: boolean;
   readonly onCharge: () => void;
   readonly onChargeHistory: () => void;
   readonly onUse: () => void;
   readonly onUseOrganize: (item?: IResponseOrganizationInfo) => void;
   readonly organizationInfo?: IResponseOrganizationInfo[];
-  readonly point: number;
+  readonly point?: number;
   readonly toggleUnRegister: () => void;
 };
 
@@ -66,42 +66,34 @@ const OrganizationInfo = ({
 
   return (
     <View style={[styles.card, styles.organizationCard]}>
-        <LinearGradient
-          colors={CARD_GRADIENT}
-          end={{ x: 1, y: 1 }}
-          start={{ x: 0, y: 0 }}
-          style={StyleSheet.absoluteFill}
-        />
-        <Text
-          style={[
-            styles.walletName,
-            { paddingHorizontal: ScaleSize(20), paddingTop: ScaleSize(20) },
-          ]}
-        >
-          {info?.name}
-        </Text>
+      <LinearGradient
+        colors={CARD_GRADIENT}
+        end={{ x: 1, y: 1 }}
+        start={{ x: 0, y: 0 }}
+        style={StyleSheet.absoluteFill}
+      />
+      <Text
+        style={[
+          styles.walletName,
+          { paddingHorizontal: ScaleSize(20), paddingTop: ScaleSize(20) },
+        ]}
+      >
+        {info?.name}
+      </Text>
 
-        <Text style={styles.balanceLabel}>
-          {t('account_management.balance')}
-        </Text>
-        <View style={styles.balanceRow}>
-          <Text style={styles.balanceValue}>
-            {formatCurrency(info?.balance)}
-          </Text>
-          <Text style={styles.currency}>
-            {t('account_management.currency')}
-          </Text>
-        </View>
+      <Text style={styles.balanceLabel}>{t('account_management.balance')}</Text>
+      <View style={styles.balanceRow}>
+        <Text style={styles.balanceValue}>{formatCurrency(info?.balance)}</Text>
+        <Text style={styles.currency}>{t('account_management.currency')}</Text>
+      </View>
 
-        <AppButton
-          onPress={() => onUse?.(info)}
-          style={styles.useButton}
-          testID="account-management-use"
-        >
-          <Text style={styles.useButtonText}>
-            {t('account_management.use')}
-          </Text>
-        </AppButton>
+      <AppButton
+        onPress={() => onUse?.(info)}
+        style={styles.useButton}
+        testID="account-management-use"
+      >
+        <Text style={styles.useButtonText}>{t('account_management.use')}</Text>
+      </AppButton>
       <View
         style={{
           paddingBottom: ScaleSize(20),
@@ -128,7 +120,7 @@ function WalletCard({
   const [organizationHeight, setOrganizationHeight] = useState(0);
   // 0 = collapsed, 1 = expanded. Drives the handle rotation and the reveal.
   const expandProgress = useSharedValue(isExpandedOrganization ? 1 : 0);
-  const hasOrganize = (organizationInfo?.length || 0) > 0
+  const hasOrganize = (organizationInfo?.length || 0) > 0;
   const toggleOrganization = useCallback(() => {
     setIsExpandedOrganization(previous => !previous);
   }, []);
@@ -143,7 +135,7 @@ function WalletCard({
   }, [expandProgress, isExpandedOrganization]);
 
   useEffect(() => {
-    if((organizationInfo?.length || 0) > 0) {
+    if ((organizationInfo?.length || 0) > 0) {
       setTimeout(() => {
         opacityBtnExpand.value = withTiming(1, {
           duration: HANDLE_ANIMATION_DURATION_MS,
@@ -162,6 +154,7 @@ function WalletCard({
   const handleStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${expandProgress.value * HALF_TURN_DEGREES}deg` }],
     opacity: opacityBtnExpand.value,
+    marginTop: -1,
   }));
 
   const organizationStyle = useAnimatedStyle(
@@ -169,6 +162,7 @@ function WalletCard({
       height: expandProgress.value * organizationHeight,
       // marginTop: expandProgress.value * ORGANIZATION_SECTION_GAP,
       opacity: expandProgress.value,
+      marginTop: -1,
     }),
     [organizationHeight],
   );
@@ -279,7 +273,7 @@ function WalletCard({
             <Image
               color={HANDLE_COLOR}
               height={HANDLE_IMAGE_HEIGHT}
-              name='ic_expand_wallet'
+              name="ic_expand_wallet"
               style={styles.expandHandleIcon}
               type="svg"
               width={HANDLE_IMAGE_WIDTH}
@@ -302,27 +296,27 @@ function WalletCard({
           pointerEvents={isExpandedOrganization ? 'auto' : 'none'}
           style={[styles.organizationClip, organizationStyle]}
         >
-            <View
-              onTouchCancel={onTouchEnd}
-              onTouchEnd={onTouchEnd}
-              onTouchStart={onTouchStart}
-              onLayout={onOrganizationLayout}
-              style={styles.organizationContent}
-            >
-              <Carousel
-                data={organizationInfo || []}
-                height={ORGANIZATION_CARD_HEIGHT}
-                loop={false}
-                onProgressChange={(_, absoluteProgress) => {
-                  carouselProgress.value = absoluteProgress;
-                }}
-                pagingEnabled
-                renderItem={renderOrganize}
-                style={styles.organizationCarousel}
-                testID="account-management-organization-carousel"
-                width={ORGANIZATION_ITEM_WIDTH}
-              />
-         
+          <View
+            onTouchCancel={onTouchEnd}
+            onTouchEnd={onTouchEnd}
+            onTouchStart={onTouchStart}
+            onLayout={onOrganizationLayout}
+            style={styles.organizationContent}
+          >
+            <Carousel
+              data={organizationInfo || []}
+              height={ORGANIZATION_CARD_HEIGHT}
+              loop={false}
+              onProgressChange={(_, absoluteProgress) => {
+                carouselProgress.value = absoluteProgress;
+              }}
+              pagingEnabled
+              renderItem={renderOrganize}
+              style={styles.organizationCarousel}
+              testID="account-management-organization-carousel"
+              width={ORGANIZATION_ITEM_WIDTH}
+            />
+
             {(organizationInfo?.length || 0) > 1 ? (
               <PaginationDots
                 activeWidth={DOT_ACTIVE_WIDTH}
@@ -412,7 +406,7 @@ const styles = StyleSheet.create({
   expandHandleClip: {
     height: HANDLE_IMAGE_HEIGHT - HANDLE_BAR_HEIGHT,
     overflow: 'hidden',
-    marginTop: -1
+    // marginTop: -1,
   },
   expandHandleIcon: {
     marginTop: -HANDLE_BAR_HEIGHT,

@@ -31,6 +31,10 @@ const formatWon = (t: any, value: number | undefined, negative = false) =>
 const formatPoint = (value: number | undefined, negative = false) =>
   `${negative ? MINUS_SIGN : ''}${formatCurrency(value)}${POINT_SUFFIX}`;
 
+const getAmount = (data: any, fieldName: string) => {
+  return data?.[fieldName] || 0;
+};
+
 function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -41,6 +45,13 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
     : '';
   const headerDate = data?.paidAt ? dayjs(data.paidAt).format(DATE_FORMAT) : '';
 
+  const paymentMethod = data?.paymentFundingSource
+    ? t('order_history_detail.price_detail.paymentMethod', {
+        method: t(
+          `order_history_detail.payment_methods.${data?.paymentFundingSource.toLowerCase()}`,
+        ),
+      })
+    : '-';
   return (
     <View style={styles.root}>
       <HeaderDetail hideNotify title={t('transaction_detail.title')} />
@@ -69,17 +80,21 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
 
               <View style={styles.divider} />
 
-              <AmountRow
-                caption={data?.couponName}
-                label={t('transaction_detail.coupon_discount_label')}
-                value={formatWon(t, data?.couponDiscount, true)}
-                valueColor={Colors.red01}
-              />
-              <AmountRow
-                label={t('transaction_detail.point_used_label')}
-                value={formatPoint(data?.pointUsed, true)}
-                valueColor={Colors.red01}
-              />
+              {getAmount(data, 'couponDiscount') > 0 && (
+                <AmountRow
+                  caption={data?.couponName}
+                  label={t('transaction_detail.coupon_discount_label')}
+                  value={formatWon(t, data?.couponDiscount, true)}
+                  valueColor={Colors.red01}
+                />
+              )}
+              {getAmount(data, 'pointUsed') > 0 && (
+                <AmountRow
+                  label={t('transaction_detail.point_used_label')}
+                  value={formatPoint(data?.pointUsed, true)}
+                  valueColor={Colors.red01}
+                />
+              )}
 
               <DashedDivider />
 
@@ -89,6 +104,7 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
                 value={formatWon(t, data?.finalPaymentAmount)}
                 valueColor={Colors.green02}
               />
+
               <AmountRow
                 label={t('transaction_detail.pay_money_label')}
                 value={formatWon(t, data?.payMoneyAmount, true)}

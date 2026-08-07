@@ -11,9 +11,13 @@ function isIPad() {
   return Platform.isPad;
 }
 
+const isLargeDevice = () => {
+  const { width, height } = getDimensions();
+  return width >= 400 && height >= 800;
+};
+
 const isDeviceSmall = () => {
   const { width, height } = getDimensions();
-  // console.log('isDeviceSmall', {width, height});
   return width <= 414 && height <= 736;
 };
 
@@ -183,6 +187,7 @@ export const DeviceUtils = {
   isTablet,
   getAppVersion,
   isIPadOrTablet,
+  isLargeDevice,
   isDevicePixel,
   ifDevicePixel,
   isDeviceSmall,
