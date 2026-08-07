@@ -6,9 +6,8 @@ import React from 'react';
 import { Colors } from '@constants';
 
 type Properties = {
-  readonly amount: number;
-  readonly days: number;
-  readonly onDismiss: () => void;
+  readonly amount?: number;
+  readonly onDismiss?: () => void;
 };
 
 const ICON_SIZE = ScaleSize(18);
@@ -18,7 +17,7 @@ const INFO_ICON = '#9AA0A6';
 const TEXT_DARK = '#3D3D3D';
 const TEXT_MUTED = '#8A8F94';
 
-function PointNotice({ amount, days, onDismiss }: Properties) {
+function PointNotice({ amount, onDismiss }: Properties) {
   const { t } = useTranslation();
 
   return (
@@ -39,7 +38,7 @@ function PointNotice({ amount, days, onDismiss }: Properties) {
           }}
         />
         <Text style={styles.bannerText}>
-          {t('pay_point.expire_banner', { amount, days })}
+          {t('pay_point.expire_banner', { amount, days: 30 })}
         </Text>
         <AppButton onPress={onDismiss} testID="pay-point-notice-confirm">
           <Text style={styles.confirmText}>{`[${t(

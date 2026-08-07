@@ -8,20 +8,17 @@ import { useEffect, useState } from 'react';
 
 export type TPointHistoryType = 'accrue' | 'expire' | 'use';
 
-const EXPIRING_AMOUNT = 200;
-
-
 const onUsePoint = () => {
   AppNavigator.navigate(Paths.PayPointHistories);
 };
 
 const onViewExpireDetail = () => {
-  AppNavigator.navigate(Paths.PayPointHistories);
+  AppNavigator.navigate(Paths.PointExpiring);
 };
 
 const onPressItemHistory = (item: any) => () => {
   AppNavigator.navigate(Paths.TransactionDetail, { transId: item?.id });
-}
+};
 const onViewAllHistory = () => {
   AppNavigator.navigate(Paths.PayPointHistories);
 };
@@ -31,34 +28,31 @@ const onLegacyLookup = () => {
 };
 
 export const usePointDashboard = () => {
-
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const dispatch = useAppDispatch();
-  const [histories, setHistories] = useState([])
+  const [histories, setHistories] = useState([]);
 
   useEffect(() => {
     dispatch(
       getPayPointHistoriesRequest({
-        balanceAccountType:'POINT',
+        balanceAccountType: 'POINT',
         onFailure: () => {
           // pagination.isLoadingMore = false;
           // setRefreshing(false);
           // setLoadingMore(false);
         },
         onSuccess: (data: ListApiResponse<IPointPayHistory[]>) => {
-          setHistories(data?.content)
+          setHistories(data?.content);
         },
         page: 0,
         size: 10,
       }),
     );
-  }, [])
-
-  
+  }, []);
 
   return {
     balance: currentWallet?.pointBalance,
-    expiringAmount: EXPIRING_AMOUNT,
+    expiringAmount: currentWallet?.expiringPointBalance,
     histories,
     onLegacyLookup,
     onPressItemHistory,

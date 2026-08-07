@@ -14,6 +14,7 @@ export { useNotifications } from './useNotifications';
 export { useContributeHistory } from './useContributeHistory';
 export { usePayPointHistories } from './usePayPointHistories';
 export { usePointDashboard } from './usePointDashboard';
+export { usePointExpiring } from './usePointExpiring';
 export { useCartDetail } from './useCartDetail';
 export { useProductDetail } from './useProductDetail';
 export { useProducts } from './useProducts';

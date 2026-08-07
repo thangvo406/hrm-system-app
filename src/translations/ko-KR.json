@@ -479,7 +479,7 @@
       "point_unit": "P",
       "use_action": "사용하기",
       "expire_warning": "30일 내 {{amount}}P 소멸 예정",
-      "expire_detail": "자세히 보기",
+      "expire_detail": "[확인]",
       "history_title": "포인트 내역",
       "view_all": "전체보기",
       "type_accrue": "적립",
@@ -490,6 +490,17 @@
       "desc_expire": "유효기간 만료",
       "info": "포인트는 생협페이 결제 시 자동으로 사용돼요. 유효기간이 임박한 포인트부터 우선 차감됩니다.",
       "legacy_lookup": "기존 시스템 이관 포인트 조회"
+    },
+    "point_expiring": {
+      "title": "포인트 소멸 예정 안내",
+      "subtitle": "곧 소멸되는 포인트를 확인하세요",
+      "summary_label": "{{days}}일 내 소멸 예정 포인트",
+      "point_unit": "P",
+      "nearest_date": "가장 빠른 소멸일 : {{date}}",
+      "list_title": "소멸 예정 내역",
+      "expire_at": "{{date}} 소멸",
+      "info": "포인트는 적립일로부터 12개월 후 자동 소멸됩니다. 유효기간이 임박한 포인트부터 우선 사용됩니다.",
+      "use_action": "포인트 사용하러 가기"
     },
     "contribute_history": {
       "title": "출자 내역",

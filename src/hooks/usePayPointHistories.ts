@@ -43,6 +43,10 @@ const onPressTransaction = (item: any) => {
   AppNavigator.navigate(Paths.TransactionDetail, { transId: item?.id });
 };
 
+const onViewExpireDetail = () => {
+  AppNavigator.navigate(Paths.PointExpiring);
+};
+
 export const usePayPointHistories = () => {
   const dispatch = useAppDispatch();
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
@@ -166,6 +170,8 @@ export const usePayPointHistories = () => {
     onPressTransaction,
     onLoadMore,
     onPressWithdrawal,
+    expiringAmount: currentWallet?.expiringPointBalance,
+    onViewExpireDetail,
     onRefresh,
     payMoneyHistories: histories.payMoney,
     pointHistories: histories.point,

@@ -117,9 +117,22 @@ export interface IWallet {
   userId: number;
   balance: number;
   pointBalance: number;
+  expiringPointBalance: number;
   status: string;
   withdrawableBalance: number;
   bonusBalance: number;
+}
+
+export interface IPointExpiryItem {
+  amount: number;
+  expiresOn: string;
+  id: number;
+}
+
+export interface IRequestGetPointExpiring
+  extends AppCallback<ListApiResponse<IPointExpiryItem[]>> {
+  page: number;
+  size: number;
 }
 
 export interface IRequestLockCard extends AppCallback {

@@ -11,18 +11,22 @@ import { ScaleSize } from '@kits/core';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
-import EmptyView from '@components/EmptyView';
 import imageNames from '@assets/images/names';
 import HistoryCard, { type PayPointHistoryType } from './HistoryCard';
 import { IPointPayHistory } from '@type';
+import { EmptyView } from '@components';
+import PointNotice from './PointNotice';
 
 const END_REACHED_THRESHOLD = 0.3;
+const TEXT_COLOR_WARNING = '#B8730D';
 
 type Properties = {
   readonly histories: readonly IPointPayHistory[];
   readonly loading?: boolean;
+  readonly expiringAmount?: number;
   readonly loadingMore?: boolean;
   readonly onLoadMore?: () => void;
+  readonly onViewExpireDetail?: () => void;
   readonly onRefresh?: () => void;
   readonly onPressItem: (item: any) => void;
   readonly refreshing?: boolean;
@@ -38,6 +42,8 @@ function HistoryList({
   onLoadMore,
   onRefresh,
   onPressItem,
+  onViewExpireDetail,
+  expiringAmount,
   type,
   refreshing = false,
 }: Properties) {
@@ -79,6 +85,9 @@ function HistoryList({
       ListFooterComponent={renderFooter}
       contentContainerStyle={styles.content}
       data={histories}
+      ListHeaderComponent={
+        <PointNotice amount={expiringAmount} onDismiss={onViewExpireDetail} />
+      }
       keyExtractor={keyExtractor}
       onEndReached={onLoadMore}
       onEndReachedThreshold={END_REACHED_THRESHOLD}
@@ -115,5 +124,29 @@ const styles = StyleSheet.create({
   },
   loading: {
     marginTop: ScaleSize(40),
+  },
+  warningBanner: {
+    alignItems: 'center',
+    backgroundColor: '#FEF6E1',
+    borderRadius: ScaleSize(10),
+    flexDirection: 'row',
+    gap: ScaleSize(8),
+    marginTop: ScaleSize(16),
+    paddingHorizontal: ScaleSize(14),
+    paddingVertical: ScaleSize(14),
+  },
+  warningIcon: {
+    fontSize: ScaleSize(14),
+  },
+  linkText: {
+    color: Colors.primary,
+    fontSize: ScaleSize(13),
+    fontWeight: 'bold',
+  },
+  warningText: {
+    color: TEXT_COLOR_WARNING,
+    flex: 1,
+    fontSize: ScaleSize(13),
+    fontWeight: '600',
   },
 });

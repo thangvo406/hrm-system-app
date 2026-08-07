@@ -24,6 +24,8 @@ import type {
 import type { ITransactionDetail } from '@type/payment';
 import type {
   IContributeHistory,
+  IPointExpiryItem,
+  IRequestGetPointExpiring,
   IRequestGetTransactionHistories,
   IRequestTopUpWallet,
   IWallet,
@@ -61,6 +63,7 @@ import {
 import {
   getCurrentWallet,
   getContributeHistories,
+  getPointExpiring,
   topUpWallet,
 } from '@services/request/wallet';
 import { getTotalItemCart } from '@services/request/payment';
@@ -78,6 +81,7 @@ import {
   getMealTicketsRequest,
   getOrganizationInfoRequest,
   getPayPointHistoriesRequest,
+  getPointExpiringRequest,
   getProfileRequest,
   getProfileSuccess,
   getTotalItemCartRequest,
@@ -181,6 +185,22 @@ function* getPayPointHistoriesWorker(
   try {
     const response: ListApiResponse<IPointPayHistory[]> = yield call(
       getPayPointHistories,
+      request,
+    );
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* getPointExpiringWorker(
+  action: PayloadAction<IRequestGetPointExpiring>,
+): Generator<unknown, void, ListApiResponse<IPointExpiryItem[]>> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: ListApiResponse<IPointExpiryItem[]> = yield call(
+      getPointExpiring,
       request,
     );
     onSuccess?.(response);
@@ -436,6 +456,7 @@ export function* accountSaga() {
     getPayPointHistoriesRequest.type,
     getPayPointHistoriesWorker,
   );
+  yield takeLatest(getPointExpiringRequest.type, getPointExpiringWorker);
   yield takeLatest(getProfileRequest.type, getProfileWorker);
   yield takeLatest(
     getTransactionDetailRequest.type,

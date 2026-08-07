@@ -24,6 +24,8 @@ function PayPointHistories() {
     payMoneyHistories,
     pointHistories,
     refreshing,
+    onViewExpireDetail,
+    expiringAmount,
   } = usePayPointHistories();
 
   const tabs = useMemo(
@@ -41,6 +43,8 @@ function PayPointHistories() {
             onPressItem={onPressTransaction}
             refreshing={refreshing}
             type="pay"
+            onViewExpireDetail={onViewExpireDetail}
+            expiringAmount={expiringAmount}
           />
         ),
         testID: 'pay-point-tab-pay-money',
@@ -58,6 +62,8 @@ function PayPointHistories() {
             onPressItem={onPressTransaction}
             refreshing={refreshing}
             type="point"
+            onViewExpireDetail={onViewExpireDetail}
+            expiringAmount={expiringAmount}
           />
         ),
         testID: 'pay-point-tab-point',

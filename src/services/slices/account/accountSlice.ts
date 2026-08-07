@@ -2,6 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AppCallback } from '@type/common';
 import type { Profile } from '@services/request/account';
 import type {
+  IRequestGetPointExpiring,
   IRequestGetTransactionHistories,
   IRequestTopUpWallet,
   IWallet,
@@ -104,6 +105,10 @@ const accountSlice = createSlice({
       prepare: (payload: IRequestGetPayPointHistories) => ({ payload }),
       reducer: () => {},
     },
+    getPointExpiringRequest: {
+      prepare: (payload: IRequestGetPointExpiring) => ({ payload }),
+      reducer: () => {},
+    },
     getProfileRequest: {
       prepare: (payload: AppCallback<Profile> = {}) => ({ payload }),
       reducer: () => {},
@@ -172,6 +177,7 @@ export const {
   getMealTicketsRequest,
   getOrganizationInfoRequest,
   getPayPointHistoriesRequest,
+  getPointExpiringRequest,
   getProfileRequest,
   getProfileSuccess,
   getTotalItemCartRequest,

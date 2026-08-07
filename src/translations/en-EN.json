@@ -179,6 +179,17 @@
       "info": "Points are used automatically when paying with Coop Pay. Points closest to expiry are deducted first.",
       "legacy_lookup": "Look up points transferred from the previous system"
     },
+    "point_expiring": {
+      "title": "Points expiring soon",
+      "subtitle": "Check the points that expire soon",
+      "summary_label": "Expiring within {{days}} days",
+      "point_unit": "P",
+      "nearest_date": "Earliest expiry: {{date}}",
+      "list_title": "Expiry schedule",
+      "expire_at": "Expires {{date}}",
+      "info": "Points expire automatically 12 months after they are earned. Points closest to expiry are used first.",
+      "use_action": "Use points"
+    },
     "contribute_history": {
       "title": "Contribution History",
       "contribution_status_title": "Contribution Status",
