@@ -3,6 +3,7 @@ import {
   loginRequest,
   loginSocialRequest,
   logout,
+  verifyUserNewLoginRequest,
 } from '@services/slices/auth/authSlice';
 import { useRef, useState } from 'react';
 import { Alert } from 'react-native';
@@ -32,7 +33,12 @@ import {
 import { MEMBER_STATUS } from '@constants/config';
 import InActiveAccount from '@dialogs/InActiveAccount';
 import DeletionAccount from '@dialogs/DeletionAccount';
-import { IResponseLogin } from '@type';
+import { IResponseCreateLinkVerifyInfoUser, IResponseLogin } from '@type';
+import WebViewScreen from '@dialogs/Webview';
+import { WebViewNavigation } from 'react-native-webview';
+import { deepLinkGate } from '@navigation/deepLinkGate';
+import Information from '@dialogs/Information';
+import { FORGOT_STEP } from './useForgotPass';
 // import InActiveAccount from '@dialogs/InActiveAccount';
 // import DeletionAccount from '@dialogs/DeletionAccount';
 
@@ -83,7 +89,9 @@ const validateLogin = (
   return errors;
 };
 
-const onLoginGoogle = async (): Promise<SocialLoginToken | undefined> => {
+const onLoginGoogle = async (
+  t: (key: string) => string,
+): Promise<SocialLoginToken | undefined> => {
   try {
     await GoogleSignin.hasPlayServices({
       showPlayServicesUpdateDialog: true,
@@ -100,21 +108,26 @@ const onLoginGoogle = async (): Promise<SocialLoginToken | undefined> => {
     if (isErrorWithCode(error)) {
       switch (error.code) {
         case statusCodes.PLAY_SERVICES_NOT_AVAILABLE: {
-          Alert.alert('Google Play Services not available');
+          Alert.alert(t('authorisation.google_play_services_unavailable'));
           break;
         }
         default: {
-          Alert.alert('Google sign-in error', error.code);
+          Alert.alert(t('authorisation.google_signin_error'), error.code);
         }
       }
     } else {
-      Alert.alert('Google sign-in error', error?.message ?? 'unknown');
+      Alert.alert(
+        t('authorisation.google_signin_error'),
+        error?.message ?? t('authorisation.error_unknown'),
+      );
     }
   }
   return undefined;
 };
 
-const onLoginKakao = async (): Promise<SocialLoginToken | undefined> => {
+const onLoginKakao = async (
+  t: (key: string) => string,
+): Promise<SocialLoginToken | undefined> => {
   try {
     const token = await loginWithKakaoAccount();
     return {
@@ -123,12 +136,17 @@ const onLoginKakao = async (): Promise<SocialLoginToken | undefined> => {
     };
   } catch (error: any) {
     console.warn('onLoginKakao.error', error);
-    Alert.alert('Kakao sign-in error', error?.message ?? 'unknown');
+    Alert.alert(
+      t('authorisation.kakao_signin_error'),
+      error?.message ?? t('authorisation.error_unknown'),
+    );
   }
   return undefined;
 };
 
-const onLoginNaver = async (): Promise<SocialLoginToken | undefined> => {
+const onLoginNaver = async (
+  t: (key: string) => string,
+): Promise<SocialLoginToken | undefined> => {
   try {
     await NaverLogin.logout();
     const { failureResponse, successResponse } = await NaverLogin.login();
@@ -138,11 +156,17 @@ const onLoginNaver = async (): Promise<SocialLoginToken | undefined> => {
       };
     }
     if (failureResponse && !failureResponse.isCancel) {
-      Alert.alert('Naver sign-in error', failureResponse.message ?? 'unknown');
+      Alert.alert(
+        t('authorisation.naver_signin_error'),
+        failureResponse.message ?? t('authorisation.error_unknown'),
+      );
     }
   } catch (error: any) {
     console.warn('onLoginNaver.error', error);
-    Alert.alert('Naver sign-in error', error?.message ?? 'unknown');
+    Alert.alert(
+      t('authorisation.naver_signin_error'),
+      error?.message ?? t('authorisation.error_unknown'),
+    );
   }
   return undefined;
 };
@@ -218,9 +242,68 @@ export const useAuthorization = () => {
     }
   };
 
+  const handleVerifyUserNewLogin = (data: any) => {
+    AppNavigator.showDialog({
+      screen: Information,
+      title: t('authorisation.new_login_dialog.title'),
+      desc: t('authorisation.new_login_dialog.desc'),
+      confirmTitle: t('common.confirm'),
+      cancelTitle: t('common.cancel'),
+      onConfirm: () => {
+        dispatch(
+          verifyUserNewLoginRequest({
+            initialPasswordToken: data?.initialPasswordToken,
+            onSuccess: (response: IResponseCreateLinkVerifyInfoUser) => {
+              AppNavigator.showDialog({
+                screen: WebViewScreen,
+                cookies: {
+                  call_url: response?.callUrl,
+                  reg_cert_key: response?.regCertKey,
+                  ordr_idxx: response?.ordrIdxx,
+                },
+                onNavigationStateChange: (
+                  navState: WebViewNavigation,
+                  onRequestClose: any,
+                ) => {
+                  const { url } = navState || {};
+                  // coop://registration/identity/failure?error=cert_failed
+                  const isDeeplinkApp = url?.startsWith?.('coop://');
+                  if (isDeeplinkApp) {
+                    const params = deepLinkGate.getPathFromUrl(navState.url);
+                    onRequestClose?.();
+                    if (params?.error) {
+                      AppNavigator.showSnackBar({
+                        message: t('forgot_password.verify_user_failed'),
+                        type: 'failed',
+                      });
+                    } else {
+                      AppNavigator.navigate(Paths.ForgotPass, {
+                        initScreen: FORGOT_STEP.NEW_PASS_FORM,
+                        resetToken: params.resetToken,
+                      });
+                    }
+                  }
+                },
+                url: response?.certWebViewUrl,
+                isFullScreen: true,
+              });
+            },
+            onFailure: (error: string) => {
+              AppNavigator.showSnackBar({
+                message: error,
+                type: 'failed',
+              });
+            },
+          }),
+        );
+      },
+    });
+  };
   const onLoginFailure = (error: any) => {
     setLoading(false);
-    if (
+    if (error?.code == NEED_INFO_LOGIN_CODE.VERIFY_NEW_LOGIN) {
+      handleVerifyUserNewLogin(error?.data);
+    } else if (
       [
         NEED_INFO_LOGIN_CODE.PHONE_NOT_VERIFIED,
         NEED_INFO_LOGIN_CODE.MEMBERSHIP_INCOMPLETE,
@@ -304,15 +387,15 @@ export const useAuthorization = () => {
     let token: SocialLoginToken | undefined;
     switch (provider) {
       case 'google': {
-        token = await onLoginGoogle();
+        token = await onLoginGoogle(t);
         break;
       }
       case 'kakao': {
-        token = await onLoginKakao();
+        token = await onLoginKakao(t);
         break;
       }
       case 'naver': {
-        token = await onLoginNaver();
+        token = await onLoginNaver(t);
         break;
       }
     }

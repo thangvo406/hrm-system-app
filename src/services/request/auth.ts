@@ -11,7 +11,6 @@ import type {
   IResponseRegisterSendOtp,
   IResponseUniversity,
   IRequestCreateLinkVerifyForgotPass,
-  IResponseCreateLinkVerifyForgotPass,
   IResponseSubmitForgotPass,
   IResponseLoginSocial,
   LogoutRequest,
@@ -22,6 +21,7 @@ import type {
   IResponseConfirmMemberShipVerify,
   IResponseLogin,
   IRequestCreateLinkVerifyInfoUser,
+  IRequestVerifyUserNewLogin,
   IResponseCreateLinkVerifyInfoUser,
 } from '@type/auth';
 import omit from 'lodash/omit';
@@ -90,9 +90,9 @@ export const loginSocial = async (
 
 export const createLinkVerifyForgotPass = async (
   request: IRequestCreateLinkVerifyForgotPass,
-): Promise<IResponseCreateLinkVerifyForgotPass> => {
+): Promise<IResponseCreateLinkVerifyInfoUser> => {
   const response = await httpRequest.post<
-    SingleApiResponse<IResponseCreateLinkVerifyForgotPass>
+    SingleApiResponse<IResponseCreateLinkVerifyInfoUser>
   >(EndPoints.AUTH.createLinkVerifyForgotPass, request);
   return response.data;
 };
@@ -142,6 +142,15 @@ export const createLinkVerifyInfoUser = async (
   const response = await httpRequest.post<
     SingleApiResponse<IResponseCreateLinkVerifyInfoUser>
   >(EndPoints.AUTH.createLinkVerifyInfoUser, request);
+  return response.data;
+};
+
+export const verifyUserNewLogin = async (
+  request: IRequestVerifyUserNewLogin,
+): Promise<IResponseCreateLinkVerifyInfoUser> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<IResponseCreateLinkVerifyInfoUser>
+  >(EndPoints.AUTH.verifyUserNewLogin, request);
   return response.data;
 };
 

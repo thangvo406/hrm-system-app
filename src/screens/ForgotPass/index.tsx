@@ -9,8 +9,8 @@ import { ForgotStep } from '@hooks/useForgotPass';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import InputEmail from './components/InputEmail';
 
-function ForgotPass() {
-  const { onSubmit, step, onBack } = useForgotPass();
+function ForgotPass(props: any) {
+  const { onSubmit, step, onBack } = useForgotPass(props);
 
   const insets = useSafeAreaInsets();
 

@@ -14,6 +14,7 @@ import type {
   IRequestSubmitForgotPass,
   IRequestVerifyOTP,
   ICredentials,
+  IRequestVerifyUserNewLogin,
   ISelectSchoolRequest,
   ISelectSchoolSuccessPayload,
   ISetUniversitiesPayload,
@@ -115,6 +116,12 @@ const authSlice = createSlice({
       prepare: (payload: IRequestConfirmMemberShipVerify) => ({ payload }),
       reducer: () => {},
     },
+    // Creates the identity-verification link/cert webview info for a user
+    // logging in with an initial (not yet confirmed) password.
+    verifyUserNewLoginRequest: {
+      prepare: (payload: IRequestVerifyUserNewLogin) => ({ payload }),
+      reducer: () => {},
+    },
     // Persist the user's selected university on the session.
     selectSchoolRequest: {
       prepare: (payload: ISelectSchoolRequest) => ({ payload }),
@@ -182,6 +189,7 @@ export const {
   setCredentials,
   submitForgotPassRequest,
   verifyOTPRequest,
+  verifyUserNewLoginRequest,
 } = authSlice.actions;
 
 export const authReducer = authSlice.reducer;

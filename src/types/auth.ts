@@ -41,6 +41,10 @@ export interface ISelectSchoolSuccessPayload {
   universityId: number;
 }
 
+export interface IRequestVerifyUserNewLogin
+  extends AppCallback<IResponseCreateLinkVerifyInfoUser> {
+  initialPasswordToken: string;
+}
 export interface ISetUniversitiesPayload {
   content: IResponseUniversity[];
   last: boolean;
@@ -75,12 +79,6 @@ export interface IResponseRegisterSendOtp {
   phoneVerificationToken: string;
 }
 
-export interface IResponseCreateLinkVerifyForgotPass {
-  callUrl: string;
-  regCertKey: string;
-  ordrIdxx: string;
-  certWebViewUrl: string;
-}
 export interface LogoutRequest {
   refreshToken: string;
 }
@@ -173,7 +171,7 @@ export interface IRequestGetUniversities
 }
 
 export interface IRequestCreateLinkVerifyForgotPass
-  extends AppCallback<IResponseCreateLinkVerifyForgotPass> {
+  extends AppCallback<IResponseCreateLinkVerifyInfoUser> {
   email: string;
 }
 

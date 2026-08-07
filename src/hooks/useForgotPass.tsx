@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch } from '@services/common/storeHooks';
 // import { ValidateUtils } from '@kits/core/utils';
@@ -8,7 +8,7 @@ import {
   submitForgotPassRequest,
 } from '@services/slices/auth/authSlice';
 import { Paths } from '@navigation/paths';
-import { IResponseCreateLinkVerifyForgotPass } from '@type';
+import { IResponseCreateLinkVerifyInfoUser } from '@type';
 import WebViewScreen from '@dialogs/Webview';
 import { WebViewNavigation } from 'react-native-webview';
 import { deepLinkGate } from '@navigation/deepLinkGate';
@@ -18,7 +18,7 @@ export type ForgotStep =
   | 'register_completed'
   | 'register_input';
 
-const FORGOT_STEP: Record<string, ForgotStep> = {
+export const FORGOT_STEP: Record<string, ForgotStep> = {
   NEW_PASS_FORM: 'new_pass_form',
   REGISTER_INPUT: 'register_input',
 };
@@ -35,11 +35,20 @@ export type FormData = {
   resetToken: string;
 };
 
-export const useForgotPass = () => {
+export const useForgotPass = (props: any) => {
   const formData = useRef<FormData>({} as FormData);
-  const [step, setStep] = useState<ForgotStep>(FORGOT_STEP.REGISTER_INPUT);
+  const { initScreen, resetToken } = AppNavigator.getParams(props);
+  const [step, setStep] = useState<ForgotStep>(
+    initScreen || FORGOT_STEP.REGISTER_INPUT,
+  );
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (resetToken) {
+      formData.current.resetToken = resetToken;
+    }
+  }, []);
 
   const onSubmitResetPass = (_data: any) => {
     dispatch(
@@ -62,7 +71,7 @@ export const useForgotPass = () => {
       }),
     );
   };
-  const onExecuteVerifyUser = (data: IResponseCreateLinkVerifyForgotPass) => {
+  const onExecuteVerifyUser = (data: IResponseCreateLinkVerifyInfoUser) => {
     AppNavigator.showDialog({
       screen: WebViewScreen,
       cookies: {
@@ -104,7 +113,7 @@ export const useForgotPass = () => {
         onFailure: (error: string) => {
           AppNavigator.showSnackBar({ message: error, type: 'failed' });
         },
-        onSuccess: (response: IResponseCreateLinkVerifyForgotPass) => {
+        onSuccess: (response: IResponseCreateLinkVerifyInfoUser) => {
           onExecuteVerifyUser(response);
         },
       }),

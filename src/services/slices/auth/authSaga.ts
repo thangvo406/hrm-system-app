@@ -13,8 +13,8 @@ import type {
   IRequestSubmitForgotPass,
   IRequestVerifyOTP,
   IResponseLogin,
+  IRequestVerifyUserNewLogin,
   IResponseCreateLinkVerifyInfoUser,
-  IResponseCreateLinkVerifyForgotPass,
 } from '@type/auth';
 
 import {
@@ -29,6 +29,7 @@ import {
   createLinkVerifyForgotPass,
   submitForgotPass,
   verifyOTP,
+  verifyUserNewLogin,
   logout as logoutRequest,
   refreshToken,
   createLinkVerifyInfoUser,
@@ -58,6 +59,7 @@ import {
   setCredentials,
   submitForgotPassRequest,
   verifyOTPRequest,
+  verifyUserNewLoginRequest,
 } from './authSlice';
 import {
   IResponseRegisterSendOtp,
@@ -196,7 +198,7 @@ function* createLinkVerifyForgotPassWorker(
 ) {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: IResponseCreateLinkVerifyForgotPass = yield call(
+    const response: IResponseCreateLinkVerifyInfoUser = yield call(
       createLinkVerifyForgotPass,
       request,
     );
@@ -245,6 +247,21 @@ function* confirmMemberShipVerifyWorker(
   try {
     const response: IResponseConfirmMemberShipVerify = yield call(
       confirmMemberShipVerify,
+      request,
+    );
+    onSuccess?.(response);
+  } catch (error) {
+    onFailure?.(getErrorMessageApi(error));
+  }
+}
+
+function* verifyUserNewLoginWorker(
+  action: PayloadAction<IRequestVerifyUserNewLogin>,
+) {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: IResponseCreateLinkVerifyInfoUser = yield call(
+      verifyUserNewLogin,
       request,
     );
     onSuccess?.(response);
@@ -312,6 +329,7 @@ export function* authSaga() {
     confirmMemberShipVerifyWorker,
   );
   yield takeLatest(selectSchoolRequest.type, selectSchoolWorker);
+  yield takeLatest(verifyUserNewLoginRequest.type, verifyUserNewLoginWorker);
   yield takeLatest(logout.type, logoutWorker);
   yield takeLatest(refreshTokenRequest.type, refreshTokenWorker);
 }

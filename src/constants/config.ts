@@ -11,6 +11,7 @@ export const NEED_INFO_LOGIN_CODE = {
   MEMBERSHIP_INCOMPLETE: 'AUTH_002',
   PHONE_NOT_VERIFIED: 'AUTH_001',
   VERIFY_UNIVERSITY_EMAIL: 'AUTH_003',
+  VERIFY_NEW_LOGIN: 'AUTH_005',
 };
 
 export const DayOfWeek = {
@@ -29,8 +30,6 @@ export const COLORS_POINT_AMOUNT: Record<string, string | undefined> = {
   POINT_USE: '#1A1A1A',
   POINT_EARN: '#2DB34A',
 };
-
-
 
 export const POINT_TAG_STYLE: Record<string, PointTagStyle | undefined> = {
   POINT_EXPIRE: {
