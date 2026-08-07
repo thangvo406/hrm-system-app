@@ -29,19 +29,19 @@ function PointBalanceCard({ balance, onUse }: Properties) {
         start={{ x: 0, y: 0 }}
         style={styles.card}
       >
-        <Text style={styles.label}>{t('point_main.balance_label')}</Text>
+        <Text style={styles.label}>{t('point_dashboard.balance_label')}</Text>
 
         <View style={styles.balanceRow}>
           <Text style={styles.balanceValue}>{formatCurrency(balance)}</Text>
-          <Text style={styles.unit}>{t('point_main.point_unit')}</Text>
+          <Text style={styles.unit}>{t('point_dashboard.point_unit')}</Text>
         </View>
 
         <AppButton
           onPress={onUse}
           style={styles.useButton}
-          testID="point-main-use"
+          testID="point-dashboard-use"
         >
-          <Text style={styles.useButtonText}>{t('point_main.use_action')}</Text>
+          <Text style={styles.useButtonText}>{t('point_dashboard.use_action')}</Text>
         </AppButton>
       </LinearGradient>
     </View>

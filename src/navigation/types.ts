@@ -68,7 +68,7 @@ export type RootStackParamList = {
     | undefined;
   [Paths.ContributionHistory]: undefined;
   [Paths.PayPointHistories]: undefined;
-  [Paths.PointMain]: undefined;
+  [Paths.PointDashboard]: undefined;
   [Paths.Payment]: undefined;
   [Paths.MealTickets]: undefined;
   [Paths.PaymentOffline]: undefined;

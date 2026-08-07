@@ -472,7 +472,7 @@
       "qr_balance_text": "잔액 {{amount}}원",
       "qr_customer_name": "홍길동"
     },
-    "point_main": {
+    "point_dashboard": {
       "title": "포인트",
       "subtitle": "보유 포인트와 이용내역을 확인하세요",
       "balance_label": "보유 포인트",

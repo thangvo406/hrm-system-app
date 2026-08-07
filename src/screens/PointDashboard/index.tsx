@@ -2,14 +2,14 @@ import { AppButton, HeaderDetail } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { usePointMain } from '@hooks';
+import { usePointDashboard } from '@hooks';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
 import PointBalanceCard from './PointBalanceCard';
 import PointHistoryRow from './PointHistoryRow';
 
 const TEXT_COLOR_WARNING = '#B8730D';
-function PointMain() {
+function PointDashboard() {
   const { t } = useTranslation();
   const {
     balance,
@@ -17,39 +17,39 @@ function PointMain() {
     onPressItemHistory,
     onUsePoint,
     onViewAllHistory,
-  } = usePointMain();
+  } = usePointDashboard();
 
   return (
     <View style={styles.safeArea}>
-      <HeaderDetail hideNotify title={t('point_main.title')} usePaddingTop />
+      <HeaderDetail hideNotify title={t('point_dashboard.title')} usePaddingTop />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
 
-        <Text style={styles.subtitle}>{t('point_main.subtitle')}</Text>
+        <Text style={styles.subtitle}>{t('point_dashboard.subtitle')}</Text>
         <PointBalanceCard balance={balance} onUse={onUsePoint} />
 
         {/* <View style={styles.warningBanner}>
           <Text style={styles.warningIcon}>⚠️</Text>
           <Text style={styles.warningText}>
-            {t('point_main.expire_warning', { amount: expiringAmount })}
+            {t('point_dashboard.expire_warning', { amount: expiringAmount })}
           </Text>
-          <AppButton onPress={onViewExpireDetail} testID="point-main-expire">
+          <AppButton onPress={onViewExpireDetail} testID="point-dashboard-expire">
             <Text style={styles.linkText}>
-              {`${t('point_main.expire_detail')} ›`}
+              {`${t('point_dashboard.expire_detail')} ›`}
             </Text>
           </AppButton>
         </View> */}
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
-            {t('point_main.history_title')}
+            {t('point_dashboard.history_title')}
           </Text>
-          <AppButton onPress={onViewAllHistory} testID="point-main-view-all">
+          <AppButton onPress={onViewAllHistory} testID="point-dashboard-view-all">
             <Text style={[styles.linkText, { color: Colors.gray06 }]}>
-              {`${t('point_main.view_all')} ›`}
+              {`${t('point_dashboard.view_all')} ›`}
             </Text>
           </AppButton>
         </View>
@@ -65,14 +65,14 @@ function PointMain() {
 
         <View style={styles.infoBanner}>
           <Text style={styles.infoIcon}>💡</Text>
-          <Text style={styles.infoText}>{t('point_main.info')}</Text>
+          <Text style={styles.infoText}>{t('point_dashboard.info')}</Text>
         </View>
       </ScrollView>
     </View>
   );
 }
 
-export default PointMain;
+export default PointDashboard;
 
 const styles = StyleSheet.create({
   historyCard: {

@@ -160,7 +160,7 @@
       "qr_balance_text": "Balance {{amount}} KRW",
       "qr_customer_name": "John Doe"
     },
-    "point_main": {
+    "point_dashboard": {
       "title": "Point",
       "subtitle": "Check your points and usage history",
       "balance_label": "Points held",

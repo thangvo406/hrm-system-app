@@ -70,7 +70,7 @@ export const useAccountManagement = () => {
 
   const toggleUnRegister = () => {
     // setShowUnRegister(prev => !prev);
-    AppNavigator.navigate(Paths.PointMain);
+    AppNavigator.navigate(Paths.PointDashboard);
   };
 
   useFocusEffect(

@@ -30,7 +30,7 @@ const onLegacyLookup = () => {
   AppNavigator.navigate(Paths.PayPointHistories);
 };
 
-export const usePointMain = () => {
+export const usePointDashboard = () => {
 
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const dispatch = useAppDispatch();

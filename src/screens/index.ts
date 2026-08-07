@@ -20,7 +20,7 @@ export { default as TransactionDetail } from './TransactionDetail';
 export { default as TransactionResult } from './TransactionResult';
 export { default as ContributionHistory } from './ContributionHistory';
 export { default as PayPointHistories } from './PayPointHistories';
-export { default as PointMain } from './PointMain';
+export { default as PointDashboard } from './PointDashboard';
 export { default as Payment } from './Payment';
 export { default as PaymentOffline } from './PaymentOffline';
 export { default as CartDetail } from './CartDetail';

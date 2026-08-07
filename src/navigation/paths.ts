@@ -22,7 +22,7 @@ export enum Paths {
   TransactionResult = 'transaction_result',
   ContributionHistory = 'contribution_history',
   PayPointHistories = 'pay_point_histories',
-  PointMain = 'point_main',
+  PointDashboard = 'point_dashboard',
   Payment = 'payment',
   PaymentOffline = 'payment_offline',
   CartDetail = 'cart_detail',
