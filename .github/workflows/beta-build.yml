@@ -17,8 +17,8 @@ env:
   BRANCH_NAME: ${{ github.ref_name }}
 
   # Lấy từ GitHub Variables (Settings > Secrets and variables > Variables) để dễ đổi version sau này mà không cần sửa code.
-  # Nếu chưa cấu hình, bạn có thể hardcode thẳng: '1.0.31'
-  VERSION_NUMBER: '1.0.0'
+  # Nếu chưa cấu hình variable thì fallback về '1.0.0'.
+  VERSION_NUMBER: ${{ vars.VERSION_NUMBER || '1.0.0' }}
 
 jobs:
   build-android:
