@@ -65,15 +65,24 @@ platform :android do
   lane :release_aab do
     version_num = ENV['VERSION_NUMBER'] || "1.0.0"
     prefix_name = ENV['PREFIX_APP_NAME'] || "APP"
-    branch      = ENV['BRANCH_NAME'] || "dev"
-    build_num   = ENV['BUILD_NUMBER'] || "1"
+    branch      = ENV['BRANCH_NAME'] || "master"
     gradle_file_path = "app/build.gradle"
+    firebase_app_id   = "1:980982448551:android:e73a635399829b5f763682"
 
     begin
       UI.message("--- BẮT ĐẦU BUILD AAB RELEASE ---")
-      UI.message("Cấu hình: #{prefix_name} - Phiên bản: #{version_num} (build #{build_num})")
-      postNotifyMessage("start", branch, version_num, build_num)
-
+      UI.message("Cấu hình: #{prefix_name} - Phiên bản: #{version_num}")
+      postNotifyMessage("start", branch, version_num)
+      _changelog = get_recent_git_commits(repo_dir: "..", limit: 5)
+      # sh "cp ../app/src/debug/google-services.json ../app/src/release/google-services.json"
+      # 2. Lấy versionCode mới nhất từ Firebase App Distribution, bump lên +1
+      # latest_version_code = get_firebase_latest_version_code(
+      #   app_id: firebase_app_id,
+      #   service_credentials_file: service_creds
+      # )
+      # new_version_code = latest_version_code + 1
+      # build_num = new_version_code.to_s
+      build_num = 1
       # Cập nhật version trong app/build.gradle TRƯỚC khi build
       update_android_version_code(
         gradle_file: gradle_file_path,
