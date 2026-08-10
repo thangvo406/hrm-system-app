@@ -53,6 +53,7 @@ export interface Profile {
   name?: string;
   fullName?: string;
   phone?: string;
+  receiptPhoneNumber?: string;
   roleCode?: string;
   universityExternalId?: string;
   universityName?: string;

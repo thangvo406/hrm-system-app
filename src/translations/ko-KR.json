@@ -254,6 +254,14 @@
       "field_email": "이메일",
       "field_phone": "전화번호",
       "field_member_type": "회원구분",
+      "field_receipt_phone": "현금영수증 휴대폰번호",
+      "memberships": {
+        "student": "학생",
+        "teacher": "교원",
+        "employee": "대학 직원",
+        "coop_employee": "생협 직원",
+        "other": "기타"
+      },
       "placeholder_name": "홍길동",
       "placeholder_email": "hong@univ.ac.kr",
       "placeholder_phone": "010-0000-0000",

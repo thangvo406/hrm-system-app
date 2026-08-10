@@ -468,6 +468,14 @@
       "field_email": "Email",
       "field_phone": "Phone",
       "field_member_type": "Member Type",
+      "field_receipt_phone": "Cash Receipt Phone Number",
+      "memberships": {
+        "student": "Student",
+        "teacher": "Teacher",
+        "employee": "University Staff",
+        "coop_employee": "Coop Staff",
+        "other": "Other"
+      },
       "placeholder_name": "Hong Gildong",
       "placeholder_email": "hong@univ.ac.kr",
       "placeholder_phone": "010-0000-0000",

@@ -19,6 +19,7 @@ const AVATAR_ICON_SIZE = ScaleSize(48);
 const BORDER_RADIUS = ScaleSize(10);
 const LABEL_COLOR = '#5C5C5C';
 const TEXT_COLOR = '#1A1A1A';
+const PHONE_MAX_LENGTH = 13;
 
 function Profile() {
   const { t } = useTranslation();
@@ -29,9 +30,11 @@ function Profile() {
     avatar,
     errors,
     membershipType,
+    receiptPhone,
     onChangeAvatar,
     onChangeEmail,
     onChangeFullName,
+    onChangeReceiptPhone,
     onChangePhone,
     onPressChangePass,
     onPressSave,
@@ -116,6 +119,16 @@ function Profile() {
             onChangeText={NOOP}
             placeholder=""
             value={membershipType}
+          />
+          <TextField
+            iconName="ic_phone"
+            keyboardType="phone-pad"
+            label={t('profile.field_receipt_phone')}
+            onChangeText={onChangeReceiptPhone}
+            maxLength={PHONE_MAX_LENGTH}
+            placeholder={t('profile.placeholder_phone')}
+            value={receiptPhone}
+            error={errors?.receiptPhone}
           />
         </View>
 

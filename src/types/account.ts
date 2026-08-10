@@ -134,6 +134,7 @@ export interface IRequestCreateQRCodeMember
 export interface IUpdateProfileInfoRequest extends AppCallback {
   name?: string;
   fullName?: string;
+  receiptPhoneNumber?: string;
 }
 export interface IUpdateAvatarRequest extends AppCallback {
   avatarPath?: string;
