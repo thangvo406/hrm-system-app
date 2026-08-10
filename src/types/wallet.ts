@@ -112,12 +112,22 @@ export interface IRequestGetTransactionHistories
   page: number;
   size: number;
 }
+export interface IPointExpirySummary {
+  currentBalance: number;
+  expiringIn3Days: number;
+  expiringIn30Days: number;
+  nextExpiryDate: any;
+  nextExpiryAmount: number;
+  validityDays: any;
+  deductionOrder: string;
+}
 export interface IWallet {
   id: number;
   userId: number;
   balance: number;
   pointBalance: number;
   expiringPointBalance: number;
+  expiringIn30Days: number;
   status: string;
   withdrawableBalance: number;
   bonusBalance: number;

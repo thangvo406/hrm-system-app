@@ -170,7 +170,7 @@ export const usePayPointHistories = () => {
     onPressTransaction,
     onLoadMore,
     onPressWithdrawal,
-    expiringAmount: currentWallet?.expiringPointBalance,
+    expiringAmount: currentWallet?.expiringIn30Days,
     onViewExpireDetail,
     onRefresh,
     payMoneyHistories: histories.payMoney,

@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { Colors } from '@constants';
+import { formatCurrency } from '@utils/product';
 
 type Properties = {
   readonly amount?: number;
@@ -38,7 +39,10 @@ function PointNotice({ amount, onDismiss }: Properties) {
           }}
         />
         <Text style={styles.bannerText}>
-          {t('pay_point.expire_banner', { amount, days: 30 })}
+          {t('pay_point.expire_banner', {
+            amount: formatCurrency(amount),
+            days: 30,
+          })}
         </Text>
         <AppButton onPress={onDismiss} testID="pay-point-notice-confirm">
           <Text style={styles.confirmText}>{`[${t(

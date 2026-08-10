@@ -187,7 +187,7 @@
       "nearest_date": "Earliest expiry: {{date}}",
       "list_title": "Expiry schedule",
       "expire_at": "Expires {{date}}",
-      "info": "Points expire automatically 12 months after they are earned. Points closest to expiry are used first.",
+      "info": "Points expire automatically 30 days after they are earned. Points closest to expiry are used first.",
       "use_action": "Use points"
     },
     "contribute_history": {
