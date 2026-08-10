@@ -79,7 +79,26 @@ class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
 #if DEBUG
     RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
 #else
-    Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+    codePushBundleURL() ?? Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 #endif
+  }
+
+  // Bundle OTA do react-native-codepush-sdk cài vào Documents/CustomCodePush/current.bundle.
+  // Chỉ dùng khi file tồn tại và không rỗng; ngược lại fallback về main.jsbundle trong app.
+  private func codePushBundleURL() -> URL? {
+    guard
+      let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+    else {
+      return nil
+    }
+    let bundleURL = documents.appendingPathComponent("CustomCodePush/current.bundle")
+    guard
+      let attributes = try? FileManager.default.attributesOfItem(atPath: bundleURL.path),
+      let size = attributes[.size] as? NSNumber,
+      size.intValue > 0
+    else {
+      return nil
+    }
+    return bundleURL
   }
 }
