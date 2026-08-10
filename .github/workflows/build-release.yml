@@ -89,9 +89,20 @@ jobs:
           # Giải mã file credential production để Fastlane upload lên Firebase App Distribution
           printf '%s' "$CREDS_B64" | base64 --decode > android/coop-prod-firebase.json
 
-          # Validate đúng service account key (không phải OAuth client json)
+          # In nội dung file để debug — CHE private_key để không lộ vào log
           ls -la android/coop-prod-firebase.json
-          python3 -c "import json;d=json.load(open('android/coop-prod-firebase.json'));assert d.get('type')=='service_account','Không phải service account key';print('OK:',d['client_email'])"
+          python3 - <<'PY'
+          import hashlib, json
+          d = json.load(open('android/coop-prod-firebase.json'))
+          pk = d.pop('private_key', None)
+          print(json.dumps(d, indent=2, ensure_ascii=False))
+          if pk:
+              ok = pk.startswith('-----BEGIN PRIVATE KEY-----') and pk.rstrip().endswith('-----END PRIVATE KEY-----')
+              print(f'private_key: {len(pk)} ký tự | PEM {"hợp lệ" if ok else "SAI ĐỊNH DẠNG"} | sha256={hashlib.sha256(pk.encode()).hexdigest()[:16]}')
+          else:
+              print('private_key: THIẾU')
+          assert d.get('type') == 'service_account', 'Không phải service account key'
+          PY
 
       - name: Run Fastlane Android Release AAB
         id: aab
