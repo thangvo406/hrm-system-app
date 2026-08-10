@@ -21,7 +21,15 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 [bundle exec] fastlane android beta
 ```
 
-Build Android APK và tự động lưu trữ lên GitHub Releases
+Tự động lấy build mới nhất trên Firebase, bump versionCode, build APK và đẩy lên Firebase App Distribution
+
+### android release_aab
+
+```sh
+[bundle exec] fastlane android release_aab
+```
+
+Build AAB Release (bundleRelease) cho Play Store — CI upload artifact qua GitHub Actions
 
 ----
 

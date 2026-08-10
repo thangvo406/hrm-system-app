@@ -76,11 +76,19 @@ jobs:
           working-directory: android
 
       - name: Decode & Generate Firebase Credentials
+        env:
+          CREDS_B64: ${{ secrets.FIREBASE_CREDENTIALS_PROD_BASE64 }}
         run: |
-          # Giải mã file credential production để Fastlane upload lên Firebase App Distribution
-          echo "${{ secrets.FIREBASE_CREDENTIALS_PROD_BASE64 }}" | base64 --decode > android/coop-prod-firebase.json
+          # Kiểm tra secret có tồn tại không (in độ dài, không lộ giá trị)
+          echo "Độ dài secret: ${#CREDS_B64} ký tự"
+          if [ -z "$CREDS_B64" ]; then
+            echo "::error::Secret FIREBASE_CREDENTIALS_PROD_BASE64 rỗng hoặc sai tên (Settings → Secrets and variables → Actions → Repository secrets)"
+            exit 1
+          fi
 
-          # In ra thông báo check xem file đã tồn tại chưa
+          # Giải mã file credential production để Fastlane upload lên Firebase App Distribution
+          printf '%s' "$CREDS_B64" | base64 --decode > android/coop-prod-firebase.json
+
           ls -la android/coop-prod-firebase.json
 
       - name: Run Fastlane Android Release AAB
