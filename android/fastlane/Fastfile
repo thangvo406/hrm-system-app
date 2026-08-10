@@ -127,7 +127,7 @@ end
 # Helpers
 # ---------------------------------------------------------------------------
 
-def postNotifyMessage(type, branch_name, version_num, build_num)
+def postNotifyMessage(type, branch_name, version_num, build_num = 0)
   slack_url = ENV['SLACK_WEBHOOK_URL']
   if slack_url.nil? || slack_url.empty?
     UI.important("SLACK_WEBHOOK_URL chưa được set — bỏ qua thông báo Slack.")

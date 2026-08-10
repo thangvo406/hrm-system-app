@@ -52,14 +52,16 @@ end
 platform :ios do
   desc "Description of what the lane does"
   lane :beta do |options|
-   versionCode = prepare_package(options)
     sh "cp ../../../../../../CoopUse/.dev ../../env/.dev"
     # react-native-config reads the env file via /tmp/envfile (highest priority)
     # then ENVFILE. xcodebuild does not run scheme pre-actions, so set both here
-    # to make the gym build deterministic.
+    # to make the gym build deterministic. This must happen BEFORE
+    # prepare_package: it runs pod install, and the Podfile generates ios/.env
+    # and injects it into the xcconfig based on this selection.
     sh "echo 'env/.dev' > /tmp/envfile"
     ENV["ENVFILE"] = "env/.dev"
     Dotenv.overload '../../env/.dev'
+    versionCode = prepare_package(options)
     prefixAppName = "CoopUse_DEV_v"
     branchName = options[:branchName]
 
@@ -121,6 +123,9 @@ platform :ios do
     # )
 
     # 3. Chạy lệnh Build
+    # xcodebuild bỏ qua scheme pre-actions, nên phải tự sinh
+    # ios/.env + ios/tmp.xcconfig ở đây trước khi gym đọc build settings.
+    sh "../../scripts/generate-ios-env.sh"
     gym(
       scheme: "CoopUse",
       clean: true,
@@ -153,15 +158,16 @@ platform :ios do
   end
   
   lane :release do |options|
-    versionCode = prepare_package(options)
     sh "cp ../../../../../../CoopUse/.prod ../../env/.prod"
-    # See beta lane: set env file for xcodebuild deterministically.
+    # See beta lane: select the env before prepare_package runs pod install,
+    # otherwise the xcconfig gets env/.dev values while JS gets env/.prod ones.
     sh "echo 'env/.prod' > /tmp/envfile"
     ENV["ENVFILE"] = "env/.prod"
     Dotenv.overload '../../env/.prod'
+    sh "cp ../../../../../../CoopUse/GoogleService-Pro.plist ../../ios/GoogleService-Info.plist"
+    versionCode = prepare_package(options)
     prefixAppName = "CoopUse_PRD_v"
     branchName = options[:branchName]
-    sh "cp ../../../../../../CoopUse/GoogleService-Pro.plist ../../ios/GoogleService-Info.plist"
 
     puts "Endpoint => #{ENV["BASE_URL"]}"
 
@@ -253,6 +259,9 @@ platform :ios do
     # )
 
     # 3. Chạy lệnh Build
+    # xcodebuild bỏ qua scheme pre-actions, nên phải tự sinh
+    # ios/.env + ios/tmp.xcconfig ở đây trước khi gym đọc build settings.
+    sh "../../scripts/generate-ios-env.sh"
     gym(
       scheme: "CoopUse",
       clean: true,
