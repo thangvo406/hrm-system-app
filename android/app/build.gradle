@@ -84,7 +84,7 @@ android {
         applicationId env.get("APP_ID")
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
+        versionCode 1
         versionName "1.0.0"
         manifestPlaceholders = [KAKAO_APP_KEY: env.get("KAKAO_APP_KEY") ?: ""]
         resValue "string", "kakao_app_key", env.get("KAKAO_APP_KEY") ?: ""
@@ -97,10 +97,11 @@ android {
             keyPassword 'android'
         }
          release {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+            // CI provides a real keystore via env vars; local builds fall back to debug.keystore
+            storeFile file('production.jks')
+            storePassword 'coop%^&coop^university&2026'
+            keyAlias 'coop-univ'
+            keyPassword 'coop%^&coop^university&2026'
         }
     }
     buildTypes {
@@ -108,9 +109,7 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

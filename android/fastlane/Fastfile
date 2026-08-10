@@ -60,13 +60,85 @@ platform :android do
       raise
     end
   end
+
+  desc "Build AAB Release (bundleRelease) cho Play Store — CI upload artifact qua GitHub Actions"
+  lane :release_aab do
+    version_num = ENV['VERSION_NUMBER'] || "1.0.0"
+    prefix_name = ENV['PREFIX_APP_NAME'] || "APP"
+    branch      = ENV['BRANCH_NAME'] || "master"
+    gradle_file_path = "app/build.gradle"
+    firebase_app_id   = "1:980982448551:android:b8f7ae4c21b9873b763682"
+    service_creds     = "coop-prod-firebase.json"
+
+    begin
+      UI.message("--- BẮT ĐẦU BUILD AAB RELEASE ---")
+      UI.message("Cấu hình: #{prefix_name} - Phiên bản: #{version_num}")
+      postNotifyMessage("start", branch, version_num)
+      _changelog = get_recent_git_commits(repo_dir: "..", limit: 5)
+      # sh "cp ../app/src/debug/google-services.json ../app/src/release/google-services.json"
+      # 2. Lấy versionCode mới nhất từ Firebase App Distribution, bump lên +1
+      latest_version_code = get_firebase_latest_version_code(
+        app_id: firebase_app_id,
+        service_credentials_file: service_creds
+      )
+      new_version_code = latest_version_code + 1
+      build_num = new_version_code.to_s
+      UI.message("latest version firebase: #{latest_version_code} - Bump to version: #{build_num}")
+      # Cập nhật version trong app/build.gradle TRƯỚC khi build
+      update_android_version_code(
+        gradle_file: gradle_file_path,
+        version_code: build_num.to_i
+      )
+      update_android_version_name(
+        gradle_file: gradle_file_path,
+        version_name: version_num
+      )
+
+      # Biên dịch AAB Release
+      gradle(
+        task: "bundle",
+        build_type: "Release"
+      )
+
+      # Đổi tên AAB để dễ quản lý
+      original_aab = "app/build/outputs/bundle/release/app-release.aab"
+      formatted_name = "#{prefix_name}_v#{version_num}_b#{build_num}"
+      target_aab_path = "app/build/outputs/bundle/release/#{formatted_name}.aab"
+      sh("mv ../#{original_aab} ../#{target_aab_path}")
+
+      # Đẩy AAB lên Firebase App Distribution
+      firebase_app_distribution(
+        app: firebase_app_id,
+        android_artifact_type: "AAB",
+        android_artifact_path: target_aab_path,
+        service_credentials_file: service_creds,
+        release_notes: "Branch: #{branch}\n\n#{_changelog}",
+        groups: "internal"
+      )
+
+      # Ghi output cho GitHub Actions (bước upload-artifact đọc từ đây)
+      if ENV['GITHUB_OUTPUT']
+        File.open(ENV['GITHUB_OUTPUT'], 'a') do |f|
+          f.puts "aab_path=android/#{target_aab_path}"
+          f.puts "aab_name=#{formatted_name}"
+        end
+      end
+
+      postNotifyMessage("success", branch, version_num, build_num)
+      UI.success("🎉 Đã build thành công AAB #{formatted_name}.aab")
+    rescue => e
+      postNotifyMessage("error", branch, version_num, build_num)
+      UI.error("❌ Build AAB thất bại: #{e.message}")
+      raise
+    end
+  end
 end
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-def postNotifyMessage(type, branch_name, version_num, build_num)
+def postNotifyMessage(type, branch_name, version_num, build_num = 0)
   slack_url = ENV['SLACK_WEBHOOK_URL']
   if slack_url.nil? || slack_url.empty?
     UI.important("SLACK_WEBHOOK_URL chưa được set — bỏ qua thông báo Slack.")
@@ -170,6 +242,20 @@ def update_android_version_code(gradle_file:, version_code:)
   new_content = content.gsub(/(\s*versionCode\s+)\d+/, "\\1#{version_code}")
   File.write(file_path, new_content)
   UI.message("Đã cập nhật versionCode = #{version_code} trong #{gradle_file}")
+end
+
+# Thay thế giá trị `versionName "<x.y.z>"` trong file build.gradle.
+def update_android_version_name(gradle_file:, version_name:)
+  file_path = File.expand_path("../#{gradle_file}", __dir__)
+  unless File.exist?(file_path)
+    UI.error("Không tìm thấy file: #{file_path}")
+    return
+  end
+
+  content = File.read(file_path)
+  new_content = content.gsub(/(\s*versionName\s+")[^"]+(")/, "\\1#{version_name}\\2")
+  File.write(file_path, new_content)
+  UI.message("Đã cập nhật versionName = #{version_name} trong #{gradle_file}")
 end
 
 # Lấy danh sách N commit gần nhất trong repo git, trả về chuỗi nhiều dòng:
