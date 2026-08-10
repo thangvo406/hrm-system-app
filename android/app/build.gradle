@@ -84,7 +84,7 @@ android {
         applicationId env.get("APP_ID")
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
+        versionCode 1
         versionName "1.0.0"
         manifestPlaceholders = [KAKAO_APP_KEY: env.get("KAKAO_APP_KEY") ?: ""]
         resValue "string", "kakao_app_key", env.get("KAKAO_APP_KEY") ?: ""

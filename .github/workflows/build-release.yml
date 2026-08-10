@@ -75,6 +75,14 @@ jobs:
           bundler-cache: true
           working-directory: android
 
+      - name: Decode & Generate Firebase Credentials
+        run: |
+          # Giải mã file credential production để Fastlane upload lên Firebase App Distribution
+          echo "${{ secrets.FIREBASE_CREDENTIALS_PROD_BASE64 }}" | base64 --decode > android/coop-prod-firebase.json
+
+          # In ra thông báo check xem file đã tồn tại chưa
+          ls -la android/coop-prod-firebase.json
+
       - name: Run Fastlane Android Release AAB
         id: aab
         # Fastlane tự đọc VERSION_NUMBER / BUILD_NUMBER / PREFIX_APP_NAME từ biến môi trường
