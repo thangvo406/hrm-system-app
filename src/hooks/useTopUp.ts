@@ -58,19 +58,6 @@ export const useTopUp = (props?: any) => {
   );
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const bankAccounts = useMemo(() => {
-    // Contributing straight from the wallet balance when cards are disabled.
-    if (isContribute && !isEnablePaymentCard) {
-      return [
-        {
-          id: BALANCE_ID,
-          displayName: t('payment.pay_money_name'),
-          type: 'COOP_BALANCE',
-          displayNumber: t('payment.balance_amount', {
-            amount: currentWallet?.balance,
-          }),
-        },
-      ];
-    }
     if (isContribute) {
       return rawDataBankAccounts;
     }
@@ -94,6 +81,9 @@ export const useTopUp = (props?: any) => {
 
   useEffect(() => {
     setSelectedAccountId(bankAccounts?.[0]?.id);
+    if(isEnablePaymentCard && isContribute && bankAccounts?.length == 0) {
+      onAddCard()
+    }
   }, []);
 
   useEffect(() => {
