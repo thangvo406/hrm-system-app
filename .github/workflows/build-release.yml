@@ -119,3 +119,126 @@ jobs:
             echo ""
             echo "Tải về bằng: \`gh run download ${{ github.run_id }} -n ${{ steps.aab.outputs.aab_name }}\`"
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # build-ios:
+  #   name: Build iOS Release (TestFlight)
+  #   runs-on: macos-15
+  #   # Build + archive + upload TestFlight thường ~40-60 phút, cho dư biên.
+  #   timeout-minutes: 90
+
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
+
+  #     - name: Select Xcode
+  #       # RN 0.81 cần Xcode 16.x; runner có nhiều bản nên chọn tường minh,
+  #       # không có thì giữ nguyên bản mặc định của image.
+  #       run: |
+  #         if [ -d /Applications/Xcode_16.2.app ]; then
+  #           sudo xcode-select -s /Applications/Xcode_16.2.app
+  #         fi
+  #         xcodebuild -version
+
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '22.13.0'
+
+  #     - name: Enable Corepack (Yarn 3.6)
+  #       run: |
+  #         corepack enable
+  #         corepack prepare yarn@3.6.4 --activate
+  #         yarn --version
+
+  #     - name: Cache Yarn dependencies
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: .yarn/cache
+  #         key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+  #         restore-keys: yarn-${{ runner.os }}-
+
+  #     - name: Install Dependencies
+  #       run: yarn install --no-immutable
+
+  #     - name: Setup Ruby and Fastlane
+  #       uses: ruby/setup-ruby@v1
+  #       with:
+  #         ruby-version: '3.2'
+  #         bundler-cache: true
+  #         working-directory: ios
+
+  #     - name: Cache CocoaPods
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: |
+  #           ios/Pods
+  #           ~/Library/Caches/CocoaPods
+  #         # Podfile.lock/yarn.lock đều bị gitignore (`*.lock`) nên key phải dựa
+  #         # trên các file thực sự có trong repo và quyết định native deps.
+  #         key: pods-${{ runner.os }}-${{ hashFiles('ios/Podfile', 'package.json') }}
+  #         restore-keys: pods-${{ runner.os }}-
+
+  #     - name: Decode env file & GoogleService-Info.plist
+  #       env:
+  #         ENV_PROD_BASE64: ${{ secrets.ENV_PROD_BASE64 }}
+  #         GOOGLE_SERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLE_SERVICE_INFO_PLIST_PROD_BASE64 }}
+  #       run: |
+  #         # env/.prod đang bị gitignore (.gitignore: `env/.*`) nên phải decode từ
+  #         # secret. Nếu sau này file được commit thì bước này tự bỏ qua.
+  #         if [ -f env/.prod ]; then
+  #           echo "env/.prod đã có trong repo — bỏ qua decode."
+  #         elif [ -z "$ENV_PROD_BASE64" ]; then
+  #           echo "::error::Thiếu secret ENV_PROD_BASE64 và repo không có env/.prod"
+  #           exit 1
+  #         else
+  #           mkdir -p env
+  #           printf '%s' "$ENV_PROD_BASE64" | base64 --decode > env/.prod
+  #           echo "Đã tạo env/.prod ($(wc -c < env/.prod) bytes)"
+  #         fi
+
+  #         # plist production: không set secret thì dùng bản đang có trong repo.
+  #         if [ -n "$GOOGLE_SERVICE_INFO_PLIST_BASE64" ]; then
+  #           printf '%s' "$GOOGLE_SERVICE_INFO_PLIST_BASE64" | base64 --decode > ios/GoogleService-Info.plist
+  #           echo "Đã ghi đè ios/GoogleService-Info.plist bằng bản production."
+  #         fi
+
+  #     - name: Run Fastlane iOS Release
+  #       id: ipa
+  #       # Fastlane tự đọc VERSION_NUMBER / BUILD_NUMBER / BRANCH_NAME từ env,
+  #       # và tự ghi AuthKey .p8 ra ios/ từ APP_STORE_CONNECT_API_KEY_BASE64.
+  #       run: bundle exec fastlane release
+  #       working-directory: ios
+  #       env:
+  #         KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+  #         ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+  #         APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+  #         IOS_DIST_CERT_P12_BASE64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
+  #         IOS_DIST_CERT_PASSWORD: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
+  #         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '120'
+  #         FASTLANE_XCODEBUILD_SETTINGS_RETRIES: '10'
+
+  #     - name: Upload IPA artifact
+  #       id: upload
+  #       # Fastlane build IPA xong mới upload TestFlight. Nếu bước pilot lỗi,
+  #       # IPA vẫn nằm sẵn trên disk — giữ lại thay vì bỏ luôn cả bản build.
+  #       if: always() && steps.ipa.outputs.ipa_path != ''
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: ${{ steps.ipa.outputs.ipa_name }}
+  #         path: ${{ steps.ipa.outputs.ipa_path }}
+  #         if-no-files-found: error
+  #         retention-days: 14
+
+  #     - name: Build summary
+  #       if: always()
+  #       run: |
+  #         {
+  #           echo "## 🍏 iOS Release (TestFlight)"
+  #           echo ""
+  #           echo "- **Version**: ${VERSION_NUMBER} (build ${BUILD_NUMBER})"
+  #           echo "- **Artifact**: ${{ steps.ipa.outputs.ipa_name }} (id: ${{ steps.upload.outputs.artifact-id }})"
+  #           echo ""
+  #           echo "Tải về bằng: \`gh run download ${{ github.run_id }} -n ${{ steps.ipa.outputs.ipa_name }}\`"
+  #         } >> "$GITHUB_STEP_SUMMARY"
