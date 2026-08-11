@@ -34,29 +34,33 @@ export interface IRequestGetTransactionDetail
 
 export interface ITransactionMovement {
   transactionKey: string;
-  sourceType: string;
-  sourceId: number;
   occurredAt: string;
-  direction: string;
-  amount: number;
-  balanceAfter: number;
-  balanceAccountType: string;
-  entryType: string;
-  fundingSource: string;
-  paymentType: string;
-  easyPayMethod: string;
-  approvalNo: string;
+  moneyAmount?: number;
+  moneyInAmount?: number;
+  moneyOutAmount?: number;
+  pointAmount: number;
+  pointEarnedAmount?: number;
+  pointUsedAmount?: number;
+  moneyBalanceBefore?: number;
+  moneyBalanceAfter?: number;
+  pointBalanceBefore: number;
+  pointBalanceAfter: number;
+  chargeBonusAmount: any;
+  chargeBonusPayMoneyRate: any;
+  chargeBonusBenefitRate: any;
+  chargeBonusTotalRate: any;
+  memberGrade: any;
+  headlineAction: string;
+  headlineEntryType: string;
+  headlineSourceType: string;
+  headlinePaymentType: any;
   storeId: number;
   storeName: string;
   orderId: number;
   orderNumber: string;
-  pointExpiresAt: string;
-  pointRemainingAmount: number;
-  memberGrade: string;
-  storeRate: number;
-  payMoneyRate: number;
-  benefitRate: number;
-  totalRate: number;
+  orderTotalAmount: number;
+  description: any;
+  legCount: number;
 }
 export interface IRequestUpdatePushId {
   optedIn: boolean;

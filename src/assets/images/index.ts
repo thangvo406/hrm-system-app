@@ -25,6 +25,7 @@ const images = {
   ic_package: require('./ic_package.png') as number,
   ic_phone: require('./ic_phone.png') as number,
   ic_placeholder_star: require('./ic_placeholder_star.png') as number,
+  ic_placeholder_transaction: require('./ic_placeholder_transaction.png') as number,
   ic_protect_green: require('./ic_protect_green.png') as number,
   ic_remove: require('./ic_remove.png') as number,
   ic_right_topup: require('./ic_right_topup.png') as number,

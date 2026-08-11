@@ -913,6 +913,12 @@
       "payment_summary_section_title": "결제 요약",
       "final_payment_label": "실결제 금액",
       "pay_money_label": "생협페이머니",
+      "section_detail": {
+        "pay_money": "생협페이머니",
+        "point": "포인트",
+        "contribution": "출자금",
+        "dividend": "배당금"
+      },
       "point_section_title": "포인트",
       "point_earned_label": "포인트 적립"
     },

@@ -27,6 +27,7 @@ const imageNames = {
   ic_package: 'ic_package',
   ic_phone: 'ic_phone',
   ic_placeholder_star: 'ic_placeholder_star',
+  ic_placeholder_transaction: 'ic_placeholder_transaction',
   ic_protect_green: 'ic_protect_green',
   ic_remove: 'ic_remove',
   ic_right_topup: 'ic_right_topup',

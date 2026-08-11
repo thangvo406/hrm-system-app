@@ -1,14 +1,41 @@
 import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getTransactionDetailRequest } from '@services/slices/account/accountSlice';
-import type { ITransactionDetail } from '@type/payment';
-import { useEffect, useState } from 'react';
+import type { ITransactionDetail, ITransactionLeg } from '@type/payment';
+import { useEffect, useMemo, useState } from 'react';
+
+export type TTransactionLegGroup = {
+  readonly balanceAccountType: string;
+  readonly legs: ITransactionLeg[];
+};
+
+/** Groups legs sharing the same balanceAccountType, keeping first-seen order. */
+const groupLegsByBalanceAccountType = (
+  legs: ITransactionLeg[] | undefined,
+): TTransactionLegGroup[] => {
+  const groups = new Map<string, ITransactionLeg[]>();
+
+  for (const leg of legs ?? []) {
+    const grouped = groups.get(leg.balanceAccountType);
+    if (grouped) {
+      grouped.push(leg);
+    } else {
+      groups.set(leg.balanceAccountType, [leg]);
+    }
+  }
+
+  return [...groups].map(([balanceAccountType, groupedLegs]) => ({
+    balanceAccountType,
+    legs: groupedLegs,
+  }));
+};
 
 export function useTransactionDetail(props: any) {
   const { transId } = AppNavigator.getParams(props);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<ITransactionDetail>();
   const dispatch = useAppDispatch();
+
   useEffect(() => {
     dispatch(
       getTransactionDetailRequest({
@@ -24,5 +51,10 @@ export function useTransactionDetail(props: any) {
     );
   }, []);
 
-  return { data, loading };
+  const groupedLegs = useMemo(
+    () => groupLegsByBalanceAccountType(data?.legs),
+    [data],
+  );
+
+  return { data, groupedLegs, loading, order: data?.order };
 }

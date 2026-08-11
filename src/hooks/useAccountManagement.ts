@@ -60,6 +60,9 @@ export const useAccountManagement = () => {
     return rawData?.filter(it => it.type == BANK_ACC_TYPES.CARD);
   }, [rawData]);
 
+  const isShowBottomButtonWallet = useMemo(() => {
+    return (currentWallet?.balance || 0) > 0;
+  }, [currentWallet]);
   const isShowUnRegister = useMemo(() => {
     return rawData?.length == 0;
   }, [rawData]);
@@ -177,6 +180,7 @@ export const useAccountManagement = () => {
     isEnablePaymentCard,
     organizationInfo,
     isShowUnRegister,
+    isShowBottomButtonWallet,
     onCharge,
     onChargeHistory,
     onManagePaymentMethods,

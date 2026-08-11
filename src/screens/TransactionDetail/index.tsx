@@ -1,5 +1,7 @@
+import type { IconName } from '@assets/icons';
 import type { Paths } from '@navigation/paths';
 import type { RootScreenProps } from '@navigation/types';
+import type { TranslationKeys } from '@translations/i18next';
 
 import { Colors } from '@constants';
 import {
@@ -19,17 +21,30 @@ import dayjs from 'dayjs';
 import PointRow from './PointRow';
 import SectionCard from './SectionCard';
 import SummaryHeader from './SummaryHeader';
+import {
+  BALANCE_ACCOUNT_TYPE,
+  TRANSACTION_DETAIL_DISPLAY,
+} from '@constants/config';
 
 const DATE_FORMAT = 'YYYY-MM-DD hh:mmA';
-const MINUS_SIGN = '-';
-const POINT_BADGE = 'P';
+const EMPTY_VALUE = '-';
 const POINT_SUFFIX = ' P';
 
+const ICONS_SECTION: Record<string, IconName | undefined> = {
+  [BALANCE_ACCOUNT_TYPE.PAY_MONEY]: 'ic_point',
+  [BALANCE_ACCOUNT_TYPE.POINT]: 'ic_point',
+  [BALANCE_ACCOUNT_TYPE.CONTRIBUTION]: 'ic_contribution',
+  [BALANCE_ACCOUNT_TYPE.DIVIDEND]: 'ic_dividend',
+};
+
+const LEG_LABELS: Record<string, string | undefined> =
+  TRANSACTION_DETAIL_DISPLAY;
+
 const formatWon = (t: any, value: number | undefined, negative = false) =>
-  `${negative ? MINUS_SIGN : ''}${t('common.display_price', { amount: formatCurrency(value) })}`;
+  `${negative ? EMPTY_VALUE : ''}${t('common.display_price', { amount: formatCurrency(value) })}`;
 
 const formatPoint = (value: number | undefined, negative = false) =>
-  `${negative ? MINUS_SIGN : ''}${formatCurrency(value)}${POINT_SUFFIX}`;
+  `${negative ? EMPTY_VALUE : ''}${formatCurrency(value)}${POINT_SUFFIX}`;
 
 const getAmount = (data: any, fieldName: string) => {
   return data?.[fieldName] || 0;
@@ -38,12 +53,12 @@ const getAmount = (data: any, fieldName: string) => {
 function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { data, loading } = useTransactionDetail(props);
+  const { data, loading, groupedLegs, order } = useTransactionDetail(props);
 
-  const headerTitle = data
-    ? `${data.productName} ${formatWon(t, data.paymentAmount)}`
+  const headerTitle = data ? formatWon(t, order?.totalAmount) : '';
+  const headerDate = data?.occurredAt
+    ? dayjs(data?.occurredAt).format(DATE_FORMAT)
     : '';
-  const headerDate = data?.paidAt ? dayjs(data.paidAt).format(DATE_FORMAT) : '';
 
   const paymentMethod = data?.paymentFundingSource
     ? t('order_history_detail.price_detail.paymentMethod', {
@@ -51,7 +66,7 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
           `order_history_detail.payment_methods.${data?.paymentFundingSource.toLowerCase()}`,
         ),
       })
-    : '-';
+    : EMPTY_VALUE;
   return (
     <View style={styles.root}>
       <HeaderDetail hideNotify title={t('transaction_detail.title')} />
@@ -75,23 +90,30 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
               <AmountRow
                 bold
                 label={t('transaction_detail.payment_amount_label')}
-                value={formatWon(t, data?.paymentAmount)}
+                value={formatWon(t, order?.totalAmount)}
               />
 
               <View style={styles.divider} />
 
-              {getAmount(data, 'couponDiscount') > 0 && (
+              {getAmount(order, 'voucherAmount') > 0 && (
                 <AmountRow
-                  caption={data?.couponName}
+                  caption={order?.couponName}
                   label={t('transaction_detail.coupon_discount_label')}
-                  value={formatWon(t, data?.couponDiscount, true)}
+                  value={formatWon(t, order?.voucherAmount, true)}
                   valueColor={Colors.red01}
                 />
               )}
-              {getAmount(data, 'pointUsed') > 0 && (
+              {getAmount(order, 'memberDiscountAmount') > 0 && (
+                <AmountRow
+                  label={t('transaction_detail.member_discount')}
+                  value={formatWon(t, order?.memberDiscountAmount, true)}
+                  valueColor={Colors.red01}
+                />
+              )}
+              {getAmount(order, 'usedPointAmount') > 0 && (
                 <AmountRow
                   label={t('transaction_detail.point_used_label')}
-                  value={formatPoint(data?.pointUsed, true)}
+                  value={formatPoint(order?.usedPointAmount, true)}
                   valueColor={Colors.red01}
                 />
               )}
@@ -101,34 +123,45 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
               <AmountRow
                 highlight
                 label={t('transaction_detail.final_payment_label')}
-                value={formatWon(t, data?.finalPaymentAmount)}
+                value={formatWon(t, order?.settledMoneyAmount)}
                 valueColor={Colors.green02}
               />
 
               <AmountRow
-                label={t('transaction_detail.pay_money_label')}
-                value={formatWon(t, data?.payMoneyAmount, true)}
+                label={paymentMethod}
+                value={formatWon(t, order?.settledMoneyAmount, true)}
                 valueColor={Colors.green02}
               />
             </SectionCard>
           </View>
 
           <View style={styles.section}>
-            <SectionCard
-              badge={POINT_BADGE}
-              title={t('transaction_detail.point_section_title')}
-            >
-              <PointRow
-                direction="used"
-                label={t('transaction_detail.point_used_label')}
-                value={formatPoint(data?.pointUsed, true)}
-              />
-              <PointRow
-                direction="earned"
-                label={t('transaction_detail.point_earned_label')}
-                value={formatPoint(data?.pointEarned)}
-              />
-            </SectionCard>
+            {groupedLegs.map((it, index) => {
+              return (
+                <SectionCard
+                  key={index}
+                  icon={ICONS_SECTION[it.balanceAccountType]}
+                  style={styles.sectionCard}
+                  title={t(
+                    `transaction_detail.section_detail.${it.balanceAccountType?.toLowerCase()}`,
+                  )}
+                >
+                  {it.legs.map((le, i) => {
+                    const title = LEG_LABELS[le.entryType];
+                    return (
+                      <PointRow
+                        key={`${index}_${i}`}
+                        direction={le.direction == 'DEBIT' ? 'used' : 'earned'}
+                        label={
+                          title ? t(title as TranslationKeys) : EMPTY_VALUE
+                        }
+                        value={formatPoint(le.amount, le.direction == 'DEBIT')}
+                      />
+                    );
+                  })}
+                </SectionCard>
+              );
+            })}
           </View>
         </ScrollView>
       )}
@@ -152,5 +185,8 @@ const styles = StyleSheet.create({
   },
   section: {
     marginTop: ScaleSize(16),
+  },
+  sectionCard: {
+    marginBottom: ScaleSize(20),
   },
 });

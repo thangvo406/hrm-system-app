@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 export type TPointHistoryType = 'accrue' | 'expire' | 'use';
 
 const onUsePoint = () => {
-  AppNavigator.navigate(Paths.PayPointHistories);
+  AppNavigator.navigate(Paths.PaymentOffline);
 };
 
 const onViewExpireDetail = () => {

@@ -1,4 +1,4 @@
-import { AppButton, HeaderDetail } from '@components';
+import { AppButton, EmptyView, HeaderDetail } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -8,6 +8,7 @@ import React, { useMemo } from 'react';
 import PointBalanceCard from './PointBalanceCard';
 import PointHistoryRow from './PointHistoryRow';
 import { formatCurrency } from '@utils/product';
+import imageNames from '@assets/images/names';
 
 const TEXT_COLOR_WARNING = '#B8730D';
 function PointDashboard() {
@@ -42,23 +43,24 @@ function PointDashboard() {
       >
         <Text style={styles.subtitle}>{t('point_dashboard.subtitle')}</Text>
         <PointBalanceCard balance={balance} onUse={onUsePoint} />
-
-        <View style={styles.warningBanner}>
-          <Text style={styles.warningIcon}>⚠️</Text>
-          <Text style={styles.warningText}>
-            {t('point_dashboard.expire_warning', {
-              amount: formatCurrency(expiringAmount || 0),
-            })}
-          </Text>
-          <AppButton
-            onPress={onViewExpireDetail}
-            testID="point-dashboard-expire"
-          >
-            <Text style={styles.linkText}>
-              {`${t('point_dashboard.expire_detail')} ›`}
+        {(expiringAmount || 0) > 0 && (
+          <View style={styles.warningBanner}>
+            <Text style={styles.warningIcon}>⚠️</Text>
+            <Text style={styles.warningText}>
+              {t('point_dashboard.expire_warning', {
+                amount: formatCurrency(expiringAmount || 0),
+              })}
             </Text>
-          </AppButton>
-        </View>
+            <AppButton
+              onPress={onViewExpireDetail}
+              testID="point-dashboard-expire"
+            >
+              <Text style={styles.linkText}>
+                {`${t('point_dashboard.expire_detail')} ›`}
+              </Text>
+            </AppButton>
+          </View>
+        )}
 
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
@@ -82,12 +84,20 @@ function PointDashboard() {
             </React.Fragment>
           ))}
         </View>
-
-        <View style={styles.infoBanner}>
-          <Text style={styles.infoIcon}>💡</Text>
-          <Text style={styles.infoText}>{infoDesc}</Text>
-        </View>
+        {!(histories?.length > 0) && (
+          <EmptyView
+            icon={imageNames.ic_placeholder_star}
+            desc={t('common.no_data')}
+            style={{
+              marginTop: ScaleSize(30),
+            }}
+          />
+        )}
       </ScrollView>
+      <View style={styles.infoBanner}>
+        <Text style={styles.infoIcon}>💡</Text>
+        <Text style={styles.infoText}>{infoDesc}</Text>
+      </View>
     </View>
   );
 }
@@ -115,6 +125,11 @@ const styles = StyleSheet.create({
     marginTop: ScaleSize(20),
     paddingHorizontal: ScaleSize(14),
     paddingVertical: ScaleSize(14),
+    // position: 'absolute',
+    // bottom: 0,
+    bottom: 20,
+    width: '90%',
+    alignSelf: 'center',
   },
   infoIcon: {
     fontSize: ScaleSize(14),

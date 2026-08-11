@@ -22,10 +22,12 @@ import Ic_chevron_upIcon from './ic_chevron_up.svg';
 import Ic_clockIcon from './ic_clock.svg';
 import Ic_clock_filledIcon from './ic_clock_filled.svg';
 import Ic_closeIcon from './ic_close.svg';
+import Ic_contributionIcon from './ic_contribution.svg';
 import Ic_copyIcon from './ic_copy.svg';
 import Ic_couponIcon from './ic_coupon.svg';
 import Ic_credit_cardIcon from './ic_credit_card.svg';
 import Ic_credit_card_filledIcon from './ic_credit_card_filled.svg';
+import Ic_dividendIcon from './ic_dividend.svg';
 import Ic_dots_verticalIcon from './ic_dots_vertical.svg';
 import Ic_expand_walletIcon from './ic_expand_wallet.svg';
 import Ic_filterIcon from './ic_filter.svg';
@@ -44,6 +46,7 @@ import Ic_otp_placeholderIcon from './ic_otp_placeholder.svg';
 import Ic_pencilIcon from './ic_pencil.svg';
 import Ic_phoneIcon from './ic_phone.svg';
 import Ic_plus_circleIcon from './ic_plus_circle.svg';
+import Ic_pointIcon from './ic_point.svg';
 import Ic_qr_memberIcon from './ic_qr_member.svg';
 import Ic_radio_selectedIcon from './ic_radio_selected.svg';
 import Ic_radio_unselectedIcon from './ic_radio_unselected.svg';
@@ -93,10 +96,12 @@ const icons = {
   'ic_clock': Ic_clockIcon,
   'ic_clock_filled': Ic_clock_filledIcon,
   'ic_close': Ic_closeIcon,
+  'ic_contribution': Ic_contributionIcon,
   'ic_copy': Ic_copyIcon,
   'ic_coupon': Ic_couponIcon,
   'ic_credit_card': Ic_credit_cardIcon,
   'ic_credit_card_filled': Ic_credit_card_filledIcon,
+  'ic_dividend': Ic_dividendIcon,
   'ic_dots_vertical': Ic_dots_verticalIcon,
   'ic_expand_wallet': Ic_expand_walletIcon,
   'ic_filter': Ic_filterIcon,
@@ -115,6 +120,7 @@ const icons = {
   'ic_pencil': Ic_pencilIcon,
   'ic_phone': Ic_phoneIcon,
   'ic_plus_circle': Ic_plus_circleIcon,
+  'ic_point': Ic_pointIcon,
   'ic_qr_member': Ic_qr_memberIcon,
   'ic_radio_selected': Ic_radio_selectedIcon,
   'ic_radio_unselected': Ic_radio_unselectedIcon,

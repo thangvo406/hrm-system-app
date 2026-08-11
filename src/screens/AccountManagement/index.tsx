@@ -36,10 +36,11 @@ function AccountManagement() {
     point,
     organizationInfo,
     isShowUnRegister,
+    isShowBottomButtonWallet,
     isEmptyBankAccount,
     isEnablePaymentCard,
   } = useAccountManagement();
-  
+
   return (
     <View style={styles.safeArea}>
       <HeaderDetail hideNotify title={t('account_management.title')} />
@@ -57,7 +58,7 @@ function AccountManagement() {
             organizationInfo={organizationInfo}
             point={point}
             toggleUnRegister={toggleUnRegister}
-            isShowUnRegister={isShowUnRegister}
+            isShowBottomButton={isShowBottomButtonWallet}
           />
         </View>
 

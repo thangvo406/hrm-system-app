@@ -287,15 +287,60 @@ export interface IRequestGenerateQRCode
 }
 
 export interface ITransactionDetail {
-  readonly id: string;
-  readonly productName: string;
-  readonly paidAt: string;
-  readonly paymentAmount: number;
-  readonly couponDiscount: number;
-  readonly couponName?: string;
-  readonly pointUsed: number;
-  readonly finalPaymentAmount: number;
-  readonly payMoneyAmount: number;
-  readonly pointEarned: number;
-  readonly paymentMethod: number;
+  transactionKey: string;
+  occurredAt: string;
+  headlineAction: string;
+  paymentFundingSource?: string;
+  order: ITransactionOrder;
+  withdrawal: any;
+  legs: ITransactionLeg[];
+}
+
+export interface ITransactionOrder {
+  orderId: number;
+  orderNumber: string;
+  storeName: string;
+  totalAmount: number;
+  totalDiscountAmount: number;
+  voucherAmount: number;
+  couponCode: any;
+  couponName: any;
+  couponDiscountAmount: number;
+  memberDiscountAmount: number;
+  storeDiscountRate: any;
+  benefitDiscountRate: any;
+  memberGrade: any;
+  usedPointAmount: number;
+  settledMoneyAmount: number;
+}
+export interface ITransactionLeg {
+  transactionKey: string;
+  sourceType: string;
+  sourceId: number;
+  occurredAt: string;
+  direction: string;
+  amount: number;
+  balanceBefore: number;
+  balanceAfter: number;
+  balanceAccountType: string;
+  entryType: string;
+  fundingSource: string;
+  purpose: string;
+  description: any;
+  paymentType: any;
+  easyPayMethod: any;
+  approvalNo: any;
+  storeId: number;
+  storeName: string;
+  orderId: number;
+  orderNumber: string;
+  organizationId: any;
+  organizationName: any;
+  pointExpiresAt?: string;
+  pointRemainingAmount?: number;
+  memberGrade?: string;
+  storeRate?: number;
+  payMoneyRate: any;
+  benefitRate?: number;
+  totalRate?: number;
 }

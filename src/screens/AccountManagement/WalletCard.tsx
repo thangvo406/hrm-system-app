@@ -45,7 +45,7 @@ const DOT_GAP = ScaleSize(3);
 
 type Properties = {
   readonly balance?: number;
-  readonly isShowUnRegister: boolean;
+  readonly isShowBottomButton: boolean;
   readonly onCharge: () => void;
   readonly onChargeHistory: () => void;
   readonly onUse: () => void;
@@ -113,7 +113,7 @@ function WalletCard({
   point,
   toggleUnRegister,
   onUseOrganize,
-  isShowUnRegister,
+  isShowBottomButton,
 }: Properties) {
   const { t } = useTranslation();
   const [isExpandedOrganization, setIsExpandedOrganization] = useState(false);
@@ -227,7 +227,7 @@ function WalletCard({
           </Text>
         </View>
 
-        {!isShowUnRegister && (
+        {!!isShowBottomButton && (
           <AppButton
             onPress={onUse}
             style={styles.useButton}
@@ -249,7 +249,7 @@ function WalletCard({
               {t('account_management.charge')}
             </Text>
           </AppButton>
-          {!isShowUnRegister && (
+          {!!isShowBottomButton && (
             <AppButton
               onPress={onChargeHistory}
               style={styles.actionButton}
