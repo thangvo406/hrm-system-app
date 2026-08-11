@@ -34,24 +34,7 @@ platform :android do
         version_code: new_version_code
       )
 
-      # 4. Clean và Biên dịch dự án thành file APK Release
-      gradle(
-        task: "assemble",
-        build_type: "Release"
-      )
-
-      # 5. Đổi tên APK để dễ quản lý
-      original_apk = "app/build/outputs/apk/release/app-release.apk"
-      formatted_name = "#{prefix_name}_v#{version_num}_b#{build_num}.apk"
-      target_apk_path = "app/build/outputs/apk/release/#{formatted_name}"
-      sh("mv ../#{original_apk} ../#{target_apk_path}")
-      firebase_app_distribution(
-        app: firebase_app_id,
-        apk_path: target_apk_path,
-        service_credentials_file: service_creds,
-        release_notes: "Branch: #{branch}\n\n#{_changelog}",
-        groups: "internal"
-      )
+      buildApkRelease(prefix_name, version_num, build_num, firebase_app_id, service_creds) 
       postNotifyMessage("success", branch, version_num, build_num)
       UI.success("🎉 Đã build & distribute thành công bản #{version_num} (build #{build_num}) lên Firebase!")
     rescue => e
@@ -94,6 +77,8 @@ platform :android do
         version_name: version_num
       )
 
+       buildApkRelease(prefix_name, version_num, build_num, firebase_app_id, service_creds)
+
       # Biên dịch AAB Release
       gradle(
         task: "bundle",
@@ -106,23 +91,26 @@ platform :android do
       target_aab_path = "app/build/outputs/bundle/release/#{formatted_name}.aab"
       sh("mv ../#{original_aab} ../#{target_aab_path}")
 
-      # Đẩy AAB lên Firebase App Distribution
-      firebase_app_distribution(
-        app: firebase_app_id,
-        android_artifact_type: "AAB",
-        android_artifact_path: target_aab_path,
-        service_credentials_file: service_creds,
-        release_notes: "Branch: #{branch}\n\n#{_changelog}",
-        groups: "internal"
-      )
-
-      # Ghi output cho GitHub Actions (bước upload-artifact đọc từ đây)
+      # Ghi output cho GitHub Actions (bước upload-artifact đọc từ đây).
+      # Phải ghi TRƯỚC bước Firebase: AAB lúc này đã build xong, nếu upload
+      # Firebase lỗi thì lane vẫn dừng nhưng ít nhất step upload-artifact còn
+      # lấy được file thay vì mất trắng bản build.
       if ENV['GITHUB_OUTPUT']
         File.open(ENV['GITHUB_OUTPUT'], 'a') do |f|
           f.puts "aab_path=android/#{target_aab_path}"
           f.puts "aab_name=#{formatted_name}"
         end
       end
+
+      # Đẩy AAB lên Firebase App Distribution
+      # firebase_app_distribution(
+      #   app: firebase_app_id,
+      #   android_artifact_type: "AAB",
+      #   android_artifact_path: target_aab_path,
+      #   service_credentials_file: service_creds,
+      #   release_notes: "Branch: #{branch}\n\n#{_changelog}",
+      #   groups: "internal"
+      # )
 
       postNotifyMessage("success", branch, version_num, build_num)
       UI.success("🎉 Đã build thành công AAB #{formatted_name}.aab")
@@ -133,6 +121,29 @@ platform :android do
     end
   end
 end
+
+def buildApkRelease(prefix_name, version_num, build_num, firebase_app_id, service_creds) {
+    branch = ENV['BRANCH_NAME'] || "dev"
+   _changelog = get_recent_git_commits(repo_dir: "..", limit: 5)
+    gradle(
+      task: "assemble",
+      build_type: "Release"
+    )
+
+    # 5. Đổi tên APK để dễ quản lý
+    original_apk = "app/build/outputs/apk/release/app-release.apk"
+    formatted_name = "#{prefix_name}_v#{version_num}_b#{build_num}.apk"
+    target_apk_path = "app/build/outputs/apk/release/#{formatted_name}"
+    sh("mv ../#{original_apk} ../#{target_apk_path}")
+    firebase_app_distribution(
+      app: firebase_app_id,
+      apk_path: target_apk_path,
+      service_credentials_file: service_creds,
+      release_notes: "Branch: #{branch}\n\n#{_changelog}",
+      groups: "internal"
+    )
+
+}
 
 # ---------------------------------------------------------------------------
 # Helpers
