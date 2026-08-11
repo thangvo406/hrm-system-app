@@ -110,7 +110,7 @@ export const useHome = (props: any) => {
   }, [accessToken]);
 
   const onPressContribution = () => {
-    if (profile?.membershipStatus == 'COMPLETED') {
+    if (profile?.membershipStatus == 'VERIFIED') {
       AppNavigator.navigate(Paths.ContributionHistory);
     } else {
       AppNavigator.showDialog({
