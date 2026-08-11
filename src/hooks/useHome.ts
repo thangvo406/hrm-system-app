@@ -57,10 +57,6 @@ const onGoToStore = () => {
   AppNavigator.navigate(Paths.Products);
 };
 
-const onPressContribution = () => {
-  AppNavigator.navigate(Paths.ContributionHistory);
-};
-
 const onPressVoucher = () => {
   AppNavigator.navigate(Paths.Vouchers);
 };
@@ -112,6 +108,19 @@ export const useHome = (props: any) => {
       SocketService.disconnect();
     };
   }, [accessToken]);
+
+  const onPressContribution = () => {
+    if (profile?.membershipStatus == 'COMPLETED') {
+      AppNavigator.navigate(Paths.ContributionHistory);
+    } else {
+      AppNavigator.showDialog({
+        screen: Information,
+        title: t('home.membership_pending_dialog.title'),
+        desc: t('home.membership_pending_dialog.desc'),
+        confirmTitle: t('home.membership_pending_dialog.confirm'),
+      });
+    }
+  };
 
   const onShowRequestAddCard = () => {
     AppNavigator.showDialog({
@@ -196,7 +205,7 @@ export const useHome = (props: any) => {
       screen: SchoolSelection,
       isFullScreen: true,
       topHeader: 0,
-      title: '대학을 선택해주세요',
+      title: t('school_selection.title'),
       btnSubmit: t('common.confirm'),
       onSubmit: onSwitchSchool,
       onBack: () => {

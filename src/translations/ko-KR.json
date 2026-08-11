@@ -355,6 +355,11 @@
       },
       "need_contribution_dialog": {
         "title": "조합원 가입을 위해 최초 1회 출자금 납부가 필요합니다.\n계속 진행하시겠습니까?"
+      },
+      "membership_pending_dialog": {
+        "title": "안내",
+        "desc": "조합원 가입 요청이 승인 대기 중입니다.\n관리자의 승인 후 해당 기능을 이용하실 수 있습니다.",
+        "confirm": "닫기"
       }
     },
     "notifications": {

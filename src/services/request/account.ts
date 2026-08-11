@@ -43,6 +43,7 @@ import { CommonUtils } from '@utils';
 export interface Profile {
   avatar?: IImage;
   coopMemberGrade?: string;
+  membershipStatus?: string;
   email?: string;
   id?: string | number;
   identityNumber?: string;

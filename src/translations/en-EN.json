@@ -569,6 +569,11 @@
       },
       "need_contribution_dialog": {
         "title": "A one-time contribution payment is required for membership.\nDo you want to continue?"
+      },
+      "membership_pending_dialog": {
+        "title": "Notice",
+        "desc": "Your membership request is pending approval.\nPlease wait for the admin to approve your request before using this feature.",
+        "confirm": "Close"
       }
     },
     "announcements": {

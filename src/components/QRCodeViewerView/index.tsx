@@ -3,7 +3,14 @@ import HeaderDetail from '@components/HeaderDetail';
 import Image from '@components/Image';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
+import type { Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ViewStyle } from 'react-native';
@@ -21,7 +28,6 @@ import ScanFrame from './ScanFrame';
 import TicketHead from './TicketHead';
 import ValidityMeter from './ValidityMeter';
 import { DeviceUtils } from '@kits/core/utils';
-import { useFocusEffect } from '@react-navigation/native';
 const { ifIOS } = DeviceUtils;
 const QR_SIZE = ScaleSize(240);
 const TICK_INTERVAL_MS = 1000;
@@ -35,13 +41,22 @@ const VOUCHER_ICON_SIZE = ScaleSize(24);
 const WAIST_NOTCH_SIZE = ScaleSize(22);
 
 const BADGE_SHADOW_OFFSET = { height: ScaleSize(4), width: 0 };
-// Whisper-thin rim in the ticket's own green, so the punched notches read as
-// a cut edge catching a hint of shadow rather than a flat painted dot.
+
 const NOTCH_RIM_COLOR = 'rgba(15, 75, 37, 0.06)';
+
+export type QRCodeViewerViewHandle = {
+  readonly close: () => void;
+  readonly refresh: () => void;
+  readonly checkRefresh: () => void;
+  readonly setMounted: (value: boolean) => void;
+  readonly restartTimer: (seconds?: number) => void;
+  readonly setData: (data?: IQRCodeViewerData) => void;
+};
 
 export type QRCodeViewerViewProps = {
   readonly data?: IQRCodeViewerData;
   readonly durationSeconds?: number;
+  readonly ref?: Ref<QRCodeViewerViewHandle>;
   readonly titleKey?: string;
   readonly contentStyle?: ViewStyle;
   readonly titleVoucher?: string;
@@ -60,6 +75,7 @@ function QRCodeViewerView({
   durationSeconds = DEFAULT_DURATION_SECONDS,
   onRefresh,
   onRequestClose,
+  ref,
   showBtnVoucher,
   titleVoucher,
   onPressVoucher,
@@ -80,21 +96,13 @@ function QRCodeViewerView({
   const isMounted = useRef(true);
 
   useEffect(() => {
+    isMounted.current = true;
     setBrightnessLevel(1);
     return () => {
+      isMounted.current = false;
       resetBrightness();
     };
   }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      isMounted.current = true;
-
-      return () => {
-        isMounted.current = false;
-      };
-    }, []),
-  );
 
   useEffect(() => {
     setData(incomingData);
@@ -108,7 +116,7 @@ function QRCodeViewerView({
 
   const startRunningRemaining = useCallback((seconds: number) => {
     clearInterval(remainingId.current);
-    setRemaining(Math.max(seconds, 0));
+    setRemaining(Math.max(10, 0));
     remainingId.current = setInterval(() => {
       setRemaining(previous => (previous > 0 ? previous - 1 : 0));
     }, TICK_INTERVAL_MS);
@@ -120,12 +128,45 @@ function QRCodeViewerView({
     return () => clearInterval(remainingId.current);
   }, [durationSeconds]);
 
-  const onPressRefresh = () => {
-    onRefresh?.(refreshed => {
+  const applyRefreshedData = useCallback(
+    (refreshed?: IQRCodeViewerData) => {
       setData(previous => ({ ...previous, ...refreshed }));
       startRunningRemaining(refreshed?.expiresIn ?? durationSeconds);
-    });
-  };
+    },
+    [durationSeconds, startRunningRemaining],
+  );
+
+  const onPressRefresh = useCallback(() => {
+    onRefresh?.(applyRefreshedData);
+  }, [applyRefreshedData, onRefresh]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      close: () => {
+        onRequestClose?.();
+      },
+      checkRefresh: () => {
+        if (remaining == 0) {
+          onPressRefresh();
+        }
+      },
+      refresh: onPressRefresh,
+      restartTimer: (seconds?: number) => {
+        startRunningRemaining(seconds ?? durationSeconds);
+      },
+      setData: applyRefreshedData,
+      setMounted: (value: boolean) => (isMounted.current = value),
+    }),
+    [
+      applyRefreshedData,
+      durationSeconds,
+      remaining,
+      onPressRefresh,
+      onRequestClose,
+      startRunningRemaining,
+    ],
+  );
 
   const _onPressVoucher = () => {
     onRequestClose?.();
