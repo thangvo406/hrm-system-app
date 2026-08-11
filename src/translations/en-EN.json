@@ -970,11 +970,29 @@
       "btn_submit": "Continue"
     },
     "contribution_input": {
-      "title": "Capital Input",
+      "title": "Contribution Increase",
       "subtitle": "Please enter the amount for additional capital contribution",
       "amount_label": "Amount Input",
       "amount_placeholder": "Please enter an amount",
-      "next": "Next"
+      "next": "Next",
+      "hero_title": "Contribution Increase Request",
+      "hero_subtitle": "Additional contributions increase your dividend benefits.\nRequest an increase today.",
+      "member_type_label": "Member type",
+      "member_status_enrolled": "(Enrolled)",
+      "current_contribution_label": "Contribution",
+      "current_units_value": "{{count}} units",
+      "current_units_amount": "({{amount}} KRW)",
+      "info_banner": "Additional contributions increase your dividend benefits.\nRequest an increase today.",
+      "caution_title": "Caution",
+      "caution_desc": "Once payment is completed, the increase is reflected in your contribution immediately.",
+      "units_input_label": "Units to add",
+      "unit_suffix": "units",
+      "unit_price_label": "1 unit",
+      "expected_amount_label": "Expected contribution",
+      "expected_units_label": "Total expected units",
+      "amount_won": "{{amount}} KRW",
+      "units_count": "{{count}} units",
+      "submit": "Apply"
     },
     "transaction_result": {
       "close": "Close",

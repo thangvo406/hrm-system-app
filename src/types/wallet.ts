@@ -7,6 +7,9 @@ export interface IContributeSummary {
   readonly totalDividend: number;
   readonly expectedDividend: number;
   readonly expectedDividendDate: string;
+  readonly unitPrice?: number;
+  readonly expectedContribution?: number;
+  readonly expectedUnits?: number;
 }
 
 export interface IContributeHistoryDetail {

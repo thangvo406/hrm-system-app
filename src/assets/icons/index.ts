@@ -38,6 +38,7 @@ import Ic_infoIcon from './ic_info.svg';
 import Ic_leafIcon from './ic_leaf.svg';
 import Ic_lock_closedIcon from './ic_lock_closed.svg';
 import Ic_map_pinIcon from './ic_map_pin.svg';
+import Ic_member_badgeIcon from './ic_member_badge.svg';
 import Ic_menuIcon from './ic_menu.svg';
 import Ic_notify_grayIcon from './ic_notify_gray.svg';
 import Ic_notify_read_allIcon from './ic_notify_read_all.svg';
@@ -63,6 +64,7 @@ import Ic_truckIcon from './ic_truck.svg';
 import Ic_unlockIcon from './ic_unlock.svg';
 import Ic_user_filledIcon from './ic_user_filled.svg';
 import Ic_walletIcon from './ic_wallet.svg';
+import Ic_won_badgeIcon from './ic_won_badge.svg';
 import KakaoIcon from './kakao.svg';
 import LanguageIcon from './language.svg';
 import LockIcon from './lock.svg';
@@ -112,6 +114,7 @@ const icons = {
   'ic_leaf': Ic_leafIcon,
   'ic_lock_closed': Ic_lock_closedIcon,
   'ic_map_pin': Ic_map_pinIcon,
+  'ic_member_badge': Ic_member_badgeIcon,
   'ic_menu': Ic_menuIcon,
   'ic_notify_gray': Ic_notify_grayIcon,
   'ic_notify_read_all': Ic_notify_read_allIcon,
@@ -137,6 +140,7 @@ const icons = {
   'ic_unlock': Ic_unlockIcon,
   'ic_user_filled': Ic_user_filledIcon,
   'ic_wallet': Ic_walletIcon,
+  'ic_won_badge': Ic_won_badgeIcon,
   'kakao': KakaoIcon,
   'language': LanguageIcon,
   'lock': LockIcon,

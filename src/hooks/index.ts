@@ -12,6 +12,7 @@ export { useForgotPass } from './useForgotPass';
 export { useI18n } from './language/useI18n';
 export { useNotifications } from './useNotifications';
 export { useContributeHistory } from './useContributeHistory';
+export { useContributionInput } from './useContributionInput';
 export { usePayPointHistories } from './usePayPointHistories';
 export { usePointDashboard } from './usePointDashboard';
 export { usePointExpiring } from './usePointExpiring';

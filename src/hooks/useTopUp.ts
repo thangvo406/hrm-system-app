@@ -88,6 +88,7 @@ export const useTopUp = (props?: any) => {
 
   useEffect(() => {
     if (!isEnablePaymentCard) {
+      alert("ec")
       const executorRequest = isContribute
         ? increaseContributionRequest
         : balanceChargeRequest;

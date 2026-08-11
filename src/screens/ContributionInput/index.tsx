@@ -1,107 +1,171 @@
-import { AppButton, HeaderDetail } from '@components';
+import type { KeyboardEvent } from 'react-native';
+
+import { AppButton, HeaderDetail, Image } from '@components';
+import { ScaleSize } from '@kits/core';
+import { DeviceUtils } from '@kits/core/utils';
+import { useContributionInput } from '@hooks';
+import { formatCurrency } from '@utils/product';
+import { useEffect, useRef } from 'react';
 import {
-  Dimensions,
+  Animated,
+  Keyboard,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
-import { ScaleSize } from '@kits/core';
-import { useTranslation } from 'react-i18next';
-import { Colors } from '@constants';
-import { formatCurrency } from '@utils/product';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { DeviceUtils } from '@kits/core/utils';
-import { CardSelection } from '@components';
-import { useTopUp } from '@hooks';
-import AppNavigator from '@navigation/AppNavigator';
-import BankInformationView from '@screens/BankInformation/BankInformationView';
+import { useTranslation } from 'react-i18next';
 
-const { ifAndroid } = DeviceUtils;
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const ITEM_WIDTH = SCREEN_WIDTH - ScaleSize(64);
-const CARD_HEIGHT = ScaleSize(92);
+import HeroSection from './HeroSection';
+import MemberSummaryCard from './MemberSummaryCard';
+import UnitsInputCard from './UnitsInputCard';
 
+const { ifAndroid, isIOS, isIPadOrTablet } = DeviceUtils;
+
+const PAGE_BG = '#F5F6F4';
 const TEXT_DARK = '#1A1A1A';
-const TEXT_MUTED = '#9B9B9B';
-const TEXT_HINT = '#C4C4C4';
-const BORDER_COLOR = '#E0E0E0';
-const GREEN = Colors.primary;
+const INFO_BG = '#EAF7EE';
+const INFO_BORDER = '#D3ECDA';
+const INFO_TEXT = '#20603A';
+const CAUTION_BG = '#FFF8E9';
+const CAUTION_BORDER = '#F6E7C6';
+const CAUTION_ORANGE = '#F5A623';
+const BTN_GREEN = '#2F9E44';
+const BTN_DISABLED = '#C9CFC9';
+const BANNER_ICON_SIZE = ScaleSize(24);
+const CHEVRON_SIZE = ScaleSize(18);
+const KEYBOARD_ANIMATION_DURATION_MS = 250;
 
 function ContributionInput() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const keyboardOffset = useRef(new Animated.Value(0)).current;
   const {
-    amountTopUp,
-    bankAccounts,
-    selectedAccountId,
+    amount,
+    currentContribution,
+    currentUnits,
     enabledBtnSubmit,
-    isEnablePaymentCard,
+    expectedContribution,
+    expectedUnits,
+    membershipLabel,
     onAmountChange,
-    onSelectAccount,
     onSubmit,
-    bankInfo,
-  } = useTopUp({ isContribute: true });
+    unitPrice,
+  } = useContributionInput();
 
-  if (!isEnablePaymentCard) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          marginTop: insets.top || 20,
-        }}
-      >
-        <BankInformationView
-          data={bankInfo}
-          showBtnBack
-          onBack={() => AppNavigator.goBack()}
-          onSubmit={() => AppNavigator.goBack()}
-          btnSubmit={t('common.popup.btn_close')}
-        />
-      </View>
-    );
-  }
+  useEffect(() => {
+    if (isIPadOrTablet()) {
+      return;
+    }
+    const showEvent = isIOS() ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = isIOS() ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    // Shift the content up by half the keyboard height so the focused units
+    // input stays visible (same pattern as ChooseMemberShipType).
+    const onShow = (event: KeyboardEvent) => {
+      Animated.timing(keyboardOffset, {
+        duration: event.duration || KEYBOARD_ANIMATION_DURATION_MS,
+        toValue: -event.endCoordinates.height / 2,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const onHide = (event: KeyboardEvent) => {
+      Animated.timing(keyboardOffset, {
+        duration: event.duration || KEYBOARD_ANIMATION_DURATION_MS,
+        toValue: 0,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const showSub = Keyboard.addListener(showEvent, onShow);
+    const hideSub = Keyboard.addListener(hideEvent, onHide);
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   return (
     <View style={styles.safeArea}>
-      <HeaderDetail hideNotify title={t('contribution_input.title')} />
+      <HeaderDetail hideNotify title="" transparent />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.content}>
-          <Text style={styles.subtitle}>
-            {t('contribution_input.subtitle')}
-          </Text>
+        <Animated.View
+          style={[
+            styles.avoidingView,
+            { transform: [{ translateY: keyboardOffset }] },
+          ]}
+        >
+          <HeroSection
+            subtitle={t('contribution_input.hero_subtitle')}
+            title={t('contribution_input.hero_title')}
+          />
 
-          <Text style={styles.sectionLabel}>
-            {t('contribution_input.amount_label')}
-          </Text>
-          <View style={styles.amountRow}>
-            <TextInput
-              keyboardType="numeric"
-              onChangeText={onAmountChange}
-              placeholder="0"
-              placeholderTextColor={TEXT_HINT}
-              style={styles.amountInput}
-              testID="contribution-input-amount-input"
-              value={formatCurrency(amountTopUp)}
+          <View style={styles.content}>
+            <MemberSummaryCard
+              contributionAmount={t('contribution_input.current_units_amount', {
+                amount: formatCurrency(currentContribution),
+              })}
+              contributionUnits={t('contribution_input.current_units_value', {
+                count: currentUnits,
+              })}
+              membershipLabel={membershipLabel}
             />
-            <Text style={styles.currencyLabel}>{t('top_up.currency')}</Text>
-          </View>
-        </View>
 
-        {bankAccounts.length > 0 ? (
-          <View style={styles.carouselWrap}>
-            <CardSelection
-              accounts={bankAccounts}
-              onSelect={onSelectAccount}
-              selectedId={selectedAccountId}
-            />
+            <View style={styles.infoBanner}>
+              <Image
+                color={INFO_TEXT}
+                height={BANNER_ICON_SIZE}
+                name="ic_info"
+                type="svg"
+                width={BANNER_ICON_SIZE}
+              />
+              <Text style={styles.infoText}>
+                {t('contribution_input.info_banner')}
+              </Text>
+            </View>
+
+            <View style={styles.cautionBanner}>
+              <Image
+                color={CAUTION_ORANGE}
+                height={BANNER_ICON_SIZE}
+                name="ic_alert_triangle"
+                type="svg"
+                width={BANNER_ICON_SIZE}
+              />
+              <View style={styles.cautionTexts}>
+                <Text style={styles.cautionTitle}>
+                  {t('contribution_input.caution_title')}
+                </Text>
+                <Text style={styles.cautionDesc}>
+                  {`•  ${t('contribution_input.caution_desc')}`}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.inputCardWrap}>
+              <UnitsInputCard
+                amount={amount}
+                expectedAmountText={t('contribution_input.amount_won', {
+                  amount: formatCurrency(expectedContribution),
+                })}
+                expectedUnitsText={t('contribution_input.units_count', {
+                  count: expectedUnits,
+                })}
+                onAmountChange={onAmountChange}
+                unitPriceText={t('contribution_input.amount_won', {
+                  amount: formatCurrency(unitPrice),
+                })}
+              />
+            </View>
           </View>
-        ) : undefined}
+        </Animated.View>
       </ScrollView>
 
       <View
@@ -111,11 +175,24 @@ function ContributionInput() {
         ]}
       >
         <AppButton
+          disabled={!enabledBtnSubmit}
           onPress={onSubmit}
-          style={[styles.nextBtn, !enabledBtnSubmit && styles.nextBtnDisabled]}
-          testID="contribution-input-next"
+          style={[
+            styles.submitBtn,
+            !enabledBtnSubmit && styles.submitBtnDisabled,
+          ]}
+          testID="contribution-input-submit"
         >
-          <Text style={styles.nextBtnText}>{t('contribution_input.next')}</Text>
+          <Text style={styles.submitBtnText}>
+            {t('contribution_input.submit')}
+          </Text>
+          <Image
+            color="#FFFFFF"
+            height={CHEVRON_SIZE}
+            name="ic_chevron_right"
+            type="svg"
+            width={CHEVRON_SIZE}
+          />
         </AppButton>
       </View>
     </View>
@@ -125,116 +202,87 @@ function ContributionInput() {
 export default ContributionInput;
 
 const styles = StyleSheet.create({
-  accountField: {
-    borderColor: BORDER_COLOR,
-    borderRadius: ScaleSize(12),
-    borderWidth: 1,
-    justifyContent: 'center',
-    paddingHorizontal: ScaleSize(16),
-    paddingVertical: ScaleSize(16),
+  avoidingView: {
+    flex: 1,
   },
-  accountFieldText: {
+  cautionBanner: {
+    backgroundColor: CAUTION_BG,
+    borderColor: CAUTION_BORDER,
+    borderRadius: ScaleSize(16),
+    borderWidth: ScaleSize(1),
+    flexDirection: 'row',
+    marginTop: ScaleSize(14),
+    padding: ScaleSize(16),
+  },
+  cautionDesc: {
+    color: TEXT_DARK,
+    fontSize: ScaleSize(13),
+    lineHeight: ScaleSize(20),
+    marginTop: ScaleSize(6),
+  },
+  cautionTexts: {
+    flex: 1,
+    marginLeft: ScaleSize(10),
+  },
+  cautionTitle: {
     color: TEXT_DARK,
     fontSize: ScaleSize(15),
-  },
-  amountInput: {
-    color: TEXT_DARK,
-    flex: 1,
-    fontSize: ScaleSize(30),
-    fontWeight: '700',
-    padding: 0,
-  },
-  amountRow: {
-    alignItems: 'flex-end',
-    borderBottomColor: GREEN,
-    borderBottomWidth: ScaleSize(2),
-    flexDirection: 'row',
-    paddingBottom: ScaleSize(10),
-  },
-  bonusText: {
-    color: GREEN,
-    fontSize: ScaleSize(13),
-    fontWeight: '600',
-    marginTop: ScaleSize(10),
-  },
-  carousel: {
-    justifyContent: 'center',
-    width: SCREEN_WIDTH,
-  },
-  carouselWrap: {
-    alignSelf: 'center',
-    marginTop: ScaleSize(56),
-    width: SCREEN_WIDTH,
-  },
-  cardSlot: {
-    alignItems: 'center',
-    height: CARD_HEIGHT,
-    justifyContent: 'center',
-    width: ITEM_WIDTH,
+    fontWeight: '800',
   },
   content: {
     paddingHorizontal: ScaleSize(20),
-    paddingTop: ScaleSize(12),
-  },
-  currencyLabel: {
-    color: TEXT_DARK,
-    fontSize: ScaleSize(24),
-    fontWeight: '700',
-    marginLeft: ScaleSize(8),
+    paddingTop: ScaleSize(16),
   },
   footer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: PAGE_BG,
     paddingHorizontal: ScaleSize(20),
     paddingTop: ScaleSize(12),
   },
-  heading: {
-    color: TEXT_DARK,
-    fontSize: ScaleSize(24),
-    fontWeight: '700',
-  },
-  methodLabel: {
-    marginTop: ScaleSize(28),
-  },
-  nextBtn: {
+  infoBanner: {
     alignItems: 'center',
-    backgroundColor: GREEN,
-    borderRadius: ScaleSize(28),
-    height: ScaleSize(52),
-    justifyContent: 'center',
-    width: '100%',
-  },
-  nextBtnDisabled: {
-    backgroundColor: '#CCCCCC',
-  },
-  nextBtnText: {
-    color: '#FFFFFF',
-    fontSize: ScaleSize(16),
-    fontWeight: '600',
-  },
-  paginationRow: {
-    alignItems: 'center',
-    alignSelf: 'center',
+    backgroundColor: INFO_BG,
+    borderColor: INFO_BORDER,
+    borderRadius: ScaleSize(16),
+    borderWidth: ScaleSize(1),
     flexDirection: 'row',
-    marginTop: ScaleSize(12),
+    marginTop: ScaleSize(18),
+    padding: ScaleSize(16),
+  },
+  infoText: {
+    color: INFO_TEXT,
+    flex: 1,
+    fontSize: ScaleSize(14),
+    fontWeight: '600',
+    lineHeight: ScaleSize(21),
+    marginLeft: ScaleSize(10),
+  },
+  inputCardWrap: {
+    marginTop: ScaleSize(18),
   },
   safeArea: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: PAGE_BG,
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
     paddingBottom: ScaleSize(24),
   },
-  sectionLabel: {
-    color: TEXT_MUTED,
-    fontSize: ScaleSize(13),
-    fontWeight: '600',
-    marginBottom: ScaleSize(12),
-    marginTop: ScaleSize(24),
+  submitBtn: {
+    alignItems: 'center',
+    backgroundColor: BTN_GREEN,
+    borderRadius: ScaleSize(20),
+    flexDirection: 'row',
+    height: ScaleSize(58),
+    justifyContent: 'center',
+    width: '100%',
   },
-  subtitle: {
-    color: TEXT_MUTED,
-    fontSize: ScaleSize(14),
-    marginTop: ScaleSize(8),
+  submitBtnDisabled: {
+    backgroundColor: BTN_DISABLED,
+  },
+  submitBtnText: {
+    color: '#FFFFFF',
+    fontSize: ScaleSize(18),
+    fontWeight: '800',
+    marginRight: ScaleSize(6),
   },
 });
