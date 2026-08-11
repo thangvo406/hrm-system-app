@@ -156,6 +156,54 @@ enum TransactionType {
   PAY_MONEY_CHARGE_BONUS = 'PAY_MONEY_CHARGE_BONUS',
 }
 
+export enum HEADLINE_ACTIONS {
+  CHARGE = 'CHARGE',
+  CHARGE_BONUS_POINT = 'CHARGE_BONUS_POINT',
+  POINT_EARN = 'POINT_EARN',
+  PAYMENT = 'PAYMENT',
+  WITHDRAWAL = 'WITHDRAWAL',
+  POINT_GRANT = 'POINT_GRANT',
+  POINT_USE = 'POINT_USE',
+  POINT_EXPIRE = 'POINT_EXPIRE',
+  REFUND = 'REFUND',
+  ADJUSTMENT = 'ADJUSTMENT',
+}
+
+export const SUMMARY_TRANSACTION_DETAIL_DISPLAY: Record<
+  HEADLINE_ACTIONS,
+  string
+> = {
+  [HEADLINE_ACTIONS.CHARGE]:
+    'account_management.transaction_detail_texts.charge',
+
+  [HEADLINE_ACTIONS.CHARGE_BONUS_POINT]:
+    'account_management.transaction_detail_texts.charge_bonus_point',
+
+  [HEADLINE_ACTIONS.PAYMENT]:
+    'account_management.transaction_detail_texts.payment',
+
+  [HEADLINE_ACTIONS.WITHDRAWAL]:
+    'account_management.transaction_detail_texts.withdrawal',
+
+  [HEADLINE_ACTIONS.POINT_EARN]:
+    'account_management.transaction_detail_texts.point_earn',
+
+  [HEADLINE_ACTIONS.POINT_GRANT]:
+    'account_management.transaction_detail_texts.point_grant',
+
+  [HEADLINE_ACTIONS.POINT_USE]:
+    'account_management.transaction_detail_texts.point_use',
+
+  [HEADLINE_ACTIONS.POINT_EXPIRE]:
+    'account_management.transaction_detail_texts.point_expire',
+
+  [HEADLINE_ACTIONS.REFUND]:
+    'account_management.transaction_detail_texts.refund',
+
+  [HEADLINE_ACTIONS.ADJUSTMENT]:
+    'account_management.transaction_detail_texts.adjustment',
+};
+
 export const TRANSACTION_DETAIL_DISPLAY: Record<TransactionType, string> = {
   [TransactionType.PAY_MONEY_CHARGE]:
     'pay_point.transaction_detail_texts.pay_money_charge',

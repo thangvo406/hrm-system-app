@@ -12,9 +12,10 @@ import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 
 const onPressTransaction = (item: any) => {
-  AppNavigator.navigate(Paths.TransactionDetail, { transId: item?.id });
+  AppNavigator.navigate(Paths.TransactionDetail, {
+    transId: item?.transactionKey,
+  });
 };
-
 
 const useTransaction = () => {
   const dispatch = useAppDispatch();
@@ -62,7 +63,6 @@ const useTransaction = () => {
       }),
     );
   }, [dispatch, currentPage]);
-
 
   return {
     onLoadMore,

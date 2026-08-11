@@ -780,6 +780,18 @@
         "credit_limit": "Credit limit",
         "spendable_amount": "Spendable amount",
         "tag": "Organization"
+      },
+      "transaction_detail_texts": {
+        "charge": "Top-up",
+        "charge_bonus_point": "Top-up Bonus Point",
+        "payment": "Payment",
+        "withdrawal": "Withdrawal",
+        "point_earn": "Store Points Accrual",
+        "point_grant": "Admin Grant",
+        "point_use": "Points Spent",
+        "point_expire": "Points Expiry",
+        "refund": "Refund",
+        "adjustment": "Admin Adjustment"
       }
     },
     "request_add_card": {

@@ -783,6 +783,18 @@
         "credit_limit": "여신 한도",
         "spendable_amount": "사용 가능 금액",
         "tag": "단체"
+      },
+      "transaction_detail_texts": {
+        "charge": "충전",
+        "charge_bonus_point": "충전 보너스",
+        "payment": "결제",
+        "withdrawal": "출금",
+        "point_earn": "매장 적립",
+        "point_grant": "관리자 지급",
+        "point_use": "포인트 사용",
+        "point_expire": "포인트 소멸",
+        "refund": "환불",
+        "adjustment": "관리자 조정"
       }
     },
     "request_add_card": {

@@ -45,9 +45,10 @@ export const EndPoints = {
     createQRCodeMember: 'api/v1/membership/qr/generate',
     withdrawalBalance: 'balance/withdrawal',
     getMealTickets: (request: string) => `order/ticket${request}`,
-    getTransactionsMovement: (request: string) => `balance/movement${request}`,
+    getTransactionsMovement: (request: string) =>
+      `balance/transaction${request}`,
     payPointHistories: (request: string) => `balance/ledger${request}`,
-    transactionDetail: (id: number) => `transaction/${id}`,
+    transactionDetail: (id: number) => `balance/transaction/${id}`,
     getOrganizationInfo: 'organization',
   },
   ACCOUNT_MANAGEMENT: {
