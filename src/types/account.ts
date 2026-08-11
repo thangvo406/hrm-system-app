@@ -175,6 +175,14 @@ export type IVoucher = {
   readonly discountAmount: number;
 };
 
+export type IQRCodeViewerData = {
+  readonly amountText?: string;
+  readonly headerBadge?: string;
+  readonly expiresIn?: number;
+  readonly token?: string;
+  readonly qrImageBase64?: string;
+} & Partial<IVoucher>;
+
 export type IMealTicket = {
   id: number;
   externalId: number;

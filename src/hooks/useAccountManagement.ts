@@ -78,7 +78,7 @@ export const useAccountManagement = () => {
       dispatch(getCurrentWalletRequest());
       dispatch(
         getOrganizationInfoRequest({
-          onSuccess: (data) => {
+          onSuccess: data => {
             setOrganizationInfo(data);
           },
         }),
@@ -144,14 +144,14 @@ export const useAccountManagement = () => {
       titleKey: 'qr_code_member.title',
       titleVoucher: info?.name,
       onPressVoucher: () => {
-        AppNavigator.navigate(Paths.Vouchers)
+        AppNavigator.navigate(Paths.Vouchers);
       },
       data: {
         expiresIn: 3000,
         code: info.name,
       },
       // onRefresh: onRefreshQR(voucher),
-    })
+    });
   }, []);
 
   // const onRegisterCard = useCallback(() => {
@@ -162,7 +162,7 @@ export const useAccountManagement = () => {
   // }, [accounts, cards]);
 
   const onUse = useCallback(() => {
-    AppNavigator.navigate(Paths.QRCodeViewer);
+    AppNavigator.navigate(Paths.PaymentOffline);
   }, []);
 
   const onViewAllTransactions = useCallback(() => {

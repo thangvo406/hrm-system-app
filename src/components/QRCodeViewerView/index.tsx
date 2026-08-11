@@ -13,7 +13,7 @@ import {
 } from '@reeq/react-native-device-brightness';
 
 import imageNames from '@assets/images/names';
-import type { IVoucher } from '@type';
+import type { IQRCodeViewerData } from '@type';
 import { formatTime } from '@utils/date';
 
 import NoticeBar from './NoticeBar';
@@ -21,6 +21,7 @@ import ScanFrame from './ScanFrame';
 import TicketHead from './TicketHead';
 import ValidityMeter from './ValidityMeter';
 import { DeviceUtils } from '@kits/core/utils';
+import { useFocusEffect } from '@react-navigation/native';
 const { ifIOS } = DeviceUtils;
 const QR_SIZE = ScaleSize(240);
 const TICK_INTERVAL_MS = 1000;
@@ -37,13 +38,6 @@ const BADGE_SHADOW_OFFSET = { height: ScaleSize(4), width: 0 };
 // Whisper-thin rim in the ticket's own green, so the punched notches read as
 // a cut edge catching a hint of shadow rather than a flat painted dot.
 const NOTCH_RIM_COLOR = 'rgba(15, 75, 37, 0.06)';
-
-export type IQRCodeViewerData = {
-  readonly amountText?: string;
-  readonly headerBadge?: string;
-  readonly expiresIn?: number;
-  readonly qrImageBase64?: string;
-} & Partial<IVoucher>;
 
 export type QRCodeViewerViewProps = {
   readonly data?: IQRCodeViewerData;
@@ -83,6 +77,7 @@ function QRCodeViewerView({
   const remainingId = useRef<ReturnType<typeof setInterval> | undefined>(
     undefined,
   );
+  const isMounted = useRef(true);
 
   useEffect(() => {
     setBrightnessLevel(1);
@@ -91,9 +86,25 @@ function QRCodeViewerView({
     };
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      isMounted.current = true;
+
+      return () => {
+        isMounted.current = false;
+      };
+    }, []),
+  );
+
   useEffect(() => {
     setData(incomingData);
   }, [incomingData]);
+
+  useEffect(() => {
+    if (isMounted.current && remaining == 0) {
+      onPressRefresh();
+    }
+  }, [remaining]);
 
   const startRunningRemaining = useCallback((seconds: number) => {
     clearInterval(remainingId.current);

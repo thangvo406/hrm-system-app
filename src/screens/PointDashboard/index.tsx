@@ -4,7 +4,7 @@ import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { usePointDashboard } from '@hooks';
 import { useTranslation } from 'react-i18next';
-import React from 'react';
+import React, { useMemo } from 'react';
 import PointBalanceCard from './PointBalanceCard';
 import PointHistoryRow from './PointHistoryRow';
 import { formatCurrency } from '@utils/product';
@@ -16,11 +16,17 @@ function PointDashboard() {
     balance,
     histories,
     expiringAmount,
+    summary,
     onPressItemHistory,
     onUsePoint,
     onViewExpireDetail,
     onViewAllHistory,
   } = usePointDashboard();
+
+  const infoDesc = useMemo(() => {
+    const key = `point_expiring.${summary?.deductionOrder?.toLowerCase()}_info`;
+    return t(key, { time: summary?.validityDays });
+  }, [summary]);
 
   return (
     <View style={styles.safeArea}>
@@ -41,7 +47,7 @@ function PointDashboard() {
           <Text style={styles.warningIcon}>⚠️</Text>
           <Text style={styles.warningText}>
             {t('point_dashboard.expire_warning', {
-              amount: formatCurrency(expiringAmount),
+              amount: formatCurrency(expiringAmount || 0),
             })}
           </Text>
           <AppButton
@@ -79,7 +85,7 @@ function PointDashboard() {
 
         <View style={styles.infoBanner}>
           <Text style={styles.infoIcon}>💡</Text>
-          <Text style={styles.infoText}>{t('point_dashboard.info')}</Text>
+          <Text style={styles.infoText}>{infoDesc}</Text>
         </View>
       </ScrollView>
     </View>

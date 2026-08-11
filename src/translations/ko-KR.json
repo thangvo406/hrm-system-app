@@ -507,7 +507,8 @@
       "nearest_date": "가장 빠른 소멸일 : {{date}}",
       "list_title": "소멸 예정 내역",
       "expire_at": "{{date}} 소멸",
-      "info": "포인트는 적립일로부터 30일 후 자동으로 소멸되며, 유효기간이 임박한 포인트부터 먼저 사용됩니다.",
+      "expiry_soonest_info": "포인트는 적립일로부터 {{time}}일 후 자동으로 소멸됩니다. 유효기간이 가장 임박한 포인트부터 우선 사용됩니다.",
+      "earned_oldest_info": "포인트는 적립일로부터 {{time}}일 후 자동으로 소멸됩니다. 먼저 적립된 포인트부터 우선 차감됩니다.",
       "use_action": "포인트 사용하러 가기"
     },
     "contribute_history": {
