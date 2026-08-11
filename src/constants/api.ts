@@ -111,6 +111,7 @@ export const EndPoints = {
     currentWallet: 'balance',
     getTransactionHistories: (request: string) => `balance/ledger?${request}`,
     topUpWallet: 'wallet/charge',
+    getPointExpiringSummary: 'balance/point/expiry-warning/summary',
     getPointExpiring: (request: string) =>
       `balance/point/expiry-warning?${request}`,
   },

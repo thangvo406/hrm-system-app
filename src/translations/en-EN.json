@@ -187,7 +187,7 @@
       "nearest_date": "Earliest expiry: {{date}}",
       "list_title": "Expiry schedule",
       "expire_at": "Expires {{date}}",
-      "info": "Points expire automatically 12 months after they are earned. Points closest to expiry are used first.",
+      "info": "Points expire automatically 30 days after they are earned. Points closest to expiry are used first.",
       "use_action": "Use points"
     },
     "contribute_history": {
@@ -468,6 +468,14 @@
       "field_email": "Email",
       "field_phone": "Phone",
       "field_member_type": "Member Type",
+      "field_receipt_phone": "Cash Receipt Phone Number",
+      "memberships": {
+        "student": "Student",
+        "teacher": "Teacher",
+        "employee": "University Staff",
+        "coop_employee": "Coop Staff",
+        "other": "Other"
+      },
       "placeholder_name": "Hong Gildong",
       "placeholder_email": "hong@univ.ac.kr",
       "placeholder_phone": "010-0000-0000",

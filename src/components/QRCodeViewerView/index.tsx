@@ -52,6 +52,7 @@ export type QRCodeViewerViewProps = {
   readonly contentStyle?: ViewStyle;
   readonly titleVoucher?: string;
   readonly btnVoucher?: string;
+  readonly subtitle?: string;
   readonly showBtnVoucher?: boolean;
   readonly showIconVoucher?: boolean;
   readonly onPressVoucher?: () => void;
@@ -69,6 +70,7 @@ function QRCodeViewerView({
   titleVoucher,
   onPressVoucher,
   btnVoucher,
+  subtitle,
   titleKey = 'qr_voucher.title',
   contentStyle,
   showIconVoucher = true,
@@ -149,7 +151,7 @@ function QRCodeViewerView({
             <TicketHead
               amountText={data?.amountText}
               badge={data?.headerBadge}
-              subtitle={t('qr_voucher.show_to_staff')}
+              subtitle={subtitle || t('qr_voucher.show_to_staff')}
               title={titleVoucher}
             />
 

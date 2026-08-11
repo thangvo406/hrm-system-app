@@ -33,6 +33,7 @@ export const useQRCodeMember = () => {
   const timeOutExpired = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
+  const profile = useAppSelector(AccountSelector.getProfile);
   const [isExpired, setIsExpired] = useState(false);
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
 
@@ -93,6 +94,7 @@ export const useQRCodeMember = () => {
     currentWallet,
     data,
     isExpired,
+    profile,
     onPressBarcode,
     onPressVoucher,
     onPressQR,

@@ -8,7 +8,7 @@ import React from 'react';
 type Properties = {
   readonly expiringWindowDays: number;
   readonly nearestExpiryDate: string | undefined;
-  readonly totalAmount: number;
+  readonly totalAmount?: number;
 };
 
 function ExpiringSummaryCard({

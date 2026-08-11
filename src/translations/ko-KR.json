@@ -254,6 +254,14 @@
       "field_email": "이메일",
       "field_phone": "전화번호",
       "field_member_type": "회원구분",
+      "field_receipt_phone": "현금영수증 휴대폰번호",
+      "memberships": {
+        "student": "학생",
+        "teacher": "교원",
+        "employee": "대학 직원",
+        "coop_employee": "생협 직원",
+        "other": "기타"
+      },
       "placeholder_name": "홍길동",
       "placeholder_email": "hong@univ.ac.kr",
       "placeholder_phone": "010-0000-0000",
@@ -499,7 +507,7 @@
       "nearest_date": "가장 빠른 소멸일 : {{date}}",
       "list_title": "소멸 예정 내역",
       "expire_at": "{{date}} 소멸",
-      "info": "포인트는 적립일로부터 12개월 후 자동 소멸됩니다. 유효기간이 임박한 포인트부터 우선 사용됩니다.",
+      "info": "포인트는 적립일로부터 30일 후 자동으로 소멸되며, 유효기간이 임박한 포인트부터 먼저 사용됩니다.",
       "use_action": "포인트 사용하러 가기"
     },
     "contribute_history": {

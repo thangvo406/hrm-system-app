@@ -2,6 +2,7 @@ import type {
   IWallet,
   IContributeHistory,
   IPointExpiryItem,
+  IPointExpirySummary,
   IRequestGetPointExpiring,
   IRequestGetTransactionHistories,
 } from '@type/wallet';
@@ -41,6 +42,14 @@ export const getPointExpiring = async (
   >(EndPoints.WALLET.getPointExpiring(params), { loading: false });
   return response?.data;
 };
+
+export const getPointExpiringSummary =
+  async (): Promise<IPointExpirySummary> => {
+    const response = await httpRequest.get<
+      SingleApiResponse<IPointExpirySummary>
+    >(EndPoints.WALLET.getPointExpiringSummary, { loading: false });
+    return response?.data;
+  };
 
 export const topUpWallet = async (
   request: IRequestTopUpWallet,

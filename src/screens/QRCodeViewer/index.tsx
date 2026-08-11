@@ -7,7 +7,7 @@ const SCREEN_BG = '#FFFFFF';
 
 function QRCodeViewer() {
   const insets = useSafeAreaInsets();
-  const { data, onRefresh, onPressVoucher } = useQRCodeMember();
+  const { data, profile, onRefresh, onPressVoucher } = useQRCodeMember();
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -16,6 +16,8 @@ function QRCodeViewer() {
         onRefresh={onRefresh}
         durationSeconds={data?.expiresIn}
         // onRequestClose={onRequestClose}
+        titleVoucher={profile?.fullName}
+        subtitle={profile?.email}
         titleKey="qr_code_member.title"
         showBtnVoucher
         onPressVoucher={onPressVoucher}

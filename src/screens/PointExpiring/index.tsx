@@ -35,10 +35,9 @@ function PointExpiring() {
     expiringWindowDays,
     items,
     loading,
-    nearestExpiryDate,
+    summary,
     onLoadMore,
     onUsePoint,
-    totalAmount,
   } = usePointExpiring();
 
   const renderEmpty = useCallback(
@@ -54,7 +53,11 @@ function PointExpiring() {
 
   return (
     <View style={styles.container}>
-      <HeaderDetail hideNotify title={t('point_expiring.title')} usePaddingTop />
+      <HeaderDetail
+        hideNotify
+        title={t('point_expiring.title')}
+        usePaddingTop
+      />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -64,8 +67,8 @@ function PointExpiring() {
 
         <ExpiringSummaryCard
           expiringWindowDays={expiringWindowDays}
-          nearestExpiryDate={nearestExpiryDate}
-          totalAmount={totalAmount}
+          nearestExpiryDate={summary?.nextExpiryDate}
+          totalAmount={summary?.currentBalance}
         />
 
         <Text style={styles.sectionTitle}>
