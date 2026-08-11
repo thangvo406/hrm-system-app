@@ -20,7 +20,7 @@ const onViewExpireDetail = () => {
 };
 
 const onPressItemHistory = (item: any) => () => {
-  AppNavigator.navigate(Paths.TransactionDetail, { transId: item?.id });
+  // AppNavigator.navigate(Paths.TransactionDetail, { transId: item?.id });
 };
 const onViewAllHistory = () => {
   AppNavigator.navigate(Paths.PayPointHistories);
