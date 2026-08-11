@@ -6,6 +6,7 @@ export enum Paths {
   BankAccountManage = 'bank_account_manage',
   BankInformation = 'bank_information',
   SchoolSelection = 'school_selection',
+  CapitalWithdrawal = 'capital_withdrawal',
   Carts = 'carts',
   Contribution = 'contribution',
   ContributionInput = 'contribution_input',

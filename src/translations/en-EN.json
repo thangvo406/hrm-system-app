@@ -195,6 +195,7 @@
       "title": "Contribution History",
       "contribution_status_title": "Contribution Status",
       "add_contribute": "Add Contribution",
+      "capital_withdrawal": "Decrease Request",
       "cumulative_contribution": "Cumulative Contribution : {{amount}} KRW",
       "dividend_info_title": "Dividend Information",
       "btn_dividend_detail": "View Details",
@@ -993,6 +994,15 @@
       "amount_won": "{{amount}} KRW",
       "units_count": "{{count}} units",
       "submit": "Apply"
+    },
+    "capital_withdrawal": {
+      "hero_title": "Contribution Decrease Request",
+      "hero_subtitle": "If your membership status changes after completion or graduation,\nyou can request a unit decrease.",
+      "info_banner": "If your membership status changes after completion or graduation, you can request a unit decrease.",
+      "option_academic_title": "Report academic change (completion/graduation)",
+      "option_academic_desc": "When your membership status changes due to completion or graduation",
+      "option_refund_title": "Unit decrease & refund request",
+      "option_refund_desc": "When you decrease contribution units and receive a refund"
     },
     "transaction_result": {
       "close": "Close",

@@ -42,6 +42,7 @@ function PayCard() {
     refreshing,
     filterCount,
     isEnablePaymentCard,
+    onCapitalWithdrawal,
     onChangeTab,
     onPressTranItem,
   } = useContributeHistory();
@@ -99,13 +100,22 @@ function PayCard() {
             <Text style={styles.sectionTitle}>
               {t('contribute_history.contribution_status_title')}
             </Text>
-            <Button
-              onPress={onRecharge}
-              style={styles.rechargeButton}
-              testID="contribute-history-add"
-              title={t('contribute_history.add_contribute')}
-              type="primary"
-            />
+            <View style={styles.headerActions}>
+              <Button
+                onPress={onRecharge}
+                style={styles.rechargeButton}
+                testID="contribute-history-add"
+                title={t('contribute_history.add_contribute')}
+                type="primary"
+              />
+              <Button
+                onPress={onCapitalWithdrawal}
+                style={styles.rechargeButton}
+                testID="contribute-history-withdrawal"
+                title={t('contribute_history.capital_withdrawal')}
+                type="primary"
+              />
+            </View>
           </View>
           <Text style={styles.balanceText}>
             {t('contribute_history.cumulative_contribution', {
@@ -254,6 +264,11 @@ const styles = StyleSheet.create({
     fontSize: ScaleSize(16),
     fontWeight: '700',
     marginBottom: ScaleSize(14),
+  },
+  headerActions: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: ScaleSize(8),
   },
   payHeaderRow: {
     alignItems: 'center',

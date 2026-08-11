@@ -39,6 +39,7 @@ export type RootStackParamList = {
       }
     | undefined;
   [Paths.SchoolSelection]: undefined;
+  [Paths.CapitalWithdrawal]: undefined;
   [Paths.Carts]: undefined;
   [Paths.Contribution]: undefined;
   [Paths.ContributionInput]: undefined;

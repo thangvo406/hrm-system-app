@@ -520,6 +520,7 @@
       "title": "출자 내역",
       "contribution_status_title": "출자금 현황",
       "add_contribute": "추가 출자",
+      "capital_withdrawal": "감좌 신청",
       "cumulative_contribution": "누적 출자금 : {{amount}}원",
       "dividend_info_title": "배당금 정보",
       "btn_dividend_detail": "상세 조회",
@@ -995,6 +996,15 @@
       "amount_won": "{{amount}}원",
       "units_count": "{{count}}구좌",
       "submit": "신청하기"
+    },
+    "capital_withdrawal": {
+      "hero_title": "출자금 감좌 신청",
+      "hero_subtitle": "수료·졸업 후 조합원 자격 변경이 필요한 경우\n감좌를 신청할 수 있습니다.",
+      "info_banner": "수료·졸업 후 조합원 자격 변경이 필요한 경우 감좌를 신청할 수 있습니다.",
+      "option_academic_title": "학적 변경 신고 (수료·졸업 등)",
+      "option_academic_desc": "수료·졸업 등으로 조합원 자격이 변경되는 경우",
+      "option_refund_title": "감좌 및 환불 신청",
+      "option_refund_desc": "출자금을 감좌하고 환불을 받는 경우"
     },
     "transaction_result": {
       "close": "확인",

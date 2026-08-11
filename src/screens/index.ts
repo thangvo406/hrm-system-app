@@ -8,6 +8,7 @@ export { default as SchoolSelection } from './SchoolSelection';
 export { default as Example } from './Example/Example';
 export { default as Home } from './Home';
 export { default as InputAddress } from './InputAddress';
+export { default as CapitalWithdrawal } from './CapitalWithdrawal';
 export { default as Contribution } from './Contribution';
 export { default as ContributionInput } from './ContributionInput';
 export { default as Notifications } from './Notifications';

@@ -45,6 +45,10 @@ const INITIAL_PAGINATION: TTabPaginationState = {
   page: 0,
 };
 
+const onCapitalWithdrawal = () => {
+  AppNavigator.navigate(Paths.CapitalWithdrawal);
+}
+
 export const useContributeHistory = () => {
   const [historyTab, setHistoryTab] = useState<TPayCardHistoryTab>('pay');
   const dispatch = useAppDispatch();
@@ -308,6 +312,7 @@ export const useContributeHistory = () => {
     onPressTranItem,
     onRecharge,
     onPressFilter,
+    onCapitalWithdrawal,
     onRefresh,
     refreshing,
     isEnablePaymentCard,

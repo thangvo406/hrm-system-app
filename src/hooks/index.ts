@@ -11,6 +11,7 @@ export { useHome } from './useHome';
 export { useForgotPass } from './useForgotPass';
 export { useI18n } from './language/useI18n';
 export { useNotifications } from './useNotifications';
+export { useCapitalWithdrawal } from './useCapitalWithdrawal';
 export { useContributeHistory } from './useContributeHistory';
 export { useContributionInput } from './useContributionInput';
 export { usePayPointHistories } from './usePayPointHistories';

@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   container: {
     paddingBottom: ScaleSize(8),
     paddingHorizontal: ScaleSize(20),
-    paddingTop: ScaleSize(28),
+    paddingTop: ScaleSize(5),
   },
   illustration: {
     marginRight: -ScaleSize(4),

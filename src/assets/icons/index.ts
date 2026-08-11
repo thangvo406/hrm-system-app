@@ -22,6 +22,7 @@ import Ic_chevron_upIcon from './ic_chevron_up.svg';
 import Ic_clockIcon from './ic_clock.svg';
 import Ic_clock_filledIcon from './ic_clock_filled.svg';
 import Ic_closeIcon from './ic_close.svg';
+import Ic_coins_refundIcon from './ic_coins_refund.svg';
 import Ic_contributionIcon from './ic_contribution.svg';
 import Ic_copyIcon from './ic_copy.svg';
 import Ic_couponIcon from './ic_coupon.svg';
@@ -31,6 +32,7 @@ import Ic_dividendIcon from './ic_dividend.svg';
 import Ic_dots_verticalIcon from './ic_dots_vertical.svg';
 import Ic_expand_walletIcon from './ic_expand_wallet.svg';
 import Ic_filterIcon from './ic_filter.svg';
+import Ic_graduation_capIcon from './ic_graduation_cap.svg';
 import Ic_homeIcon from './ic_home.svg';
 import Ic_hourglassIcon from './ic_hourglass.svg';
 import Ic_id_cardIcon from './ic_id_card.svg';
@@ -98,6 +100,7 @@ const icons = {
   'ic_clock': Ic_clockIcon,
   'ic_clock_filled': Ic_clock_filledIcon,
   'ic_close': Ic_closeIcon,
+  'ic_coins_refund': Ic_coins_refundIcon,
   'ic_contribution': Ic_contributionIcon,
   'ic_copy': Ic_copyIcon,
   'ic_coupon': Ic_couponIcon,
@@ -107,6 +110,7 @@ const icons = {
   'ic_dots_vertical': Ic_dots_verticalIcon,
   'ic_expand_wallet': Ic_expand_walletIcon,
   'ic_filter': Ic_filterIcon,
+  'ic_graduation_cap': Ic_graduation_capIcon,
   'ic_home': Ic_homeIcon,
   'ic_hourglass': Ic_hourglassIcon,
   'ic_id_card': Ic_id_cardIcon,
