@@ -1,7 +1,11 @@
 import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getTransactionDetailRequest } from '@services/slices/account/accountSlice';
-import type { ITransactionDetail, ITransactionLeg } from '@type/payment';
+import type {
+  ITransactionDetail,
+  ITransactionLeg,
+  ITransactionOrder,
+} from '@type/payment';
 import { useEffect, useMemo, useState } from 'react';
 
 export type TTransactionLegGroup = {
@@ -36,6 +40,19 @@ export function useTransactionDetail(props: any) {
   const [data, setData] = useState<ITransactionDetail>();
   const dispatch = useAppDispatch();
 
+  const order = useMemo(() => {
+    if (data?.order) {
+      return data?.order as ITransactionOrder;
+    }
+    const { legs } = data || {};
+    if ((legs?.length || 0) > 0) {
+      return {
+        totalAmount: legs?.[0].amount,
+        settledMoneyAmount: legs?.[0].amount,
+      } as ITransactionOrder;
+    }
+  }, [data]);
+
   useEffect(() => {
     dispatch(
       getTransactionDetailRequest({
@@ -56,5 +73,5 @@ export function useTransactionDetail(props: any) {
     [data],
   );
 
-  return { data, groupedLegs, loading, order: data?.order };
+  return { data, groupedLegs, loading, order };
 }

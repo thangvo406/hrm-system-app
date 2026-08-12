@@ -290,6 +290,7 @@ export interface ITransactionDetail {
   transactionKey: string;
   occurredAt: string;
   headlineAction: string;
+  headlineFundingSource: string;
   paymentFundingSource?: string;
   order: ITransactionOrder;
   withdrawal: any;

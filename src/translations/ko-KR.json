@@ -575,7 +575,8 @@
       "search_placeholder": "매장 이름",
       "delivery_label": {
         "pickup": "픽업",
-        "delivery": "배달"
+        "delivery": "배달",
+        "hall": "매장"
       },
       "section_label": "자주 주문한 매장",
       "filter": {

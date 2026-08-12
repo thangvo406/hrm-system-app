@@ -95,9 +95,7 @@ const StatusFilter = React.forwardRef<StatusFilterRef, any>(
 
     return (
       <View style={[styles.flex1, containerStyle]}>
-        <Text style={styles.title}>
-          {title || t('date_range_filter.title')}
-        </Text>
+        <Text style={styles.title}>{title}</Text>
 
         <View style={styles.container}>
           {data?.map((item: any, index: number) => {

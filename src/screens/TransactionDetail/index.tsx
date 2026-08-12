@@ -60,10 +60,10 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
     ? dayjs(data?.occurredAt).format(DATE_FORMAT)
     : '';
 
-  const paymentMethod = data?.paymentFundingSource
+  const paymentMethod = data?.headlineFundingSource
     ? t('order_history_detail.price_detail.paymentMethod', {
         method: t(
-          `order_history_detail.payment_methods.${data?.paymentFundingSource.toLowerCase()}`,
+          `order_history_detail.payment_methods.${data?.headlineFundingSource.toLowerCase()}`,
         ),
       })
     : EMPTY_VALUE;

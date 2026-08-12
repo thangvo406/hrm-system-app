@@ -601,8 +601,9 @@
       "search_placeholder": "Store name",
       "section_label": "Frequently Ordered Store",
       "delivery_label": {
-        "pickup": "Pickup",
-        "delivery": "Delivery"
+        "pickup": "`Pickup",
+        "delivery": "Delivery",
+        "hall": "Dine-in"
       },
       "filter": {
         "title": "Storting",

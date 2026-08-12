@@ -81,14 +81,13 @@ export const useTopUp = (props?: any) => {
 
   useEffect(() => {
     setSelectedAccountId(bankAccounts?.[0]?.id);
-    if(isEnablePaymentCard && isContribute && bankAccounts?.length == 0) {
-      onAddCard()
+    if (isEnablePaymentCard && isContribute && bankAccounts?.length == 0) {
+      onAddCard();
     }
   }, []);
 
   useEffect(() => {
     if (!isEnablePaymentCard) {
-      alert("ec")
       const executorRequest = isContribute
         ? increaseContributionRequest
         : balanceChargeRequest;
