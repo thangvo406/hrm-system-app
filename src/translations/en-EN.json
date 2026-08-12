@@ -758,6 +758,7 @@
       "unlock_account_confirm_desc": "This account will be available for payment again.",
       "unlock_success": "Payment method unlocked",
       "add_payment_method": "Add Payment Method",
+      "coop_pay_label": "Coop Pay",
       "account": "Account",
       "recent_history": "Recent history",
       "view_all": "View all",

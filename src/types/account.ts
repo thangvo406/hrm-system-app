@@ -133,7 +133,9 @@ export interface IRequestGetPayPointHistories
 }
 export interface IRequestCreateQRCodeMember
   extends AppCallback<IResponseCreateQRCodeMember> {
-  cpn: string[];
+  cpn?: string[];
+  paymentType?: string;
+  organizationId?: number;
 }
 export interface IUpdateProfileInfoRequest extends AppCallback {
   name?: string;

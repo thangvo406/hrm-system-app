@@ -1,4 +1,5 @@
 import { RegisterMembershipStep, AuthStep, PointTagStyle } from '@type';
+import { Environment } from './environment';
 
 export const initialLoginForm = {
   email: '',
@@ -6,6 +7,7 @@ export const initialLoginForm = {
 };
 
 export const PASSWORD_MIN_LENGTH = 6;
+export const URL_TRANSLATION = `${Environment.DOMAIN_CDN}uploads/{{lng}}.json`;
 
 export const NEED_INFO_LOGIN_CODE = {
   MEMBERSHIP_INCOMPLETE: 'AUTH_002',

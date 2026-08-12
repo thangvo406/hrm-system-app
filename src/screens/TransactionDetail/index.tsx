@@ -142,9 +142,13 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
                   key={index}
                   icon={ICONS_SECTION[it.balanceAccountType]}
                   style={styles.sectionCard}
-                  title={t(
-                    `transaction_detail.section_detail.${it.balanceAccountType?.toLowerCase()}`,
-                  )}
+                  title={
+                    !it.balanceAccountType
+                      ? '-'
+                      : t(
+                          `transaction_detail.section_detail.${it.balanceAccountType?.toLowerCase()}`,
+                        )
+                  }
                 >
                   {it.legs.map((le, i) => {
                     const title = LEG_LABELS[le.entryType];

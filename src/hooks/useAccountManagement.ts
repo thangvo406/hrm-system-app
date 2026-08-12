@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector, AppSelector } from '@services/selectors';
 import { AccountManagementSelector } from '@services/selectors/accountManagement';
 import {
+  generateQRCodeMemberRequest,
   getCurrentWalletRequest,
   getOrganizationInfoRequest,
 } from '@services/slices/account/accountSlice';
@@ -138,22 +139,37 @@ export const useAccountManagement = () => {
     AppNavigator.navigate(Paths.BankAccountManage);
   }, []);
 
+  const generateQROrganize =
+    (info: IResponseOrganizationInfo) => (callback: any) => {
+      dispatch(
+        generateQRCodeMemberRequest({
+          paymentType: 'ORGANIZATION_BALANCE',
+          organizationId: info.organizationId,
+          onSuccess: response => {
+            callback?.(response);
+          },
+        }),
+      );
+    };
+
   const onUseOrganize = useCallback((info: IResponseOrganizationInfo) => {
-    AppNavigator.showDialog({
-      screen: QRCodeViewerView,
-      isFullScreen: true,
-      showBtnVoucher: true,
-      showIconVoucher: true,
-      titleKey: 'qr_code_member.title',
-      titleVoucher: info?.name,
-      onPressVoucher: () => {
-        AppNavigator.navigate(Paths.Vouchers);
-      },
-      data: {
-        expiresIn: 3000,
-        code: info.name,
-      },
-      // onRefresh: onRefreshQR(voucher),
+    generateQROrganize(info)((response: any) => {
+      AppNavigator.showDialog({
+        screen: QRCodeViewerView,
+        isFullScreen: true,
+        showBtnVoucher: true,
+        showIconVoucher: true,
+        titleKey: 'qr_code_member.title',
+        onRefresh: generateQROrganize(info),
+        titleVoucher: info?.name,
+        onPressVoucher: () => {
+          AppNavigator.navigate(Paths.Vouchers);
+        },
+        data: {
+          expiresIn: response?.expiresIn,
+          token: response?.token,
+        },
+      });
     });
   }, []);
 

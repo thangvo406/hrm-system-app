@@ -233,7 +233,6 @@
     "bank_information": {
       "transfer_title": "생협페이머니 충전금액을\n아래의 계좌로 입금해주세요.",
       "transfer_desc": "*입금하신 금액은 관리자 확인 후\n생협페이머니로 지급됩니다.\n(영업일 기준 1~3일 소요)",
-      "intro": "조합원 최초 가입시,\n출자금 납부가 필요합니다.",
       "bank_label": "은행",
       "account_number": "계좌번호",
       "account_holder": "예금주",
@@ -281,7 +280,6 @@
       "tab_vouchers": "혜택",
       "tab_pay": "결제",
       "tab_qr_member": "회원QR",
-      "tab_benefit": "혜택",
       "tab_mypage": "내정보",
       "member_labels": {
         "general": "일반회원",
@@ -912,6 +910,7 @@
       "payment_amount_label": "결제 금액",
       "coupon_discount_label": "쿠폰 할인",
       "point_used_label": "포인트 사용",
+      "member_discount": "조합원 할인",
       "payment_summary_section_title": "결제 요약",
       "final_payment_label": "실결제 금액",
       "pay_money_label": "생협페이머니",

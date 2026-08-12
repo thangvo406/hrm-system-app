@@ -116,7 +116,7 @@ function QRCodeViewerView({
 
   const startRunningRemaining = useCallback((seconds: number) => {
     clearInterval(remainingId.current);
-    setRemaining(Math.max(10, 0));
+    setRemaining(Math.max(seconds, 0));
     remainingId.current = setInterval(() => {
       setRemaining(previous => (previous > 0 ? previous - 1 : 0));
     }, TICK_INTERVAL_MS);
