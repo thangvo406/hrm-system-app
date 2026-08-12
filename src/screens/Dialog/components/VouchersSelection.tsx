@@ -1,3 +1,4 @@
+import imageNames from '@assets/images/names';
 import {
   Image,
   AppButton,
@@ -5,6 +6,7 @@ import {
   Button,
   HeaderDetail,
   VouchersSelectionLoading,
+  EmptyView,
 } from '@components';
 import TextField from '@components/TextField';
 import { Colors } from '@constants';
@@ -132,6 +134,14 @@ function VouchersSelection(props: any) {
     [voucherSelected],
   );
 
+  const renderEmpty = useCallback(
+    () =>
+      loading ? undefined : (
+        <EmptyView desc={t('common.no_data')} icon={imageNames.ic_vouchers} />
+      ),
+    [loading],
+  );
+
   return (
     <View
       style={{
@@ -153,6 +163,7 @@ function VouchersSelection(props: any) {
           data={vouchers}
           keyExtractor={keyExtractor}
           renderItem={renderItem}
+          ListEmptyComponent={renderEmpty}
           showsVerticalScrollIndicator={false}
           onEndReachedThreshold={1.5}
           onEndReached={onLoadMore}

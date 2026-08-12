@@ -83,13 +83,17 @@ function CartProductCard({
       <View style={styles.info}>
         <Text style={styles.name}>{item.productName}</Text>
         <Text style={styles.price}>
-          {t('common.display_price', { amount: formatCurrency(item.unitPrice) })}
+          {t('common.display_price', {
+            amount: formatCurrency(item.unitPrice),
+          })}
         </Text>
-        {item.selectedAttributes?.map((attribute: IAttributeCart) => (
-          <Text style={styles.attribute} key={attribute.attributeId}>
-            {attribute.attributeName}
-          </Text>
-        ))}
+        {item.selectedAttributes?.map(
+          (attribute: IAttributeCart, index: number) => (
+            <Text style={styles.attribute} key={index}>
+              {attribute.attributeName}
+            </Text>
+          ),
+        )}
         {error ? <Text style={styles.error}>{error}</Text> : undefined}
       </View>
 

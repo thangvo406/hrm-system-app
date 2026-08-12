@@ -36,8 +36,9 @@ export function useProfile() {
   const onChangeReceiptPhone = useCallback((text: string) => {
     const phone = text.replaceAll(/\D/g, '');
     setReceiptPhone(phone);
-    const error =
-      phone && ValidateUtils.isPhoneNumber(text)
+    const error = !phone
+      ? ''
+      : phone && ValidateUtils.isPhoneNumber(text)
         ? ''
         : t('authorisation.error_phone_invalid');
     setErrors(prev =>

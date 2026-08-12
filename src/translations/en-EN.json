@@ -285,7 +285,8 @@
       "cart_button": "Checkout {{amount}} KRW",
       "empty": "No products to display.",
       "out_of_stock": "Sold Out",
-      "sold_out": "Sold Out"
+      "sold_out": "Sold Out",
+      "search_placeholder": "Product name"
     },
     "authorisation": {
       "tab_login": "Login",
