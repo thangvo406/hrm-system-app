@@ -15,7 +15,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ScaleSize } from '@kits/core';
 import imageNames from '@assets/images/names';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
@@ -26,6 +26,8 @@ import AppNavigator from '@navigation/AppNavigator';
 import Information from '@screens/Dialog/components/Information';
 import { useI18n } from '@hooks';
 import RegisterMembership from '@dialogs/RegisterMembership';
+import { GRADE_MEMBERSHIP_TYPE } from '@constants/config';
+import set from 'lodash/set';
 
 const MENU_WIDTH_RATIO = 0.78;
 const SLIDE_DURATION = 280;
@@ -75,7 +77,7 @@ const NAV_TARGETS: Readonly<Record<string, Paths>> = {
   pay_balance: Paths.ContributionHistory,
   survey: Paths.Survey,
   store_search: Paths.Stores,
-  order: Paths.OrderHistories,
+  order: Paths.Orders,
   pay: Paths.PaymentOffline,
   deposit_inquiry: Paths.ContributionHistory,
   deposit_pay: Paths.ContributionInput,
@@ -84,7 +86,7 @@ const NAV_TARGETS: Readonly<Record<string, Paths>> = {
   meal_ticket: Paths.MealTickets,
 };
 
-const sections: readonly MenuSection[] = [
+const SECTIONS: readonly MenuSection[] = [
   {
     items: [
       { key: 'deposit_inquiry', labelKey: 'home.menu.deposit_inquiry' },
@@ -148,6 +150,20 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
   const profileName = profile?.name ?? profile?.fullName ?? '';
   const profileInitial =
     profileName.trim().charAt(0).toUpperCase() || LOGO_INITIALS;
+
+  const sections = useMemo(() => {
+    const isHideContribute =
+      profile?.coopMemberGrade == GRADE_MEMBERSHIP_TYPE.GENERAL;
+    const _sections = SECTIONS;
+    let firstItem = _sections[0].items;
+    if (isHideContribute) {
+      firstItem = firstItem.filter(
+        it => !['deposit_inquiry', 'deposit_pay'].includes(it.key),
+      );
+    }
+    set(_sections, `[0].items`, firstItem);
+    return _sections;
+  }, []);
 
   useEffect(() => {
     if (closing) {

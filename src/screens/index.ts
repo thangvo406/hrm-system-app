@@ -14,7 +14,7 @@ export { default as ContributionInput } from './ContributionInput';
 export { default as Notifications } from './Notifications';
 export { default as Profile } from './Profile';
 export { default as OrderCompleted } from './OrderCompleted';
-export { default as OrderHistories } from './OrderHistories';
+export { default as Orders } from './Orders';
 export { default as AcademicVerificationFinish } from './AcademicVerificationFinish';
 export { default as OrderHistoryDetail } from './OrderHistoryDetail';
 export { default as TransactionDetail } from './TransactionDetail';

@@ -1,10 +1,10 @@
 import type { IOrderHistoryItem } from '@type/payment';
 import type { ListRenderItem } from 'react-native';
 
-import { EmptyView, HeaderDetail, OrderHistoriesLoading } from '@components';
+import { EmptyView, HeaderDetail, OrdersLoading } from '@components';
 import { ScaleSize } from '@kits/core';
 import { FlatList, StyleSheet, View } from 'react-native';
-import { useOrderHistories } from '@hooks';
+import { useOrders } from '@hooks';
 import OrderHistoryRow from './OrderHistoryRow';
 import imageNames from '@assets/images/names';
 import { useTranslation } from 'react-i18next';
@@ -18,9 +18,8 @@ function ItemSeparator() {
   return <View style={styles.separator} />;
 }
 
-function OrderHistories() {
-  const { data, loading, onLoadMore, onPressItem, onReOrder } =
-    useOrderHistories();
+function Orders() {
+  const { data, loading, onLoadMore, onPressItem, onReOrder } = useOrders();
 
   const { t } = useTranslation();
 
@@ -40,7 +39,7 @@ function OrderHistories() {
     <View style={styles.container}>
       <HeaderDetail title={t('order_histories.title')} />
       {loading ? (
-        <OrderHistoriesLoading />
+        <OrdersLoading />
       ) : data?.length > 0 ? (
         <FlatList
           contentContainerStyle={styles.listContent}
@@ -59,7 +58,7 @@ function OrderHistories() {
   );
 }
 
-export default OrderHistories;
+export default Orders;
 
 const styles = StyleSheet.create({
   container: {

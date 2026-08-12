@@ -14,7 +14,7 @@ function onPressItem(item: any) {
   AppNavigator.navigate(Paths.OrderHistoryDetail, { data: item });
 }
 
-export function useOrderHistories() {
+export function useOrders() {
   const dispatch = useAppDispatch();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -81,7 +81,7 @@ const SKELETON_LAYOUT: any[] = Array.from(
   (_, index) => buildRowLayout(index),
 );
 
-function OrderHistoriesLoading() {
+function OrdersLoading() {
   return (
     <Skeleton
       animationType="shiver"
@@ -92,7 +92,7 @@ function OrderHistoriesLoading() {
   );
 }
 
-export default React.memo(OrderHistoriesLoading);
+export default React.memo(OrdersLoading);
 
 const styles = StyleSheet.create({
   container: {

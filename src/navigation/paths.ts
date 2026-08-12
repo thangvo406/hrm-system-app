@@ -17,7 +17,7 @@ export enum Paths {
   Notifications = 'notifications',
   OrderCompleted = 'order_completed',
   AcademicVerificationFinish = 'academic_verify_finish',
-  OrderHistories = 'order_histories',
+  Orders = 'orders',
   OrderHistoryDetail = 'order_history_detail',
   TransactionDetail = 'transaction_detail',
   TransactionResult = 'transaction_result',

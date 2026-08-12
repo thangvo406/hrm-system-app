@@ -1,7 +1,7 @@
 export { default as AnnouncementDetailLoading } from './Loading/AnnouncementDetail';
 export { default as AnnouncementLoading } from './Loading/Annoucements';
 export { default as NotificationsLoading } from './Loading/Notificatification';
-export { default as OrderHistoriesLoading } from './Loading/OrderHistories';
+export { default as OrdersLoading } from './Loading/Orders';
 export { default as OrderHistoryDetailLoading } from './Loading/OrderHistoryDetail';
 export { default as TransactionDetailLoading } from './Loading/TransactionDetail';
 export { default as TransactionHistoriesLoading } from './Loading/TransactionHistories';

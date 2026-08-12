@@ -24,7 +24,7 @@ export { useReturnParams } from './useReturnParams';
 export { useSurvey } from './useSurvey';
 export { useSurveyDetail } from './useSurveyDetail';
 export { useStore } from './useStore';
-export { useOrderHistories } from './useOrderHistories';
+export { useOrders } from './useOrders';
 export { useOrderHistoryDetail } from './useOrderHistoryDetail';
 export { useTransactionDetail } from './useTransactionDetail';
 export { useTopUp } from './useTopUp';

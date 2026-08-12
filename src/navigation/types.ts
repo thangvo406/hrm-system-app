@@ -55,7 +55,7 @@ export type RootStackParamList = {
         status?: 'pending' | 'success';
       }
     | undefined;
-  [Paths.OrderHistories]: undefined;
+  [Paths.Orders]: undefined;
   [Paths.TransactionDetail]: { data?: ITransactionDetail } | undefined;
   [Paths.TransactionResult]:
     | {
