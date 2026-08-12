@@ -1,23 +1,17 @@
 import type { WithdrawalType } from '@screens/CapitalWithdrawal/WithdrawalTypeCard';
-import type { IAccount } from '@type';
 import type { IContributeSummary } from '@type/wallet';
-import type { WebViewNavigation } from 'react-native-webview';
 
-import { MEMBERSHIP_TYPE, PaymentTypes } from '@constants/config';
+import { MEMBERSHIP_TYPE} from '@constants/config';
 import bankData from '@constants/banks.json';
 import Selection from '@dialogs/Selection';
-import WebViewScreen from '@dialogs/Webview';
 import AppNavigator from '@navigation/AppNavigator';
-import { deepLinkGate } from '@navigation/deepLinkGate';
 import { Paths } from '@navigation/paths';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import {
-  AccountManagementSelector,
   AccountSelector,
 } from '@services/selectors';
 import {
   getContributeSummaryRequest,
-  increaseContributionRequest,
 } from '@services/slices/payment/paymentSlice';
 import { TranslationUtils } from '@utils';
 import { useEffect, useMemo, useState } from 'react';
@@ -26,20 +20,11 @@ import { useTranslation } from 'react-i18next';
 import type { IBankOption } from './useWithdrawal';
 
 const CONTRIBUTION_UNIT_PRICE = 100_000;
-const RESULT_STATUSES: Record<string, string> = {
-  APPROVED: 'SUCCESS',
-  COMPLETED: 'SUCCESS',
-  SUCCESS: 'SUCCESS',
-};
 
 export const useCapitalWithdrawal = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const profile = useAppSelector(AccountSelector.getProfile);
-  const bankAccounts = useAppSelector(
-    AccountManagementSelector.getAccountCards,
-  );
-  const [selectedAccountId, setSelectedAccountId] = useState<IAccount['id']>();
   const [summary, setSummary] = useState<IContributeSummary | undefined>();
   const [amount, setAmount] = useState('');
   const [withdrawalType, setWithdrawalType] =
@@ -51,7 +36,6 @@ export const useCapitalWithdrawal = () => {
   );
 
   useEffect(() => {
-    setSelectedAccountId(bankAccounts?.[0]?.id);
     dispatch(
       getContributeSummaryRequest({
         onFailure: () => setSummary(undefined),
@@ -117,64 +101,21 @@ export const useCapitalWithdrawal = () => {
   // TODO: swap increaseContributionRequest for the decrease/refund API once
   // the backend endpoint is available — this is copied from the increase flow.
   const onSubmit = () => {
-    AppNavigator.navigate(Paths.CapitalWithdrawalResult);
-    return;
-    dispatch(
-      increaseContributionRequest({
-        amount: Number(amount),
-        payment: {
-          paymentMethodId:
-            selectedAccountId == undefined
-              ? undefined
-              : Number(selectedAccountId),
-          paymentType: PaymentTypes.SAVED_METHOD,
-        },
-        onSuccess: (data: any) => {
-          const _data = data?.kcpSessionData || data;
-          AppNavigator.showDialog({
-            cookies: {
-              ordr_idxx: _data?.orderNo,
-              qpay_sdk_url: _data?.qpaySdkUrl,
-              qtid: _data?.qtid,
-              req_amt: _data?.reqAmt,
-              req_type: _data?.reqType,
-              site_cd: _data?.siteCd,
-            },
-            isFullScreen: true,
-            onNavigationStateChange: (
-              navState: WebViewNavigation,
-              onRequestClose: any,
-            ) => {
-              const { url } = navState || {};
-              const isDeeplinkApp = url?.startsWith?.('coop://');
-              if (!isDeeplinkApp) {
-                return;
-              }
-              const params = deepLinkGate.getPathFromUrl(navState.url);
-              const resultStatus = params?.status as string | undefined;
-              const cardSelected = bankAccounts?.find(
-                it => it.id == selectedAccountId,
-              );
-              onRequestClose();
-              AppNavigator.navigate(Paths.TransactionResult, {
-                ...params,
-                bankName: cardSelected?.displayName,
-                isContribute: true,
-                status: params?.error
-                  ? 'FAILED'
-                  : RESULT_STATUSES[resultStatus ?? ''] || resultStatus,
-                type: 'contribute',
-              });
-            },
-            screen: WebViewScreen,
-            url: _data?.kcpWebViewUrl,
-          });
-        },
-        onFailure: error => {
-          AppNavigator.showSnackBar({ message: error, type: 'failed' });
-        },
-      }),
-    );
+    const requestedUnits = Number(amount);
+    AppNavigator.navigate(Paths.CapitalWithdrawalResult, {
+      amount: requestedUnits * unitPrice,
+      applicantName: profile?.fullName ?? profile?.name,
+      bankInfo: {
+        accountHolder,
+        accountNumber,
+        bank: selectedBank,
+      },
+      currentUnitCount: currentUnits,
+      requestedAt: Date.now(),
+      status: 'PENDING',
+      totalUnitCountAfter: Math.max(currentUnits - requestedUnits, 0),
+      unitCount: requestedUnits,
+    });
   };
 
   return {

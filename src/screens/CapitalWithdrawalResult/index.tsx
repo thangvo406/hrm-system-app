@@ -1,5 +1,5 @@
 import type { IconName } from '@assets/icons';
-import type { RootScreenProps } from '@navigation/types';
+import type { RootScreenProps, RootStackParamList } from '@navigation/types';
 import type { TransactionResultStatus } from '@navigation/types';
 
 import { AppButton, Image } from '@components';
@@ -9,6 +9,7 @@ import { DeviceUtils } from '@kits/core/utils';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import RegisterHeader from '@screens/Authorisation/components/RegisterFlow/Header';
+import { formatCurrency } from '@utils/product';
 import dayjs from 'dayjs';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -26,6 +27,10 @@ const SPARKLE_SMALL_SIZE = ScaleSize(9);
 const DETAIL_ICON_SIZE = ScaleSize(20);
 const MEGAPHONE_ICON_SIZE = ScaleSize(38);
 const CONFIRM_ICON_SIZE = ScaleSize(20);
+
+type ResultParams = Partial<
+  NonNullable<RootStackParamList[Paths.CapitalWithdrawalResult]>
+>;
 
 type StatusUiConfig = {
   readonly badgeBg: string;
@@ -104,22 +109,33 @@ function CapitalWithdrawalResult(
 ) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const params = AppNavigator.getParams(props) || {};
+  const params = (AppNavigator.getParams(props) || {}) as ResultParams;
   const {
-    accountNumber,
-    amount = 0,
+    amount,
     applicantName,
     applicationId,
-    bankName,
+    bankInfo,
     currentUnitCount,
     expectedCompletionAt,
     memberId,
     requestedAt,
     totalUnitCountAfter,
-    unitCount = 0,
+    unitCount,
     verifyCode,
   } = params;
-  const status: TransactionResultStatus = params?.status ?? 'PENDING';
+
+  // Refund account: prefer the bankInfo object built by the withdrawal form,
+  // fall back to the flat params for callers that only send those.
+  const accountHolder = bankInfo?.accountHolder ?? params.accountHolder;
+  const accountNumber = bankInfo?.accountNumber ?? params.accountNumber;
+  const bankName = bankInfo?.bank?.name ?? params.bankName;
+  const bankAndNumber = [bankName, accountNumber].filter(Boolean).join(' ');
+  const depositAccount =
+    bankAndNumber && accountHolder
+      ? `${bankAndNumber} (${accountHolder})`
+      : bankAndNumber;
+
+  const status: TransactionResultStatus = params.status ?? 'PENDING';
 
   const config = UI_CONFIG[status];
   const statusDisplay = status.toLocaleLowerCase();
@@ -211,12 +227,14 @@ function CapitalWithdrawalResult(
               }
             />
           ) : undefined}
-          <Row
-            label={t('capital_withdrawal_result.unit_count')}
-            value={t('capital_withdrawal_result.unit_value', {
-              count: unitCount,
-            })}
-          />
+          {unitCount === undefined ? undefined : (
+            <Row
+              label={t('capital_withdrawal_result.unit_count')}
+              value={t('capital_withdrawal_result.unit_value', {
+                count: unitCount,
+              })}
+            />
+          )}
           {currentUnitCount === undefined ? undefined : (
             <Row
               label={t('capital_withdrawal_result.current_unit_count')}
@@ -233,14 +251,16 @@ function CapitalWithdrawalResult(
               })}
             />
           )}
-          <Row
-            label={t('capital_withdrawal_result.amount')}
-            value={`${amount.toLocaleString('ko-KR')}${t('capital_withdrawal_result.currency_suffix')}`}
-          />
-          {bankName || accountNumber ? (
+          {amount === undefined ? undefined : (
+            <Row
+              label={t('capital_withdrawal_result.amount')}
+              value={`${formatCurrency(amount)}${t('capital_withdrawal_result.currency_suffix')}`}
+            />
+          )}
+          {depositAccount ? (
             <Row
               label={t('capital_withdrawal_result.deposit_account')}
-              value={[bankName, accountNumber].filter(Boolean).join(' ')}
+              value={depositAccount}
             />
           ) : undefined}
           {verifyCode ? (

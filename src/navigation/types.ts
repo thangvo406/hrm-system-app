@@ -1,5 +1,6 @@
 import type { AppStacks, Paths } from '@navigation/paths';
 import type { BankInformationOrigin } from '@hooks/useBankInformation';
+import type { IBankOption } from '@hooks/useWithdrawal';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { IQRCodeViewerData, TNotificationItem } from '@type';
 import { IStoreItem } from '@type/store';
@@ -42,10 +43,16 @@ export type RootStackParamList = {
   [Paths.CapitalWithdrawal]: undefined;
   [Paths.CapitalWithdrawalResult]:
     | {
+        accountHolder?: string;
         accountNumber?: string;
         amount: number;
         applicantName?: string;
         applicationId?: string;
+        bankInfo?: {
+          accountHolder?: string;
+          accountNumber?: string;
+          bank?: IBankOption;
+        };
         bankName?: string;
         currentUnitCount?: number;
         expectedCompletionAt?: number | string;
