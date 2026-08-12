@@ -209,6 +209,7 @@ export interface IOrderHistoryItem {
 
 export interface IRequestGetOrderHistories
   extends AppCallback<ListApiResponse<IOrderHistoryItem[]>> {
+  readonly orderReceiveMethod?: string;
   readonly page: number;
   readonly size: number;
 }

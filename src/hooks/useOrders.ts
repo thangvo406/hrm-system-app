@@ -10,6 +10,14 @@ import { Paths } from '@navigation/paths';
 
 const PAGE_SIZE = 10;
 
+export type OrderTabKey = 'all' | 'pickup' | 'hall';
+
+export const ORDER_RECEIVE_METHODS: Record<OrderTabKey, string> = {
+  all: '',
+  hall: 'hall',
+  pickup: 'pickup',
+};
+
 function onPressItem(item: any) {
   AppNavigator.navigate(Paths.OrderHistoryDetail, { data: item });
 }
@@ -19,6 +27,9 @@ export function useOrders() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>(undefined);
+  const [activeTab, setActiveTab] = useState<OrderTabKey>(
+    ORDER_RECEIVE_METHODS.all as OrderTabKey,
+  );
   const [currentPage, setCurrentPage] = useState(0);
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
@@ -50,13 +61,14 @@ export function useOrders() {
   useEffect(() => {
     dispatch(
       getOrderHistoriesRequest({
+        orderReceiveMethod: ORDER_RECEIVE_METHODS[activeTab],
         page: currentPage,
         size: PAGE_SIZE,
         onFailure: handleFailure,
         onSuccess: handleSuccess,
       }),
     );
-  }, [dispatch, currentPage]);
+  }, [dispatch, activeTab, currentPage]);
 
   const onLoadMore = useCallback(() => {
     clearTimeout(timoutLoadMore.current);
@@ -67,10 +79,20 @@ export function useOrders() {
     }, 350);
   }, [currentPage]);
 
+  const onChangeTab = (tab: OrderTabKey) => {
+    if (tab === activeTab) return;
+    setLoading(true);
+    isLast.current = false;
+    setActiveTab(tab);
+    setCurrentPage(0);
+  };
+
   return {
+    activeTab,
     data,
     error,
     loading,
+    onChangeTab,
     onLoadMore,
     onReOrder,
     onPressItem,

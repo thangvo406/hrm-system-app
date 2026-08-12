@@ -1,9 +1,16 @@
+import type { OrderTabKey } from '@hooks';
 import type { IOrderHistoryItem } from '@type/payment';
 import type { ListRenderItem } from 'react-native';
 
-import { EmptyView, HeaderDetail, OrdersLoading } from '@components';
+import {
+  EmptyView,
+  HeaderDetail,
+  OrdersLoading,
+  SegmentedTab,
+} from '@components';
 import { ScaleSize } from '@kits/core';
 import { FlatList, StyleSheet, View } from 'react-native';
+import { useMemo } from 'react';
 import { useOrders } from '@hooks';
 import OrderHistoryRow from './OrderHistoryRow';
 import imageNames from '@assets/images/names';
@@ -19,9 +26,29 @@ function ItemSeparator() {
 }
 
 function Orders() {
-  const { data, loading, onLoadMore, onPressItem, onReOrder } = useOrders();
+  const {
+    activeTab,
+    data,
+    loading,
+    onChangeTab,
+    onLoadMore,
+    onPressItem,
+    onReOrder,
+  } = useOrders();
 
   const { t } = useTranslation();
+
+  const tabs = useMemo(
+    () => [
+      { id: 'all' as OrderTabKey, label: t('order_histories.tabs.all') },
+      {
+        id: 'pickup' as OrderTabKey,
+        label: t('order_histories.tabs.pickup'),
+      },
+      { id: 'hall' as OrderTabKey, label: t('order_histories.tabs.hall') },
+    ],
+    [t],
+  );
 
   const renderItem: ListRenderItem<IOrderHistoryItem> = ({ item }) => (
     <OrderHistoryRow
@@ -38,6 +65,12 @@ function Orders() {
   return (
     <View style={styles.container}>
       <HeaderDetail title={t('order_histories.title')} />
+      <SegmentedTab
+        activeTab={activeTab}
+        onTabChange={onChangeTab}
+        style={styles.tabs}
+        tabs={tabs}
+      />
       {loading ? (
         <OrdersLoading />
       ) : data?.length > 0 ? (
@@ -74,5 +107,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#EFEFEF',
     height: 1,
     marginHorizontal: ScaleSize(16),
+  },
+  tabs: {
+    marginHorizontal: ScaleSize(16),
+    marginTop: ScaleSize(12),
   },
 });

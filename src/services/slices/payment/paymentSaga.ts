@@ -162,11 +162,11 @@ function* createOrderWorker(
 function* getOrderHistoriesWorker(
   action: PayloadAction<IRequestGetOrderHistories>,
 ): Generator<unknown, void, ListApiResponse<IOrderHistoryItem[]>> {
-  const { onFailure, onSuccess, page, size } = action.payload;
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
     const response: ListApiResponse<IOrderHistoryItem[]> = yield call(
       getOrderHistories,
-      { page, size },
+      request,
     );
     onSuccess?.(response);
   } catch (error_) {

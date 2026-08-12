@@ -845,7 +845,12 @@
     },
     "order_histories": {
       "title": "주문 내역",
-      "reorder": "재주문"
+      "reorder": "재주문",
+      "tabs": {
+        "all": "전체",
+        "pickup": "픽업",
+        "hall": "매장"
+      }
     },
     "qr_code_member": {
       "title": "모바일 회원QR",

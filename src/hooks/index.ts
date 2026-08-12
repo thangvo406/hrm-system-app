@@ -3,6 +3,7 @@ export type {
   RegisterErrors,
   SocialProvider,
 } from './useAuthorization';
+export type { OrderTabKey } from './useOrders';
 export { useCart } from './useCart';
 export { useAnnouncementDetail } from './useAnnouncementDetail';
 export { useAnnouncements } from './useAnnouncements';

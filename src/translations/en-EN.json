@@ -602,7 +602,7 @@
       "search_placeholder": "Store name",
       "section_label": "Frequently Ordered Store",
       "delivery_label": {
-        "pickup": "`Pickup",
+        "pickup": "Pickup",
         "delivery": "Delivery",
         "hall": "Dine-in"
       },
@@ -845,7 +845,12 @@
     },
     "order_histories": {
       "title": "Order History",
-      "reorder": "Reorder"
+      "reorder": "Reorder",
+      "tabs": {
+        "all": "All",
+        "pickup": "Pickup",
+        "hall": "Dine-in"
+      }
     },
     "qr_code_member": {
       "title": "Membership QR Code",
