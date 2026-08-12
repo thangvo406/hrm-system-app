@@ -994,7 +994,9 @@
       "expected_units_label": "Total expected units",
       "amount_won": "{{amount}} KRW",
       "units_count": "{{count}} units",
-      "submit": "Apply"
+      "submit": "Apply",
+      "title_transfer_amount": "Please transfer your contribution to the account below.",
+      "desc_transfer_amount": "Your contribution will be credited after admin confirmation.(Takes 1–3 business days)"
     },
     "capital_withdrawal": {
       "hero_title": "Contribution Decrease Request",

@@ -996,7 +996,9 @@
       "expected_units_label": "총 예상 구좌수",
       "amount_won": "{{amount}}원",
       "units_count": "{{count}}구좌",
-      "submit": "신청하기"
+      "submit": "신청하기",
+      "title_transfer_amount": "아래 계좌로 출자금을 송금해 주세요.",
+      "desc_transfer_amount": "입금하신 출자금은 관리자 확인 후 출자금으로 반영됩니다.(영업일 기준 1~3일 소요)"
     },
     "capital_withdrawal": {
       "hero_title": "출자금 감좌 신청",
