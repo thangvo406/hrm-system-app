@@ -40,6 +40,23 @@ export type RootStackParamList = {
     | undefined;
   [Paths.SchoolSelection]: undefined;
   [Paths.CapitalWithdrawal]: undefined;
+  [Paths.CapitalWithdrawalResult]:
+    | {
+        accountNumber?: string;
+        amount: number;
+        applicantName?: string;
+        applicationId?: string;
+        bankName?: string;
+        currentUnitCount?: number;
+        expectedCompletionAt?: number | string;
+        memberId?: string;
+        requestedAt: number | string;
+        status?: TransactionResultStatus;
+        totalUnitCountAfter?: number;
+        unitCount: number;
+        verifyCode?: string;
+      }
+    | undefined;
   [Paths.Carts]: undefined;
   [Paths.Contribution]: undefined;
   [Paths.ContributionInput]: undefined;

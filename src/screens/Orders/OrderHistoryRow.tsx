@@ -55,12 +55,12 @@ function OrderHistoryRow({
           </Text>
         </View>
       </View>
-      {/* <View style={styles.actions}>
+      <View style={styles.actions}>
         <AppButton onPress={onReOrder} style={styles.actionBtn}>
           <Text style={styles.actionLabel}>{t('order_histories.reorder')}</Text>
           <Text style={styles.actionArrow}> →</Text>
         </AppButton>
-      </View> */}
+      </View>
     </AppButton>
   );
 }
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     color: TEXT_DARK,
     flex: 1,
     fontSize: ScaleSize(15),
-    fontWeight: '500',
+    fontWeight: 'bold',
     lineHeight: ScaleSize(22),
   },
   orderCode: {

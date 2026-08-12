@@ -27,9 +27,7 @@ export function useOrders() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | undefined>(undefined);
-  const [activeTab, setActiveTab] = useState<OrderTabKey>(
-    ORDER_RECEIVE_METHODS.all as OrderTabKey,
-  );
+  const [activeTab, setActiveTab] = useState<OrderTabKey>('all');
   const [currentPage, setCurrentPage] = useState(0);
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);

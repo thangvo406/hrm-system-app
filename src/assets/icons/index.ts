@@ -40,6 +40,7 @@ import Ic_infoIcon from './ic_info.svg';
 import Ic_leafIcon from './ic_leaf.svg';
 import Ic_lock_closedIcon from './ic_lock_closed.svg';
 import Ic_map_pinIcon from './ic_map_pin.svg';
+import Ic_megaphoneIcon from './ic_megaphone.svg';
 import Ic_member_badgeIcon from './ic_member_badge.svg';
 import Ic_menuIcon from './ic_menu.svg';
 import Ic_notify_grayIcon from './ic_notify_gray.svg';
@@ -118,6 +119,7 @@ const icons = {
   'ic_leaf': Ic_leafIcon,
   'ic_lock_closed': Ic_lock_closedIcon,
   'ic_map_pin': Ic_map_pinIcon,
+  'ic_megaphone': Ic_megaphoneIcon,
   'ic_member_badge': Ic_member_badgeIcon,
   'ic_menu': Ic_menuIcon,
   'ic_notify_gray': Ic_notify_grayIcon,

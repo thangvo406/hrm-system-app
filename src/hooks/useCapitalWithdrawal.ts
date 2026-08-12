@@ -117,6 +117,8 @@ export const useCapitalWithdrawal = () => {
   // TODO: swap increaseContributionRequest for the decrease/refund API once
   // the backend endpoint is available — this is copied from the increase flow.
   const onSubmit = () => {
+    AppNavigator.navigate(Paths.CapitalWithdrawalResult);
+    return;
     dispatch(
       increaseContributionRequest({
         amount: Number(amount),
