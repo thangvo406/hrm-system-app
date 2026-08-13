@@ -165,7 +165,10 @@ export function useMealTickets() {
             titleKey: 'meal_ticket.detail.title',
             btnVoucher: `‹${t('meal_ticket.detail.btn_back')}`,
             titleVoucher: voucher?.productName,
-            data: response,
+            data: {
+              ...(response || ({} as any)),
+              token: JSON.stringify(response?.data),
+            },
             onRefresh: onRefreshQR(voucher),
           });
         },

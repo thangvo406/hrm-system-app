@@ -6,6 +6,7 @@ import type { TranslationKeys } from '@translations/i18next';
 import { Colors } from '@constants';
 import {
   AmountRow,
+  Button,
   DashedDivider,
   HeaderDetail,
   TransactionDetailLoading,
@@ -53,7 +54,15 @@ const getAmount = (data: any, fieldName: string) => {
 function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { data, loading, groupedLegs, order } = useTransactionDetail(props);
+  const {
+    data,
+    loading,
+    groupedLegs,
+    isShowDashDivider,
+    order,
+    onPressQR,
+    isDebit,
+  } = useTransactionDetail(props);
 
   const headerTitle = data ? formatWon(t, order?.totalAmount) : '';
   const headerDate = data?.occurredAt
@@ -73,101 +82,118 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
       {loading ? (
         <TransactionDetailLoading />
       ) : (
-        <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            { paddingBottom: insets.bottom + ScaleSize(24) },
-          ]}
-          showsVerticalScrollIndicator={false}
-        >
-          <SummaryHeader date={headerDate} title={headerTitle} />
+        <>
+          <ScrollView
+            contentContainerStyle={[
+              styles.scrollContent,
+              { paddingBottom: insets.bottom + ScaleSize(24) },
+            ]}
+            showsVerticalScrollIndicator={false}
+          >
+            <SummaryHeader
+              date={headerDate}
+              title={headerTitle}
+              isDebit={isDebit}
+              storeName={order?.storeName}
+            />
 
-          <View style={styles.section}>
-            <SectionCard
-              icon="ic_wallet"
-              title={t('transaction_detail.payment_summary_section_title')}
-            >
-              <AmountRow
-                bold
-                label={t('transaction_detail.payment_amount_label')}
-                value={formatWon(t, order?.totalAmount)}
-              />
-
-              <View style={styles.divider} />
-
-              {getAmount(order, 'voucherAmount') > 0 && (
+            <View style={styles.section}>
+              <SectionCard
+                icon="ic_wallet"
+                title={t('transaction_detail.payment_summary_section_title')}
+              >
                 <AmountRow
-                  caption={order?.couponName}
-                  label={t('transaction_detail.coupon_discount_label')}
-                  value={formatWon(t, order?.voucherAmount, true)}
-                  valueColor={Colors.red01}
+                  bold
+                  label={t('transaction_detail.payment_amount_label')}
+                  value={formatWon(t, order?.totalAmount)}
                 />
-              )}
-              {getAmount(order, 'memberDiscountAmount') > 0 && (
+                {!!isShowDashDivider && <View style={styles.divider} />}
+                {getAmount(order, 'voucherAmount') > 0 && (
+                  <AmountRow
+                    caption={order?.couponName}
+                    label={t('transaction_detail.coupon_discount_label')}
+                    value={formatWon(t, order?.voucherAmount, true)}
+                    valueColor={Colors.red01}
+                  />
+                )}
+                {getAmount(order, 'memberDiscountAmount') > 0 && (
+                  <AmountRow
+                    label={t('transaction_detail.member_discount')}
+                    value={formatWon(t, order?.memberDiscountAmount, true)}
+                    valueColor={Colors.red01}
+                  />
+                )}
+                {getAmount(order, 'usedPointAmount') > 0 && (
+                  <AmountRow
+                    label={t('transaction_detail.point_used_label')}
+                    value={formatPoint(order?.usedPointAmount, true)}
+                    valueColor={Colors.red01}
+                  />
+                )}
+
+                {!!isShowDashDivider && <DashedDivider />}
                 <AmountRow
-                  label={t('transaction_detail.member_discount')}
-                  value={formatWon(t, order?.memberDiscountAmount, true)}
-                  valueColor={Colors.red01}
+                  highlight
+                  label={t('transaction_detail.final_payment_label')}
+                  value={formatWon(t, order?.settledMoneyAmount)}
+                  valueColor={Colors.green02}
                 />
-              )}
-              {getAmount(order, 'usedPointAmount') > 0 && (
                 <AmountRow
-                  label={t('transaction_detail.point_used_label')}
-                  value={formatPoint(order?.usedPointAmount, true)}
-                  valueColor={Colors.red01}
+                  label={paymentMethod}
+                  value={formatWon(t, order?.settledMoneyAmount, isDebit)}
+                  valueColor={Colors.green02}
                 />
-              )}
+              </SectionCard>
+            </View>
 
-              <DashedDivider />
-
-              <AmountRow
-                highlight
-                label={t('transaction_detail.final_payment_label')}
-                value={formatWon(t, order?.settledMoneyAmount)}
-                valueColor={Colors.green02}
-              />
-
-              <AmountRow
-                label={paymentMethod}
-                value={formatWon(t, order?.settledMoneyAmount, true)}
-                valueColor={Colors.green02}
-              />
-            </SectionCard>
-          </View>
-
-          <View style={styles.section}>
-            {groupedLegs.map((it, index) => {
-              return (
-                <SectionCard
-                  key={index}
-                  icon={ICONS_SECTION[it.balanceAccountType]}
-                  style={styles.sectionCard}
-                  title={
-                    !it.balanceAccountType
-                      ? '-'
-                      : t(
-                          `transaction_detail.section_detail.${it.balanceAccountType?.toLowerCase()}`,
-                        )
-                  }
-                >
-                  {it.legs.map((le, i) => {
-                    const title = LEG_LABELS[le.entryType];
-                    return (
-                      <PointRow
-                        key={`${index}_${i}`}
-                        direction={le.direction == 'DEBIT' ? 'used' : 'earned'}
-                        label={
-                          title ? t(title as TranslationKeys) : EMPTY_VALUE
-                        }
-                        value={formatPoint(le.amount, le.direction == 'DEBIT')}
-                      />
-                    );
-                  })}
-                </SectionCard>
-              );
-            })}
-          </View>
-        </ScrollView>
+            <View style={styles.section}>
+              {groupedLegs.map((it, index) => {
+                return (
+                  <SectionCard
+                    key={index}
+                    icon={ICONS_SECTION[it.balanceAccountType]}
+                    style={styles.sectionCard}
+                    title={
+                      !it.balanceAccountType
+                        ? '-'
+                        : t(
+                            `transaction_detail.section_detail.${it.balanceAccountType?.toLowerCase()}`,
+                          )
+                    }
+                  >
+                    {it.legs.map((le, i) => {
+                      const title = LEG_LABELS[le.entryType];
+                      return (
+                        <PointRow
+                          key={`${index}_${i}`}
+                          direction={
+                            le.direction == 'DEBIT' ? 'used' : 'earned'
+                          }
+                          label={
+                            title ? t(title as TranslationKeys) : EMPTY_VALUE
+                          }
+                          value={formatPoint(
+                            le.amount,
+                            le.direction == 'DEBIT',
+                          )}
+                        />
+                      );
+                    })}
+                  </SectionCard>
+                );
+              })}
+            </View>
+          </ScrollView>
+          <Button
+            title={t('transaction_detail.create_payment_cancel_qr_button')}
+            onPress={onPressQR}
+            style={{
+              width: '90%',
+              alignSelf: 'center',
+              bottom: 20,
+            }}
+          />
+        </>
       )}
     </View>
   );

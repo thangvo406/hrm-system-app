@@ -140,8 +140,12 @@ export interface IRequestCreateQRCodeMember
   organizationId?: number;
 }
 export interface IRequestGenerateQRCodeMealTicket
-  extends AppCallback<IGenerateQRCodeResponse> {
+  extends AppCallback<IResponseGenerateQRCodeMealTicket> {
   ticketCode: string;
+}
+
+export interface IResponseGenerateQRCodeMealTicket {
+  data: { ticket_code: string };
 }
 export interface IUpdateProfileInfoRequest extends AppCallback {
   name?: string;
