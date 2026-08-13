@@ -51,6 +51,7 @@ export const EndPoints = {
     payPointHistories: (request: string) => `balance/ledger${request}`,
     transactionDetail: (id: number) => `balance/transaction/${id}`,
     getOrganizationInfo: 'organization',
+    generateQRCodeMealTicket: 'api/v1/ticket/qr/generate',
   },
   ACCOUNT_MANAGEMENT: {
     addAccount: 'balance/kcp/register/init',

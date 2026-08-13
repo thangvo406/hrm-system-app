@@ -7,9 +7,9 @@ import type {
 } from '@type/auth';
 
 import type {
-  IResponseCreateQRCodeMember,
   IResponseOrganizationInfo,
   IRequestAutoCompleteAddress,
+  IRequestGenerateQRCodeMealTicket,
   IRequestGetPayPointHistories,
   IRequestGetVouchers,
   IRequestUpdateMembership,
@@ -25,6 +25,7 @@ import type {
   IVoucher,
   IMealTicket,
   IPointPayHistory,
+  IGenerateQRCodeResponse,
 } from '@type/account';
 import type { ITransactionDetail } from '@type/payment';
 
@@ -202,9 +203,9 @@ export const deletePushId = async (pushId: string): Promise<void> => {
 
 export const createQRCodeMember = async (
   request: IRequestCreateQRCodeMember,
-): Promise<IResponseCreateQRCodeMember> => {
+): Promise<IGenerateQRCodeResponse> => {
   const response = await httpRequest.post<
-    SingleApiResponse<IResponseCreateQRCodeMember>
+    SingleApiResponse<IGenerateQRCodeResponse>
   >(EndPoints.ACCOUNT.createQRCodeMember, request);
   return response.data;
 };
@@ -253,5 +254,14 @@ export const getMealTickets = async (
   >(EndPoints.ACCOUNT.getMealTickets(params ? `?${params}` : ''), {
     loading: false,
   });
+  return response.data;
+};
+
+export const generateQRCodeMealTicket = async (
+  request: Omit<IRequestGenerateQRCodeMealTicket, 'onFailure' | 'onSuccess'>,
+): Promise<IGenerateQRCodeResponse> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<IGenerateQRCodeResponse>
+  >(EndPoints.ACCOUNT.generateQRCodeMealTicket, request);
   return response.data;
 };

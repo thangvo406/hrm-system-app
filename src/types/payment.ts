@@ -1,3 +1,4 @@
+import { IGenerateQRCodeResponse } from './account';
 import type { AppCallback, IImage, ListApiResponse } from './common';
 import type { IRequestCheckout, IProduct } from './products';
 
@@ -269,11 +270,6 @@ export interface IOrderSummary {
 export interface IRequestGetOrderHistoryDetail
   extends AppCallback<IOrderHistoryDetailItem> {
   readonly orderId: string;
-}
-
-export interface IGenerateQRCodeResponse {
-  readonly expiresIn: number;
-  readonly qrImageBase64: string;
 }
 
 export interface IRequestDecreaseContribute

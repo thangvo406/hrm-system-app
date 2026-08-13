@@ -6,7 +6,6 @@ import type {
   ICreateOrderResponse,
   IRequestDecreaseContribute,
   IRequestGenerateQRCode,
-  IGenerateQRCodeResponse,
   IRequestGetCartDetail,
   IRequestGetInfoProductCheckout,
   IRequestGetListCart,
@@ -22,6 +21,8 @@ import type {
   IResponseInitPayment,
   IKcpInitParams,
 } from '@type/payment';
+import { IGenerateQRCodeResponse } from '@type/account';
+
 import {
   IRequestIncreaseContribute,
   IContributeHistoryDetail,

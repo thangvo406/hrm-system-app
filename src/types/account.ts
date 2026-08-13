@@ -2,6 +2,7 @@ import type { AddressSuggestion } from '@services/request/account';
 
 import type { AppCallback, IImage, ListApiResponse } from './common';
 import type { ITransactionDetail } from './payment';
+import { IResponseSendOtpVerifyMembership } from './auth';
 
 export interface IRequestAutoCompleteAddress
   extends AppCallback<AddressSuggestion[]> {
@@ -12,7 +13,8 @@ export interface IRequestUpdatePassword extends AppCallback {
   currentPassword: string;
   newPassword: string;
 }
-export interface IRequestUpdateMembership extends AppCallback {
+export interface IRequestUpdateMembership
+  extends AppCallback<IResponseSendOtpVerifyMembership> {
   membershipType: string;
   universityId: number;
   universityEmail: string;
@@ -132,10 +134,14 @@ export interface IRequestGetPayPointHistories
   size: number;
 }
 export interface IRequestCreateQRCodeMember
-  extends AppCallback<IResponseCreateQRCodeMember> {
+  extends AppCallback<IGenerateQRCodeResponse> {
   cpn?: string[];
   paymentType?: string;
   organizationId?: number;
+}
+export interface IRequestGenerateQRCodeMealTicket
+  extends AppCallback<IGenerateQRCodeResponse> {
+  ticketCode: string;
 }
 export interface IUpdateProfileInfoRequest extends AppCallback {
   name?: string;
@@ -159,11 +165,6 @@ export interface IRequestGetVouchers
   storeId?: number;
 }
 
-export interface IResponseCreateQRCodeMember {
-  readonly expiresIn: number;
-  readonly qrImageBase64: string;
-}
-
 export type IStoreVoucher = {
   storeId: number;
   storeName: string;
@@ -180,6 +181,12 @@ export type IVoucher = {
   readonly discountRate: number;
   readonly discountAmount: number;
 };
+
+export interface IGenerateQRCodeResponse {
+  readonly expiresIn: number;
+  readonly qrImageBase64: string;
+  readonly token: string;
+}
 
 export type IQRCodeViewerData = {
   readonly amountText?: string;

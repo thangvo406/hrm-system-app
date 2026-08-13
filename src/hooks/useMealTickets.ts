@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useFocusEffect } from '@react-navigation/native';
 import {
+  generateQRCodeMealTicketRequest,
   generateQRCodeMemberRequest,
   getMealTicketsRequest,
 } from '@services/slices/account/accountSlice';
@@ -153,8 +154,8 @@ export function useMealTickets() {
 
   const onUseVoucher = useCallback((voucher: IMealTicket) => {
     dispatch(
-      generateQRCodeMemberRequest({
-        cpn: [voucher.code],
+      generateQRCodeMealTicketRequest({
+        ticketCode: voucher.code,
         onSuccess: response => {
           AppNavigator.showDialog({
             screen: QRCodeViewerView,

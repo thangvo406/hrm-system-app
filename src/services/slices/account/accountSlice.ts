@@ -12,6 +12,7 @@ import type { ITotalItemCart } from '@type/payment';
 import type {
   IRequestAutoCompleteAddress,
   IResponseOrganizationInfo,
+  IRequestGenerateQRCodeMealTicket,
   IRequestGetTransactionDetail,
   IRequestGetTransactionMovement,
   IRequestGetPayPointHistories,
@@ -70,6 +71,10 @@ const accountSlice = createSlice({
     },
     deleteAccountRequest: {
       prepare: (payload: IRequestDeleteAccount) => ({ payload }),
+      reducer: () => {},
+    },
+    generateQRCodeMealTicketRequest: {
+      prepare: (payload: IRequestGenerateQRCodeMealTicket) => ({ payload }),
       reducer: () => {},
     },
     generateQRCodeMemberRequest: {
@@ -178,6 +183,7 @@ export const {
   clearProfile,
   confirmOTPRequestMembershipRequest,
   deleteAccountRequest,
+  generateQRCodeMealTicketRequest,
   generateQRCodeMemberRequest,
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
