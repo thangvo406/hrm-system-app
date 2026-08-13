@@ -29,6 +29,11 @@ type StatusUiConfig = {
   readonly infoStrongColor: string;
 };
 
+const STATUS_MAPPING = {
+  VERIFYING: 'PENDING',
+  REJECTED: 'FAILED',
+};
+
 const UI_CONFIG: Record<TransactionResultStatus, StatusUiConfig> = {
   FAILED: {
     badgeBg: '#FDE0E0',
@@ -90,7 +95,8 @@ function Index(props: any) {
     isContribute,
     ...params
   } = props || {};
-  const status: TransactionResultStatus = params?.status ?? 'PENDING';
+  const status: TransactionResultStatus =
+    STATUS_MAPPING[params?.status] || params?.status || 'PENDING';
   const statusDisplay = status.toLocaleLowerCase();
   const prefixKeyTranslate = isContribute ? '.contribute.' : '.';
 
