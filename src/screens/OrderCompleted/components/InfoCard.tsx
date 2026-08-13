@@ -37,7 +37,7 @@ function InfoCard({
   theme,
 }: InfoCardProps) {
   const { t } = useTranslation();
-
+  const address =  data?.address?.address_name ?? data?.storeAddress?.address_name ?? '';
   return (
     <View style={styles.card}>
       <InfoRow
@@ -67,14 +67,17 @@ function InfoCard({
         theme={theme}
         value={dayjs(data?.paymentDueAt).format('DD/MM/YYYY HH:mm')}
       />
-      <InfoRow
+      {
+        address?.length > 0 &&
+        <InfoRow
         icon="ic_map_pin"
         label={t('order_completed.delivery_address')}
         theme={theme}
-        value={
-          data?.address?.address_name ?? data?.storeAddress?.address_name ?? ''
-        }
+        value={address}
       />
+
+      }
+     
       <InfoRow
         icon="ic_truck"
         label={t('order_completed.shipping_method')}

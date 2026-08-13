@@ -105,7 +105,7 @@ export function useTransactionDetail(props: any) {
 
   const onPressQR = () => {
     dispatch(generateQRRefundTransactionRequest({
-      orderId: data?.id,
+      orderId: order?.orderId || 0,
       onSuccess: (response) => {
         AppNavigator.showDialog({
           screen: QRCodeViewerView,
@@ -114,10 +114,8 @@ export function useTransactionDetail(props: any) {
           showIconVoucher: false,
           titleKey: 'transaction_detail.payment_cancel_qr_title',
           btnVoucher: t('transaction_detail.back_to_transaction_detail'),
-          titleVoucher: t('transaction_detail.payment_cancel_qr_title'),
-          data: {
-            token: data?.transactionKey,
-          },
+          titleVoucher: t('transaction_detail.payment_cancel_request'),
+          data: response
           // onRefresh: onRefreshQR(voucher),
         });
       }

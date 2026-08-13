@@ -85,7 +85,7 @@ export interface IAttributeCart {
 }
 
 
-export interface IRequestGenerateQRRefundTransaction extends AppCallback<IStoreCartItem> {
+export interface IRequestGenerateQRRefundTransaction extends AppCallback<IGenerateQRCodeResponse> {
   orderId: number
 }
 export interface IRequestGetCartDetail extends AppCallback<IStoreCartItem> {
@@ -300,7 +300,6 @@ export interface ITransactionDetail {
   occurredAt: string;
   headlineAction: string;
   headlineFundingSource: string;
-  cancelQrAvailable: boolean;
   paymentFundingSource?: string;
   order: ITransactionOrder;
   withdrawal: any;
@@ -314,8 +313,9 @@ export interface ITransactionOrder {
   totalAmount: number;
   totalDiscountAmount: number;
   voucherAmount: number;
-  couponCode: any;
-  couponName: any;
+  couponCode: string;
+  cancelQrAvailable: boolean;
+  couponName: string;
   couponDiscountAmount: number;
   memberDiscountAmount: number;
   storeDiscountRate: any;

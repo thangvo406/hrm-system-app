@@ -934,6 +934,7 @@
       "point_section_title": "포인트",
       "point_earned_label": "포인트 적립",
       "payment_cancel_qr_title": "결제취소 QR",
+      "payment_cancel_request": "결제취소 요청",
       "back_to_transaction_detail": "‹ 거래 상세로 돌아가기",
       "create_payment_cancel_qr_button": "결제취소 QR 생성"
     },

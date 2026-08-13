@@ -327,10 +327,10 @@ function* getContributeSummaryWorker(
 
 function* generateQRRefundTransactionWorker(
   action: PayloadAction<IRequestGenerateQRRefundTransaction>,
-): Generator<unknown, void, IContributeSummary> {
+): Generator<unknown, void, IGenerateQRCodeResponse> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: IContributeSummary = yield call(generateQRRefundTransaction, request);
+    const response: IGenerateQRCodeResponse = yield call(generateQRRefundTransaction, request);
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);

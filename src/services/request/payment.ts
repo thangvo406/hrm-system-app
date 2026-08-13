@@ -134,7 +134,7 @@ export const createLinkPaymentOrder = async (
   delete request.orderId;
   const response = await httpRequest.post<
     SingleApiResponse<IResponseInitPayment>
-  >(EndPoints.PAYMENT.createLinkPaymentOrder(orderId), request);
+  >(EndPoints.PAYMENT.createLinkPaymentOrder(orderId || 0), request);
   return response.data;
 };
 

@@ -934,6 +934,7 @@
       "point_section_title": "Point",
       "point_earned_label": "Points Earned",
       "payment_cancel_qr_title": "Payment Cancellation QR",
+      "payment_cancel_request": "Payment Cancellation Request",
       "back_to_transaction_detail": "‹ Back to Transaction Detail",
       "create_payment_cancel_qr_button": "Create Payment Cancellation QR"
     },

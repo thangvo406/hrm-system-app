@@ -185,7 +185,7 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
             </View>
           </ScrollView>
           {
-            !!data?.cancelQrAvailable &&
+            !!order?.cancelQrAvailable &&
             <Button
             title={t('transaction_detail.create_payment_cancel_qr_button')}
             onPress={onPressQR}
