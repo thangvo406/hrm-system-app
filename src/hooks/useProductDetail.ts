@@ -230,8 +230,15 @@ export const useProductDetail = (props: any) => {
     setQuantity(prev => Math.max(0, prev + delta));
   };
 
-  const updateCountCart = () => {
+  const handleGoBack = (cartInfo: any) => {
     dispatch(getTotalItemCartRequest());
+    if (AppNavigator.getPreviousRoute().name == Paths.Products) {
+      AppNavigator.goBack({ cartInfo, productId: data?.id });
+    } else {
+      AppNavigator.replace(Paths.Products, {
+        storeId: data?.storeId,
+      });
+    }
   };
 
   const onPressCart = () => {
@@ -253,8 +260,7 @@ export const useProductDetail = (props: any) => {
               message: t('product_detail.remove_cart_success'),
               type: 'success',
             });
-            setCheckoutInfo(prev => (prev ? { ...prev, quantity: 0 } : prev));
-            updateCountCart();
+            handleGoBack(null);
           },
           onFailure: (message: string) => {
             AppNavigator.showSnackBar({
@@ -288,14 +294,7 @@ export const useProductDetail = (props: any) => {
             message: t('product_detail.add_cart_success'),
             type: 'success',
           });
-          dispatch(getTotalItemCartRequest());
-          if (AppNavigator.getPreviousRoute().name == Paths.Products) {
-            AppNavigator.goBack({ cartInfo, productId: data?.id });
-          } else {
-            AppNavigator.replace(Paths.Products, {
-              storeId: data?.storeId,
-            });
-          }
+          handleGoBack(cartInfo);
         },
         onFailure: (message: string) => {
           AppNavigator.showSnackBar({

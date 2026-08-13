@@ -3,11 +3,10 @@ import type { IProduct } from '@type/products';
 import { AppButton, Image } from '@components';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import imageNames from '@assets/images/names';
 import { ProductUtils } from '@utils';
 import isNumber from 'lodash/isNumber';
-import debounce from 'lodash/debounce';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
 import SoldOutRibbon from './SoldOutRibbon';
@@ -34,7 +33,7 @@ function ProductRow({
   onPress,
 }: Properties) {
   const thumbUri = item.thumbnail?.fileUrl;
-  const [quantity, setQuantity] = useState(0);
+  const quantity = item?.cartItemInfo?.quantity ?? 0;
   const [errorMaxQuantity, setErrorMaxQuantity] = useState('');
   const { t } = useTranslation();
   const originalPrice = isNumber(item.discountPrice)
@@ -53,48 +52,29 @@ function ProductRow({
     onPress(item);
   };
 
-  useEffect(() => {
-    if (item?.cartItemInfo) {
-      setQuantity(item?.cartItemInfo?.quantity);
-    } else {
-      setQuantity(0);
-    }
-  }, [item?.cartItemInfo]);
-
-  useEffect(() => {
-    if (!item.cartItemInfo || item.cartItemInfo?.quantity == quantity) {
-      return;
-    }
-    const debounceId = debounce(() => {
-      onChangeQuantity?.(
-        {
-          ...item,
-          cartItemInfo: {
-            ...item.cartItemInfo,
-            quantity,
-          },
-        },
-        index,
-      );
-    }, 350);
-    debounceId();
-    return () => debounceId.cancel();
-  }, [quantity, index]);
-
   const _onChangeQuantity = (type: string) => () => {
     const newQuantity = Math.max(
       0,
       type === 'plus' ? quantity + 1 : quantity - 1,
     );
-
     if (item.isStockManaged && newQuantity > item.stockQuantity) {
       setErrorMaxQuantity(
         t('product_detail.max_quantity_error', { count: item.stockQuantity }),
       );
       return;
     }
-    setQuantity(newQuantity);
+
     setErrorMaxQuantity('');
+    onChangeQuantity?.(
+      {
+        ...item,
+        cartItemInfo: {
+          ...item.cartItemInfo,
+          quantity: newQuantity,
+        },
+      },
+      index,
+    );
   };
 
   return (
