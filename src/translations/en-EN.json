@@ -90,6 +90,7 @@
         "refund": "Refund",
         "manual_adjustment": "Manual Adjustment",
         "point_earn": "Points Earned",
+        "point_grant": "Admin Grant",
         "point_use": "Points Used",
         "contribution_earn": "Capital Contribution",
         "contribution_decrease": "Contribution Withdrawal",
@@ -99,7 +100,9 @@
         "usage_dividend_earn": "Usage Dividend",
         "point_expire": "Points Expired",
         "pay_money_withdrawal": "Pay Money Withdrawal",
-        "pay_money_charge_bonus": "Top-up Bonus"
+        "pay_money_charge_bonus": "Top-up Bonus",
+        "charge_bonus_point": "Top-up Bonus Point",
+        "org_payment": "Organization Payment"
       },
       "tags": {
         "point_expired": "Expired",
@@ -795,7 +798,8 @@
         "point_use": "Points Spent",
         "point_expire": "Points Expiry",
         "refund": "Refund",
-        "adjustment": "Admin Adjustment"
+        "adjustment": "Admin Adjustment",
+        "org_payment": "Organization Payment"
       }
     },
     "request_add_card": {
@@ -928,7 +932,10 @@
         "dividend": "Dividend"
       },
       "point_section_title": "Point",
-      "point_earned_label": "Points Earned"
+      "point_earned_label": "Points Earned",
+      "payment_cancel_qr_title": "Payment Cancellation QR",
+      "back_to_transaction_detail": "‹ Back to Transaction Detail",
+      "create_payment_cancel_qr_button": "Create Payment Cancellation QR"
     },
     "input_address": {
       "search_placeholder": "Search Province/City and Ward/Commune",

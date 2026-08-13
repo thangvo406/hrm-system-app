@@ -413,6 +413,7 @@
         "refund": "환불",
         "manual_adjustment": "수동 조정",
         "point_earn": "포인트 적립",
+        "point_grant": "관리자 지급",
         "point_use": "포인트 사용",
         "contribution_earn": "출자금 적립",
         "contribution_decrease": "출자금 감소",
@@ -422,7 +423,9 @@
         "usage_dividend_earn": "이용배당",
         "point_expire": "포인트 소멸",
         "pay_money_withdrawal": "페이머니 출금",
-        "pay_money_charge_bonus": "충전 보너스"
+        "pay_money_charge_bonus": "충전 보너스",
+        "charge_bonus_point": "충전 보너스 포인트",
+        "org_payment": "단체 결제"
       },
       "tags": {
         "point_expired": "만료",
@@ -795,7 +798,8 @@
         "point_use": "포인트 사용",
         "point_expire": "포인트 소멸",
         "refund": "환불",
-        "adjustment": "관리자 조정"
+        "adjustment": "관리자 조정",
+        "org_payment": "단체 결제"
       }
     },
     "request_add_card": {
@@ -928,7 +932,10 @@
         "dividend": "배당금"
       },
       "point_section_title": "포인트",
-      "point_earned_label": "포인트 적립"
+      "point_earned_label": "포인트 적립",
+      "payment_cancel_qr_title": "결제취소 QR",
+      "back_to_transaction_detail": "‹ 거래 상세로 돌아가기",
+      "create_payment_cancel_qr_button": "결제취소 QR 생성"
     },
     "input_address": {
       "search_placeholder": "도/시 및 동/면 검색",

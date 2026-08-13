@@ -19,7 +19,7 @@ export const useWithdrawal = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState(currentWallet?.balance);
   const [accountHolder, setAccountHolder] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
   const [selectedBank, setSelectedBank] = useState<IBankOption | undefined>(
@@ -28,10 +28,10 @@ export const useWithdrawal = () => {
   const [errorAmount, setErrorAmount] = useState('');
 
   const enabledBtnSubmit = useMemo(() => {
-    const numericAmount = Number(amount);
+    // const numericAmount = Number(amount);
     return (
-      numericAmount > 0 &&
-      numericAmount <= (currentWallet?.withdrawableBalance || 0) &&
+      // numericAmount > 0 &&
+      // numericAmount <= (currentWallet?.withdrawableBalance || 0) &&
       selectedBank !== undefined &&
       accountNumber.trim().length > 0 &&
       accountHolder.trim().length > 0

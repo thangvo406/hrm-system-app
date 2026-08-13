@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Colors } from '@constants';
 import { DeviceUtils } from '@kits/core/utils';
-import { formatCurrency } from '@utils/product';
+// import { formatCurrency } from '@utils/product';
 import { useWithdrawal } from '@hooks/useWithdrawal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -31,13 +31,13 @@ function Withdrawal() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const {
-    amount,
+    // amount,
     enabledBtnSubmit,
     onAccountNumberChange,
-    onAmountChange,
+    // onAmountChange,
     onSubmit,
     selectedBank,
-    errorAmount,
+    // errorAmount,
     currentWallet,
     setAccountHolder,
     onPressBank,
@@ -92,23 +92,6 @@ function Withdrawal() {
           <Text style={styles.sectionLabel}>
             {t('withdrawal.amount_section')}
           </Text>
-          <TextField
-            inputWrapperStyle={styles.amountWrapper}
-            keyboardType="numeric"
-            onChangeText={onAmountChange}
-            returnKeyType="done"
-            error={errorAmount}
-            placeholder={t('withdrawal.amount_placeholder')}
-            renderRightComponent={() => (
-              <View style={styles.unitGroup}>
-                <View style={styles.unitDivider} />
-                <Text style={styles.unitText}>{t('withdrawal.currency')}</Text>
-              </View>
-            )}
-            style={styles.amountInput}
-            testID="withdrawal-amount"
-            value={formatCurrency(amount)}
-          />
 
           <View style={styles.accountCard}>
             <Text style={styles.accountTitle}>
