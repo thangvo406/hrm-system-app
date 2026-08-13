@@ -8,6 +8,7 @@ import { DeviceUtils } from '@kits/core/utils';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { useMemo } from 'react';
 
 const SCREEN_BG = '#F2F2F2';
 const TEXT_DARK = '#1A1A1A';
@@ -29,6 +30,17 @@ function OrderShipping(props: any) {
     selected,
     selectedLabel,
   } = useOrderShipping(props);
+
+  const storeMetaText = useMemo(() => {
+    let text = '';
+    if(data?.storeAddress?.address_name) {
+      text = data?.storeAddress?.address_name;
+    }
+    // if(data?.storeOpeningHours) {
+      
+    // }
+    return text;
+  }, [])
 
   return (
     <View style={styles.screen}>
@@ -69,9 +81,7 @@ function OrderShipping(props: any) {
         <View style={styles.card}>
           <Text style={styles.storeName}>{data?.storeName}</Text>
           <Text style={styles.storeMeta}>
-            {/* {`${data?.storeAddress?.address_name || '-'}  |  ${data?.storeOpeningHours || '-'}`} */}
-            {/* TODO: handle show storeOpeningHours */}
-            {`${data?.storeAddress?.address_name || '-'}  | -`}
+            {storeMetaText}
           </Text>
           <Text style={styles.storeAvailable}>
             {t('order_method.store_available', {

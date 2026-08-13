@@ -184,7 +184,9 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
               })}
             </View>
           </ScrollView>
-          <Button
+          {
+            !!data?.cancelQrAvailable &&
+            <Button
             title={t('transaction_detail.create_payment_cancel_qr_button')}
             onPress={onPressQR}
             style={{
@@ -193,6 +195,8 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
               bottom: 20,
             }}
           />
+
+          }
         </>
       )}
     </View>

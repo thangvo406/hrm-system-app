@@ -3,6 +3,7 @@ import { HEADLINE_ACTIONS } from '@constants/config';
 import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getTransactionDetailRequest } from '@services/slices/account/accountSlice';
+import { generateQRRefundTransactionRequest } from '@services/slices/payment/paymentSlice';
 import type {
   ITransactionDetail,
   ITransactionLeg,
@@ -103,19 +104,24 @@ export function useTransactionDetail(props: any) {
   );
 
   const onPressQR = () => {
-    AppNavigator.showDialog({
-      screen: QRCodeViewerView,
-      isFullScreen: true,
-      showBtnVoucher: true,
-      showIconVoucher: false,
-      titleKey: 'transaction_detail.payment_cancel_qr_title',
-      btnVoucher: t('transaction_detail.back_to_transaction_detail'),
-      titleVoucher: t('transaction_detail.payment_cancel_qr_title'),
-      data: {
-        token: data?.transactionKey,
-      },
-      // onRefresh: onRefreshQR(voucher),
-    });
+    dispatch(generateQRRefundTransactionRequest({
+      orderId: data?.id,
+      onSuccess: (response) => {
+        AppNavigator.showDialog({
+          screen: QRCodeViewerView,
+          isFullScreen: true,
+          showBtnVoucher: true,
+          showIconVoucher: false,
+          titleKey: 'transaction_detail.payment_cancel_qr_title',
+          btnVoucher: t('transaction_detail.back_to_transaction_detail'),
+          titleVoucher: t('transaction_detail.payment_cancel_qr_title'),
+          data: {
+            token: data?.transactionKey,
+          },
+          // onRefresh: onRefreshQR(voucher),
+        });
+      }
+    }))
   };
 
   return {

@@ -1,10 +1,10 @@
 import type { AppCallback } from '@type/common';
 import type {
-  ICheckoutInfo,
   IRequestCalculatePrice,
   IRequestCreateOrder,
   IRequestDecreaseContribute,
   IRequestGenerateQRCode,
+  IRequestGenerateQRRefundTransaction,
   IRequestGetCartDetail,
   IRequestGetInfoProductCheckout,
   IRequestGetListCart,
@@ -107,6 +107,10 @@ const paymentSlice = createSlice({
       prepare: (payload: IRequestGetContributeHistoryDetail) => ({ payload }),
       reducer: () => {},
     },
+    generateQRRefundTransactionRequest: {
+      prepare: (payload: IRequestGenerateQRRefundTransaction) => ({ payload }),
+      reducer: () => {},
+    },
     getCartDetailRequest: {
       prepare: (payload: IRequestGetCartDetail) => ({ payload }),
       reducer: () => {},
@@ -142,5 +146,6 @@ export const {
   balanceChargeRequest,
   removeCartItemRequest,
   updateCartItemRequest,
+  generateQRRefundTransactionRequest,
 } = paymentSlice.actions;
 export const paymentReducer = paymentSlice.reducer;

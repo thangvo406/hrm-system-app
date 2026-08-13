@@ -21,6 +21,7 @@ import type {
   ICreateLinkPaymentOrderRequest,
   IKcpInitParams,
   IResponseInitPayment,
+  IRequestGenerateQRRefundTransaction,
 } from '@type/payment';
 
 import { IGenerateQRCodeResponse } from '@type/account';
@@ -163,6 +164,16 @@ export const getAddressOrderRecent = async (): Promise<string[]> => {
     EndPoints.PAYMENT.addressOrderRecent,
     { loading: false },
   );
+  return response.data;
+};
+
+
+export const generateQRRefundTransaction = async (
+  request: WithoutCallbacks<IRequestGenerateQRRefundTransaction>,
+): Promise<IGenerateQRCodeResponse> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<IGenerateQRCodeResponse>
+  >(EndPoints.PAYMENT.generateQRRefundTransaction, request);
   return response.data;
 };
 

@@ -20,6 +20,7 @@ import type {
   IRequestUpdateCartItem,
   IResponseInitPayment,
   IKcpInitParams,
+  IRequestGenerateQRRefundTransaction,
 } from '@type/payment';
 import { IGenerateQRCodeResponse } from '@type/account';
 
@@ -55,6 +56,7 @@ import {
   balanceCharge,
   removeCartItem,
   updateCartItem,
+  generateQRRefundTransaction,
 } from '@services/request/payment';
 import { getErrorMessageApi } from '@utils/common';
 
@@ -78,6 +80,7 @@ import {
   balanceChargeRequest,
   removeCartItemRequest,
   updateCartItemRequest,
+  generateQRRefundTransactionRequest,
 } from './paymentSlice';
 import { IDividendHistory } from '@type';
 
@@ -322,6 +325,19 @@ function* getContributeSummaryWorker(
   }
 }
 
+function* generateQRRefundTransactionWorker(
+  action: PayloadAction<IRequestGenerateQRRefundTransaction>,
+): Generator<unknown, void, IContributeSummary> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: IContributeSummary = yield call(generateQRRefundTransaction, request);
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 function* getContributeHistoryDetailWorker(
   action: PayloadAction<IRequestGetContributeHistoryDetail>,
 ): Generator<unknown, void, IContributeHistoryDetail> {
@@ -387,6 +403,7 @@ export function* paymentSaga() {
   yield takeLatest(decreaseContributeRequest.type, decreaseContributeWorker);
   yield takeLatest(balanceChargeRequest.type, balanceChargeWorker);
   yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
+  yield takeLatest(generateQRRefundTransactionRequest.type, generateQRRefundTransactionWorker);
   yield takeLatest(updateCartItemRequest.type, updateCartItemWorker);
   yield takeLatest(getCartDetailRequest.type, getCartDetailWorker);
   yield takeLatest(
