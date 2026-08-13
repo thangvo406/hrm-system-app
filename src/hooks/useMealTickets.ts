@@ -143,10 +143,13 @@ export function useMealTickets() {
 
   const onRefreshQR = (voucher: any) => (callback: any) => {
     dispatch(
-      generateQRCodeMemberRequest({
-        cpn: [voucher.code],
+      generateQRCodeMealTicketRequest({
+        ticketCode: voucher.code,
         onSuccess: response => {
-          callback(response);
+          callback({
+            ...(response || ({} as any)),
+            token: JSON.stringify(response?.data),
+          });
         },
       }),
     );
