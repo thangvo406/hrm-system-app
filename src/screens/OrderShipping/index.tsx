@@ -1,137 +1,38 @@
-import type { IconName } from '@assets/icons';
+import type { OrderMethodItem } from '@hooks/useOrderShipping';
 
 import { AppButton, Button, HeaderDetail, Image } from '@components';
 import { Colors } from '@constants';
+import { useOrderShipping } from '@hooks';
 import { ScaleSize } from '@kits/core';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import AppNavigator from '@navigation/AppNavigator';
-import InputAddress from '@screens/InputAddress';
 import { DeviceUtils } from '@kits/core/utils';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 const SCREEN_BG = '#F2F2F2';
 const TEXT_DARK = '#1A1A1A';
 const ICON_TINT = '#6B6B6B';
 const METHOD_ICON_SIZE = ScaleSize(34);
+const { ifAndroid } = DeviceUtils;
 
-type OrderMethod = 'DELIVERY' | 'HALL' | 'PICKUP';
-const { isAndroid } = DeviceUtils;
-const ORDER_METHODS: readonly {
-  readonly desc: string;
-  readonly icon: IconName;
-  readonly id: OrderMethod;
-  readonly label: string;
-}[] = [
-  {
-    desc: 'order_method.method_delivery_desc',
-    icon: 'ic_truck',
-    id: 'DELIVERY',
-    label: 'order_method.method_delivery',
-  },
-  {
-    desc: 'order_method.method_pickup_desc',
-    icon: 'ic_shopping_bag',
-    id: 'PICKUP',
-    label: 'order_method.method_pickup',
-  },
-  {
-    desc: 'order_method.method_dinein_desc',
-    icon: 'ic_store',
-    id: 'HALL',
-    label: 'order_method.method_dinein',
-  },
-];
-
-type ShippingProperties = {
-  readonly onSelectMethod?: (method: OrderMethod) => void;
-  readonly onSubmit?: (data: any) => void;
-  readonly onRequestClose: () => void;
-  readonly addressOrderRecent: any;
-  readonly data: any;
-};
-
-function Shipping({
-  onRequestClose,
-  addressOrderRecent,
-  onSubmit,
-  onSelectMethod,
-  data,
-}: ShippingProperties) {
+function OrderShipping(props: any) {
   const { t } = useTranslation();
-  const [selected, setSelected] = useState<OrderMethod | string>('');
-  const [addressDelivery, setAddressDelivery] = useState(addressOrderRecent);
   const insets = useSafeAreaInsets();
-
-  const getAddressDisplay = () => {
-    return (
-      addressDelivery?.address?.roadAddress ||
-      addressDelivery?.address?.landAddress ||
-      addressDelivery?.address_name
-    );
-  };
-
-  const disableBtn = useMemo(() => {
-    return (
-      !selected || (selected == 'DELIVERY' && !getAddressDisplay()?.length)
-    );
-  }, [addressDelivery, selected]);
-
-  const orderMethods = useMemo(() => {
-    return data?.storeReceiveMethod?.map((item: any) => {
-      const it = ORDER_METHODS?.find(it => it.id == item);
-      return it;
-    });
-  }, [data]);
-
-  useEffect(() => {
-    setSelected(prev => (prev ? prev : orderMethods?.[0]?.id));
-  }, [orderMethods]);
-
-  const onUpdateAddress = (address: any) => {
-    setAddressDelivery(address);
-  };
-
-  const onPressMethod = (method: OrderMethod) => () => {
-    setSelected(method);
-    onSelectMethod?.(method);
-  };
-
-  const onChangeAddress = () => {
-    AppNavigator.showDialog({
-      screen: InputAddress,
-      isFullScreen: true,
-      addressRecent: addressOrderRecent,
-      onSubmit: onUpdateAddress,
-    });
-  };
-
-  const handleSubmit = () => {
-    onRequestClose?.();
-    onSubmit?.({
-      shipping: selected,
-      address: addressDelivery || addressOrderRecent,
-    });
-  };
-
-  const selectedLabel = ORDER_METHODS.find(it => it.id === selected)?.label;
-
-  const bottomBtnSubmit = useMemo(() => {
-    if (isAndroid()) {
-      return insets.bottom < 48 ? -insets.bottom : 0;
-    }
-    return insets.bottom || 10;
-  }, []);
+  const {
+    addressDisplay,
+    data,
+    disableBtn,
+    onChangeAddress,
+    onPressMethod,
+    onSubmit,
+    orderMethods,
+    selected,
+    selectedLabel,
+  } = useOrderShipping(props);
 
   return (
     <View style={styles.screen}>
-      <HeaderDetail
-        hideNotify
-        usePaddingTop={false}
-        onPressBack={onRequestClose}
-        title={t('order_method.title')}
-      />
+      <HeaderDetail hideNotify title={t('order_method.title')} />
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -140,7 +41,7 @@ function Shipping({
         <Text style={styles.subheading}>{t('order_method.subheading')}</Text>
 
         <View style={styles.methodRow}>
-          {orderMethods?.map((method: any) => {
+          {orderMethods?.map((method: OrderMethodItem) => {
             const isSelected = selected === method.id;
             return (
               <AppButton
@@ -185,9 +86,7 @@ function Shipping({
               {t('order_method.address_section_title')}
             </Text>
             <View style={[styles.card, styles.addressCard]}>
-              <Text style={styles.addressText}>
-                {getAddressDisplay() || '--'}
-              </Text>
+              <Text style={styles.addressText}>{addressDisplay || '--'}</Text>
               <AppButton
                 onPress={onChangeAddress}
                 style={styles.changeBtn}
@@ -204,22 +103,25 @@ function Shipping({
           </>
         )}
       </ScrollView>
-      <Button
-        title={t('order_method.btn_submit')}
-        type="rounded"
-        onPress={handleSubmit}
-        disabled={disableBtn}
-        style={{
-          width: '90%',
-          alignSelf: 'center',
-          bottom: bottomBtnSubmit,
-        }}
-      />
+      <View
+        style={[
+          styles.bottomBar,
+          { paddingBottom: ifAndroid(16, insets.bottom || ScaleSize(20)) },
+        ]}
+      >
+        <Button
+          disabled={disableBtn}
+          onPress={onSubmit}
+          testID="order-method-submit"
+          title={t('order_method.btn_submit')}
+          type="rounded"
+        />
+      </View>
     </View>
   );
 }
 
-export default React.memo(Shipping);
+export default OrderShipping;
 
 const styles = StyleSheet.create({
   addressCard: {
@@ -227,10 +129,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  addressNote: {
+    color: Colors.green04,
+    fontSize: ScaleSize(14),
+    marginTop: ScaleSize(16),
+  },
   addressText: {
     color: TEXT_DARK,
     flex: 1,
     fontSize: ScaleSize(15),
+  },
+  bottomBar: {
+    paddingHorizontal: ScaleSize(16),
+    paddingTop: ScaleSize(12),
   },
   card: {
     backgroundColor: Colors.white,
@@ -242,11 +153,6 @@ const styles = StyleSheet.create({
     shadowOffset: { height: 2, width: 0 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
-  },
-  cardTitle: {
-    color: TEXT_DARK,
-    fontSize: ScaleSize(16),
-    fontWeight: '700',
   },
   changeBtn: {
     paddingLeft: ScaleSize(12),
@@ -294,8 +200,8 @@ const styles = StyleSheet.create({
     borderRadius: ScaleSize(12),
     height: ScaleSize(88),
     justifyContent: 'center',
-    marginHorizontal: ScaleSize(10),
     marginBottom: ScaleSize(12),
+    marginHorizontal: ScaleSize(10),
   },
   methodLabel: {
     color: TEXT_DARK,
@@ -313,12 +219,6 @@ const styles = StyleSheet.create({
   screen: {
     backgroundColor: SCREEN_BG,
     flex: 1,
-    paddingBottom: ScaleSize(10),
-  },
-  addressNote: {
-    color: Colors.green04,
-    fontSize: ScaleSize(14),
-    marginTop: ScaleSize(16),
   },
   sectionTitle: {
     color: TEXT_DARK,
@@ -346,10 +246,5 @@ const styles = StyleSheet.create({
     color: Colors.gray1,
     fontSize: ScaleSize(14),
     marginTop: ScaleSize(8),
-  },
-  waitValue: {
-    color: Colors.gray1,
-    fontSize: ScaleSize(14),
-    marginTop: ScaleSize(10),
   },
 });

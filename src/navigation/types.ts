@@ -79,6 +79,12 @@ export type RootStackParamList = {
         status?: 'pending' | 'success';
       }
     | undefined;
+  [Paths.OrderShipping]:
+    | {
+        addressOrderRecent?: unknown;
+        data?: unknown;
+      }
+    | undefined;
   [Paths.Orders]: undefined;
   [Paths.TransactionDetail]: { data?: ITransactionDetail } | undefined;
   [Paths.TransactionResult]:
@@ -97,7 +103,15 @@ export type RootStackParamList = {
   [Paths.Payment]: undefined;
   [Paths.MealTickets]: undefined;
   [Paths.PaymentOffline]: undefined;
-  [Paths.CartDetail]: undefined;
+  [Paths.CartDetail]:
+    | {
+        address?: unknown;
+        cartId?: number;
+        data?: unknown;
+        isShowConfirmPayment?: boolean;
+        shipping?: string;
+      }
+    | undefined;
   [Paths.QRCodeViewer]:
     | { data?: IQRCodeViewerData; durationSeconds?: number }
     | undefined;

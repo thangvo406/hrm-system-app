@@ -17,6 +17,7 @@ export enum Paths {
   InputAddress = 'input_address',
   Notifications = 'notifications',
   OrderCompleted = 'order_completed',
+  OrderShipping = 'order_shipping',
   AcademicVerificationFinish = 'academic_verify_finish',
   Orders = 'orders',
   OrderHistoryDetail = 'order_history_detail',

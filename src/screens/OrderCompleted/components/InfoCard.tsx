@@ -79,7 +79,7 @@ function InfoCard({
         icon="ic_truck"
         label={t('order_completed.shipping_method')}
         theme={theme}
-        value={data?.deliveryMethod ?? fallback?.deliveryMethod ?? ''}
+        value={t(`order_history_detail.shipping_methods.${(data?.deliveryMethod ?? fallback?.deliveryMethod ?? '').toLowerCase()}`)}
       />
       <InfoRow
         icon="ic_wallet"

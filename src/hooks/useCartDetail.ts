@@ -1,8 +1,6 @@
 import { AppConstants } from '@constants';
-import Selection from '@dialogs/Selection';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
-import Shipping from '@screens/CartDetail/OrderFlow/Shipping';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getTotalItemCartRequest } from '@services/slices/account/accountSlice';
 import {
@@ -21,26 +19,7 @@ import { DeviceEventEmitter } from 'react-native';
 
 export type UseCartDetail = ReturnType<typeof useCartDetail>;
 
-const DATA_PICKUP_TIME = [
-  {
-    id: 15,
-    label: '15 minutes',
-  },
-  {
-    id: 20,
-    label: '20 minutes',
-  },
-  {
-    id: 30,
-    label: '30 minutes',
-  },
-  {
-    id: 45,
-    label: '45 minutes',
-  },
-];
 
-const PICKUP_DEFAULT = DATA_PICKUP_TIME[0];
 interface AddressDelivery {
   address: SearchAddressItem;
   detail: string;
@@ -48,13 +27,20 @@ interface AddressDelivery {
 }
 
 export const useCartDetail = (props: any) => {
-  const { cartId, data: dataCart } = AppNavigator.getParams(props);
+  const {
+    address,
+    cartId,
+    data: dataCart,
+    isShowConfirmPayment = false,
+    shipping,
+  } = AppNavigator.getParams(props);
   const { t } = useTranslation();
   const [data, setData] = useState(dataCart);
   const [deliveryTab, setDeliveryTab] = useState<string | undefined>(
-    data?.storeReceiveMethod?.length > 0
-      ? data.storeReceiveMethod[0]
-      : undefined,
+    shipping ||
+      (data?.storeReceiveMethod?.length > 0
+        ? data.storeReceiveMethod[0]
+        : undefined),
   );
   const [loading, setLoading] = useState(!dataCart);
   const [error, setError] = useState('');
@@ -63,13 +49,12 @@ export const useCartDetail = (props: any) => {
   const debounceIdChangeQuanlity = useRef<
     DebouncedFunc<() => void> | undefined
   >(undefined);
-  const [isShowConfirmPayment, setShowConfirmPayment] = useState(false);
 
   const [paymentMethod, setPaymentMethod] = useState<string>(
     AppConstants.PaymentTypes.BALANCE,
   );
-  const [pickupTime, setPickupTime] = useState(PICKUP_DEFAULT);
-  const [addressDelivery, setAddressDelivery] = useState<AddressDelivery>();
+  const [addressDelivery, setAddressDelivery] =
+    useState<AddressDelivery>(address);
 
   const shippingTabs = useMemo(() => {
     return (
@@ -91,9 +76,11 @@ export const useCartDetail = (props: any) => {
   useEffect(() => {
     dispatch(
       getAddressOrderRecentRequest({
-        onSuccess(data: any) {
-          setAddressDelivery(data);
-          setAddressOrderRecent(data);
+        onSuccess(addressRecent: any) {
+          setAddressOrderRecent(addressRecent);
+          if (!address) {
+            setAddressDelivery(addressRecent);
+          }
         },
       }),
     );
@@ -145,20 +132,13 @@ export const useCartDetail = (props: any) => {
           selectedAttributes: product?.selectedAttributes,
           cartItemId: product?.id,
           onSuccess: (response: any) => {
-            if (response?.items?.length == 0) {
-              dispatch(
-                removeCartItemRequest({
-                  cartItemId: response?.id,
-                  onSuccess: () => {
-                    AppNavigator.showSnackBar({
-                      message: t('payment_cart.remove_cart_success'),
-                      type: 'success',
-                    });
-                    dispatch(getTotalItemCartRequest());
-                    AppNavigator.goBack();
-                  },
-                }),
-              );
+            if (!response?.items?.length) {
+              AppNavigator.showSnackBar({
+                message: t('payment_cart.remove_cart_success'),
+                type: 'success',
+              });
+              dispatch(getTotalItemCartRequest());
+              AppNavigator.goBack();
             } else {
               setData(response);
             }
@@ -184,30 +164,6 @@ export const useCartDetail = (props: any) => {
     );
   };
 
-  const onPressPickupTime = () => {
-    AppNavigator.showDialog({
-      screen: Selection,
-      title: t('payment_cart.select_pickup_time'),
-      popupType: 'bottomSheet',
-      items: DATA_PICKUP_TIME,
-      selectedId: pickupTime.id,
-      onSelect: (id: number) => {
-        const item = DATA_PICKUP_TIME.find(it => it.id === id);
-        if (item) {
-          setPickupTime(item);
-        }
-      },
-    });
-  };
-
-  const onSubmitShipping = (shippingData: any) => {
-    setAddressDelivery(shippingData?.address);
-    if (shippingData?.shipping) {
-      setDeliveryTab(shippingData.shipping);
-    }
-    setShowConfirmPayment(true);
-  };
-
   const onPressPayment = () => {
     const items = products?.map((it: any) => ({
       id: it.productId,
@@ -230,21 +186,13 @@ export const useCartDetail = (props: any) => {
   };
 
   const onBack = () => {
-    if (isShowConfirmPayment) {
-      setShowConfirmPayment(false);
-    } else {
-      AppNavigator.goBack();
-    }
+    AppNavigator.goBack();
   };
 
   const onPressOrder = () => {
-    AppNavigator.showDialog({
-      screen: Shipping,
-      data,
-      isFullScreen: true,
+    AppNavigator.navigate(Paths.OrderShipping, {
       addressOrderRecent,
-      overlayColor: '#F2F2F2',
-      onSubmit: onSubmitShipping,
+      data,
     });
   };
 
@@ -263,19 +211,16 @@ export const useCartDetail = (props: any) => {
     onRemoveProduct,
     loading,
     error,
-    pickupTime,
     products,
     isShowConfirmPayment,
     addressDelivery: getAddressDisplay(),
     onPressOrder,
     onBack,
     onPressPayment,
-    onPressPickupTime,
     setDeliveryTab,
     onPressSelectAddress,
     setPaymentMethod,
     onChangeQuantity,
-    setPickupTime,
     shippingTabs,
   };
 };

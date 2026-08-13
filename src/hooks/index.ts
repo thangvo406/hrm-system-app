@@ -27,6 +27,7 @@ export { useSurveyDetail } from './useSurveyDetail';
 export { useStore } from './useStore';
 export { useOrders } from './useOrders';
 export { useOrderHistoryDetail } from './useOrderHistoryDetail';
+export { useOrderShipping } from './useOrderShipping';
 export { useTransactionDetail } from './useTransactionDetail';
 export { useTopUp } from './useTopUp';
 export { useQRCodeMember } from './useQRCodeMember';

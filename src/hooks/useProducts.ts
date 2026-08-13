@@ -158,6 +158,10 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
       if (!storeInfo) {
         return;
       }
+      if(!isLoadingMore.current && currentPage != 0) {
+        setCurrentPage(0)
+        return;
+      }
       dispatch(
         getProductsRequest({
           storeId: storeInfo?.id || 1,
