@@ -46,6 +46,7 @@ function ContributionInput() {
     currentContribution,
     currentUnits,
     enabledBtnSubmit,
+    errorAmount,
     expectedContribution,
     expectedUnits,
     membershipLabel,
@@ -152,6 +153,7 @@ function ContributionInput() {
             <View style={styles.inputCardWrap}>
               <UnitsInputCard
                 amount={amount}
+                errorAmount={errorAmount}
                 expectedAmountText={t('contribution_input.amount_won', {
                   amount: formatCurrency(expectedContribution),
                 })}

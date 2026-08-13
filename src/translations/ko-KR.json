@@ -1004,7 +1004,8 @@
       "units_count": "{{count}}구좌",
       "submit": "신청하기",
       "title_transfer_amount": "아래 계좌로 출자금을 송금해 주세요.",
-      "desc_transfer_amount": "입금하신 출자금은 관리자 확인 후 출자금으로 반영됩니다.(영업일 기준 1~3일 소요)"
+      "desc_transfer_amount": "입금하신 출자금은 관리자 확인 후 출자금으로 반영됩니다.(영업일 기준 1~3일 소요)",
+      "error_amount_required": "증좌할 금액을 입력해 주세요"
     },
     "capital_withdrawal": {
       "hero_title": "출자금 감좌 신청",
@@ -1013,7 +1014,8 @@
       "option_academic_title": "학적 변경 신고 (수료·졸업 등)",
       "option_academic_desc": "수료·졸업 등으로 조합원 자격이 변경되는 경우",
       "option_refund_title": "감좌 및 환불 신청",
-      "option_refund_desc": "출자금을 감좌하고 환불을 받는 경우"
+      "option_refund_desc": "출자금을 감좌하고 환불을 받는 경우",
+      "error_units_exceed_current": "구좌수는 현재 보유 구좌수를 초과할 수 없습니다"
     },
     "capital_withdrawal_result": {
       "detail_title": "증좌 신청 정보",

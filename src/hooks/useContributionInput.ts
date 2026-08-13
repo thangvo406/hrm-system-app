@@ -2,10 +2,7 @@ import type { IAccount } from '@type';
 import type { IContributeSummary } from '@type/wallet';
 import type { WebViewNavigation } from 'react-native-webview';
 
-import {
-  MEMBERSHIP_TYPE,
-  PaymentTypes,
-} from '@constants/config';
+import { MEMBERSHIP_TYPE, PaymentTypes } from '@constants/config';
 import RequestAddCard from '@dialogs/RequestAddCard';
 import WebViewScreen from '@dialogs/Webview';
 import AppNavigator from '@navigation/AppNavigator';
@@ -47,6 +44,7 @@ export const useContributionInput = () => {
   const [selectedAccountId, setSelectedAccountId] = useState<IAccount['id']>();
   const [summary, setSummary] = useState<IContributeSummary | undefined>();
   const [amount, setAmount] = useState('');
+  const [touchedAmount, setTouchedAmount] = useState(false);
 
   useEffect(() => {
     setSelectedAccountId(bankAccounts?.[0]?.id);
@@ -93,7 +91,15 @@ export const useContributionInput = () => {
     return Number(amount) >= 1 && bankAccounts?.length > 0;
   }, [amount, bankAccounts, isEnablePaymentCard]);
 
+  const errorAmount = useMemo(() => {
+    if (!touchedAmount || Number(amount) >= 1) {
+      return '';
+    }
+    return t('contribution_input.error_amount_required');
+  }, [amount, t, touchedAmount]);
+
   const onAmountChange = (value: string) => {
+    setTouchedAmount(true);
     setAmount(value.replaceAll(/\D/g, '').replace(/^0+/, ''));
   };
 
@@ -166,6 +172,7 @@ export const useContributionInput = () => {
     currentContribution,
     currentUnits,
     enabledBtnSubmit,
+    errorAmount,
     expectedContribution,
     expectedUnits,
     isEnablePaymentCard,

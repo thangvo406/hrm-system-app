@@ -9,6 +9,7 @@ const TEXT_DARK = '#1A1A1A';
 const TEXT_HINT = '#C4C4C4';
 const LABEL_GREEN = '#3FA34D';
 const LINE_GREEN = '#2DB34A';
+const LINE_ERROR = '#D32F2F';
 const STRIP_BG = '#F1F8F0';
 const CARD_SHADOW = 'rgba(23, 68, 33, 0.08)';
 const DOC_ICON_SIZE = ScaleSize(48);
@@ -22,17 +23,20 @@ type Properties = {
   readonly expectedUnitsText: string;
   readonly onAmountChange: (value: string) => void;
   readonly unitPriceText: string;
+  readonly errorAmount: string;
 };
 
 function UnitsInputCard({
   amount,
   expectedAmountText,
   expectedUnitsText,
+  errorAmount,
   onAmountChange,
   unitPriceText,
 }: Properties) {
   const { t } = useTranslation();
   const inputRef = useRef<TextInput>(null);
+  const hasError = !!errorAmount;
 
   const onPressInputRow = () => {
     inputRef.current?.focus();
@@ -48,7 +52,7 @@ function UnitsInputCard({
 
       <AppButton
         onPress={onPressInputRow}
-        style={styles.inputRow}
+        style={[styles.inputRow, hasError && styles.inputRowError]}
         testID="contribution-input-amount-row"
       >
         <TextInput
@@ -56,7 +60,7 @@ function UnitsInputCard({
           onChangeText={onAmountChange}
           placeholder="0"
           placeholderTextColor={TEXT_HINT}
-          returnKeyType='done'
+          returnKeyType="done"
           ref={inputRef}
           style={styles.input}
           testID="contribution-input-amount-input"
@@ -66,6 +70,11 @@ function UnitsInputCard({
           {t('contribution_input.unit_suffix')}
         </Text>
       </AppButton>
+      {hasError ? (
+        <Text style={styles.errorText} testID="contribution-input-amount-error">
+          {errorAmount}
+        </Text>
+      ) : undefined}
       <Image
         height={DOC_ICON_SIZE}
         name={imageNames.ic_doc_edit_green}
@@ -127,6 +136,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginHorizontal: ScaleSize(4),
   },
+  errorText: {
+    color: LINE_ERROR,
+    fontSize: ScaleSize(12),
+    marginTop: ScaleSize(6),
+  },
   headerRow: {
     alignItems: 'flex-start',
     flexDirection: 'row',
@@ -149,6 +163,9 @@ const styles = StyleSheet.create({
     paddingBottom: ScaleSize(10),
     paddingRight: INPUT_ROW_ICON_INSET,
   },
+  inputRowError: {
+    borderBottomColor: LINE_ERROR,
+  },
   label: {
     color: TEXT_DARK,
     fontSize: ScaleSize(16),
@@ -170,6 +187,7 @@ const styles = StyleSheet.create({
   stripColumnWide: {
     alignItems: 'center',
     flex: 1,
+    justifyContent: 'center',
   },
   stripLabel: {
     color: LABEL_GREEN,
@@ -181,6 +199,7 @@ const styles = StyleSheet.create({
     fontSize: ScaleSize(15),
     fontWeight: '800',
     marginTop: ScaleSize(4),
+    textAlign: 'center',
   },
   unitSuffix: {
     color: TEXT_DARK,

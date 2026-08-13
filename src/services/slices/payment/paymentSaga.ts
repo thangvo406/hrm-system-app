@@ -4,6 +4,7 @@ import type {
   ICheckoutInfo,
   IRequestCreateOrder,
   ICreateOrderResponse,
+  IRequestDecreaseContribute,
   IRequestGenerateQRCode,
   IGenerateQRCodeResponse,
   IRequestGetCartDetail,
@@ -31,12 +32,13 @@ import {
 } from '@type/wallet';
 import type { AppCallback, ListApiResponse } from '@type/common';
 
-import { call, takeLatest } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
 
 import {
   calculatePrice,
   createLinkPaymentOrder,
   createOrder,
+  decreaseContribute,
   generateQRCodePay,
   getAddressOrderRecent,
   getCartDetail,
@@ -58,11 +60,13 @@ import { getErrorMessageApi } from '@utils/common';
 import {
   calculatePriceRequest,
   createOrderRequest,
+  decreaseContributeRequest,
   generateQRCodePayRequest,
   getAddressOrderRecentRequest,
   getCartDetailRequest,
   getContributeHistoryDetailRequest,
   getContributeSummaryRequest,
+  getContributeSummarySuccess,
   getDividendDetailRequest,
   getHistoriesDividendRequest,
   getInfoProductCheckoutRequest,
@@ -290,12 +294,26 @@ function* increaseContributionWorker(
   }
 }
 
+function* decreaseContributeWorker(
+  action: PayloadAction<IRequestDecreaseContribute>,
+): Generator<unknown, void, IKcpInitParams> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: IKcpInitParams = yield call(decreaseContribute, request);
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 function* getContributeSummaryWorker(
   action: PayloadAction<AppCallback<IContributeSummary>>,
 ): Generator<unknown, void, IContributeSummary> {
   const { onFailure, onSuccess } = action.payload;
   try {
     const response: IContributeSummary = yield call(getContributeSummary);
+    yield put(getContributeSummarySuccess(response));
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -365,6 +383,7 @@ export function* paymentSaga() {
     increaseContributionRequest.type,
     increaseContributionWorker,
   );
+  yield takeLatest(decreaseContributeRequest.type, decreaseContributeWorker);
   yield takeLatest(balanceChargeRequest.type, balanceChargeWorker);
   yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
   yield takeLatest(updateCartItemRequest.type, updateCartItemWorker);

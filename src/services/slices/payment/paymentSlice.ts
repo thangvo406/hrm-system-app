@@ -3,6 +3,7 @@ import type {
   ICheckoutInfo,
   IRequestCalculatePrice,
   IRequestCreateOrder,
+  IRequestDecreaseContribute,
   IRequestGenerateQRCode,
   IRequestGetCartDetail,
   IRequestGetInfoProductCheckout,
@@ -21,14 +22,16 @@ import {
   IRequestIncreaseContribute,
 } from '@type/wallet';
 
+import type { PayloadAction } from '@reduxjs/toolkit';
+
 import { createSlice } from '@reduxjs/toolkit';
 
 export interface PaymentState {
-  checkoutInfo: ICheckoutInfo | undefined;
+  contributeSummary: IContributeSummary | undefined;
 }
 
 const initialState: PaymentState = {
-  checkoutInfo: undefined,
+  contributeSummary: undefined,
 };
 
 const paymentSlice = createSlice({
@@ -83,9 +86,22 @@ const paymentSlice = createSlice({
       prepare: (payload: IRequestIncreaseContribute) => ({ payload }),
       reducer: () => {},
     },
+    decreaseContributeRequest: {
+      prepare: (payload: IRequestDecreaseContribute) => ({ payload }),
+      reducer: () => {},
+    },
     getContributeSummaryRequest: {
       prepare: (payload: AppCallback<IContributeSummary>) => ({ payload }),
       reducer: () => {},
+    },
+    getContributeSummarySuccess: {
+      prepare: (payload: IContributeSummary | undefined) => ({ payload }),
+      reducer: (
+        state,
+        action: PayloadAction<IContributeSummary | undefined>,
+      ) => {
+        state.contributeSummary = action.payload;
+      },
     },
     getContributeHistoryDetailRequest: {
       prepare: (payload: IRequestGetContributeHistoryDetail) => ({ payload }),
@@ -109,11 +125,13 @@ const paymentSlice = createSlice({
 export const {
   calculatePriceRequest,
   createOrderRequest,
+  decreaseContributeRequest,
   generateQRCodePayRequest,
   getAddressOrderRecentRequest,
   getCartDetailRequest,
   getContributeHistoryDetailRequest,
   getContributeSummaryRequest,
+  getContributeSummarySuccess,
   getDividendDetailRequest,
   getHistoriesDividendRequest,
   getInfoProductCheckoutRequest,

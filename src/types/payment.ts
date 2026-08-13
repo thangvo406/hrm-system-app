@@ -276,6 +276,14 @@ export interface IGenerateQRCodeResponse {
   readonly qrImageBase64: string;
 }
 
+export interface IRequestDecreaseContribute
+  extends AppCallback<IKcpInitParams> {
+  units: number;
+  requestReason?: string;
+  refundBankName: string;
+  refundBankAccountNumber: string;
+  refundBankAccountHolder: string;
+}
 export interface IRequestInitCharge extends AppCallback<IKcpInitParams> {
   amount: number;
   payment: IPaymentRequest;

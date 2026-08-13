@@ -9,6 +9,7 @@ import type {
   IRequestGetListCart,
   IRequestGetOrderHistories,
   IRequestGetOrderHistoryDetail,
+  IRequestDecreaseContribute,
   IRequestInitCharge,
   IRequestRemoveCartItem,
   IRequestUpdateCartItem,
@@ -189,6 +190,16 @@ export const increaseContribution = async (
   const response = await httpRequest.post<
     SingleApiResponse<IResponseIncreaseContribute>
   >(EndPoints.CONTRIBUTION.increase, request);
+  return response.data;
+};
+
+export const decreaseContribute = async (
+  request: WithoutCallbacks<IRequestDecreaseContribute>,
+): Promise<IKcpInitParams> => {
+  const response = await httpRequest.post<SingleApiResponse<IKcpInitParams>>(
+    EndPoints.CONTRIBUTION.decrease,
+    request,
+  );
   return response.data;
 };
 

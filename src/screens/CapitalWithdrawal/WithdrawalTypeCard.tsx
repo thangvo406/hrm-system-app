@@ -16,9 +16,9 @@ const OPTION_ICON_SIZE = ScaleSize(24);
 const RADIO_OUTER_SIZE = ScaleSize(22);
 const RADIO_INNER_SIZE = ScaleSize(12);
 
-export type WithdrawalType = 'academic_change' | 'decrease_refund';
+type WithdrawalType = 'academic_change' | 'decrease_refund';
 
-type OptionDef = {
+export type OptionDef = {
   readonly desc: string;
   readonly icon: 'ic_coins_refund' | 'ic_graduation_cap';
   readonly iconBg: string;
@@ -27,7 +27,7 @@ type OptionDef = {
 };
 
 type Properties = {
-  readonly onSelect: (type: WithdrawalType) => void;
+  readonly onSelect: (item: OptionDef) => void;
   readonly selected: WithdrawalType;
 };
 
@@ -59,7 +59,7 @@ function WithdrawalTypeCard({ onSelect, selected }: Properties) {
           <React.Fragment key={option.type}>
             {index > 0 ? <View style={styles.divider} /> : undefined}
             <AppButton
-              onPress={() => onSelect(option.type)}
+              onPress={() => onSelect(option)}
               style={styles.option}
               testID={`capital-withdrawal-option-${option.type}`}
             >

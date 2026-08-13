@@ -4,6 +4,7 @@ import { IKcpInitParams, IPaymentRequest } from './payment';
 
 export interface IContributeSummary {
   readonly currentContribution: number;
+  readonly currentUnits: number;
   readonly totalDividend: number;
   readonly expectedDividend: number;
   readonly expectedDividendDate: string;

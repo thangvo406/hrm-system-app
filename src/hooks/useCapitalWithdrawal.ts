@@ -1,20 +1,15 @@
-import type { WithdrawalType } from '@screens/CapitalWithdrawal/WithdrawalTypeCard';
-import type { IContributeSummary } from '@type/wallet';
+import type { OptionDef } from '@screens/CapitalWithdrawal/WithdrawalTypeCard';
 
-import { MEMBERSHIP_TYPE} from '@constants/config';
+import { MEMBERSHIP_TYPE } from '@constants/config';
 import bankData from '@constants/banks.json';
 import Selection from '@dialogs/Selection';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
-import {
-  AccountSelector,
-} from '@services/selectors';
-import {
-  getContributeSummaryRequest,
-} from '@services/slices/payment/paymentSlice';
+import { AccountSelector, PaymentSelector } from '@services/selectors';
+import { decreaseContributeRequest } from '@services/slices/payment/paymentSlice';
 import { TranslationUtils } from '@utils';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { IBankOption } from './useWithdrawal';
@@ -25,24 +20,18 @@ export const useCapitalWithdrawal = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const profile = useAppSelector(AccountSelector.getProfile);
-  const [summary, setSummary] = useState<IContributeSummary | undefined>();
+  const summary = useAppSelector(PaymentSelector.getContributeSummary);
   const [amount, setAmount] = useState('');
-  const [withdrawalType, setWithdrawalType] =
-    useState<WithdrawalType>('decrease_refund');
+  const [withdrawalSelected, setWithdrawalSelected] = useState<OptionDef>({
+    type: 'decrease_refund',
+    title: t('capital_withdrawal.option_academic_title'),
+  } as OptionDef);
   const [accountHolder, setAccountHolder] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
   const [selectedBank, setSelectedBank] = useState<IBankOption | undefined>(
     undefined,
   );
-
-  useEffect(() => {
-    dispatch(
-      getContributeSummaryRequest({
-        onFailure: () => setSummary(undefined),
-        onSuccess: data => setSummary(data),
-      }),
-    );
-  }, []);
+  const [errorAmount, setErrorAmount] = useState('');
 
   const membershipLabel = useMemo(() => {
     const rawType = profile?.membershipType;
@@ -59,11 +48,10 @@ export const useCapitalWithdrawal = () => {
     return baseLabel;
   }, [profile?.membershipType, t]);
 
-  // The summary strip values come straight from the API and stay fixed —
-  // they do NOT recompute while the user is typing units.
   const unitPrice = summary?.unitPrice ?? CONTRIBUTION_UNIT_PRICE;
   const currentContribution = summary?.currentContribution ?? 0;
-  const currentUnits = Math.floor(currentContribution / unitPrice);
+  const selfCurrentUnits = Math.floor(currentContribution / unitPrice);
+  const currentUnits = summary?.currentUnits || selfCurrentUnits;
   const expectedContribution =
     summary?.expectedContribution ?? currentContribution;
   const expectedUnits =
@@ -78,7 +66,13 @@ export const useCapitalWithdrawal = () => {
   }, [accountHolder, accountNumber, amount, selectedBank]);
 
   const onAmountChange = (value: string) => {
-    setAmount(value.replaceAll(/\D/g, '').replace(/^0+/, ''));
+    const _value = value.replaceAll(/\D/g, '').replace(/^0+/, '');
+    if (Number(_value) > (summary?.currentUnits || 0)) {
+      setErrorAmount(t('capital_withdrawal.error_units_exceed_current'));
+    } else {
+      setErrorAmount('');
+      setAmount(_value);
+    }
   };
 
   const onAccountNumberChange = (value: string) => {
@@ -98,24 +92,44 @@ export const useCapitalWithdrawal = () => {
     });
   };
 
-  // TODO: swap increaseContributionRequest for the decrease/refund API once
-  // the backend endpoint is available — this is copied from the increase flow.
   const onSubmit = () => {
     const requestedUnits = Number(amount);
-    AppNavigator.navigate(Paths.CapitalWithdrawalResult, {
-      amount: requestedUnits * unitPrice,
-      applicantName: profile?.fullName ?? profile?.name,
-      bankInfo: {
-        accountHolder,
-        accountNumber,
-        bank: selectedBank,
-      },
-      currentUnitCount: currentUnits,
-      requestedAt: Date.now(),
-      status: 'PENDING',
-      totalUnitCountAfter: Math.max(currentUnits - requestedUnits, 0),
-      unitCount: requestedUnits,
-    });
+    const bankName =
+      typeof selectedBank == 'string'
+        ? selectedBank
+        : (selectedBank?.name ?? '');
+
+    dispatch(
+      decreaseContributeRequest({
+        units: requestedUnits,
+        refundBankAccountNumber: accountNumber,
+        refundBankName: bankName,
+        refundBankAccountHolder: accountHolder,
+        requestReason: withdrawalSelected?.title,
+        onSuccess: () => {
+          AppNavigator.navigate(Paths.CapitalWithdrawalResult, {
+            amount: requestedUnits * unitPrice,
+            applicantName: profile?.fullName ?? profile?.name,
+            bankInfo: {
+              accountHolder,
+              accountNumber,
+              bank: selectedBank,
+            },
+            currentUnitCount: currentUnits,
+            requestedAt: Date.now(),
+            status: 'PENDING',
+            totalUnitCountAfter: Math.max(currentUnits - requestedUnits, 0),
+            unitCount: requestedUnits,
+          });
+        },
+        onFailure: error => {
+          AppNavigator.showSnackBar({
+            message: error,
+            type: 'failed',
+          });
+        },
+      }),
+    );
   };
 
   return {
@@ -128,14 +142,15 @@ export const useCapitalWithdrawal = () => {
     expectedContribution,
     expectedUnits,
     membershipLabel,
+    errorAmount,
     onAccountNumberChange,
     onAmountChange,
     onPressBank,
     onSubmit,
     selectedBank,
     setAccountHolder,
-    setWithdrawalType,
+    setWithdrawalSelected,
     unitPrice,
-    withdrawalType,
+    withdrawalType: withdrawalSelected?.type,
   };
 };

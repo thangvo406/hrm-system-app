@@ -53,13 +53,14 @@ function CapitalWithdrawal() {
     expectedContribution,
     expectedUnits,
     membershipLabel,
+    errorAmount,
     onAccountNumberChange,
     onAmountChange,
     onPressBank,
     onSubmit,
     selectedBank,
     setAccountHolder,
-    setWithdrawalType,
+    setWithdrawalSelected,
     unitPrice,
     withdrawalType,
   } = useCapitalWithdrawal();
@@ -128,11 +129,9 @@ function CapitalWithdrawal() {
               membershipLabel={membershipLabel}
             />
 
-          
-
             <View style={styles.typeCardWrap}>
               <WithdrawalTypeCard
-                onSelect={setWithdrawalType}
+                onSelect={setWithdrawalSelected}
                 selected={withdrawalType}
               />
             </View>
@@ -146,6 +145,7 @@ function CapitalWithdrawal() {
                 expectedUnitsText={t('contribution_input.units_count', {
                   count: expectedUnits,
                 })}
+                errorAmount={errorAmount}
                 onAmountChange={onAmountChange}
                 unitPriceText={t('contribution_input.amount_won', {
                   amount: formatCurrency(unitPrice),
@@ -208,7 +208,6 @@ function CapitalWithdrawal() {
                 </Text>
               </View>
             </View>
-
           </View>
         </Animated.View>
       </ScrollView>
