@@ -148,7 +148,10 @@ export function useMealTickets() {
         onSuccess: response => {
           callback({
             ...(response || ({} as any)),
-            token: JSON.stringify(response?.data),
+            token:
+              typeof response?.data == 'string'
+                ? response?.data
+                : JSON.stringify(response?.data),
           });
         },
       }),
@@ -170,7 +173,10 @@ export function useMealTickets() {
             titleVoucher: voucher?.productName,
             data: {
               ...(response || ({} as any)),
-              token: JSON.stringify(response?.data),
+              token:
+                typeof response?.data == 'string'
+                  ? response?.data
+                  : JSON.stringify(response?.data),
             },
             onRefresh: onRefreshQR(voucher),
           });
