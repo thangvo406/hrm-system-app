@@ -30,6 +30,7 @@ const HALF_TURN_DEGREES = 180;
 const HANDLE_IMAGE_WIDTH = ScaleSize(100);
 const HANDLE_IMAGE_HEIGHT = ScaleSize(50);
 const HANDLE_BAR_HEIGHT = ScaleSize(19);
+const HANDLE_HEIGHT = HANDLE_IMAGE_HEIGHT - HANDLE_BAR_HEIGHT;
 // 60 below the card bottom edge; the visible handle already fills part of it.
 const ORGANIZATION_SECTION_GAP =
   ScaleSize(60) - HANDLE_IMAGE_HEIGHT + HANDLE_BAR_HEIGHT;
@@ -153,6 +154,7 @@ function WalletCard({
 
   const handleStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${expandProgress.value * HALF_TURN_DEGREES}deg` }],
+    height: opacityBtnExpand.value * HANDLE_HEIGHT,
     opacity: opacityBtnExpand.value,
     marginTop: -1,
   }));
@@ -404,7 +406,7 @@ const styles = StyleSheet.create({
     top: 0,
   },
   expandHandleClip: {
-    height: HANDLE_IMAGE_HEIGHT - HANDLE_BAR_HEIGHT,
+    height: HANDLE_HEIGHT,
     overflow: 'hidden',
     // marginTop: -1,
   },

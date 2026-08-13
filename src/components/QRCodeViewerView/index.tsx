@@ -31,7 +31,7 @@ import { DeviceUtils } from '@kits/core/utils';
 const { ifIOS } = DeviceUtils;
 const QR_SIZE = ScaleSize(240);
 const TICK_INTERVAL_MS = 1000;
-const DEFAULT_DURATION_SECONDS = 120;
+const DEFAULT_DURATION_SECONDS = 300;
 
 const BADGE_SIZE = ScaleSize(54);
 const FOOT_NOTCH_SIZE = ScaleSize(26);

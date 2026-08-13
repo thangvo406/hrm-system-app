@@ -1,6 +1,6 @@
 import type { CarouselRenderItem } from 'react-native-reanimated-carousel';
 
-import { AddPlaceholder, Button, Image } from '@components';
+import { AddPlaceholder, Button, CardsLoading, Image } from '@components';
 import { ScaleSize } from '@kits/core';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -92,11 +92,12 @@ function Cards({
 }: Properties) {
   // The "add account" tile leads the carousel, so hiding it shifts every
   // real account's index back by one.
-  const focusedIndex = (accounts?.length ?? 0) > 0
-    ? hideRegisterAccount
-      ? Math.max(initialIndex - 1, 0)
-      : initialIndex
-    : -1;
+  const focusedIndex =
+    (accounts?.length ?? 0) > 0
+      ? hideRegisterAccount
+        ? Math.max(initialIndex - 1, 0)
+        : initialIndex
+      : -1;
 
   const { t } = useTranslation();
   const progress = useSharedValue(focusedIndex);
@@ -141,6 +142,10 @@ function Cards({
       Globals.isScrollingRef.current = false;
     }
   }, []);
+
+  if (!accounts) {
+    return <CardsLoading />;
+  }
 
   return (
     <>

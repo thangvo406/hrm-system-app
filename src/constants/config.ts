@@ -40,6 +40,11 @@ export const POINT_TAG_STYLE: Record<string, PointTagStyle | undefined> = {
     color: '#D9534F',
     title: 'pay_point.tags.point_expired',
   },
+  CHARGE_BONUS_POINT: {
+    background: '#DFF3E1',
+    color: '#2DB34A',
+    title: 'pay_point.tags.point_accrue',
+  },
   REFUND: {
     background: '#DFF3E1',
     color: '#2DB34A',
@@ -146,6 +151,7 @@ enum TransactionType {
   REFUND = 'REFUND',
   MANUAL_ADJUSTMENT = 'MANUAL_ADJUSTMENT',
   POINT_EARN = 'POINT_EARN',
+  POINT_GRANT = 'POINT_GRANT',
   POINT_USE = 'POINT_USE',
   CONTRIBUTION_EARN = 'CONTRIBUTION_EARN',
   CONTRIBUTION_DECREASE = 'CONTRIBUTION_DECREASE',
@@ -156,6 +162,8 @@ enum TransactionType {
   POINT_EXPIRE = 'POINT_EXPIRE',
   PAY_MONEY_WITHDRAWAL = 'PAY_MONEY_WITHDRAWAL',
   PAY_MONEY_CHARGE_BONUS = 'PAY_MONEY_CHARGE_BONUS',
+  CHARGE_BONUS_POINT = 'CHARGE_BONUS_POINT',
+  ORG_PAYMENT = 'ORG_PAYMENT',
 }
 
 export enum HEADLINE_ACTIONS {
@@ -169,6 +177,7 @@ export enum HEADLINE_ACTIONS {
   POINT_EXPIRE = 'POINT_EXPIRE',
   REFUND = 'REFUND',
   ADJUSTMENT = 'ADJUSTMENT',
+  ORG_PAYMENT = 'ORG_PAYMENT',
 }
 
 export enum BALANCE_ACCOUNT_TYPE {
@@ -211,6 +220,9 @@ export const SUMMARY_TRANSACTION_DETAIL_DISPLAY: Record<
 
   [HEADLINE_ACTIONS.ADJUSTMENT]:
     'account_management.transaction_detail_texts.adjustment',
+
+  [HEADLINE_ACTIONS.ORG_PAYMENT]:
+    'account_management.transaction_detail_texts.org_payment',
 };
 
 export const TRANSACTION_DETAIL_DISPLAY: Record<TransactionType, string> = {
@@ -229,6 +241,9 @@ export const TRANSACTION_DETAIL_DISPLAY: Record<TransactionType, string> = {
     'pay_point.transaction_detail_texts.manual_adjustment',
 
   [TransactionType.POINT_EARN]: 'pay_point.transaction_detail_texts.point_earn',
+
+  [TransactionType.POINT_GRANT]:
+    'pay_point.transaction_detail_texts.point_grant',
 
   [TransactionType.POINT_USE]: 'pay_point.transaction_detail_texts.point_use',
 
@@ -258,6 +273,12 @@ export const TRANSACTION_DETAIL_DISPLAY: Record<TransactionType, string> = {
 
   [TransactionType.PAY_MONEY_CHARGE_BONUS]:
     'pay_point.transaction_detail_texts.pay_money_charge_bonus',
+
+  [TransactionType.CHARGE_BONUS_POINT]:
+    'pay_point.transaction_detail_texts.charge_bonus_point',
+
+  [TransactionType.ORG_PAYMENT]:
+    'pay_point.transaction_detail_texts.org_payment',
 };
 
 export const MEMBERSHIP_OPTIONS = [

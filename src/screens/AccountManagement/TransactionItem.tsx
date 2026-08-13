@@ -27,7 +27,7 @@ const TRANSACTION_AMOUNT_DISPLAY = {
   },
   [HEADLINE_ACTIONS.CHARGE_BONUS_POINT]: {
     amount: 'moneyInAmount',
-    sign: '-',
+    sign: '+',
   },
   [HEADLINE_ACTIONS.PAYMENT]: {
     amount: 'moneyOutAmount',
@@ -59,6 +59,10 @@ const TRANSACTION_AMOUNT_DISPLAY = {
   },
   [HEADLINE_ACTIONS.ADJUSTMENT]: {
     amount: 'moneyOutAmount',
+    sign: '-',
+  },
+  [HEADLINE_ACTIONS.ORG_PAYMENT]: {
+    amount: 'moneyInAmount',
     sign: '-',
   },
 };

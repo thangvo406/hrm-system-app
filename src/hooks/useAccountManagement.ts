@@ -13,10 +13,15 @@ import {
   generateQRCodeMemberRequest,
   getCurrentWalletRequest,
   getOrganizationInfoRequest,
+  getTransactionsMovementRequest,
 } from '@services/slices/account/accountSlice';
 import { getAccountCardsRequest } from '@services/slices/accountManagement/accountManagementSlice';
-import { IResponseOrganizationInfo } from '@type';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  IResponseOrganizationInfo,
+  ITransactionMovement,
+  ListApiResponse,
+} from '@type';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export type SourceCard = {
@@ -45,6 +50,92 @@ export type WalletTransaction = {
 
 export const PRIMARY_CARD_INDEX = 1;
 
+const TRANSACTIONS_PAGE_SIZE = 20;
+
+type TTransactionPagination = {
+  isLast: boolean;
+  isLoadingMore: boolean;
+  loaded: boolean;
+  page: number;
+};
+
+const INITIAL_TRANSACTION_PAGINATION: TTransactionPagination = {
+  isLast: false,
+  isLoadingMore: false,
+  loaded: false,
+  page: 0,
+};
+
+const onPressTransaction = (item: ITransactionMovement) => {
+  AppNavigator.navigate(Paths.TransactionDetail, {
+    transId: item?.transactionKey,
+  });
+};
+
+const useTransactions = () => {
+  const dispatch = useAppDispatch();
+  const [transactions, setTransactions] = useState<ITransactionMovement[]>([]);
+  const [loadingTransactions, setLoadingTransactions] = useState(true);
+  const [loadingMoreTransactions, setLoadingMoreTransactions] = useState(false);
+  const transactionPagination = useRef<TTransactionPagination>({
+    ...INITIAL_TRANSACTION_PAGINATION,
+  });
+
+  const fetchTransactions = useCallback(
+    (page: number) => {
+      dispatch(
+        getTransactionsMovementRequest({
+          page,
+          size: TRANSACTIONS_PAGE_SIZE,
+          onFailure: () => {
+            transactionPagination.current.isLoadingMore = false;
+            setLoadingTransactions(false);
+            setLoadingMoreTransactions(false);
+          },
+          onSuccess: (data: ListApiResponse<ITransactionMovement[]>) => {
+            transactionPagination.current.isLast = data.last;
+            transactionPagination.current.isLoadingMore = false;
+            transactionPagination.current.loaded = true;
+            transactionPagination.current.page = page;
+            setTransactions(prev =>
+              page === 0 ? data?.content : [...prev, ...(data?.content || [])],
+            );
+            setLoadingTransactions(false);
+            setLoadingMoreTransactions(false);
+          },
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  const onLoadMoreTransactions = useCallback(() => {
+    const pagination = transactionPagination.current;
+    if (!pagination.loaded || pagination.isLast || pagination.isLoadingMore) {
+      return;
+    }
+    pagination.isLoadingMore = true;
+    setLoadingMoreTransactions(true);
+    fetchTransactions(pagination.page + 1);
+  }, [fetchTransactions]);
+
+  useFocusEffect(
+    useCallback(() => {
+      transactionPagination.current = { ...INITIAL_TRANSACTION_PAGINATION };
+      setLoadingTransactions(true);
+      fetchTransactions(0);
+    }, [fetchTransactions]),
+  );
+
+  return {
+    loadingMoreTransactions,
+    loadingTransactions,
+    onLoadMoreTransactions,
+    onPressTransaction,
+    transactions,
+  };
+};
+
 export const useAccountManagement = () => {
   const rawData = useAppSelector(AccountManagementSelector.getAccountCards);
   const dispatch = useAppDispatch();
@@ -53,29 +144,38 @@ export const useAccountManagement = () => {
   const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
   const [organizationInfo, setOrganizationInfo] =
     useState<IResponseOrganizationInfo[]>();
+  const [loadingAccountCards, setLoadingAccountCards] = useState(true);
   const accounts = useMemo(() => {
+    if (loadingAccountCards) {
+      return undefined;
+    }
     return rawData?.filter(it => it.type == BANK_ACC_TYPES.ACCOUNT);
-  }, [rawData]);
+  }, [loadingAccountCards, rawData]);
 
   const cards = useMemo(() => {
+    if (loadingAccountCards) {
+      return undefined;
+    }
     return rawData?.filter(it => it.type == BANK_ACC_TYPES.CARD);
-  }, [rawData]);
+  }, [loadingAccountCards, rawData]);
 
   const isShowBottomButtonWallet = useMemo(() => {
     return (currentWallet?.balance || 0) > 0;
   }, [currentWallet]);
   const isShowUnRegister = useMemo(() => {
-    return rawData?.length == 0;
-  }, [rawData]);
+    return !loadingAccountCards && rawData?.length == 0;
+  }, [loadingAccountCards, rawData]);
 
   const isEmptyBankAccount = useMemo(() => {
-    return rawData?.length == 0;
-  }, [rawData]);
+    return !loadingAccountCards && rawData?.length == 0;
+  }, [loadingAccountCards, rawData]);
 
   const toggleUnRegister = () => {
     // setShowUnRegister(prev => !prev);
     AppNavigator.navigate(Paths.PointDashboard);
   };
+
+  const transactions = useTransactions();
 
   useFocusEffect(
     useCallback(() => {
@@ -91,7 +191,12 @@ export const useAccountManagement = () => {
   );
 
   useEffect(() => {
-    dispatch(getAccountCardsRequest({}));
+    dispatch(
+      getAccountCardsRequest({
+        onFailure: () => setLoadingAccountCards(false),
+        onSuccess: () => setLoadingAccountCards(false),
+      }),
+    );
   }, [dispatch]);
 
   const onRegisterAccount = useCallback(() => {
@@ -128,7 +233,11 @@ export const useAccountManagement = () => {
   }, [isEnablePaymentCard, rawData]);
 
   const onChargeHistory = useCallback(() => {
-    if (!isEnablePaymentCard || accounts?.length > 0 || cards.length > 0) {
+    if (
+      !isEnablePaymentCard ||
+      (accounts?.length ?? 0) > 0 ||
+      (cards?.length ?? 0) > 0
+    ) {
       AppNavigator.navigate(Paths.PayPointHistories);
     } else {
       onShowDialogConfirm();
@@ -207,5 +316,6 @@ export const useAccountManagement = () => {
     toggleUnRegister,
     onUseOrganize,
     point: currentWallet?.pointBalance,
+    ...transactions,
   };
 };

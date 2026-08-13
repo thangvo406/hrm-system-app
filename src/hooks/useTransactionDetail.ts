@@ -1,3 +1,5 @@
+import QRCodeViewerView from '@components/QRCodeViewerView';
+import { HEADLINE_ACTIONS } from '@constants/config';
 import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getTransactionDetailRequest } from '@services/slices/account/accountSlice';
@@ -7,11 +9,25 @@ import type {
   ITransactionOrder,
 } from '@type/payment';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type TTransactionLegGroup = {
   readonly balanceAccountType: string;
   readonly legs: ITransactionLeg[];
 };
+
+const DEBIT_TYPES = new Set<string>([
+  HEADLINE_ACTIONS.PAYMENT,
+  HEADLINE_ACTIONS.POINT_EXPIRE,
+  HEADLINE_ACTIONS.WITHDRAWAL,
+]);
+// const CREDIT_TYPES = [
+//   HEADLINE_ACTIONS.CHARGE,
+//   HEADLINE_ACTIONS.REFUND,
+//   HEADLINE_ACTIONS.POINT_EARN,
+//   HEADLINE_ACTIONS.POINT_GRANT,
+//   HEADLINE_ACTIONS.POINT_GRANT,
+// ];
 
 /** Groups legs sharing the same balanceAccountType, keeping first-seen order. */
 const groupLegsByBalanceAccountType = (
@@ -39,6 +55,11 @@ export function useTransactionDetail(props: any) {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<ITransactionDetail>();
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
+
+  const isDebit = useMemo(() => {
+    return DEBIT_TYPES.has(data?.headlineAction ?? '');
+  }, []);
 
   const order = useMemo(() => {
     if (data?.order) {
@@ -52,6 +73,14 @@ export function useTransactionDetail(props: any) {
       } as ITransactionOrder;
     }
   }, [data]);
+
+  const isShowDashDivider = useMemo(() => {
+    return [
+      order?.voucherAmount,
+      order?.memberDiscountAmount,
+      order?.usedPointAmount,
+    ].some(it => Number(it) > 0);
+  }, [order]);
 
   useEffect(() => {
     dispatch(
@@ -73,5 +102,29 @@ export function useTransactionDetail(props: any) {
     [data],
   );
 
-  return { data, groupedLegs, loading, order };
+  const onPressQR = () => {
+    AppNavigator.showDialog({
+      screen: QRCodeViewerView,
+      isFullScreen: true,
+      showBtnVoucher: true,
+      showIconVoucher: false,
+      titleKey: 'transaction_detail.payment_cancel_qr_title',
+      btnVoucher: t('transaction_detail.back_to_transaction_detail'),
+      titleVoucher: t('transaction_detail.payment_cancel_qr_title'),
+      data: {
+        token: data?.transactionKey,
+      },
+      // onRefresh: onRefreshQR(voucher),
+    });
+  };
+
+  return {
+    data,
+    groupedLegs,
+    loading,
+    order,
+    onPressQR,
+    isDebit,
+    isShowDashDivider,
+  };
 }
