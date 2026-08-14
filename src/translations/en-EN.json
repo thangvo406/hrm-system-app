@@ -989,6 +989,23 @@
       "address_delivery_note": "Please enter your on-campus address.",
       "btn_submit": "Continue"
     },
+    "cancellation_order": {
+      "title": "Cancel Order",
+      "order_label": "Order to cancel",
+      "order_number": "Order #{{number}}",
+      "order_items": "{{amount}} KRW · {{items}}",
+      "reason_heading": "Choose a reason for cancelling",
+      "reason_change_mind": "Changed my mind",
+      "reason_order_mistake": "Ordered by mistake",
+      "reason_delivery_delay": "Delivery is late",
+      "reason_store_issue": "Store issue",
+      "reason_other": "Something else",
+      "other_placeholder": "Tell us why you're cancelling",
+      "notice_title": "Before you cancel",
+      "notice_desc": "Orders already being prepared may incur a cancellation fee.",
+      "back": "Go back",
+      "submit": "Request cancellation"
+    },
     "contribution_input": {
       "title": "Contribution Increase",
       "subtitle": "Please enter the amount for additional capital contribution",

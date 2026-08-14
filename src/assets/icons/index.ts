@@ -13,6 +13,7 @@ import Ic_burstIcon from './ic_burst.svg';
 import Ic_calendarIcon from './ic_calendar.svg';
 import Ic_calendar_xIcon from './ic_calendar_x.svg';
 import Ic_cartIcon from './ic_cart.svg';
+import Ic_chat_bubbleIcon from './ic_chat_bubble.svg';
 import Ic_checkIcon from './ic_check.svg';
 import Ic_check_circleIcon from './ic_check_circle.svg';
 import Ic_check_filledIcon from './ic_check_filled.svg';
@@ -55,6 +56,7 @@ import Ic_qr_memberIcon from './ic_qr_member.svg';
 import Ic_radio_selectedIcon from './ic_radio_selected.svg';
 import Ic_radio_unselectedIcon from './ic_radio_unselected.svg';
 import Ic_refreshIcon from './ic_refresh.svg';
+import Ic_scooterIcon from './ic_scooter.svg';
 import Ic_searchIcon from './ic_search.svg';
 import Ic_settingsIcon from './ic_settings.svg';
 import Ic_shield_checkIcon from './ic_shield_check.svg';
@@ -92,6 +94,7 @@ const icons = {
   'ic_calendar': Ic_calendarIcon,
   'ic_calendar_x': Ic_calendar_xIcon,
   'ic_cart': Ic_cartIcon,
+  'ic_chat_bubble': Ic_chat_bubbleIcon,
   'ic_check': Ic_checkIcon,
   'ic_check_circle': Ic_check_circleIcon,
   'ic_check_filled': Ic_check_filledIcon,
@@ -134,6 +137,7 @@ const icons = {
   'ic_radio_selected': Ic_radio_selectedIcon,
   'ic_radio_unselected': Ic_radio_unselectedIcon,
   'ic_refresh': Ic_refreshIcon,
+  'ic_scooter': Ic_scooterIcon,
   'ic_search': Ic_searchIcon,
   'ic_settings': Ic_settingsIcon,
   'ic_shield_check': Ic_shield_checkIcon,

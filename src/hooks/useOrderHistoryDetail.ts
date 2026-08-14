@@ -1,4 +1,5 @@
 import AppNavigator from '@navigation/AppNavigator';
+import { Paths } from '@navigation/paths';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getOrderHistoryDetailRequest } from '@services/slices/payment/paymentSlice';
@@ -40,6 +41,12 @@ export function useOrderHistoryDetail(props: any) {
     );
   }, []);
 
+  const onPressCancelOrder = () => {
+    AppNavigator.navigate(Paths.CancellationOrder, {
+      order: data,
+    });
+  };
+
   const visibleProducts = showAllProducts
     ? data?.products
     : data?.products?.slice(0, 3);
@@ -50,6 +57,7 @@ export function useOrderHistoryDetail(props: any) {
     loading,
     storeName: data?.storeName ?? orderItem?.storeName ?? '',
     onPressCopyOrderNumber,
+    onPressCancelOrder,
     showAllProducts,
     toggleShowAllProducts,
     visibleProducts,

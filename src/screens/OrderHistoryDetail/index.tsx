@@ -25,6 +25,7 @@ function OrderHistoryDetail(props: any) {
     isSuccess,
     onPressCopyOrderNumber,
     storeName,
+    onPressCancelOrder,
   } = useOrderHistoryDetail(props);
 
   return (
@@ -56,7 +57,10 @@ function OrderHistoryDetail(props: any) {
             <PaymentInfoSection order={data} summaryPrice={data?.summary} />
           </ScrollView>
 
-          <BottomActions onPressContactSupport={noop} onPressReorder={noop} />
+          <BottomActions
+            onPressContactSupport={noop}
+            onPressCancelOrder={onPressCancelOrder}
+          />
         </>
       )}
     </View>

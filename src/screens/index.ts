@@ -10,6 +10,7 @@ export { default as Home } from './Home';
 export { default as InputAddress } from './InputAddress';
 export { default as CapitalWithdrawal } from './CapitalWithdrawal';
 export { default as CapitalWithdrawalResult } from './CapitalWithdrawalResult';
+export { default as CancellationOrder } from './CancellationOrder';
 export { default as Contribution } from './Contribution';
 export { default as ContributionInput } from './ContributionInput';
 export { default as Notifications } from './Notifications';

@@ -64,6 +64,15 @@ export type RootStackParamList = {
         verifyCode?: string;
       }
     | undefined;
+  [Paths.CancellationOrder]:
+    | {
+        itemsSummary?: string;
+        orderId?: number;
+        orderNumber?: string;
+        storeName?: string;
+        totalAmount?: number;
+      }
+    | undefined;
   [Paths.Carts]: undefined;
   [Paths.Contribution]: undefined;
   [Paths.ContributionInput]: undefined;

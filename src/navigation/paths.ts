@@ -8,6 +8,7 @@ export enum Paths {
   SchoolSelection = 'school_selection',
   CapitalWithdrawal = 'capital_withdrawal',
   CapitalWithdrawalResult = 'capital_withdrawal_result',
+  CancellationOrder = 'cancellation_order',
   Carts = 'carts',
   Contribution = 'contribution',
   ContributionInput = 'contribution_input',

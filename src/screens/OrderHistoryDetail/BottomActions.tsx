@@ -11,12 +11,15 @@ const { ifAndroid } = DeviceUtils;
 
 type Properties = {
   readonly onPressContactSupport: () => void;
-  readonly onPressReorder: () => void;
+  readonly onPressCancelOrder: () => void;
 };
 
 const ANDROID_BOTTOM_SPACE = 16;
 
-function BottomActions({ onPressContactSupport, onPressReorder }: Properties) {
+function BottomActions({
+  onPressContactSupport,
+  onPressCancelOrder,
+}: Properties) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
 
@@ -33,11 +36,10 @@ function BottomActions({ onPressContactSupport, onPressReorder }: Properties) {
       ]}
     >
       <Button
-        onPress={onPressReorder}
-        style={styles.action}
+        onPress={onPressCancelOrder}
+        style={styles.cancelOrder}
         testID="order-detail-reorder"
-        title={t('order_history_detail.reorder')}
-        type="outline-bordered"
+        title={t('cancellation_order.title')}
       />
       <Button
         onPress={onPressContactSupport}
@@ -53,6 +55,14 @@ function BottomActions({ onPressContactSupport, onPressReorder }: Properties) {
 export default React.memo(BottomActions);
 
 const styles = StyleSheet.create({
+  cancelOrder: {
+    alignItems: 'center',
+    backgroundColor: Colors.red03,
+    borderRadius: ScaleSize(14),
+    flex: 1,
+    height: ScaleSize(52),
+    justifyContent: 'center',
+  },
   action: {
     flex: 1,
   },

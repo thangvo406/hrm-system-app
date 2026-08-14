@@ -17,8 +17,8 @@ export type OrderTabKey = 'all' | 'pickup' | 'hall';
 
 export const ORDER_RECEIVE_METHODS: Record<OrderTabKey, string> = {
   all: '',
-  hall: 'hall',
-  pickup: 'pickup',
+  hall: 'HALL',
+  pickup: 'PICKUP',
 };
 
 function onPressItem(item: any) {
@@ -73,7 +73,7 @@ export function useOrders() {
   useEffect(() => {
     dispatch(
       getOrderHistoriesRequest({
-        orderReceiveMethod: ORDER_RECEIVE_METHODS[activeTab],
+        receiveMethod: ORDER_RECEIVE_METHODS[activeTab],
         page: currentPage,
         size: PAGE_SIZE,
         onFailure: handleFailure,

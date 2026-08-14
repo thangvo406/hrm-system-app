@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
   storeName: {
     fontSize: ScaleSize(13),
     color: Colors.black,
+    fontWeight: 'bold',
   },
   date: {
     color: Colors.gray14,
