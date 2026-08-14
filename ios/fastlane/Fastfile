@@ -34,112 +34,90 @@ REPO_ROOT = File.expand_path('../..', __dir__)
 # resolve_api_key_path ghi ra từ secret APP_STORE_CONNECT_API_KEY_BASE64.
 LOCAL_SECRETS_DIR = File.expand_path('../../../../../..', __dir__)
 
-def teams_url = "https://dtpeducationvn.webhook.office.com/webhookb2/8d1bdeab-5e7f-4499-bde1-355f512a6e4e@cc1c7f2f-c062-49ab-9800-8b7bdb4f8a93/IncomingWebhook/67eb38906694412aa81bf281ad40f092/05f57c89-2792-4d03-b715-0a7da6e4cc82/V28rCnZ6x-px5hrrR2ZvThJcxUf6qIRW8SBAnxGZ1n5r41"
-def post_teams_card(title:, message:, facts: [])
-  require 'net/http'
-  require 'json'
-  require 'uri'
-  require 'openssl'
-
-  payload = {
-    "@type" => "MessageCard",
-    "@context" => "http://schema.org/extensions",
-    "themeColor" => "0078D7",
-    "title" => title,
-    "summary" => title,
-    "sections" => [{ "text" => message, "facts" => facts }]
-  }
-
-  uri = URI.parse(teams_url)
-  headers = { 'Content-Type' => 'application/json' }
-  http = Net::HTTP.new(uri.host, uri.port)
-  http.use_ssl = uri.scheme == "https"
-  # CI hosts fail CRL checks against the Teams webhook, so skip verification unless explicitly enabled.
-  verify_ssl = ENV.fetch("TEAMS_VERIFY_SSL", "false") != "false"
-  http.verify_mode = OpenSSL::SSL::VERIFY_NONE unless verify_ssl
-
-  response = http.post(uri.request_uri, payload.to_json, headers)
-  unless response.code.to_i == 200 && response.body.to_i == 1
-    UI.error("Teams notification failed (#{response.code}): #{response.body}")
-  end
-rescue => e
-  UI.error("Teams notification error: #{e.message}")
-end
 platform :ios do
   desc "Build IPA dev và upload lên TestFlight"
   lane :beta do |options|
-    copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', '.dev'), "#{REPO_ROOT}/env/.dev")
-    # react-native-config reads the env file via /tmp/envfile (highest priority)
-    # then ENVFILE. xcodebuild does not run scheme pre-actions, so set both here
-    # to make the gym build deterministic. This must happen BEFORE
-    # prepare_package: it runs pod install, and the Podfile generates ios/.env
-    # and injects it into the xcconfig based on this selection.
-    select_env_file("env/.dev")
-    versionCode = prepare_package(options)
     prefixAppName = "CoopUse_DEV_v"
     branchName = resolve_branch_name(options)
+    # Resolve version/build sớm để thông báo "start" có đủ thông tin, và để
+    # nhánh rescue luôn có biến hợp lệ dù lỗi xảy ra ở bất kỳ đâu.
+    versionCode = resolve_version_number(options)
+    build = nil
 
-    puts "Endpoint => #{ENV["BASE_URL"]}"
+    begin
+      UI.message("--- BẮT ĐẦU BUILD IPA DEV & UPLOAD TESTFLIGHT ---")
+      postNotifyMessage("start", branchName, versionCode, nil)
 
-    appId = resolve_ios_app_id
-    appName = "#{prefixAppName}#{versionCode}.ipa"
+      copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', '.dev'), "#{REPO_ROOT}/env/.dev")
+      # react-native-config reads the env file via /tmp/envfile (highest priority)
+      # then ENVFILE. xcodebuild does not run scheme pre-actions, so set both here
+      # to make the gym build deterministic. This must happen BEFORE
+      # prepare_package: it runs pod install, and the Podfile generates ios/.env
+      # and injects it into the xcconfig based on this selection.
+      select_env_file("env/.dev")
+      prepare_package(options)
 
-    api_key_path = resolve_api_key_path
-    api_key = app_store_connect_api_key(
-      key_id: ENV["KEY_ID"],
-      issuer_id: ENV["ISSUER_ID"],
-      key_filepath: api_key_path,
-      duration: 1200, # optional (maximum 1200)
-      in_house: false # optional but may be required if using match/sigh
-    )
+      puts "Endpoint => #{ENV["BASE_URL"]}"
 
-    build = latest_testflight_build_number(
-      api_key: api_key,
-      app_identifier: appId,
-      version: versionCode,
+      appId = resolve_ios_app_id
+      appName = "#{prefixAppName}#{versionCode}.ipa"
+
+      api_key_path = resolve_api_key_path
+      api_key = app_store_connect_api_key(
+        key_id: ENV["KEY_ID"],
+        issuer_id: ENV["ISSUER_ID"],
+        key_filepath: api_key_path,
+        duration: 1200, # optional (maximum 1200)
+        in_house: false # optional but may be required if using match/sigh
       )
-    if build.nil?
-      build = resolve_build_number(options)
-    else
-      build = build + 1
-    end
 
-    puts "versionCode => #{versionCode}"
-    puts "build => #{build}"
-    puts "appId => #{appId}"
+      build = latest_testflight_build_number(
+        api_key: api_key,
+        app_identifier: appId,
+        version: versionCode,
+        )
+      if build.nil?
+        build = resolve_build_number(options)
+      else
+        build = build + 1
+      end
 
-    increment_build_number(
-      build_number: build,
-      xcodeproj: "#{IOS_DIR}/CoopUse.xcodeproj"
-    )
-     # 1. Ép buộc bật Automatic Signing trong Xcode Project file
-    update_code_signing_settings(
-      use_automatic_signing: true,
-      path: "#{IOS_DIR}/CoopUse.xcodeproj" # Đường dẫn tới file xcodeproj của bạn
-    )
+      puts "versionCode => #{versionCode}"
+      puts "build => #{build}"
+      puts "appId => #{appId}"
 
-    # 2. Trên CI: tạo keychain tạm + nạp certificate distribution (nếu có secret).
-    # Không có cert thì dựa hoàn toàn vào -allowProvisioningUpdates + API key.
-    setup_signing
+      increment_build_number(
+        build_number: build,
+        xcodeproj: "#{IOS_DIR}/CoopUse.xcodeproj"
+      )
+      # 1. Ép buộc bật Automatic Signing trong Xcode Project file
+      update_code_signing_settings(
+        use_automatic_signing: true,
+        path: "#{IOS_DIR}/CoopUse.xcodeproj" # Đường dẫn tới file xcodeproj của bạn
+      )
 
-    # 3. Chạy lệnh Build
-    # xcodebuild bỏ qua scheme pre-actions, nên phải tự sinh
-    # ios/.env + ios/tmp.xcconfig ở đây trước khi gym đọc build settings.
-    sh "#{REPO_ROOT.shellescape}/scripts/generate-ios-env.sh"
-    gym(
-      scheme: "CoopUse",
-      clean: true,
-      workspace: "#{IOS_DIR}/CoopUse.xcworkspace",
-      export_method: "app-store",
-      output_directory: "#{IOS_DIR}/builds",
-      output_name: appName,
-      silent: true,
-      # Cho phép xcodebuild tự tạo/tải provisioning profile qua App Store Connect
-      # API key — bắt buộc khi dùng automatic signing trên runner sạch.
-      xcargs: provisioning_xcargs(api_key_path)
-    )
+      # 2. Trên CI: tạo keychain tạm + nạp certificate distribution (nếu có secret).
+      # Không có cert thì dựa hoàn toàn vào -allowProvisioningUpdates + API key.
+      setup_signing
 
-    export_ipa_output(appName)
+      # 3. Chạy lệnh Build
+      # xcodebuild bỏ qua scheme pre-actions, nên phải tự sinh
+      # ios/.env + ios/tmp.xcconfig ở đây trước khi gym đọc build settings.
+      sh "#{REPO_ROOT.shellescape}/scripts/generate-ios-env.sh"
+      gym(
+        scheme: "CoopUse",
+        clean: true,
+        workspace: "#{IOS_DIR}/CoopUse.xcworkspace",
+        export_method: "app-store",
+        output_directory: "#{IOS_DIR}/builds",
+        output_name: appName,
+        silent: true,
+        # Cho phép xcodebuild tự tạo/tải provisioning profile qua App Store Connect
+        # API key — bắt buộc khi dùng automatic signing trên runner sạch.
+        xcargs: provisioning_xcargs(api_key_path)
+      )
+
+      export_ipa_output(appName)
 
       pilot(
         api_key: api_key,
@@ -147,98 +125,112 @@ platform :ios do
         changelog: "Dev => #{branchName}",
         ipa: "#{IOS_DIR}/builds/#{appName}")
 
-    send_message_success(branchName, "#{versionCode}.#{build}", "[CoopUse-DEV] Testflight was built")
+      postNotifyMessage("success", branchName, versionCode, build)
+      UI.success("🎉 Đã build & upload thành công bản #{versionCode} (build #{build}) lên TestFlight!")
+    rescue => e
+      postNotifyMessage("error", branchName, versionCode, build)
+      UI.error("❌ Build/upload TestFlight thất bại: #{e.message}")
+      raise
+    end
   end
 
   desc "Build IPA production và upload lên TestFlight"
   lane :release do |options|
-    copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', '.prod'), "#{REPO_ROOT}/env/.prod")
-    # See beta lane: select the env before prepare_package runs pod install,
-    # otherwise the xcconfig gets env/.dev values while JS gets env/.prod ones.
-    select_env_file("env/.prod")
-    copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', 'GoogleService-Pro.plist'), "#{IOS_DIR}/GoogleService-Info.plist")
-    versionCode = prepare_package(options)
     prefixAppName = "CoopUse_PRD_v"
     branchName = resolve_branch_name(options)
+    # Xem lane beta: resolve sớm để "start" có thông tin và rescue luôn an toàn.
+    versionCode = resolve_version_number(options)
+    build = nil
 
-    puts "Endpoint => #{ENV["BASE_URL"]}"
+    begin
+      UI.message("--- BẮT ĐẦU BUILD IPA PROD & UPLOAD TESTFLIGHT ---")
+      postNotifyMessage("start", branchName, versionCode, nil)
 
-    appId = resolve_ios_app_id
-    appName = "#{prefixAppName}#{versionCode}.ipa"
+      copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', '.prod'), "#{REPO_ROOT}/env/.prod")
+      # See beta lane: select the env before prepare_package runs pod install,
+      # otherwise the xcconfig gets env/.dev values while JS gets env/.prod ones.
+      select_env_file("env/.prod")
+      copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', 'GoogleService-Pro.plist'), "#{IOS_DIR}/GoogleService-Info.plist")
+      prepare_package(options)
 
-    api_key_path = resolve_api_key_path
-    api_key = app_store_connect_api_key(
-      key_id: ENV["KEY_ID"],
-      issuer_id: ENV["ISSUER_ID"],
-      key_filepath: api_key_path,
-      duration: 1200, # optional (maximum 1200)
-      in_house: false # optional but may be required if using match/sigh
-    )
+      puts "Endpoint => #{ENV["BASE_URL"]}"
 
+      appId = resolve_ios_app_id
+      appName = "#{prefixAppName}#{versionCode}.ipa"
 
-    build = latest_testflight_build_number(
-      api_key: api_key,
-      app_identifier: appId,
-      version: versionCode,
-    )
+      api_key_path = resolve_api_key_path
+      api_key = app_store_connect_api_key(
+        key_id: ENV["KEY_ID"],
+        issuer_id: ENV["ISSUER_ID"],
+        key_filepath: api_key_path,
+        duration: 1200, # optional (maximum 1200)
+        in_house: false # optional but may be required if using match/sigh
+      )
 
-    if build.nil?
-      build = resolve_build_number(options)
-    else
-      build = build + 1
-    end
+      build = latest_testflight_build_number(
+        api_key: api_key,
+        app_identifier: appId,
+        version: versionCode,
+      )
 
-    puts "versionCode => #{versionCode}"
-    puts "build => #{build}"
-    # update_notification_service_id(appId)
+      if build.nil?
+        build = resolve_build_number(options)
+      else
+        build = build + 1
+      end
 
-    # Update main app target
-    update_target_bundle_id(
-      target_name: "CoopUse",
-      plist_path: "#{IOS_DIR}/CoopUse/Info.plist",
-      bundle_id: appId
-    )
+      puts "versionCode => #{versionCode}"
+      puts "build => #{build}"
+      puts "appId => #{appId}"
+      # update_notification_service_id(appId)
 
-    # Update Notification Service target
-    update_target_bundle_id(
-      target_name: "CoopUseNotificationService",
-      plist_path: "#{IOS_DIR}/CoopUseNotificationService/Info.plist",
-      bundle_id: "#{appId}.CoopUseNotificationService"
-    )
+      # Update main app target
+      update_target_bundle_id(
+        target_name: "CoopUse",
+        plist_path: "#{IOS_DIR}/CoopUse/Info.plist",
+        bundle_id: appId
+      )
 
-    increment_version_number(
-      version_number: versionCode,               # specify specific version number (optional, omitting it increments patch version number)
-      xcodeproj: "#{IOS_DIR}/CoopUse.xcodeproj"  # (optional, you must specify the path to your main Xcode project if it is not in the project root directory)
-    )
-    increment_build_number(
-      build_number: build,
-      xcodeproj: "#{IOS_DIR}/CoopUse.xcodeproj"
-    )
+      # Update Notification Service target
+      update_target_bundle_id(
+        target_name: "CoopUseNotificationService",
+        plist_path: "#{IOS_DIR}/CoopUseNotificationService/Info.plist",
+        bundle_id: "#{appId}.CoopUseNotificationService"
+      )
+
+      increment_version_number(
+        version_number: versionCode,               # specify specific version number (optional, omitting it increments patch version number)
+        xcodeproj: "#{IOS_DIR}/CoopUse.xcodeproj"  # (optional, you must specify the path to your main Xcode project if it is not in the project root directory)
+      )
+      increment_build_number(
+        build_number: build,
+        xcodeproj: "#{IOS_DIR}/CoopUse.xcodeproj"
+      )
       # 1. Ép buộc bật Automatic Signing trong Xcode Project file
-    update_code_signing_settings(
-      use_automatic_signing: true,
-      path: "#{IOS_DIR}/CoopUse.xcodeproj" # Đường dẫn tới file xcodeproj của bạn
-    )
+      update_code_signing_settings(
+        use_automatic_signing: true,
+        path: "#{IOS_DIR}/CoopUse.xcodeproj" # Đường dẫn tới file xcodeproj của bạn
+      )
 
-    # 2. Keychain tạm + certificate cho runner (xem lane beta).
-    setup_signing
+      # 2. Keychain tạm + certificate cho runner (xem lane beta).
+      setup_signing
 
-    # 3. Chạy lệnh Build
-    # xcodebuild bỏ qua scheme pre-actions, nên phải tự sinh
-    # ios/.env + ios/tmp.xcconfig ở đây trước khi gym đọc build settings.
-    sh "#{REPO_ROOT.shellescape}/scripts/generate-ios-env.sh"
-    gym(
-      scheme: "CoopUse",
-      clean: true,
-      workspace: "#{IOS_DIR}/CoopUse.xcworkspace",
-      export_method: "app-store",
-      output_directory: "#{IOS_DIR}/builds",
-      output_name: appName,
-      silent: true,
-      xcargs: provisioning_xcargs(api_key_path)
-    )
+      # 3. Chạy lệnh Build
+      # xcodebuild bỏ qua scheme pre-actions, nên phải tự sinh
+      # ios/.env + ios/tmp.xcconfig ở đây trước khi gym đọc build settings.
+      sh "#{REPO_ROOT.shellescape}/scripts/generate-ios-env.sh"
+      gym(
+        scheme: "CoopUse",
+        clean: true,
+        workspace: "#{IOS_DIR}/CoopUse.xcworkspace",
+        export_method: "app-store",
+        output_directory: "#{IOS_DIR}/builds",
+        output_name: appName,
+        silent: true,
+        xcargs: provisioning_xcargs(api_key_path)
+      )
 
-    export_ipa_output(appName)
+      export_ipa_output(appName)
 
       pilot(
         api_key: api_key,
@@ -246,7 +238,13 @@ platform :ios do
         changelog: "PROD => #{branchName}",
         ipa: "#{IOS_DIR}/builds/#{appName}")
 
-    send_message_success(branchName, "#{versionCode}.#{build}", "[CoopUse-PROD] Testflight was built")
+      postNotifyMessage("success", branchName, versionCode, build)
+      UI.success("🎉 Đã build & upload thành công bản #{versionCode} (build #{build}) lên TestFlight!")
+    rescue => e
+      postNotifyMessage("error", branchName, versionCode, build)
+      UI.error("❌ Build/upload TestFlight thất bại: #{e.message}")
+      raise
+    end
   end
 end
 
@@ -447,27 +445,45 @@ def prepare_package(options)
 end
 
 
-def send_message_success(branchName, buildNumber, message = "App successfully released to AppCenter")
-  post_teams_card(
-    title: "App build successfully",
-    message: message,
-    facts:[
-      {
-        "name"=>"App",
-        "value"=>"i-School",
-     },
-      {
-        "name"=>"Branch",
-        "value"=>"#{branchName}",
-     },
-      {
-        "name"=>"Platform",
-        "value"=>"iOS"
-      },
-      {
-          "name"=>"Build number",
-          "value"=>"#{buildNumber}",
-      },
-    ]
-  )
+# Thông báo build lên Slack — giữ nguyên hình dạng của
+# android/fastlane/Fastfile#postNotifyMessage để 2 platform bắn vào cùng một
+# channel với cùng format, chỉ khác giá trị "Platform".
+# Không set SLACK_WEBHOOK_URL thì bỏ qua im lặng (build local không cần bắn).
+def postNotifyMessage(type, branch_name, version_num, build_num = 0)
+  slack_url = ENV['SLACK_WEBHOOK_URL']
+  if slack_url.nil? || slack_url.empty?
+    UI.important("SLACK_WEBHOOK_URL chưa được set — bỏ qua thông báo Slack.")
+    return
+  end
+
+  base_payload = { "Platform" => "iOS" }
+  base_payload["Branch"] = branch_name unless branch_name.nil?
+  base_payload["Version"] = version_num unless version_num.nil?
+  base_payload["Build Number"] = build_num unless build_num.nil?
+
+  case type
+  when "start"
+    slack(
+      message: "🚧 Start building App",
+      slack_url: slack_url,
+      success: true,
+      payload: base_payload
+    )
+  when "success"
+    slack(
+      message: "🎉 Build App Successfully!",
+      slack_url: slack_url,
+      success: true,
+      payload: base_payload
+    )
+  when "error"
+    slack(
+      message: "❌ Build App Failed!",
+      slack_url: slack_url,
+      success: false,
+      payload: base_payload
+    )
+  else
+    UI.error("postNotifyMessage: unknown type '#{type}'")
+  end
 end
