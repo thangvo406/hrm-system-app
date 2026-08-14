@@ -1,9 +1,16 @@
 import type { ListRenderItem } from 'react-native';
 import type { IStoreItem } from '@type/store';
 
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { ScaleSize } from '@kits/core';
+import { Colors } from '@constants';
 import { EmptyView, StoresLoading } from '@components';
 import { useStore } from '@hooks';
 import { useTranslation } from 'react-i18next';
@@ -47,7 +54,9 @@ function Stores() {
     onPressFilter,
     onPressProduct,
     onPressStore,
+    onRefresh,
     onSearchChange,
+    refreshing,
     stores,
     storeOrderRecent,
     onBack,
@@ -95,6 +104,14 @@ function Stores() {
               ) : undefined
             }
             keyExtractor={keyExtractor}
+            refreshControl={
+              <RefreshControl
+                colors={[Colors.primary]}
+                onRefresh={onRefresh}
+                refreshing={refreshing}
+                tintColor={Colors.primary}
+              />
+            }
             renderItem={renderItem}
             showsVerticalScrollIndicator={false}
           />

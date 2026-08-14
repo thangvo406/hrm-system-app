@@ -3,6 +3,7 @@ import type {
   IRequestActiveAccount,
   IRequestDeleteAccount,
   IResponseConfirmMemberShipVerify,
+  IResponseCreateLinkVerifyInfoUser,
   IResponseSendOtpVerifyMembership,
 } from '@type/auth';
 
@@ -93,8 +94,11 @@ export const deleteAccount = async (
 
 export const activeAccount = async (
   request: IRequestActiveAccount,
-): Promise<void> => {
-  await httpRequest.post(EndPoints.ACCOUNT.activeAccount, request);
+): Promise<IResponseCreateLinkVerifyInfoUser> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<IResponseCreateLinkVerifyInfoUser>
+  >(EndPoints.ACCOUNT.activeAccount, request);
+  return response.data;
 };
 
 export const updatePassword = async (

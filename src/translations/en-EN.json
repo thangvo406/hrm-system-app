@@ -1167,7 +1167,8 @@
       "reactivation_desc": "You can immediately reactivate your account through identity verification.",
       "reactivation_note": "Your points and benefits will be retained.",
       "reactivate_button": "Reactivate Account After Identity Verification",
-      "delete_button": "Delete Account"
+      "delete_button": "Delete Account",
+      "active_account_success": "Account activated successfully. Please log in again."
     },
     "deletion_account": {
       "title": "Account Deletion",

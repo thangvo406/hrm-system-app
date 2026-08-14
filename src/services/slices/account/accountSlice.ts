@@ -28,6 +28,7 @@ import type {
 import type {
   IRequestConfirmMemberShipVerify,
   IRequestDeleteAccount,
+  IResponseCreateLinkVerifyInfoUser,
 } from '@type/auth';
 
 import { createSlice } from '@reduxjs/toolkit';
@@ -56,7 +57,9 @@ const accountSlice = createSlice({
   name: 'account',
   reducers: {
     activeAccountRequest: {
-      prepare: (payload: AppCallback = {}) => ({ payload }),
+      prepare: (payload: AppCallback<IResponseCreateLinkVerifyInfoUser>) => ({
+        payload,
+      }),
       reducer: () => {},
     },
     autoCompleteAddressRequest: {

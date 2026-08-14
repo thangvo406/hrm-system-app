@@ -39,7 +39,7 @@ export const EndPoints = {
     updateMembership: 'user/membership/request',
     updatePushId: 'notification/push-subscription',
     deleteAccount: 'user/delete',
-    activeAccount: 'activeAccount',
+    activeAccount: 'user/hibernation/identity/init',
     changePass: 'user/change-password',
     updateProfile: 'user/profile',
     confirmOTPRequestMembership: 'user/membership/confirm-otp',

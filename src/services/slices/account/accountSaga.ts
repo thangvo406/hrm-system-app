@@ -39,6 +39,8 @@ import type {
   IRequestConfirmMemberShipVerify,
   IRequestDeleteAccount,
   IResponseConfirmMemberShipVerify,
+  IResponseCreateLinkVerifyInfoUser,
+  IResponseSendOtpVerifyMembership,
 } from '@type/auth';
 
 import {
@@ -269,11 +271,13 @@ function* generateQRCodeMealTicketWorker(
   }
 }
 
-function* activeAccountWorker(action: PayloadAction<AppCallback>) {
+function* activeAccountWorker(
+  action: PayloadAction<AppCallback<IResponseCreateLinkVerifyInfoUser>>,
+): Generator<unknown, void, IResponseCreateLinkVerifyInfoUser> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    yield call(activeAccount, request);
-    onSuccess?.();
+    const response = yield call(activeAccount, request);
+    onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
     onFailure?.(message);
@@ -335,7 +339,7 @@ function* confirmOTPRequestMembershipWorker(
 
 function* updateMembershipWorker(
   action: PayloadAction<IRequestUpdateMembership>,
-) {
+): Generator<unknown, void, IResponseSendOtpVerifyMembership> {
   const { onSuccess, onFailure, ...request } = action.payload;
   try {
     const response = yield call(updateMembership, request);
