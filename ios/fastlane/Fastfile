@@ -29,8 +29,9 @@ IOS_DIR = File.expand_path('..', __dir__)
 REPO_ROOT = File.expand_path('../..', __dir__)
 
 # Thư mục chứa secret trên máy local (env file, yarn.lock, AuthKey .p8).
-# Trên GitHub Actions runner thư mục này không tồn tại: mọi thao tác copy đều
-# được bỏ qua, file tương ứng do workflow decode từ secrets trước khi gọi lane.
+# Trên GitHub Actions runner thư mục này không tồn tại nên mọi thao tác copy đều
+# được bỏ qua: env file đã được commit trong repo, còn AuthKey .p8 do
+# resolve_api_key_path ghi ra từ secret APP_STORE_CONNECT_API_KEY_BASE64.
 LOCAL_SECRETS_DIR = File.expand_path('../../../../../..', __dir__)
 
 def teams_url = "https://dtpeducationvn.webhook.office.com/webhookb2/8d1bdeab-5e7f-4499-bde1-355f512a6e4e@cc1c7f2f-c062-49ab-9800-8b7bdb4f8a93/IncomingWebhook/67eb38906694412aa81bf281ad40f092/05f57c89-2792-4d03-b715-0a7da6e4cc82/V28rCnZ6x-px5hrrR2ZvThJcxUf6qIRW8SBAnxGZ1n5r41"
@@ -80,7 +81,7 @@ platform :ios do
 
     puts "Endpoint => #{ENV["BASE_URL"]}"
 
-    appId = ENV["APP_ID"]
+    appId = resolve_ios_app_id
     appName = "#{prefixAppName}#{versionCode}.ipa"
 
     api_key_path = resolve_api_key_path
@@ -105,7 +106,7 @@ platform :ios do
 
     puts "versionCode => #{versionCode}"
     puts "build => #{build}"
-    puts " ENV[KEY_ID] => #{ENV["APP_ID"]}"
+    puts "appId => #{appId}"
 
     increment_build_number(
       build_number: build,
@@ -162,7 +163,7 @@ platform :ios do
 
     puts "Endpoint => #{ENV["BASE_URL"]}"
 
-    appId = ENV["APP_ID"]
+    appId = resolve_ios_app_id
     appName = "#{prefixAppName}#{versionCode}.ipa"
 
     api_key_path = resolve_api_key_path
@@ -272,7 +273,7 @@ end
 def select_env_file(env_file)
   env_path = File.join(REPO_ROOT, env_file)
   unless File.exist?(env_path)
-    UI.user_error!("Không tìm thấy #{env_path}. Trên CI, workflow phải decode secret ra file này trước khi chạy lane.")
+    UI.user_error!("Không tìm thấy #{env_path}. File này được commit trong repo — kiểm tra .gitignore có đang loại nó ra không.")
   end
 
   File.write('/tmp/envfile', "#{env_file}\n")
@@ -295,6 +296,16 @@ end
 
 def resolve_branch_name(options)
   options[:branchName] || ENV['BRANCH_NAME'] || "dev"
+end
+
+# Bundle id iOS. env file có cả APP_ID (package name Android, vd com.coop_use)
+# và APP_IOS_ID (com.coopuse) — lane iOS phải dùng đúng cái sau, nếu không
+# pilot/latest_testflight_build_number sẽ trỏ vào app không tồn tại trên
+# App Store Connect. Fail ngay ở đây thay vì sau khi pod install xong.
+def resolve_ios_app_id
+  app_id = ENV['APP_IOS_ID']
+  UI.user_error!("Thiếu APP_IOS_ID trong env file — không xác định được bundle id iOS.") if app_id.nil? || app_id.to_s.empty?
+  app_id.to_s
 end
 
 # App Store Connect API key: dùng file .p8 có sẵn trong ios/, nếu không có thì

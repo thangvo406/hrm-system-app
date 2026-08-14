@@ -575,7 +575,7 @@
       "title": "스마트오더",
       "search_placeholder": "매장 이름",
       "delivery_label": {
-        "pickup": "픽업",
+        "pickup": "포장",
         "delivery": "배달",
         "hall": "매장"
       },
@@ -854,7 +854,7 @@
       "reorder": "재주문",
       "tabs": {
         "all": "전체",
-        "pickup": "픽업",
+        "pickup": "포장",
         "hall": "매장"
       }
     },
