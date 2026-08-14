@@ -630,6 +630,8 @@
     "products": {
       "cart_button": "장바구니 {{amount}}원",
       "empty": "표시할 상품이 없습니다.",
+      "limit_reached": "구매 한도 초과",
+      "limit_reached_desc": "구매 한도에 도달했습니다",
       "out_of_stock": "품절",
       "sold_out": "품절",
       "search_placeholder": "상품명"

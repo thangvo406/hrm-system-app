@@ -3,13 +3,14 @@ import type { IProduct } from '@type/products';
 import { AppButton, ProgressiveImage } from '@components';
 import { ScaleSize } from '@kits/core';
 import isNumber from 'lodash/isNumber';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { ProductUtils } from '@utils';
 
 import SoldOutBadge from './SoldOutBadge';
 import SoldOutThumb from './SoldOutThumb';
+import { useTranslation } from 'react-i18next';
 
 const PRODUCT_THUMB = ScaleSize(112);
 
@@ -26,6 +27,7 @@ function ProductCard({ onPressProduct, product, storeId }: Properties) {
   const thumbUri = product.thumbnail?.fileUrl;
   const { isStockManaged, stockQuantity, discountPrice, sellingPrice } =
     product || {};
+  const { t } = useTranslation();
   const isSoldOut = !isStockManaged
     ? false
     : !isNumber(stockQuantity) || stockQuantity <= 0;
@@ -33,9 +35,18 @@ function ProductCard({ onPressProduct, product, storeId }: Properties) {
     ? discountPrice
     : sellingPrice || 0;
 
+  const textSoldOut = useMemo(() => {
+    if (isSoldOut) {
+      return t('products.sold_out');
+    }
+    return t('products.limit_reached');
+  }, [isSoldOut, t]);
+
+  const isDisableItem = !!textSoldOut;
+
   return (
     <AppButton
-      disabled={isSoldOut}
+      disabled={isDisableItem}
       onPress={() => {
         onPressProduct(product.id);
       }}
@@ -43,7 +54,7 @@ function ProductCard({ onPressProduct, product, storeId }: Properties) {
       testID={`store-${storeId}-product-${product.id}`}
     >
       <View style={styles.productCardInner}>
-        {isSoldOut ? (
+        {isDisableItem ? (
           <SoldOutThumb size={PRODUCT_THUMB} uri={thumbUri} />
         ) : (
           <ProgressiveImage
@@ -69,10 +80,10 @@ function ProductCard({ onPressProduct, product, storeId }: Properties) {
           {ProductUtils.formatCurrency(originalPrice)}
         </Text>
       </View>
-      {isSoldOut ? (
+      {isDisableItem ? (
         <>
           <View pointerEvents="none" style={styles.soldOutOverlay} />
-          <SoldOutBadge />
+          <SoldOutBadge text={textSoldOut} />
         </>
       ) : undefined}
     </AppButton>

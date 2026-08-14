@@ -287,6 +287,8 @@
     "products": {
       "cart_button": "Checkout {{amount}} KRW",
       "empty": "No products to display.",
+      "limit_reached": "Limit Reached",
+      "limit_reached_desc": "Purchase Limit Reached",
       "out_of_stock": "Sold Out",
       "sold_out": "Sold Out",
       "search_placeholder": "Product name"

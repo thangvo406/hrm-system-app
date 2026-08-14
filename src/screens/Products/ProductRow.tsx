@@ -3,7 +3,7 @@ import type { IProduct } from '@type/products';
 import { AppButton, Image } from '@components';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import imageNames from '@assets/images/names';
 import { ProductUtils } from '@utils';
 import isNumber from 'lodash/isNumber';
@@ -48,6 +48,23 @@ function ProductRow({
     [item.isStockManaged, item.stockQuantity],
   );
 
+  const { textSoldOut, descSoldOut } = useMemo(() => {
+    let text = '';
+    let descSoldOut = '';
+    if (isSoldOut) {
+      text = t('products.out_of_stock');
+    } else if (item.isForStudent && !item.isSoldToday) {
+      text = t('products.limit_reached');
+      descSoldOut = t('products.limit_reached_desc');
+    }
+    return {
+      textSoldOut: text,
+      descSoldOut,
+    };
+  }, [isSoldOut, item.isForStudent, item.isSoldToday, t]);
+
+  const isDisableItem = !!textSoldOut;
+
   const handlePress = () => {
     onPress(item);
   };
@@ -81,7 +98,7 @@ function ProductRow({
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={handlePress}
-      disabled={isSoldOut}
+      disabled={isDisableItem}
       style={[styles.productRow, isFirst && { marginTop: 20 }]}
       testID={`product-${item.id}`}
     >
@@ -91,6 +108,9 @@ function ProductRow({
         <Text style={styles.productPrice}>
           {ProductUtils.formatCurrency(originalPrice)}
         </Text>
+        {descSoldOut ? (
+          <Text style={styles.descSoldOut}>{descSoldOut}</Text>
+        ) : null}
         {quantity > 0 ? (
           <View style={styles.stepper}>
             <AppButton
@@ -131,9 +151,9 @@ function ProductRow({
             width={PRODUCT_THUMB_SIZE}
           />
         )}
-        {isSoldOut ? <SoldOutRibbon /> : undefined}
+        {textSoldOut ? <SoldOutRibbon text={textSoldOut} /> : undefined}
       </View>
-      {isSoldOut ? (
+      {isDisableItem ? (
         <View pointerEvents="none" style={styles.soldOutOverlay} />
       ) : undefined}
     </TouchableOpacity>
@@ -147,6 +167,11 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: ScaleSize(12),
     marginTop: ScaleSize(6),
+  },
+  descSoldOut: {
+    fontSize: ScaleSize(13),
+    color: Colors.red03,
+    marginTop: ScaleSize(4),
   },
   productInfo: {
     flex: 1,

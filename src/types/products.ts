@@ -20,6 +20,8 @@ export interface IProduct {
   quantity?: number;
   productThumbnail: IImage;
   cartItemInfo: IProductCartItemInfo;
+  isForStudent: boolean;
+  isSoldToday: boolean;
 }
 
 export interface IProductCartItemInfo {
