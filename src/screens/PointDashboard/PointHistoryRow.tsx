@@ -30,7 +30,7 @@ function PointHistoryRow({ item, onPressItem }: Properties) {
   const { t } = useTranslation();
   const tag = POINT_TAG_STYLE[item?.entryType];
   const detailLabel = DETAIL_LABELS[item.entryType];
-  const amountColor = COLORS_POINT_AMOUNT[item.entryType];
+  const amountColor = COLORS_POINT_AMOUNT[item.transactionDirection];
   return (
     <AppButton style={styles.row} onPress={onPressItem?.(item)}>
       <View style={styles.leftColumn}>

@@ -28,10 +28,8 @@ export const DayOfWeek = {
 export const EMPTY_VALUE = '-';
 
 export const COLORS_POINT_AMOUNT: Record<string, string | undefined> = {
-  POINT_EXPIRE: '#D9534F',
-  POINT_USE: '#1A1A1A',
-  POINT_EARN: '#2DB34A',
-  REFUND: '#2DB34A',
+  DEBIT: '#E14B4B',
+  CREDIT: '#2DB34A',
 };
 
 export const POINT_TAG_STYLE: Record<string, PointTagStyle | undefined> = {
@@ -56,6 +54,11 @@ export const POINT_TAG_STYLE: Record<string, PointTagStyle | undefined> = {
     title: 'pay_point.tags.point_use',
   },
   POINT_EARN: {
+    background: '#DFF3E1',
+    color: '#2DB34A',
+    title: 'pay_point.tags.point_accrue',
+  },
+  POINT_GRANT: {
     background: '#DFF3E1',
     color: '#2DB34A',
     title: 'pay_point.tags.point_accrue',
