@@ -84,9 +84,9 @@ export interface IAttributeCart {
   price: number;
 }
 
-
-export interface IRequestGenerateQRRefundTransaction extends AppCallback<IGenerateQRCodeResponse> {
-  orderId: number
+export interface IRequestGenerateQRRefundTransaction
+  extends AppCallback<IGenerateQRCodeResponse> {
+  orderId: number;
 }
 export interface IRequestGetCartDetail extends AppCallback<IStoreCartItem> {
   readonly cartId: number;
@@ -283,6 +283,9 @@ export interface IRequestDecreaseContribute
   refundBankName: string;
   refundBankAccountNumber: string;
   refundBankAccountHolder: string;
+}
+export interface IRequestReOrder extends AppCallback<IStoreCartItem> {
+  orderId: number;
 }
 export interface IRequestInitCharge extends AppCallback<IKcpInitParams> {
   amount: number;

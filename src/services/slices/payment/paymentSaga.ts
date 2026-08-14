@@ -21,6 +21,7 @@ import type {
   IResponseInitPayment,
   IKcpInitParams,
   IRequestGenerateQRRefundTransaction,
+  IRequestReOrder,
 } from '@type/payment';
 import { IGenerateQRCodeResponse } from '@type/account';
 
@@ -54,6 +55,7 @@ import {
   getOrderHistoryDetail,
   increaseContribution,
   balanceCharge,
+  reorder,
   removeCartItem,
   updateCartItem,
   generateQRRefundTransaction,
@@ -78,6 +80,7 @@ import {
   getOrderHistoryDetailRequest,
   increaseContributionRequest,
   balanceChargeRequest,
+  reorderRequest,
   removeCartItemRequest,
   updateCartItemRequest,
   generateQRRefundTransactionRequest,
@@ -272,6 +275,19 @@ function* balanceChargeWorker(
   }
 }
 
+function* reorderWorker(
+  action: PayloadAction<IRequestReOrder>,
+): Generator<unknown, void, IStoreCartItem> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: IStoreCartItem = yield call(reorder, request);
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 function* calculatePriceWorker(
   action: PayloadAction<IRequestCalculatePrice>,
 ): Generator<unknown, void, IPriceDetail> {
@@ -330,7 +346,10 @@ function* generateQRRefundTransactionWorker(
 ): Generator<unknown, void, IGenerateQRCodeResponse> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: IGenerateQRCodeResponse = yield call(generateQRRefundTransaction, request);
+    const response: IGenerateQRCodeResponse = yield call(
+      generateQRRefundTransaction,
+      request,
+    );
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -402,8 +421,12 @@ export function* paymentSaga() {
   );
   yield takeLatest(decreaseContributeRequest.type, decreaseContributeWorker);
   yield takeLatest(balanceChargeRequest.type, balanceChargeWorker);
+  yield takeLatest(reorderRequest.type, reorderWorker);
   yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
-  yield takeLatest(generateQRRefundTransactionRequest.type, generateQRRefundTransactionWorker);
+  yield takeLatest(
+    generateQRRefundTransactionRequest.type,
+    generateQRRefundTransactionWorker,
+  );
   yield takeLatest(updateCartItemRequest.type, updateCartItemWorker);
   yield takeLatest(getCartDetailRequest.type, getCartDetailWorker);
   yield takeLatest(

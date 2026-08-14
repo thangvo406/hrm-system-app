@@ -11,6 +11,7 @@ import type {
   IRequestGetOrderHistories,
   IRequestGetOrderHistoryDetail,
   IRequestInitCharge,
+  IRequestReOrder,
   IRequestRemoveCartItem,
   IRequestUpdateCartItem,
 } from '@type/payment';
@@ -72,6 +73,10 @@ const paymentSlice = createSlice({
     },
     getOrderHistoryDetailRequest: {
       prepare: (payload: IRequestGetOrderHistoryDetail) => ({ payload }),
+      reducer: () => {},
+    },
+    reorderRequest: {
+      prepare: (payload: IRequestReOrder) => ({ payload }),
       reducer: () => {},
     },
     removeCartItemRequest: {
@@ -144,6 +149,7 @@ export const {
   getOrderHistoryDetailRequest,
   increaseContributionRequest,
   balanceChargeRequest,
+  reorderRequest,
   removeCartItemRequest,
   updateCartItemRequest,
   generateQRRefundTransactionRequest,

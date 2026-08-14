@@ -22,6 +22,7 @@ import type {
   IKcpInitParams,
   IResponseInitPayment,
   IRequestGenerateQRRefundTransaction,
+  IRequestReOrder,
 } from '@type/payment';
 
 import { IGenerateQRCodeResponse } from '@type/account';
@@ -167,7 +168,6 @@ export const getAddressOrderRecent = async (): Promise<string[]> => {
   return response.data;
 };
 
-
 export const generateQRRefundTransaction = async (
   request: WithoutCallbacks<IRequestGenerateQRRefundTransaction>,
 ): Promise<IGenerateQRCodeResponse> => {
@@ -191,6 +191,16 @@ export const balanceCharge = async (
 ): Promise<IKcpInitParams> => {
   const response = await httpRequest.post<SingleApiResponse<IKcpInitParams>>(
     EndPoints.PAYMENT.balanceCharge,
+    request,
+  );
+  return response.data;
+};
+
+export const reorder = async (
+  request: WithoutCallbacks<IRequestReOrder>,
+): Promise<IStoreCartItem> => {
+  const response = await httpRequest.post<SingleApiResponse<IStoreCartItem>>(
+    EndPoints.PAYMENT.reorder,
     request,
   );
   return response.data;

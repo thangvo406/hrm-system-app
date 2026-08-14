@@ -108,7 +108,8 @@ export const EndPoints = {
     balanceCharge: 'balance/charge',
     cartDetail: (cartId: number) => `app/cart/${cartId}`,
     calculatePrice: 'order/total',
-    generateQRRefundTransaction: 'api/v1/pay/qr/cancel' 
+    generateQRRefundTransaction: 'api/v1/pay/qr/cancel',
+    reorder: 'order/reorder',
   },
 
   WALLET: {

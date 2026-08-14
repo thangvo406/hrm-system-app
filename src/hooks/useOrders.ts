@@ -4,7 +4,10 @@ import type { ListApiResponse } from '@type';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useAppDispatch } from '@services/common/storeHooks';
-import { getOrderHistoriesRequest } from '@services/slices/payment/paymentSlice';
+import {
+  getOrderHistoriesRequest,
+  reorderRequest,
+} from '@services/slices/payment/paymentSlice';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 
@@ -45,11 +48,22 @@ export function useOrders() {
   };
 
   const onReOrder = (item: any) => {
-    //   dispatch(checkoutProductRequest({
-    //      productId: number;
-    // quantity: number;
-    //       selectedAttributes: AttributeCheckout[];
-    //   }))
+    dispatch(
+      reorderRequest({
+        orderId: item.id,
+        onSuccess: () => {
+          AppNavigator.navigate(Paths.Products, {
+            storeId: item?.storeId,
+          });
+        },
+        onFailure: error => {
+          AppNavigator.showSnackBar({
+            message: error,
+            type: 'failed',
+          });
+        },
+      }),
+    );
   };
   const handleFailure = (message: string) => {
     setError(message);
