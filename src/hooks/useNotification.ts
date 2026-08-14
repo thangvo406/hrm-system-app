@@ -54,7 +54,7 @@ const useNotification = () => {
   };
 
   const checkPermission = async () => {
-    if (!profile?.identityNumber) {
+    if (!profile?.id) {
       return;
     }
     // const statusPermission = AppStorage.getBoolean(

@@ -25,8 +25,14 @@ type Properties = {
 
 function ProductCard({ onPressProduct, product, storeId }: Properties) {
   const thumbUri = product.thumbnail?.fileUrl;
-  const { isStockManaged, stockQuantity, discountPrice, sellingPrice } =
-    product || {};
+  const {
+    isStockManaged,
+    stockQuantity,
+    isForStudent,
+    discountPrice,
+    isSoldToday,
+    sellingPrice,
+  } = product || {};
   const { t } = useTranslation();
   const isSoldOut = !isStockManaged
     ? false
@@ -38,8 +44,10 @@ function ProductCard({ onPressProduct, product, storeId }: Properties) {
   const textSoldOut = useMemo(() => {
     if (isSoldOut) {
       return t('products.sold_out');
+    } else if (isForStudent && isSoldToday) {
+      return t('products.limit_reached');
     }
-    return t('products.limit_reached');
+    return '';
   }, [isSoldOut, t]);
 
   const isDisableItem = !!textSoldOut;
