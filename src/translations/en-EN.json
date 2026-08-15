@@ -41,9 +41,13 @@
       "history_title": "History",
       "tab_pay": "Contribution History",
       "tab_point": "Dividend History",
-      "balance_after": "Balance: {{amount}} KRW",
       "empty": "No history to display.",
       "transaction_failed": "Transaction failed",
+      "rows": {
+        "unit": "Unit: {{amount}}",
+        "unit_price": "Unit price: {{amount}} KRW",
+        "balance_after": "Balance: {{amount}} KRW"
+      },
       "transaction_detail": {
         "title": "Transaction history",
         "date_label": "Date",

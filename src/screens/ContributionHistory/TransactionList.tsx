@@ -56,12 +56,19 @@ function TransactionRow({
         </Text>
       </View>
       <View style={styles.bottomRow}>
-        <Text style={styles.description}>{item.displayType}</Text>
         <Text style={styles.balance}>
-          {!isNumber(item.balanceAfter)
-            ? '-'
-            : t('pay_card.balance_after', {
-                amount: formatCurrency(item.balanceAfter),
+        {t('pay_card.rows.unit', {
+                amount: formatCurrency(item.units),
+              })}
+        </Text>
+        <Text style={styles.balance}>
+        {t('pay_card.rows.unit_price', {
+                amount: formatCurrency(item.unitPrice || 0),
+              })}
+        </Text>
+        <Text style={styles.balance}>
+        {t('pay_card.rows.balance_after', {
+                amount: formatCurrency(item.balanceAfter || 0),
               })}
         </Text>
       </View>
@@ -127,13 +134,14 @@ const styles = StyleSheet.create({
   },
   balance: {
     color: TEXT_MUTED,
-    fontSize: ScaleSize(16),
+    fontSize: ScaleSize(14),
+    lineHeight: 22
   },
   bottomRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: 'flex-end',
+    // flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: ScaleSize(8),
+    // marginTop: ScaleSize(8),
   },
   date: {
     color: TEXT_MUTED,

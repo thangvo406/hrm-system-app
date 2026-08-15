@@ -57,6 +57,8 @@ export interface IContributeHistory {
   amount: number;
   balanceBefore: number;
   balanceAfter: number;
+  units: number;
+  unitPrice: number;
   paymentMethod: string;
   status: string;
   occurredAt: string;

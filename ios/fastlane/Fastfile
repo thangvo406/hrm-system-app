@@ -17,7 +17,9 @@ require 'xcodeproj'
 require 'base64'
 require 'digest'
 require 'fileutils'
+require 'plist'
 require 'shellwords'
+require 'tmpdir'
 
 # Dotenv.load './Appfile'
 
@@ -111,9 +113,9 @@ platform :ios do
         path: "#{IOS_DIR}/CoopUse.xcodeproj" # Đường dẫn tới file xcodeproj của bạn
       )
 
-      # 2. Trên CI: tạo keychain tạm + nạp certificate distribution (nếu có secret).
-      # Không có cert thì dựa hoàn toàn vào -allowProvisioningUpdates + API key.
-      setup_signing
+      # 2. Trên CI: tạo keychain tạm + nạp certificate distribution từ
+      # IOS_DIST_CERT_P12_BASE64 — bước export sẽ ký manual bằng cert này.
+      keychain = setup_signing
 
       # 3. Chạy lệnh Build
       # xcodebuild bỏ qua scheme pre-actions, nên phải tự sinh
@@ -127,9 +129,11 @@ platform :ios do
         output_directory: "#{IOS_DIR}/builds",
         output_name: appName,
         silent: true,
-        # Cho phép xcodebuild tự tạo/tải provisioning profile qua App Store Connect
-        # API key — bắt buộc khi dùng automatic signing trên runner sạch.
-        xcargs: provisioning_xcargs(api_key_path)
+        # Archive vẫn dùng automatic signing: cloud signing chỉ cần quyền
+        # development ở bước này và đang chạy tốt. Export thì manual — xem
+        # manual_export_signing.
+        xcargs: provisioning_xcargs(api_key_path),
+        **manual_export_signing(api_key, keychain)
       )
 
       export_ipa_output(appName)
@@ -233,7 +237,7 @@ platform :ios do
       )
 
       # 2. Keychain tạm + certificate cho runner (xem lane beta).
-      setup_signing
+      keychain = setup_signing
 
       # 3. Chạy lệnh Build
       # xcodebuild bỏ qua scheme pre-actions, nên phải tự sinh
@@ -247,7 +251,8 @@ platform :ios do
         output_directory: "#{IOS_DIR}/builds",
         output_name: appName,
         silent: true,
-        xcargs: provisioning_xcargs(api_key_path)
+        xcargs: provisioning_xcargs(api_key_path),
+        **manual_export_signing(api_key, keychain)
       )
 
       export_ipa_output(appName)
@@ -415,27 +420,283 @@ def decode_api_key(raw)
 end
 
 # Keychain tạm + certificate distribution cho runner CI.
+#
+# Vì sao bắt buộc phải có keychain: codesign chỉ đọc được identity (cert + private
+# key) từ keychain — không có cách nào đưa thẳng file .p12 cho xcodebuild. Khoá
+# signingCertificate trong exportOptionsPlist chỉ là bộ CHỌN (tên / SHA-1 / loại
+# cert), không phải đường dẫn file. Nên chuỗi bắt buộc là:
+#
+#   IOS_DIST_CERT_P12_BASE64 → security import → keychain → find-identity
+#     → exportOptionsPlist.signingCertificate → codesign lúc exportArchive
+#
+# Trả về đường dẫn keychain vừa nạp cert (nil khi chạy local → dùng login keychain).
 def setup_signing
-  return UI.message("Không phải CI — bỏ qua setup keychain.") unless is_ci
+  unless is_ci
+    UI.message("Không phải CI — dùng identity distribution trong login keychain.")
+    return nil
+  end
 
   setup_ci(force: true)
 
-  cert_base64 = ENV['IOS_DIST_CERT_P12_BASE64']
-  if cert_base64.nil? || cert_base64.empty?
-    UI.important("IOS_DIST_CERT_P12_BASE64 chưa set — dựa vào -allowProvisioningUpdates để Xcode tự tạo cert/profile qua API key.")
-    return
+  cert_base64 = ENV['IOS_DIST_CERT_P12_BASE64'].to_s.strip
+  if cert_base64.empty?
+    UI.user_error!(
+      "IOS_DIST_CERT_P12_BASE64 chưa set. Export ký manual nên bắt buộc phải có " \
+      "certificate Apple Distribution trong keychain. Tạo secret bằng:\n" \
+      "  base64 -i dist_certificate.p12 | tr -d '\\n' | pbcopy"
+    )
+  end
+
+  cert_password = ENV['IOS_DIST_CERT_PASSWORD'].to_s
+  if cert_password.empty?
+    UI.important("IOS_DIST_CERT_PASSWORD rỗng — chỉ đúng nếu .p12 được export không đặt mật khẩu.")
   end
 
   p12_path = File.join(IOS_DIR, "dist_certificate.p12")
-  File.binwrite(p12_path, Base64.decode64(cert_base64))
+  File.binwrite(p12_path, decode_p12(cert_base64))
+  File.chmod(0600, p12_path)
+
   import_certificate(
     certificate_path: p12_path,
-    certificate_password: ENV['IOS_DIST_CERT_PASSWORD'] || "",
-    keychain_name: "fastlane_tmp_keychain",
-    keychain_password: ""
+    certificate_password: cert_password,
+    keychain_name: ci_keychain_name,
+    keychain_password: ci_keychain_password
   )
+
+  harden_ci_keychain
+  ci_keychain_path
 ensure
   File.delete(p12_path) if defined?(p12_path) && p12_path && File.exist?(p12_path)
+end
+
+# PKCS#12 là DER nên luôn mở đầu bằng SEQUENCE. Base64.decode64 im lặng bỏ qua ký
+# tự không hợp lệ, nên secret dán hỏng vẫn ra một file — và lỗi chỉ lộ ra ở
+# `security import` dưới dạng "MAC verification failed", rất dễ tưởng nhầm là sai
+# IOS_DIST_CERT_PASSWORD. Chặn ngay tại đây (xem decode_api_key, cùng lý do).
+def decode_p12(raw)
+  decoded = Base64.decode64(raw)
+  if decoded.empty? || decoded.getbyte(0) != DER_SEQUENCE_TAG
+    UI.user_error!(
+      "IOS_DIST_CERT_P12_BASE64 không giải ra file .p12 hợp lệ. Tạo lại bằng:\n" \
+      "  base64 -i dist_certificate.p12 | tr -d '\\n' | pbcopy"
+    )
+  end
+  decoded
+end
+
+# setup_ci đặt tên/mật khẩu keychain qua env — đọc lại từ đó thay vì hardcode để
+# không lệch nếu ai đó set MATCH_KEYCHAIN_NAME.
+def ci_keychain_name
+  ENV['MATCH_KEYCHAIN_NAME'].to_s.empty? ? DEFAULT_KEYCHAIN_NAME : ENV['MATCH_KEYCHAIN_NAME']
+end
+
+def ci_keychain_password
+  ENV['MATCH_KEYCHAIN_PASSWORD'].to_s
+end
+
+# macOS hiện đại tạo file keychain với hậu tố "-db"; giữ cả 2 khả năng.
+def ci_keychain_path
+  base = File.join(Dir.home, 'Library', 'Keychains', ci_keychain_name)
+  ["#{base}-db", base].find { |path| File.exist?(path) }
+end
+
+# Hai thứ phải sửa sau khi import, nếu không export sẽ chết đúng lúc codesign:
+#
+#   1. set-key-partition-list: `security import` gắn ACL lên private key. Thiếu
+#      apple-tool:/apple:/codesign: trong partition list thì codesign bật hộp
+#      thoại xin quyền — trên runner không ai bấm, build treo rồi timeout.
+#      import_certificate của fastlane cũng chạy lệnh này, nhưng chạy lại là
+#      idempotent và giúp hành vi không phụ thuộc phiên bản gem.
+#   2. bỏ timeout khoá keychain: create_keychain của setup_ci đặt 3600s, trong
+#      khi archive + export của repo này mất ~30-60 phút. Keychain khoá lại giữa
+#      chừng thì exportArchive báo "User interaction is not allowed".
+def harden_ci_keychain
+  path = ci_keychain_path
+  if path.nil?
+    UI.important("Không tìm thấy file keychain '#{ci_keychain_name}' — bỏ qua bước gia cố.")
+    return
+  end
+
+  partition = "security set-key-partition-list -S apple-tool:,apple:,codesign: -s " \
+              "-k #{ci_keychain_password.shellescape} #{path.shellescape}"
+  `#{partition} > /dev/null 2>&1`
+  UI.important("set-key-partition-list thất bại — codesign có thể bị hỏi quyền.") unless $?.success?
+
+  # Không truyền -t nghĩa là "không bao giờ tự khoá" (xem man security).
+  `security set-keychain-settings #{path.shellescape} > /dev/null 2>&1`
+  `security unlock-keychain -p #{ci_keychain_password.shellescape} #{path.shellescape} > /dev/null 2>&1`
+end
+
+# ---------------------------------------------------------------------------
+# Manual signing cho bước export
+# ---------------------------------------------------------------------------
+#
+# Vì sao không để xcodebuild tự lo: cloud signing lúc export cần App Store
+# Connect API key có role Admin/App Manager (quyền dùng Cloud Managed
+# Distribution Certificate). Key chỉ có quyền development vẫn archive được —
+# nó tự tạo một cert "Created via API" type Development — rồi chết ở export:
+#
+#   error: exportArchive Cloud signing permission error
+#   error: exportArchive No profiles for 'com.coopuse' were found
+#
+# Ký manual bằng cert + profile đã có sẵn thì export không gọi App Store Connect
+# nữa, nên role của key không còn ảnh hưởng (chỉ pilot upload mới cần key).
+
+DEFAULT_KEYCHAIN_NAME = "fastlane_tmp_keychain".freeze
+PROFILE_INSTALL_DIR = File.expand_path('~/Library/MobileDevice/Provisioning Profiles').freeze
+
+# Certificate distribution có thể là "Apple Distribution" (hiện tại) hoặc
+# "iPhone Distribution" (cert đời cũ chưa hết hạn) — hardcode một cái là trượt.
+DISTRIBUTION_IDENTITY_PATTERN = /"((?:Apple|iPhone) Distribution:[^"]+)"/.freeze
+
+# DER của .mobileprovision luôn mở đầu bằng SEQUENCE (0x30). Đủ để phân biệt
+# file thật với secret dán nhầm (base64 của text, file rỗng...).
+DER_SEQUENCE_TAG = 0x30
+
+# Tham số export cho gym. Trả về hash để lane splat thẳng vào gym(...).
+# `keychain` là giá trị setup_signing trả về — nil khi build local.
+def manual_export_signing(api_key, keychain)
+  team_id = resolve_team_id
+  identity = distribution_identity(keychain)
+  bundle_ids = resolve_export_bundle_ids
+  profiles = resolve_export_profiles(api_key, bundle_ids)
+
+  UI.message("Export manual signing — team #{team_id}, cert #{identity}")
+  profiles.each { |bundle_id, name| UI.message("  #{bundle_id} → #{name}") }
+
+  {
+    export_team_id: team_id,
+    export_options: {
+      provisioningProfiles: profiles,
+      signingCertificate: identity,
+      signingStyle: 'manual',
+      teamID: team_id
+    }
+  }
+end
+
+# Tên identity distribution để điền vào exportOptionsPlist.signingCertificate.
+#
+# Trên CI hỏi thẳng keychain vừa nạp .p12 — bảo đảm cái tên trả về đúng là cert
+# trong IOS_DIST_CERT_P12_BASE64, không phải một identity nào khác lọt vào search
+# list. Local thì không truyền keychain → tìm trong toàn bộ search list.
+#
+# `-v` chỉ liệt kê identity hợp lệ (còn hạn + dựng được chain tin cậy), nên nếu
+# thiếu Apple WWDR intermediate thì cert sẽ không hiện ra ở đây.
+def distribution_identity(keychain = nil)
+  command = "security find-identity -v -p codesigning"
+  command += " #{keychain.shellescape}" if keychain
+  identities = `#{command} 2>/dev/null`.scan(DISTRIBUTION_IDENTITY_PATTERN).flatten.uniq
+
+  if identities.empty?
+    UI.user_error!(
+      "Không tìm thấy identity Apple Distribution nào trong #{keychain || 'keychain search list'}.\n" \
+      "Trên CI: .p12 trong IOS_DIST_CERT_P12_BASE64 không phải cert distribution, " \
+      "IOS_DIST_CERT_PASSWORD sai, hoặc cert đã hết hạn.\n" \
+      "Trên máy local: cần cài certificate distribution vào login keychain."
+    )
+  end
+  UI.important("Có #{identities.size} identity distribution, dùng: #{identities.first}") if identities.size > 1
+
+  identities.first
+end
+
+def resolve_team_id
+  team_id = release_build_settings('CoopUse')['DEVELOPMENT_TEAM'].to_s
+  UI.user_error!("Target CoopUse không có DEVELOPMENT_TEAM trong build settings.") if team_id.empty?
+  team_id
+end
+
+# Bundle id thật của từng target cần profile khi export. Đọc từ project thay vì
+# hardcode: extension khai báo "$(APP_IOS_ID).NotificationService", và lane
+# release còn ghi đè PRODUCT_BUNDLE_IDENTIFIER trước khi build.
+def resolve_export_bundle_ids
+  VERSIONED_TARGETS.map do |target_name|
+    settings = release_build_settings(target_name)
+    # Biến thể [sdk=iphoneos*] thắng khi build cho device — phải ưu tiên nó.
+    raw = settings['PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]'] || settings['PRODUCT_BUNDLE_IDENTIFIER']
+    UI.user_error!("Target '#{target_name}' không có PRODUCT_BUNDLE_IDENTIFIER.") if raw.to_s.empty?
+    # Xcode chỉ nội suy $(APP_IOS_ID) lúc build, ở đây phải tự thay từ env file.
+    raw.to_s.gsub(/\$\((\w+)\)/) { ENV[Regexp.last_match(1)].to_s }
+  end
+end
+
+def release_build_settings(target_name)
+  project = Xcodeproj::Project.open("#{IOS_DIR}/CoopUse.xcodeproj")
+  target = project.targets.find { |t| t.name == target_name }
+  UI.user_error!("❌ Target '#{target_name}' not found in CoopUse.xcodeproj") if target.nil?
+
+  config = target.build_configurations.find { |c| c.name == 'Release' } || target.build_configurations.first
+  config.build_settings
+end
+
+# Map bundle_id => tên profile cho exportOptionsPlist.
+#
+# Ưu tiên profile nạp từ secret: export khi đó offline hoàn toàn. Thiếu thì
+# fallback sang sigh — đỡ phải quản secret, nhưng lại cần đúng cái quyền App
+# Store Connect mà ta đang né, nên chỉ là lưới đỡ.
+def resolve_export_profiles(api_key, bundle_ids)
+  profiles = install_profiles_from_secret
+  missing = bundle_ids - profiles.keys
+  return profiles.slice(*bundle_ids) if missing.empty?
+
+  UI.important("Chưa có profile cho: #{missing.join(', ')} — thử tải qua App Store Connect.")
+  missing.each do |bundle_id|
+    path = sigh(
+      api_key: api_key,
+      app_identifier: bundle_id,
+      platform: 'ios',
+      readonly: false
+    )
+    profiles[bundle_id] = profile_info(path)[:name]
+  end
+
+  profiles.slice(*bundle_ids)
+end
+
+# Nạp .mobileprovision từ secret IOS_PROVISIONING_PROFILES_BASE64 (nhiều profile
+# ngăn cách bằng khoảng trắng hoặc dấu phẩy) vào thư mục Xcode đọc profile.
+def install_profiles_from_secret
+  blobs = ENV['IOS_PROVISIONING_PROFILES_BASE64'].to_s.split(/[\s,]+/).reject(&:empty?)
+  return {} if blobs.empty?
+
+  FileUtils.mkdir_p(PROFILE_INSTALL_DIR)
+  blobs.each_with_object({}) do |blob, map|
+    decoded = Base64.decode64(blob)
+    unless decoded.getbyte(0) == DER_SEQUENCE_TAG
+      UI.user_error!(
+        "IOS_PROVISIONING_PROFILES_BASE64 chứa entry không phải .mobileprovision hợp lệ. Tạo bằng:\n" \
+        "  base64 -i profile.mobileprovision | tr -d '\\n'"
+      )
+    end
+
+    tmp_path = File.join(Dir.tmpdir, "#{fingerprint(blob)}.mobileprovision")
+    File.binwrite(tmp_path, decoded)
+    info = profile_info(tmp_path)
+    FileUtils.mv(tmp_path, File.join(PROFILE_INSTALL_DIR, "#{info[:uuid]}.mobileprovision"))
+
+    UI.message("Đã cài profile '#{info[:name]}' cho #{info[:bundle_id]}")
+    map[info[:bundle_id]] = info[:name]
+  end
+end
+
+# Đọc metadata của .mobileprovision (file là CMS ký, phải bóc bằng `security`).
+def profile_info(path)
+  xml = `security cms -D -i #{path.to_s.shellescape} 2>/dev/null`
+  UI.user_error!("Không đọc được provisioning profile: #{path}") if xml.strip.empty?
+
+  plist = Plist.parse_xml(xml)
+  team_id = Array(plist['TeamIdentifier']).first.to_s
+  # application-identifier là "<TEAMID>.<bundle id>"; bỏ tiền tố để so với
+  # bundle id lấy từ project.
+  app_identifier = plist.dig('Entitlements', 'application-identifier').to_s
+  bundle_id = app_identifier.sub(/\A#{Regexp.escape(team_id)}\./, '')
+
+  if bundle_id.end_with?('*')
+    UI.important("Profile '#{plist['Name']}' là wildcard (#{bundle_id}) — sẽ không khớp bundle id cụ thể nào.")
+  end
+
+  { bundle_id: bundle_id, name: plist['Name'].to_s, uuid: plist['UUID'].to_s }
 end
 
 # Cho phép xcodebuild tự tạo/tải provisioning profile bằng App Store Connect API

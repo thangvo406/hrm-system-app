@@ -32,7 +32,7 @@ const DEFAULT_RETRY_DELAY = 500;
 const deviceManufacturerInLib = DeviceInfo.getManufacturerSync();
 const deviceManufacturer =
   deviceManufacturerInLib == undefined ? '' : deviceManufacturerInLib;
-const DEVICE_HEADERS = {
+const getDeviceHeader = () => ({
   'app-buildNumber': DeviceInfo.getBuildNumber(),
   'app-version': DeviceInfo.getVersion(),
   'device-brand': DeviceInfo.getBrand(),
@@ -43,7 +43,7 @@ const DEVICE_HEADERS = {
   'device-deviceId': DeviceUtils.getDeviceId(),
   'device-manufacturer': deviceManufacturer,
   'accept-language': ApiLanguages[i18next.language as any],
-};
+});
 
 const delay = (ms: number) =>
   new Promise(resolve => {
@@ -115,7 +115,7 @@ const request = async <T>(
       const response = await instance.request<T>({
         ...config,
         headers: {
-          ...DEVICE_HEADERS,
+          ...getDeviceHeader(),
           ...((config.headers as
             | Record<string, string | number | boolean>
             | undefined) || {}),
