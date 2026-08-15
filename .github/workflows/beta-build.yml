@@ -108,13 +108,53 @@ jobs:
           fetch-depth: 0
 
       - name: Select Xcode
-        # RN 0.81 cần Xcode 16.x; runner có nhiều bản nên chọn tường minh,
-        # không có thì giữ nguyên bản mặc định của image.
+        # Từ Xcode 16, iOS platform là gói tải riêng — runner image có thể có
+        # /Applications/Xcode_X.Y.app mà KHÔNG có iOS platform, và archive sẽ
+        # chết với "Unable to find a destination matching { generic, platform:iOS }".
+        # Nên phải chọn theo tiêu chí "có iphoneos SDK", không phải theo tên thư mục.
+        #
+        # Ưu tiên major 26 để CI khớp với máy dev (đang dùng Xcode 26.x) — chênh
+        # Xcode giữa local và CI là nguồn của cả một lớp lỗi "local pass, CI fail".
+        # Đổi XCODE_MAJOR_PREF về '16' là quay lại SDK iOS 18.x.
+        env:
+          XCODE_MAJOR_PREF: '26'
         run: |
-          if [ -d /Applications/Xcode_16.2.app ]; then
-            sudo xcode-select -s /Applications/Xcode_16.2.app
+          set -uo pipefail
+          echo "Xcode có trên runner:"
+          ls -d /Applications/Xcode*.app 2>/dev/null || true
+
+          # Ưu tiên major đã chọn (mới nhất trong nhóm), rồi tới bản mới nhất
+          # bất kỳ nếu nhóm đó không dùng được; bỏ trùng lặp.
+          candidates=$(
+            { ls -d "/Applications/Xcode_${XCODE_MAJOR_PREF}"*.app 2>/dev/null | sort -Vr
+              ls -d /Applications/Xcode*.app                       2>/dev/null | sort -Vr
+            } | awk '!seen[$0]++'
+          )
+
+          # Hứng output ra biến rồi mới so khớp — KHÔNG dùng `| grep -q`: grep thoát
+          # ngay khi khớp dòng đầu, xcodebuild nhận SIGPIPE và trả non-zero, rồi
+          # `pipefail` biến cả pipeline thành thất bại dù thực ra đã khớp.
+          pick=""
+          for app in $candidates; do
+            sdks=$(DEVELOPER_DIR="$app/Contents/Developer" xcodebuild -showsdks 2>/dev/null || true)
+            case "$sdks" in
+              *iphoneos*)
+                pick="$app"
+                break
+                ;;
+            esac
+            echo "  bỏ qua $app — chưa cài iOS platform"
+          done
+
+          if [ -z "$pick" ]; then
+            echo "::error::Không có Xcode nào trên runner cài sẵn iOS platform"
+            exit 1
           fi
+
+          sudo xcode-select -s "$pick"
+          echo "Đã chọn: $pick"
           xcodebuild -version
+          xcodebuild -showsdks | grep -i 'ios' || true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
