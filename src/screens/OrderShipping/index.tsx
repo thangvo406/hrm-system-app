@@ -33,14 +33,17 @@ function OrderShipping(props: any) {
 
   const storeMetaText = useMemo(() => {
     let text = '';
-    if(data?.storeAddress?.address_name) {
+    if (data?.storeAddress?.address_name) {
       text = data?.storeAddress?.address_name;
     }
-    // if(data?.storeOpeningHours) {
-      
-    // }
+    if (data?.openingTime) {
+      text = text ? text + ' | ' + data?.openingTime : data?.openingTime;
+    }
+    if (data?.closedTime) {
+      text = text ? text + ' - ' + data?.closedTime : data?.closedTime;
+    }
     return text;
-  }, [])
+  }, []);
 
   return (
     <View style={styles.screen}>
@@ -80,9 +83,7 @@ function OrderShipping(props: any) {
 
         <View style={styles.card}>
           <Text style={styles.storeName}>{data?.storeName}</Text>
-          <Text style={styles.storeMeta}>
-            {storeMetaText}
-          </Text>
+          <Text style={styles.storeMeta}>{storeMetaText}</Text>
           <Text style={styles.storeAvailable}>
             {t('order_method.store_available', {
               method: selectedLabel ? t(selectedLabel) : '',

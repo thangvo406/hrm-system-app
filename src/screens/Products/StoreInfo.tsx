@@ -10,7 +10,7 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { IStoreItem } from '@type/store';
 import isNumber from 'lodash/isNumber';
@@ -25,6 +25,10 @@ const META_ICON_SIZE = ScaleSize(14);
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = Colors.gray1;
 const COLLAPSE_TITLE_START = 0.8;
+// API trả giờ dạng HH:mm:ss — cắt 3 ký tự cuối (`:ss`) để hiển thị HH:mm.
+const SECONDS_SUFFIX_LENGTH = 3;
+
+const trimSeconds = (time: string) => time.slice(0, -SECONDS_SUFFIX_LENGTH);
 
 type Properties = {
   readonly collapseScroll?: number;
@@ -58,8 +62,18 @@ function StoreInfo({
     ? `${t('product_detail.min_order_label')}: ${ProductUtils.formatCurrency(storeInfo.minOrder)}`
     : '';
 
+  const openTime = useMemo(() => {
+    let text = '';
+    if (storeInfo?.openingTime) {
+      text = trimSeconds(storeInfo.openingTime);
+    }
+    if (storeInfo?.closedTime) {
+      text += `-${trimSeconds(storeInfo.closedTime)}`;
+    }
+    return text;
+  }, [storeInfo?.closedTime, storeInfo?.openingTime]);
   const logoUri = storeInfo?.logo?.fileUrl;
-  const hasMeta = storeInfo?.estimateTime || minOrderText;
+  const hasMeta = storeInfo?.estimateTime || minOrderText || openTime;
 
   if (!storeInfo) {
     return <></>;
@@ -97,23 +111,32 @@ function StoreInfo({
             {storeInfo?.name}
           </Animated.Text>
           {hasMeta ? (
-            <View style={styles.metaRow}>
-              {storeInfo?.estimateTime ? (
-                <View style={styles.metaItem}>
-                  <Image
-                    color={TEXT_MUTED}
-                    height={META_ICON_SIZE}
-                    name="ic_clock"
-                    type="svg"
-                    width={META_ICON_SIZE}
-                  />
-                  <Text style={styles.metaText}>{storeInfo.estimateTime}</Text>
-                </View>
-              ) : undefined}
-              {minOrderText ? (
-                <Text style={styles.metaText}>{minOrderText}</Text>
-              ) : undefined}
-            </View>
+            <>
+              <View style={styles.metaRow}>
+                {storeInfo?.estimateTime ? (
+                  <View style={styles.metaItem}>
+                    <Image
+                      color={TEXT_MUTED}
+                      height={META_ICON_SIZE}
+                      name="ic_clock"
+                      type="svg"
+                      width={META_ICON_SIZE}
+                    />
+                    <Text style={styles.metaText}>
+                      {storeInfo.estimateTime}
+                    </Text>
+                  </View>
+                ) : undefined}
+                {minOrderText ? (
+                  <Text style={styles.metaText}>{minOrderText}</Text>
+                ) : undefined}
+              </View>
+              {!!openTime && (
+                <Text style={styles.metaText}>
+                  {t('stores.open_hours', { time: openTime })}
+                </Text>
+              )}
+            </>
           ) : undefined}
           <View
             style={{

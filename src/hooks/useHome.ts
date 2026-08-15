@@ -110,16 +110,17 @@ export const useHome = (props: any) => {
   }, [accessToken]);
 
   const onPressContribution = () => {
-    if (profile?.membershipStatus == 'VERIFIED') {
-      AppNavigator.navigate(Paths.ContributionHistory);
-    } else {
-      AppNavigator.showDialog({
-        screen: Information,
-        title: t('home.membership_pending_dialog.title'),
-        desc: t('home.membership_pending_dialog.desc'),
-        confirmTitle: t('home.membership_pending_dialog.confirm'),
-      });
-    }
+    AppNavigator.navigate(Paths.ContributionHistory);
+    // if (profile?.membershipStatus !== 'VERIFIED') {
+    //   AppNavigator.navigate(Paths.ContributionHistory);
+    // } else {
+    //   AppNavigator.showDialog({
+    //     screen: Information,
+    //     title: t('home.membership_pending_dialog.title'),
+    //     desc: t('home.membership_pending_dialog.desc'),
+    //     confirmTitle: t('home.membership_pending_dialog.confirm'),
+    //   });
+    // }
   };
 
   const onShowRequestAddCard = () => {

@@ -582,6 +582,7 @@
       "section_label": "자주 주문한 매장",
       "view_all_orders": "주문내역 전체보기",
       "min_order": "최소주문 : {{amount}}",
+      "open_hours": "영업시간: {{time}}",
       "filter": {
         "title": "저장",
         "sort_by": "정렬 기준",
