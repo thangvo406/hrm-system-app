@@ -15,6 +15,7 @@
 require('dotenv')
 require 'xcodeproj'
 require 'base64'
+require 'digest'
 require 'fileutils'
 require 'shellwords'
 
@@ -61,10 +62,10 @@ platform :ios do
       # prepare_package: it runs pod install, and the Podfile generates ios/.env
       # and injects it into the xcconfig based on this selection.
       select_env_file("env/.dev")
-      prepare_package(options)
 
-    #  puts "Endpoint => #{ENV["BASE_URL"]}"
-
+      # Toàn bộ phần bắt tay App Store Connect chạy TRƯỚC pod install: nó chỉ
+      # cần env file (vừa select ở trên) và .p8, không đụng gì tới Pods. Đặt ở
+      # đây thì lỗi credential lộ ra sau ~40 giây thay vì sau ~10 phút.
       appId = resolve_ios_app_id
       appName = "#{prefixAppName}#{versionCode}.ipa"
       puts "api_key_path => #{api_key_path}"
@@ -96,7 +97,11 @@ platform :ios do
 
       puts "versionCode => #{versionCode}"
       puts "build => #{build}"
-      puts "appId => #{appId}"
+
+      # Từ đây trở xuống mới cần Pods / node_modules.
+      prepare_package(options)
+
+    #  puts "Endpoint => #{ENV["BASE_URL"]}"
 
       set_project_version(version_number: versionCode, build_number: build)
 
@@ -164,12 +169,14 @@ platform :ios do
       # otherwise the xcconfig gets env/.dev values while JS gets env/.prod ones.
       select_env_file("env/.prod")
       copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', 'GoogleService-Pro.plist'), "#{IOS_DIR}/GoogleService-Info.plist")
-      prepare_package(options)
 
       puts "Endpoint => #{ENV["BASE_URL"]}"
 
+      # Xem lane beta: cụm App Store Connect chạy trước pod install.
       appId = resolve_ios_app_id
       appName = "#{prefixAppName}#{versionCode}.ipa"
+      puts "api_key_path => #{api_key_path}"
+      puts "appId => #{appId}"
 
       api_key = app_store_connect_api_key(
         key_id: ENV["KEY_ID"],
@@ -197,7 +204,10 @@ platform :ios do
 
       puts "versionCode => #{versionCode}"
       puts "build => #{build}"
-      puts "appId => #{appId}"
+
+      # Từ đây trở xuống mới cần Pods / node_modules.
+      prepare_package(options)
+
       # update_notification_service_id(appId)
 
       # Update main app target
@@ -321,6 +331,12 @@ end
 # vì xcodebuild -authenticationKeyPath không nhận đường dẫn tương đối.
 PEM_PRIVATE_KEY_HEADER = '-----BEGIN PRIVATE KEY-----'
 
+# 12 ký tự đầu của SHA-256. Không đảo ngược được nên GitHub không che, dùng để
+# so giá trị trên runner với máy local mà không in giá trị thật ra log.
+def fingerprint(value)
+  Digest::SHA256.hexdigest(value.to_s)[0, 12]
+end
+
 def resolve_api_key_path
   # GitHub secret rất dễ mang theo newline/space ở cuối khi paste vào UI. Một
   # `kid` hay `iss` có ký tự thừa vẫn tạo được JWT nhưng Apple sẽ từ chối với
@@ -353,16 +369,30 @@ def resolve_api_key_path
   copy_local_secret(File.join(LOCAL_SECRETS_DIR, "AuthKey_#{key_id}.p8"), "#{IOS_DIR}/AuthKey_#{key_id}.p8")
 
   preferred = File.join(IOS_DIR, "AuthKey_#{key_id}.p8")
-  return preferred if File.exist?(preferred)
+  unless File.exist?(preferred)
+    key_base64 = ENV['APP_STORE_CONNECT_API_KEY_BASE64'].to_s.strip
+    if key_base64.empty?
+      UI.user_error!("Không tìm thấy AuthKey_#{key_id}.p8 trong ios/ và secret APP_STORE_CONNECT_API_KEY_BASE64 cũng rỗng.")
+    end
 
-  key_base64 = ENV['APP_STORE_CONNECT_API_KEY_BASE64'].to_s.strip
-  if key_base64.empty?
-    UI.user_error!("Không tìm thấy AuthKey_#{key_id}.p8 trong ios/ và secret APP_STORE_CONNECT_API_KEY_BASE64 cũng rỗng.")
+    File.binwrite(preferred, decode_api_key(key_base64))
+    File.chmod(0600, preferred)
+    UI.message("Đã ghi App Store Connect API key ra #{preferred}")
   end
 
-  File.binwrite(preferred, decode_api_key(key_base64))
-  File.chmod(0600, preferred)
-  UI.message("Đã ghi App Store Connect API key ra #{preferred} (KEY_ID=#{key_id})")
+  # GitHub Actions che mọi giá trị secret trong log thành ***, kể cả khi nó nằm
+  # trong tên file (AuthKey_***.p8) — bình thường, không phải lỗi. Hệ quả là
+  # không thể nhìn log để biết giá trị trên runner có trùng máy local không.
+  #
+  # Hash thì không bị che. Đối chiếu 3 dòng dưới với local:
+  #   printf '%s' "$KEY_ID"    | shasum -a 256 | cut -c1-12
+  #   printf '%s' "$ISSUER_ID" | shasum -a 256 | cut -c1-12
+  #   shasum -a 256 ios/AuthKey_<KEY_ID>.p8   | cut -c1-12
+  # Cái nào lệch chính là secret bị sai. (KEY_ID/ISSUER_ID là định danh nằm sẵn
+  # trong header/payload của JWT gửi lên Apple, không phải bí mật như .p8.)
+  UI.message("fp KEY_ID    = #{fingerprint(key_id)}")
+  UI.message("fp ISSUER_ID = #{fingerprint(issuer_id)}")
+  UI.message("fp AuthKey   = #{Digest::SHA256.file(preferred).hexdigest[0, 12]} (#{File.size(preferred)} bytes)")
   preferred
 end
 
