@@ -21,7 +21,7 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 [bundle exec] fastlane ios beta
 ```
 
-Build IPA dev (upload TestFlight đang tắt — CI lấy IPA qua artifact)
+Build IPA dev và upload lên TestFlight
 
 ### ios release
 
@@ -29,7 +29,7 @@ Build IPA dev (upload TestFlight đang tắt — CI lấy IPA qua artifact)
 [bundle exec] fastlane ios release
 ```
 
-Build IPA production (upload TestFlight đang tắt — CI lấy IPA qua artifact)
+Build IPA production và upload lên TestFlight
 
 ----
 
