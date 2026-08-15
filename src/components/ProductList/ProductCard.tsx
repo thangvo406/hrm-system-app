@@ -48,7 +48,7 @@ function ProductCard({ onPressProduct, product, storeId }: Properties) {
       return t('products.limit_reached');
     }
     return '';
-  }, [isSoldOut, t]);
+  }, [isSoldOut, isSoldToday, isForStudent, t]);
 
   const isDisableItem = !!textSoldOut;
 

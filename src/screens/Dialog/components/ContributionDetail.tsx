@@ -28,6 +28,10 @@ const STATUS_BADGES: Record<string, StatusBadge> = {
     color: '#D0342C',
     labelKey: 'contribute_history.detail.statuses.failed',
   },
+  REJECTED: {
+    color: '#D0342C',
+    labelKey: 'contribute_history.detail.statuses.failed',
+  },
 };
 
 type StatusProps = {

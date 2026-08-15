@@ -21,6 +21,7 @@ type Properties = {
   readonly storeName: string;
   readonly orderCode: string;
   readonly storeLogo: string;
+  readonly isSoldToday: boolean;
   readonly time: string;
   readonly onReOrder: () => void;
   readonly onPressItem: () => void;
@@ -33,10 +34,12 @@ function OrderHistoryRow({
   storeName,
   time,
   hasItems,
+  isSoldToday,
   onReOrder,
   onPressItem,
 }: Properties) {
   const { t } = useTranslation();
+  const isHideReorder = isSoldToday || !hasItems;
   return (
     <AppButton style={styles.container} onPress={onPressItem}>
       <View style={styles.row}>
@@ -57,7 +60,7 @@ function OrderHistoryRow({
           </Text>
         </View>
       </View>
-      {!!hasItems && (
+      {!isHideReorder && (
         <View style={styles.actions}>
           <AppButton onPress={onReOrder} style={styles.actionBtn}>
             <Text style={styles.actionLabel}>

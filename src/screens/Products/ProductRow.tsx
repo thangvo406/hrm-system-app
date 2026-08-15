@@ -53,7 +53,7 @@ function ProductRow({
     let descSoldOut = '';
     if (isSoldOut) {
       text = t('products.out_of_stock');
-    } else if (item.isForStudent && !item.isSoldToday) {
+    } else if (item.isForStudent && item.isSoldToday) {
       text = t('products.limit_reached');
       descSoldOut = t('products.limit_reached_desc');
     }
