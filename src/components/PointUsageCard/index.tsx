@@ -1,6 +1,6 @@
-import AppButton from '@components/AppButton';
 import CheckBox from '@components/CheckBox';
 import TextField from '@components/TextField';
+import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from '@utils/product';
@@ -28,15 +28,14 @@ function PointUsageCard({
 }: Properties) {
   const { t } = useTranslation();
   const [errorInputPoint, setErrorInputPoint] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const [inputText, setInputText] = useState('');
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
 
   const onChangePoint = (text: string) => {
-    const newText = text.replaceAll(/\D/g, '');
-    const newNumber =
-      newText == String(pointUsed)
-        ? Number(newText.slice(0, -1))
-        : Number(newText);
-    if (newNumber > currentWallet?.pointBalance) {
+    const digits = text.replaceAll(/\D/g, '');
+    const newNumber = digits ? Number(digits) : 0;
+    if (newNumber > (currentWallet?.pointBalance || 0)) {
       setErrorInputPoint(
         t('point_usage.max_point_error', {
           amount: formatCurrency(currentWallet?.pointBalance),
@@ -45,11 +44,26 @@ function PointUsageCard({
       return;
     }
     setErrorInputPoint('');
-    onChangePointUsed(Number(newNumber));
+    setInputText(digits ? formatCurrency(newNumber) : '');
+    onChangePointUsed(newNumber);
   };
 
+  const onFocusPoint = () => {
+    setIsFocused(true);
+    // Đang là 0 thì bỏ số 0 đi để gõ trực tiếp.
+    setInputText(pointUsed ? formatCurrency(pointUsed) : '');
+  };
+
+  const onBlurPoint = () => {
+    setIsFocused(false);
+  };
+
+  const renderPointUnit = () => (
+    <Text style={styles.pointUnit}>{t('point_usage.point_unit')}</Text>
+  );
+
   return (
-    <AppButton style={styles.card} onPress={onToggleUsePoints}>
+    <View style={styles.card}>
       <View
         style={{
           flexDirection: 'row',
@@ -75,17 +89,20 @@ function PointUsageCard({
           inputWrapperStyle={styles.pointPill}
           keyboardType="number-pad"
           onChangeText={onChangePoint}
-          placeholder="0"
+          onBlur={onBlurPoint}
+          onFocus={onFocusPoint}
+          placeholder=""
+          renderRightComponent={renderPointUnit}
           returnKeyType="done"
           style={styles.pointPillText}
           testID="point-usage-input"
-          value={`${formatCurrency(pointUsed)} ${t('point_usage.point_unit')}`}
+          value={isFocused ? inputText : formatCurrency(pointUsed)}
         />
       </View>
       {!!errorInputPoint && (
         <Text style={styles.errorMaxQuantity}>{errorInputPoint}</Text>
       )}
-    </AppButton>
+    </View>
   );
 }
 
@@ -125,6 +142,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: ACCENT_COLOR,
     borderRadius: ScaleSize(8),
+    gap: ScaleSize(4),
     justifyContent: 'center',
     marginBottom: 0,
     maxWidth: ScaleSize(120),
@@ -132,13 +150,18 @@ const styles = StyleSheet.create({
     paddingVertical: ScaleSize(10),
   },
   pointPillText: {
-    color: '#FFFFFF',
+    color: Colors.white,
     flex: 0,
-    // Giữ text trong maxWidth của pill khi số điểm dài, không tràn ra ngoài.
     flexShrink: 1,
     fontSize: ScaleSize(15),
     fontWeight: '700',
+    minWidth: ScaleSize(24),
     paddingVertical: 0,
     textAlign: 'center',
+  },
+  pointUnit: {
+    color: Colors.white,
+    fontSize: ScaleSize(15),
+    fontWeight: '700',
   },
 });

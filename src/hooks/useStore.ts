@@ -8,7 +8,7 @@ import {
   getStoresRequest,
 } from '@services/slices/stores/storesSlice';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import AppNavigator from '@navigation/AppNavigator';
 import FilterStore from '@dialogs/FilterStore';
@@ -27,6 +27,10 @@ const onBack = () => {
   } else {
     AppNavigator.goBack();
   }
+};
+
+const onPressOrderHistory = () => {
+  AppNavigator.navigate(Paths.Orders);
 };
 
 export const useStore = () => {
@@ -147,6 +151,7 @@ export const useStore = () => {
     storeOrderRecent,
     onLoadMore,
     onPressProduct,
+    onPressOrderHistory,
     onPressStore,
     onPressFilter,
     onRefresh,

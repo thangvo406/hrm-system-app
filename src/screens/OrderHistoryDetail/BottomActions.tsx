@@ -10,14 +10,14 @@ import React from 'react';
 const { ifAndroid } = DeviceUtils;
 
 type Properties = {
-  readonly onPressContactSupport: () => void;
+  readonly onPressGoSmartOrder: () => void;
   readonly onPressCancelOrder: () => void;
 };
 
 const ANDROID_BOTTOM_SPACE = 16;
 
 function BottomActions({
-  onPressContactSupport,
+  onPressGoSmartOrder,
   onPressCancelOrder,
 }: Properties) {
   const insets = useSafeAreaInsets();
@@ -42,10 +42,10 @@ function BottomActions({
         title={t('cancellation_order.title')}
       />
       <Button
-        onPress={onPressContactSupport}
+        onPress={onPressGoSmartOrder}
         style={styles.action}
         testID="order-detail-support"
-        title={t('order_history_detail.contact_support')}
+        title={t('order_history_detail.go_smart_order')}
         type="rounded"
       />
     </View>

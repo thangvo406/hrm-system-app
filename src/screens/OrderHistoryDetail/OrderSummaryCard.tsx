@@ -6,13 +6,13 @@ import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from '@utils/product';
 import { useTranslation } from 'react-i18next';
-import React from 'react';
+import React, { useMemo } from 'react';
 import dayjs from 'dayjs';
 
-import { DATE_FORMAT, EMPTY_VALUE, getStatusTone, sharedStyles } from './theme';
+import { DATE_FORMAT, EMPTY_VALUE, sharedStyles } from './theme';
+import { OrderTransactionStatus } from '@constants/config';
 
 type Properties = {
-  readonly isSuccess: boolean;
   readonly onPressCopyOrderNumber: () => void;
   readonly order?: IOrderHistoryDetailItem;
 };
@@ -20,14 +20,44 @@ type Properties = {
 const COPY_ICON_SIZE = ScaleSize(18);
 const RECEIPT_ICON_SIZE = ScaleSize(28);
 
+// order.status là string nên dùng Set<string> để has() nhận vào.
+const SUCCESS_STATUSES: ReadonlySet<string> = new Set([
+  OrderTransactionStatus.PAYMENT_COMPLETED,
+  OrderTransactionStatus.PAYMENT_INTEGRATED_COMPLETED,
+  OrderTransactionStatus.COMPLETED,
+  OrderTransactionStatus.SHIPPING,
+]);
+
+const PENDING_STATUSES: ReadonlySet<string> = new Set([
+  OrderTransactionStatus.PENDING,
+  OrderTransactionStatus.PAYMENT_PENDING,
+]);
+
 function OrderSummaryCard({
-  isSuccess,
   onPressCopyOrderNumber,
   order = undefined,
 }: Properties) {
   const { t } = useTranslation();
-  const accentColor = isSuccess ? Colors.primary : Colors.yellow01;
-  const statusTone = getStatusTone(isSuccess, order?.status);
+  const { accentColor, statusTone } = useMemo(() => {
+    const status = order?.status || '';
+    if (SUCCESS_STATUSES.has(status)) {
+      return {
+        accentColor: Colors.primary,
+        statusTone: { background: Colors.green09, color: Colors.green08 },
+      };
+    }
+    if (PENDING_STATUSES.has(status)) {
+      return {
+        accentColor: Colors.yellow01,
+        statusTone: { background: Colors.yellow04, color: Colors.yellow03 },
+      };
+    }
+    // CANCEL_REQUESTED / CANCELED và mọi trạng thái khác dùng tone xám.
+    return {
+      accentColor: Colors.gray17,
+      statusTone: { background: Colors.gray21, color: Colors.gray17 },
+    };
+  }, [order]);
 
   return (
     <View style={sharedStyles.card}>

@@ -11,9 +11,6 @@ import OrderSummaryCard from './OrderSummaryCard';
 import PaymentInfoSection from './PaymentInfoSection';
 import ProductsSection from './ProductsSection';
 
-// TODO(feature): wire the reorder / contact-support actions.
-const noop = () => {};
-
 function OrderHistoryDetail(props: any) {
   const insets = useSafeAreaInsets();
   const {
@@ -22,10 +19,10 @@ function OrderHistoryDetail(props: any) {
     showAllProducts,
     toggleShowAllProducts,
     visibleProducts,
-    isSuccess,
     onPressCopyOrderNumber,
     storeName,
     onPressCancelOrder,
+    onPressGoSmartOrder,
   } = useOrderHistoryDetail(props);
 
   return (
@@ -43,7 +40,6 @@ function OrderHistoryDetail(props: any) {
             showsVerticalScrollIndicator={false}
           >
             <OrderSummaryCard
-              isSuccess={isSuccess}
               onPressCopyOrderNumber={onPressCopyOrderNumber}
               order={data}
             />
@@ -58,7 +54,7 @@ function OrderHistoryDetail(props: any) {
           </ScrollView>
 
           <BottomActions
-            onPressContactSupport={noop}
+            onPressGoSmartOrder={onPressGoSmartOrder}
             onPressCancelOrder={onPressCancelOrder}
           />
         </>

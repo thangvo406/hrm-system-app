@@ -1,17 +1,11 @@
 import type { ListRenderItem } from 'react-native';
 import type { IStoreItem } from '@type/store';
 
-import {
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { ScaleSize } from '@kits/core';
 import { Colors } from '@constants';
-import { EmptyView, StoresLoading } from '@components';
+import { AppButton, EmptyView, StoresLoading } from '@components';
 import { useStore } from '@hooks';
 import { useTranslation } from 'react-i18next';
 
@@ -56,6 +50,7 @@ function Stores() {
     onPressStore,
     onRefresh,
     onSearchChange,
+    onPressOrderHistory,
     refreshing,
     stores,
     storeOrderRecent,
@@ -73,12 +68,28 @@ function Stores() {
   };
 
   const isShowList =
-    storeOrderRecent?.products?.length > 0 || stores?.length > 0;
+    (storeOrderRecent?.products?.length || 0) > 0 || stores?.length > 0;
 
   return (
     <View style={styles.safeArea}>
       <HeaderDetail title={t('stores.title')} onPressBack={onBack} />
-
+      <AppButton
+        onPress={onPressOrderHistory}
+        style={{
+          alignSelf: 'flex-end',
+          marginTop: ScaleSize(20),
+          marginRight: ScaleSize(20),
+        }}
+      >
+        <Text
+          style={{
+            color: Colors.primary,
+            fontSize: ScaleSize(13),
+          }}
+        >
+          {`${t('stores.view_all_orders')}›`}
+        </Text>
+      </AppButton>
       <SearchComponent
         onPressFilter={onPressFilter}
         setKeyword={onSearchChange}

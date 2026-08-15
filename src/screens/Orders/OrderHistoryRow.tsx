@@ -17,6 +17,7 @@ const THUMB_SIZE = ScaleSize(52);
 
 type Properties = {
   readonly price: number;
+  readonly hasItems?: boolean;
   readonly storeName: string;
   readonly orderCode: string;
   readonly storeLogo: string;
@@ -31,6 +32,7 @@ function OrderHistoryRow({
   orderCode,
   storeName,
   time,
+  hasItems,
   onReOrder,
   onPressItem,
 }: Properties) {
@@ -55,12 +57,16 @@ function OrderHistoryRow({
           </Text>
         </View>
       </View>
-      <View style={styles.actions}>
-        <AppButton onPress={onReOrder} style={styles.actionBtn}>
-          <Text style={styles.actionLabel}>{t('order_histories.reorder')}</Text>
-          <Text style={styles.actionArrow}> →</Text>
-        </AppButton>
-      </View>
+      {!!hasItems && (
+        <View style={styles.actions}>
+          <AppButton onPress={onReOrder} style={styles.actionBtn}>
+            <Text style={styles.actionLabel}>
+              {t('order_histories.reorder')}
+            </Text>
+            <Text style={styles.actionArrow}> →</Text>
+          </AppButton>
+        </View>
+      )}
     </AppButton>
   );
 }

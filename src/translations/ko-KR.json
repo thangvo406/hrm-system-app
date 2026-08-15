@@ -580,6 +580,8 @@
         "hall": "매장"
       },
       "section_label": "자주 주문한 매장",
+      "view_all_orders": "주문내역 전체보기",
+      "min_order": "최소주문 : {{amount}}",
       "filter": {
         "title": "저장",
         "sort_by": "정렬 기준",
@@ -892,6 +894,7 @@
       "show_more": "상품 전체 보기",
       "show_less": "접기",
       "reorder": "재주문",
+      "go_smart_order": "스마트오더 홈",
       "contact_support": "고객 지원 문의",
       "payment_methods": {
         "pay_money": "생협페이머니",
@@ -906,6 +909,7 @@
         "payment_completed": "결제 완료",
         "shipping": "배송 중",
         "completed": "배송 완료",
+        "payment_integrated_completed": "배송 완료",
         "cancel_requested": "취소 요청",
         "canceled": "취소 완료"
       },
@@ -1202,6 +1206,7 @@
       "tab_expired": "만료",
       "expired": "만료",
       "dday": "D-{{days}}",
+      "available_to": "{{date}}까지 사용 가능",
       "valid_until": "유효기간: {{date}}",
       "min_payment": "최소 결제금액: {{amount}}",
       "min_payment_none": "없음",

@@ -116,10 +116,10 @@ function CartProductCard({
           <View style={styles.stepper}>
             <AppButton
               onPress={onPressMinus}
-              style={[styles.stepperBtn, styles.stepperMinus]}
+              style={[styles.stepperBtn, styles.stepperPlus]}
               testID={`cart-minus-${item.id}`}
             >
-              <Text style={styles.stepperMinusIcon}>−</Text>
+              <Text style={styles.stepperPlusIcon}>−</Text>
             </AppButton>
             <Text style={styles.stepperCount}>{quantity}</Text>
             <AppButton

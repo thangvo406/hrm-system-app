@@ -606,6 +606,8 @@
       "title": "Smart Order",
       "search_placeholder": "Store name",
       "section_label": "Frequently Ordered Store",
+      "view_all_orders": "View all orders",
+      "min_order": "Min. order : {{amount}}",
       "delivery_label": {
         "pickup": "Pickup",
         "delivery": "Delivery",
@@ -892,7 +894,7 @@
       "show_more": "View all products",
       "show_less": "Show less",
       "reorder": "Reorder",
-      "contact_support": "Contact Support",
+      "go_smart_order": "Smart Order Home",
       "status_pending": "Pending",
       "payment_methods": {
         "pay_money": "COOP pay-money",
@@ -909,6 +911,7 @@
         "payment_completed": "Paid",
         "shipping": "Shipping",
         "completed": "Completed",
+        "payment_integrated_completed": "Completed",
         "cancel_requested": "Cancellation Requested",
         "canceled": "Cancelled"
       },
@@ -1202,6 +1205,7 @@
       "tab_expired": "Expired",
       "expired": "Expired",
       "dday": "D-{{days}}",
+      "available_to": "Available to {{date}}",
       "valid_until": "Valid until: {{date}}",
       "min_payment": "Min. payment: {{amount}}",
       "min_payment_none": "None",

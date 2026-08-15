@@ -29,7 +29,9 @@ function StoreCard({ onPressProduct, onPressStore, store }: Properties) {
   };
 
   const minOrderText = store.minOrder
-    ? `최소주문 : ${ProductUtils.formatCurrency(store.minOrder)}`
+    ? t('stores.min_order', {
+        amount: ProductUtils.formatCurrency(store.minOrder),
+      })
     : '';
 
   return (

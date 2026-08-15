@@ -75,6 +75,7 @@ export const usePaymentOffline = () => {
 
   const onChangePointUsed = useCallback((numeric: number) => {
     setPointUsed(numeric);
+    setUsePoints(true);
   }, []);
 
   const onRefreshQRCode = useCallback((callback: any) => {

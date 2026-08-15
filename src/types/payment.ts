@@ -208,6 +208,7 @@ export interface IOrderHistoryItem {
   readonly totalAmount: number;
   readonly storeName: string;
   readonly orderNumber: string;
+  readonly hasItems: boolean;
   readonly orderedAt: string;
   readonly summary: IOrderSummary;
 }

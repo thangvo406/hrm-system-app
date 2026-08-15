@@ -55,6 +55,7 @@ function Orders() {
       price={item.summary?.finalPrice}
       storeName={item.storeName}
       orderCode={item.orderNumber}
+      hasItems={item.hasItems}
       time={item.orderedAt || ''}
       onPressItem={() => onPressItem(item)}
       onReOrder={() => onReOrder(item)}

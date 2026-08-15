@@ -7,6 +7,10 @@ import { IOrderHistoryDetailItem } from '@type';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+const onPressGoSmartOrder = () => {
+  AppNavigator.reset(Paths.Stores);
+};
+
 export function useOrderHistoryDetail(props: any) {
   const { data: orderItem } = AppNavigator.getParams(props);
   const { t } = useTranslation();
@@ -15,8 +19,6 @@ export function useOrderHistoryDetail(props: any) {
   const [loading, setLoading] = useState(true);
   const dispatch = useAppDispatch();
   const toggleShowAllProducts = () => setShowAllProducts(prev => !prev);
-
-  const isSuccess = data?.status === 'COMPLETED';
 
   const onPressCopyOrderNumber = () => {
     Clipboard.setString(data?.orderNumber ?? '');
@@ -53,11 +55,11 @@ export function useOrderHistoryDetail(props: any) {
 
   return {
     data,
-    isSuccess,
     loading,
     storeName: data?.storeName ?? orderItem?.storeName ?? '',
     onPressCopyOrderNumber,
     onPressCancelOrder,
+    onPressGoSmartOrder,
     showAllProducts,
     toggleShowAllProducts,
     visibleProducts,

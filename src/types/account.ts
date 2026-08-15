@@ -184,6 +184,8 @@ export type IVoucher = {
   readonly type: string;
   readonly discountRate: number;
   readonly discountAmount: number;
+  readonly expiredFrom: string;
+  readonly inUsagePeriod: boolean;
 };
 
 export interface IGenerateQRCodeResponse {

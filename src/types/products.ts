@@ -39,6 +39,7 @@ export interface IResponseProductDetail {
   sellingPrice: number;
   discountPrice: any;
   stockQuantity: number;
+  isForStudent: boolean;
   isStockManaged: boolean;
   status: string;
   sortOrder: number;

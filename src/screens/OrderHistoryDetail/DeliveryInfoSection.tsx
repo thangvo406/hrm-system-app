@@ -54,12 +54,14 @@ function DeliveryInfoSection({ order = undefined }: Properties) {
       </View>
 
       <View style={sharedStyles.divider} />
-      <View style={styles.fieldBlock}>
-        <Text style={sharedStyles.label}>
-          {t('order_history_detail.delivery_address_label')}
-        </Text>
-        <Text style={styles.fieldValue}>{address || EMPTY_VALUE}</Text>
-      </View>
+      {!!address && (
+        <View style={styles.fieldBlock}>
+          <Text style={sharedStyles.label}>
+            {t('order_history_detail.delivery_address_label')}
+          </Text>
+          <Text style={styles.fieldValue}>{address || EMPTY_VALUE}</Text>
+        </View>
+      )}
 
       <View style={sharedStyles.divider} />
       <View style={styles.fieldBlock}>

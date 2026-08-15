@@ -1,7 +1,7 @@
 import type { Paths } from '@navigation/paths';
 import type { RootScreenProps } from '@navigation/types';
 
-import { AppButton, HeaderDetail } from '@components';
+import { AppButton, Button, HeaderDetail } from '@components';
 import { Colors } from '@constants';
 import { useCancellationOrder } from '@hooks';
 import { ScaleSize } from '@kits/core';
@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import CancelNotice from './CancelNotice';
 import OrderSummaryCard from './OrderSummaryCard';
 import ReasonList from './ReasonList';
+import AppNavigator from '@navigation/AppNavigator';
 
 const { ifAndroid } = DeviceUtils;
 
@@ -66,6 +67,7 @@ function CancellationOrder(props: RootScreenProps<Paths.CancellationOrder>) {
         style={[
           styles.footer,
           {
+            flex: 1,
             paddingBottom: ifAndroid(
               FOOTER_BOTTOM_ANDROID,
               insets.bottom || FOOTER_BOTTOM_IOS,
@@ -73,6 +75,14 @@ function CancellationOrder(props: RootScreenProps<Paths.CancellationOrder>) {
           },
         ]}
       >
+        <Button
+          title={t('cancellation_order.back')}
+          type="outline-bordered"
+          onPress={() => AppNavigator.goBack()}
+          style={{
+            flex: 1 / 2,
+          }}
+        />
         <AppButton
           disabled={disabledSubmit}
           onPress={onSubmit}
@@ -139,7 +149,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.red03,
     borderRadius: ScaleSize(14),
-    flex: 1.4,
+    flex: 1 / 2,
     height: ScaleSize(52),
     justifyContent: 'center',
   },

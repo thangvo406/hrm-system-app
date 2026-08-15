@@ -51,6 +51,8 @@ export const useProductDetail = (props: any) => {
     );
   }, [checkoutInfo]);
 
+  const isHideUpdateQuantity = data?.isForStudent;
+
   const disabledBtnSubmit = useMemo(() => {
     return data?.isStockManaged && data?.stockQuantity == 0;
   }, [data]);
@@ -314,6 +316,7 @@ export const useProductDetail = (props: any) => {
     buttonTextSubmit,
     minChooseQuantity,
     disabledBtnSubmit,
+    isHideUpdateQuantity,
     onChangeQuantity,
     onPressCart,
     onSelectAttribute,
