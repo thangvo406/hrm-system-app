@@ -1,5 +1,6 @@
 import { Environment } from '@constants';
 import { FileManager } from '@kits/core/utils/FileManager';
+import { Paths } from '@navigation/paths';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { updatePushIdRequest } from '@services/slices/account/accountSlice';
@@ -12,8 +13,14 @@ import { useSelector } from 'react-redux';
 const CLICK_DEBOUNCE_MS = 500;
 const DEVICE_ID_RETRY_MS = 1000;
 
-const onHandleNotificationClick = () => {
+const NOTIFICATION_TYPES = {
+  // TOPUP_CODE_ISSUED: Paths.Top,
+};
+
+const onHandleNotificationClick = (event: any) => {
   //TODO: implement logic notification click
+  console.log('onHandleNotificationClick', event);
+  const { type } = event?.additionalData || {};
 };
 
 const useNotification = () => {
@@ -91,7 +98,7 @@ const useNotification = () => {
               'Notification click event: ',
               JSON.stringify(event),
             );
-            onHandleNotificationClick();
+            onHandleNotificationClick(event);
           }, CLICK_DEBOUNCE_MS) as unknown as number;
         },
       );

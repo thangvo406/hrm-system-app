@@ -67,7 +67,7 @@ function VoucherCard({
 
   const isAvailable = useMemo(() => {
     if (!isMealTicket) {
-      return voucher?.inUsagePeriod;
+      return !voucher?.inUsagePeriod;
     }
     return false;
   }, [t, voucher]);
@@ -164,6 +164,12 @@ function VoucherCard({
           ) : undefined}
         </View>
       </View>
+      {isAvailable ? (
+        <>
+          <View style={styles.grayscaleOverlay} />
+          <View style={styles.dimOverlay} />
+        </>
+      ) : undefined}
     </View>
   );
 }
@@ -189,14 +195,17 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   textUnAvailable: {
-    color: Colors.red03,
+    color: '#c9c42e',
     fontSize: ScaleSize(12),
+    fontWeight: 'bold',
   },
   card: {
     backgroundColor: Colors.white,
     borderRadius: ScaleSize(14),
     elevation: 3,
     flexDirection: 'row',
+    // Giới hạn phạm vi của mixBlendMode trong phạm vi card.
+    isolation: 'isolate',
     marginBottom: ScaleSize(16),
     overflow: 'hidden',
     shadowColor: '#000000',
@@ -213,6 +222,15 @@ const styles = StyleSheet.create({
     color: TEXT_DARK,
     fontSize: ScaleSize(14),
     marginTop: ScaleSize(10),
+  },
+  dimOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Colors.gray26,
+  },
+  grayscaleOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Colors.gray25,
+    mixBlendMode: 'saturation',
   },
   footerRow: {
     alignItems: 'flex-end',

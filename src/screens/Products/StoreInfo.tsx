@@ -14,6 +14,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { IStoreItem } from '@type/store';
 import isNumber from 'lodash/isNumber';
+import { trimSeconds } from '@utils/date';
 
 const CARD_OVERLAP = ScaleSize(68);
 const CARD_BORDER_RADIUS = ScaleSize(16);
@@ -26,9 +27,6 @@ const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = Colors.gray1;
 const COLLAPSE_TITLE_START = 0.8;
 // API trả giờ dạng HH:mm:ss — cắt 3 ký tự cuối (`:ss`) để hiển thị HH:mm.
-const SECONDS_SUFFIX_LENGTH = 3;
-
-const trimSeconds = (time: string) => time.slice(0, -SECONDS_SUFFIX_LENGTH);
 
 type Properties = {
   readonly collapseScroll?: number;

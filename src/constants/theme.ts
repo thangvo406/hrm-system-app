@@ -26,6 +26,8 @@ export const Colors = {
   gray22: '#F7F7F7',
   gray23: '#4A4A4A',
   gray24: '#9AA0A6',
+  gray25: '#5D5B5B',
+  gray26: 'rgba(243, 243, 243, 0.4)',
   black01: '#1A1A1A',
   yellow01: '#F5A623',
   yellow02: '#F6AD55',

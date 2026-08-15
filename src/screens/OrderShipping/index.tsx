@@ -9,6 +9,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
+import { trimSeconds } from '@utils/date';
 
 const SCREEN_BG = '#F2F2F2';
 const TEXT_DARK = '#1A1A1A';
@@ -33,14 +34,16 @@ function OrderShipping(props: any) {
 
   const storeMetaText = useMemo(() => {
     let text = '';
-    if (data?.storeAddress?.address_name) {
-      text = data?.storeAddress?.address_name;
+    if (data?.storeAddress) {
+      text = data?.storeAddress;
     }
-    if (data?.openingTime) {
-      text = text ? text + ' | ' + data?.openingTime : data?.openingTime;
+    if (data?.storeOpeningTime) {
+      const time = trimSeconds(data?.storeOpeningTime);
+      text = text ? text + ' | ' + time : time;
     }
-    if (data?.closedTime) {
-      text = text ? text + ' - ' + data?.closedTime : data?.closedTime;
+    if (data?.storeClosedTime) {
+      const time = trimSeconds(data?.storeClosedTime);
+      text = text ? text + ' - ' + time : time;
     }
     return text;
   }, []);
