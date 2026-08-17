@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import type { IStoreItem } from '@type/store';
 import isNumber from 'lodash/isNumber';
 import { trimSeconds } from '@utils/date';
+import StoreClosedBanner from './StoreClosedBanner';
 
 const CARD_OVERLAP = ScaleSize(68);
 const CARD_BORDER_RADIUS = ScaleSize(16);
@@ -30,12 +31,14 @@ const COLLAPSE_TITLE_START = 0.8;
 
 type Properties = {
   readonly collapseScroll?: number;
+  readonly isOutsideOpenHour?: boolean;
   readonly scrollY?: SharedValue<number>;
   readonly storeInfo?: IStoreItem;
 };
 
 function StoreInfo({
   collapseScroll = 0,
+  isOutsideOpenHour = false,
   scrollY = undefined,
   storeInfo = undefined,
 }: Properties) {
@@ -79,7 +82,11 @@ function StoreInfo({
 
   return (
     <View style={styles.wrapper}>
-      <View style={styles.card}>
+      {isOutsideOpenHour ? (
+        <StoreClosedBanner storeInfo={storeInfo} />
+      ) : undefined}
+
+      <View style={[styles.card, isOutsideOpenHour && styles.cardBelowBanner]}>
         <View style={styles.logoWrap}>
           {logoUri ? (
             <ProgressiveImage
@@ -169,6 +176,9 @@ const styles = StyleSheet.create({
     shadowOffset: { height: ScaleSize(4), width: 0 },
     shadowOpacity: 0.12,
     shadowRadius: ScaleSize(12),
+  },
+  cardBelowBanner: {
+    marginTop: -ScaleSize(12),
   },
   containerDeliver: {
     paddingVertical: ScaleSize(3),

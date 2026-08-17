@@ -14,6 +14,9 @@ const ICON_RADIUS = 6.2;
 const ICON_DIAGONAL = ICON_RADIUS / Math.SQRT2;
 
 function SoldOutBadge({ text }: any) {
+  if(!text) {
+    return <></>
+  }
   return (
     <View pointerEvents="none" style={styles.badge}>
       <Svg

@@ -11,10 +11,11 @@ type Properties = {
   readonly onPressProduct: (productId: number) => void;
   readonly products: IProduct[];
   readonly storeId: number;
+  readonly isOutsideOpenHour: boolean;
   readonly style?: ViewStyle | ViewStyle[];
 };
 
-function ProductList({ onPressProduct, style, products, storeId }: Properties) {
+function ProductList({ onPressProduct, style, isOutsideOpenHour, products, storeId }: Properties) {
   return (
     <ScrollView
       contentContainerStyle={[styles.productList, style]}
@@ -47,6 +48,7 @@ function ProductList({ onPressProduct, style, products, storeId }: Properties) {
           onPressProduct={onPressProduct}
           product={product}
           storeId={storeId}
+          isOutsideOpenHour={isOutsideOpenHour}
         />
       ))}
     </ScrollView>

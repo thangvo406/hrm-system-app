@@ -11,6 +11,7 @@ import type { AttributeCheckout } from '@type/products';
 import { IProduct } from '@type';
 import { updateCartItemRequest } from '@services/slices/payment/paymentSlice';
 import debounce from 'lodash/debounce';
+import { CommonUtils } from '@utils';
 import { useFocusEffect } from '@react-navigation/native';
 import { useReturnParams } from '@hooks/useReturnParams';
 
@@ -46,6 +47,11 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
         }
       }
     },
+  );
+
+  const isOutsideOpenHour = useMemo(
+    () => CommonUtils.isStoreOutsideOpenHour(storeInfo),
+    [storeInfo],
   );
 
   const goToCart = () => {
@@ -195,6 +201,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   return {
     data,
     loading,
+    isOutsideOpenHour,
     onSearchChange,
     goToCart,
     onChangeQuantity,

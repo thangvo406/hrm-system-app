@@ -21,6 +21,7 @@ type Properties = {
   readonly item: IProduct;
   readonly isFirst: boolean;
   readonly index: number;
+  readonly isOutsideOpenHour?: boolean;
   readonly onPress: (item: any) => void;
   readonly onChangeQuantity: (item: any, index: number) => void;
 };
@@ -29,6 +30,7 @@ function ProductRow({
   item,
   index,
   isFirst,
+  isOutsideOpenHour,
   onChangeQuantity,
   onPress,
 }: Properties) {
@@ -64,7 +66,7 @@ function ProductRow({
     };
   }, [isSoldOut, item.isForStudent, item.isSoldToday, t]);
 
-  const isDisableItem = !!textSoldOut;
+  const isDisableItem = !!textSoldOut || isOutsideOpenHour;
 
   const handlePress = () => {
     onPress(item);

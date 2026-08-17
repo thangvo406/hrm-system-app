@@ -1,6 +1,119 @@
 import { IPointPayHistory, KakaoDocument, SearchAddressItem } from '@type';
+import { AppConstants } from '@constants';
+import { IStoreItem } from '@type/store';
+import dayjs from 'dayjs';
 import isNumber from 'lodash/isNumber';
 import { formatCurrency } from './product';
+
+const DAYS_IN_WEEK = 7;
+const OPEN_TIME_FORMAT = 'HH:mm';
+const OPEN_DATE_PARSE_FORMAT = 'YYYY-MM-DD';
+// dayjs().day() → 0..6 bắt đầu từ Chủ nhật.
+const DAY_OF_WEEK_BY_INDEX = [
+  AppConstants.DayOfWeek.SUNDAY,
+  AppConstants.DayOfWeek.MONDAY,
+  AppConstants.DayOfWeek.TUESDAY,
+  AppConstants.DayOfWeek.WEDNESDAY,
+  AppConstants.DayOfWeek.THURSDAY,
+  AppConstants.DayOfWeek.FRIDAY,
+  AppConstants.DayOfWeek.SATURDAY,
+];
+
+/**
+ * Ghép giờ dạng `HH:mm:ss` của cửa hàng vào ngày của `date` để so sánh được
+ * với thời điểm hiện tại.
+ */
+const withTime = (date: dayjs.Dayjs, time: string) => {
+  const [hour, minute, second] = time.split(':').map(Number);
+  return date
+    .set('hour', hour || 0)
+    .set('minute', minute || 0)
+    .set('second', second || 0)
+    .set('millisecond', 0);
+};
+
+/**
+ * Hiện tại có nằm ngoài giờ mở cửa (`openingTime` - `closedTime`) hay không.
+ * Thiếu dữ liệu giờ thì coi như cửa hàng vẫn mở.
+ */
+export const isStoreOutsideOpenHour = (storeInfo?: IStoreItem) => {
+  const { closedTime, openingTime } = storeInfo ?? {};
+  if (!openingTime || !closedTime) {
+    return false;
+  }
+
+  const now = dayjs();
+  const opensAt = withTime(now, openingTime);
+  const closesAt = withTime(now, closedTime);
+
+  // Ca qua đêm (vd 22:00:00 - 02:00:00): giờ đóng nằm trước giờ mở nên
+  // khoảng mở cửa bị chia làm 2 đoạn quanh nửa đêm.
+  const isOvernight = closesAt.isBefore(opensAt);
+  const isOpen = isOvernight
+    ? !now.isBefore(opensAt) || now.isBefore(closesAt)
+    : !now.isBefore(opensAt) && now.isBefore(closesAt);
+
+  return !isOpen;
+};
+
+/**
+ * Mốc mở cửa gần nhất của cửa hàng: quét từ hôm nay tới 6 ngày sau trong
+ * `operatingHours`, fallback về `openingTime` chung (hôm nay nếu chưa tới giờ
+ * mở, còn lại là ngày mai). Trả về `undefined` khi không có dữ liệu giờ mở.
+ */
+export const getStoreReopenAt = (storeInfo?: IStoreItem) => {
+  const now = dayjs();
+  const { openingTime, operatingHours } = storeInfo ?? {};
+
+  if (operatingHours?.length) {
+    for (let offset = 0; offset < DAYS_IN_WEEK; offset += 1) {
+      const day = now.add(offset, 'day');
+      const schedule = operatingHours.find(
+        item =>
+          item.dayOfWeek === DAY_OF_WEEK_BY_INDEX[day.day()] &&
+          item.open &&
+          !!item.openTime,
+      );
+      if (!schedule) {
+        continue;
+      }
+      const opensAt = dayjs(
+        `${day.format(OPEN_DATE_PARSE_FORMAT)} ${schedule.openTime}`,
+      );
+      if (opensAt.isAfter(now)) {
+        return opensAt;
+      }
+    }
+    return undefined;
+  }
+
+  if (!openingTime) {
+    return undefined;
+  }
+  const opensToday = dayjs(
+    `${now.format(OPEN_DATE_PARSE_FORMAT)} ${openingTime}`,
+  );
+  return opensToday.isAfter(now) ? opensToday : opensToday.add(1, 'day');
+};
+
+/**
+ * Text mở cửa lại: `HH:mm` nếu mở trong ngày, thêm ngày theo `dateFormat`
+ * (format dayjs, lấy từ i18n) khi sang ngày khác.
+ */
+export const getStoreReopenText = (
+  storeInfo: IStoreItem | undefined,
+  dateFormat: string,
+) => {
+  const reopenAt = getStoreReopenAt(storeInfo);
+  if (!reopenAt?.isValid()) {
+    return '';
+  }
+  const time = reopenAt.format(OPEN_TIME_FORMAT);
+  // Chỉ kèm ngày khi mở lại sang ngày khác — cùng ngày thì giờ là đủ.
+  return reopenAt.isSame(dayjs(), 'day')
+    ? time
+    : `${time}, ${reopenAt.format(dateFormat)}`;
+};
 
 const PHONE_AREA_CODE_LENGTH = 3;
 const PHONE_MIDDLE_LENGTH = 4;

@@ -650,7 +650,10 @@
       "limit_reached_desc": "구매 한도에 도달했습니다",
       "out_of_stock": "품절",
       "sold_out": "품절",
-      "search_placeholder": "상품명"
+      "search_placeholder": "상품명",
+      "store_closed": "영업 종료",
+      "store_reopen_at": "{{time}} 오픈",
+      "store_reopen_date_format": "M월 D일"
     },
     "contribution": {
       "title": "마이페이지",

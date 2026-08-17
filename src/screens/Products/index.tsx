@@ -51,6 +51,7 @@ function Products(props: RootScreenProps<Paths.Products>) {
     storeInfo,
     isShowBtnCart,
     loading,
+    isOutsideOpenHour,
     goToCart,
     onChangeQuantity,
     onLoadMore,
@@ -128,12 +129,13 @@ function Products(props: RootScreenProps<Paths.Products>) {
             isFirst={index == 0}
             item={item}
             onPress={onPressProduct}
+            isOutsideOpenHour={isOutsideOpenHour}
             index={index}
             onChangeQuantity={onChangeQuantity}
           />
         );
       },
-    [onPressProduct, data],
+    [onPressProduct, isOutsideOpenHour, data],
   );
 
   return (
@@ -162,6 +164,7 @@ function Products(props: RootScreenProps<Paths.Products>) {
             ListHeaderComponent={
               <StoreInfo
                 collapseScroll={collapseScroll}
+                isOutsideOpenHour={isOutsideOpenHour}
                 scrollY={frozenScrollY}
                 storeInfo={storeInfo}
               />

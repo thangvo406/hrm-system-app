@@ -64,6 +64,7 @@ import Ic_shopping_bagIcon from './ic_shopping_bag.svg';
 import Ic_sparkleIcon from './ic_sparkle.svg';
 import Ic_starIcon from './ic_star.svg';
 import Ic_storeIcon from './ic_store.svg';
+import Ic_store_closedIcon from './ic_store_closed.svg';
 import Ic_trashIcon from './ic_trash.svg';
 import Ic_truckIcon from './ic_truck.svg';
 import Ic_unlockIcon from './ic_unlock.svg';
@@ -145,6 +146,7 @@ const icons = {
   'ic_sparkle': Ic_sparkleIcon,
   'ic_star': Ic_starIcon,
   'ic_store': Ic_storeIcon,
+  'ic_store_closed': Ic_store_closedIcon,
   'ic_trash': Ic_trashIcon,
   'ic_truck': Ic_truckIcon,
   'ic_unlock': Ic_unlockIcon,

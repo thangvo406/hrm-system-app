@@ -21,9 +21,10 @@ type Properties = {
   readonly onPressProduct: (productId: number) => void;
   readonly product: IProduct;
   readonly storeId: number;
+  readonly isOutsideOpenHour: boolean
 };
 
-function ProductCard({ onPressProduct, product, storeId }: Properties) {
+function ProductCard({ onPressProduct, product, storeId, isOutsideOpenHour }: Properties) {
   const thumbUri = product.thumbnail?.fileUrl;
   const {
     isStockManaged,
@@ -50,7 +51,7 @@ function ProductCard({ onPressProduct, product, storeId }: Properties) {
     return '';
   }, [isSoldOut, isSoldToday, isForStudent, t]);
 
-  const isDisableItem = !!textSoldOut;
+  const isDisableItem = !!textSoldOut || isOutsideOpenHour;
 
   return (
     <AppButton

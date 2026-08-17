@@ -302,7 +302,10 @@
       "limit_reached_desc": "Purchase Limit Reached",
       "out_of_stock": "Sold Out",
       "sold_out": "Sold Out",
-      "search_placeholder": "Product name"
+      "search_placeholder": "Product name",
+      "store_closed": "Closed",
+      "store_reopen_at": "Opens at {{time}}",
+      "store_reopen_date_format": "MMM D"
     },
     "authorisation": {
       "tab_login": "Login",
