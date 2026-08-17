@@ -104,15 +104,16 @@ platform :ios do
 
       set_project_version(version_number: versionCode, build_number: build)
 
-      # 1. Ép buộc bật Automatic Signing trong Xcode Project file
-      update_code_signing_settings(
-        use_automatic_signing: true,
-        path: "#{IOS_DIR}/CoopUse.xcodeproj" # Đường dẫn tới file xcodeproj của bạn
-      )
-
-      # 2. Trên CI: tạo keychain tạm + nạp certificate distribution từ
-      # IOS_DIST_CERT_P12_BASE64 — bước export sẽ ký manual bằng cert này.
+      # 1. Trên CI: tạo keychain tạm + nạp certificate distribution từ
+      # IOS_DIST_CERT_P12_BASE64.
       keychain = setup_signing
+
+      # 2. Cài provisioning profile từ secret, resolve tên, rồi ghi manual signing
+      # vào từng target. Phải giữ ở biến chứ không splat thẳng vào gym:
+      # apply_manual_signing BẮT BUỘC chạy trước archive, không được phụ thuộc vào
+      # thứ tự Ruby evaluate argument của gym.
+      signing = manual_export_signing(api_key, keychain)
+      apply_manual_signing(signing)
 
       # 3. Chạy lệnh Build
       # xcodebuild bỏ qua scheme pre-actions, nên phải tự sinh
@@ -126,14 +127,13 @@ platform :ios do
         output_directory: "#{IOS_DIR}/builds",
         output_name: appName,
         silent: true,
-        # Archive vẫn dùng automatic signing: cloud signing chỉ cần quyền
-        # development ở bước này và đang chạy tốt. Export thì manual — xem
-        # manual_export_signing.
+        # Archive lẫn export đều ký manual bằng cert + profile đã nạp sẵn, nên
+        # xcodebuild không cần liên lạc với App Store Connect. Xem provisioning_xcargs.
         xcargs: provisioning_xcargs(api_key_path),
-        **manual_export_signing(api_key, keychain)
+        **signing
       )
 
-      export_ipa_output(appName)
+      export_ipa_output(appName, build)
 
       pilot(
         api_key: api_key,
@@ -208,32 +208,19 @@ platform :ios do
       # Từ đây trở xuống mới cần Pods / node_modules.
       prepare_package(options)
 
-      # update_notification_service_id(appId)
-
-      # Update main app target
-      update_target_bundle_id(
-        target_name: "CoopUse",
-        plist_path: "#{IOS_DIR}/CoopUse/Info.plist",
-        bundle_id: appId
-      )
-
-      # Update Notification Service target
-      update_target_bundle_id(
-        target_name: "CoopUseNotificationService",
-        plist_path: "#{IOS_DIR}/CoopUseNotificationService/Info.plist",
-        bundle_id: "#{appId}.CoopUseNotificationService"
-      )
+      # Bundle id KHÔNG được ghi đè ở đây: cả 2 target đã lấy id từ
+      # $(APP_IOS_ID) trong build settings, còn CoopUse/Info.plist thì dùng thẳng
+      # $(APP_IOS_ID). Env file đã được select_env_file nạp ở trên nên id tự đúng
+      # theo môi trường — ghi đè bằng tay chỉ tạo cơ hội lệch giữa 2 target.
 
       set_project_version(version_number: versionCode, build_number: build)
 
-      # 1. Ép buộc bật Automatic Signing trong Xcode Project file
-      update_code_signing_settings(
-        use_automatic_signing: true,
-        path: "#{IOS_DIR}/CoopUse.xcodeproj" # Đường dẫn tới file xcodeproj của bạn
-      )
-
-      # 2. Keychain tạm + certificate cho runner (xem lane beta).
+      # 1. Keychain tạm + certificate cho runner (xem lane beta).
       keychain = setup_signing
+
+      # 2. Profile + manual signing per-target (xem lane beta).
+      signing = manual_export_signing(api_key, keychain)
+      apply_manual_signing(signing)
 
       # 3. Chạy lệnh Build
       # xcodebuild bỏ qua scheme pre-actions, nên phải tự sinh
@@ -248,10 +235,10 @@ platform :ios do
         output_name: appName,
         silent: true,
         xcargs: provisioning_xcargs(api_key_path),
-        **manual_export_signing(api_key, keychain)
+        **signing
       )
 
-      export_ipa_output(appName)
+      export_ipa_output(appName, build)
 
       pilot(
         api_key: api_key,
@@ -559,7 +546,14 @@ end
 # nữa, nên role của key không còn ảnh hưởng (chỉ pilot upload mới cần key).
 
 DEFAULT_KEYCHAIN_NAME = "fastlane_tmp_keychain".freeze
-PROFILE_INSTALL_DIR = File.expand_path('~/Library/MobileDevice/Provisioning Profiles').freeze
+# Xcode 16 chuyển chỗ đọc provisioning profile sang ~/Library/Developer/Xcode/UserData,
+# trong khi fastlane (2.227) vẫn chỉ ghi vào đường dẫn legacy. Workflow đang chọn
+# Xcode 26 nên cài vào CẢ HAI: tốn thêm vài KB, đổi lại không phải đánh cược vào
+# việc bản Xcode trên runner còn đọc thư mục cũ hay không.
+PROFILE_INSTALL_DIRS = [
+  File.expand_path('~/Library/MobileDevice/Provisioning Profiles'),
+  File.expand_path('~/Library/Developer/Xcode/UserData/Provisioning Profiles')
+].freeze
 
 # Certificate distribution có thể là "Apple Distribution" (hiện tại) hoặc
 # "iPhone Distribution" (cert đời cũ chưa hết hạn) — hardcode một cái là trượt.
@@ -589,6 +583,38 @@ def manual_export_signing(api_key, keychain)
       teamID: team_id
     }
   }
+end
+
+# Ghi cấu hình manual signing vào build settings của từng target, chạy TRƯỚC gym.
+#
+# Vì sao không nhét vào xcargs: xcargs truyền build setting ở command-line level
+# nên áp cho MỌI target trong workspace — app, extension và toàn bộ Pods. Một
+# PROVISIONING_PROFILE_SPECIFIER duy nhất không thể vừa đúng cho com.coopuse vừa
+# đúng cho com.coopuse.NotificationService, archive sẽ chết ở target thứ hai.
+#
+# Không truyền bundle_identifier: option đó ghi vào key PRODUCT_BUNDLE_IDENTIFIER
+# gốc, trong khi bản thân project đã lấy id từ $(APP_IOS_ID) rồi.
+#
+# `signing` là hash do manual_export_signing trả về.
+def apply_manual_signing(signing)
+  profiles = signing[:export_options][:provisioningProfiles]
+
+  # zip an toàn vì resolve_export_bundle_ids map theo đúng thứ tự VERSIONED_TARGETS.
+  VERSIONED_TARGETS.zip(resolve_export_bundle_ids).each do |target_name, bundle_id|
+    profile_name = profiles[bundle_id]
+    UI.user_error!("Không có provisioning profile cho #{bundle_id} (target #{target_name}).") if profile_name.nil?
+
+    update_code_signing_settings(
+      build_configurations: ['Release'],
+      code_sign_identity: signing[:export_options][:signingCertificate],
+      path: "#{IOS_DIR}/CoopUse.xcodeproj",
+      profile_name: profile_name,
+      targets: [target_name],
+      team_id: signing[:export_team_id],
+      use_automatic_signing: false
+    )
+    UI.message("🔏 #{target_name} (#{bundle_id}) → manual signing, profile '#{profile_name}'")
+  end
 end
 
 # Tên identity distribution để điền vào exportOptionsPlist.signingCertificate.
@@ -648,15 +674,26 @@ end
 
 # Map bundle_id => tên profile cho exportOptionsPlist.
 #
-# Ưu tiên profile nạp từ secret: export khi đó offline hoàn toàn. Thiếu thì
-# fallback sang sigh — đỡ phải quản secret, nhưng lại cần đúng cái quyền App
-# Store Connect mà ta đang né, nên chỉ là lưới đỡ.
+# Nguồn chính là profile nạp từ secret: build khi đó không đụng App Store Connect.
+# Thiếu thì fallback sang sigh ở chế độ readonly — CHỈ TẢI profile đã có sẵn trên
+# portal, không tạo mới. Muốn cho phép tạo thì phải bật ALLOW_PROFILE_CREATION
+# tường minh: tạo profile là thao tác ghi lên tài khoản Apple, không được xảy ra
+# âm thầm chỉ vì ai đó gõ sai tên secret.
 def resolve_export_profiles(api_key, bundle_ids)
   profiles = install_profiles_from_secret
   missing = bundle_ids - profiles.keys
   return profiles.slice(*bundle_ids) if missing.empty?
 
-  UI.important("Chưa có profile cho: #{missing.join(', ')} — thử tải qua App Store Connect.")
+  readonly = ENV['ALLOW_PROFILE_CREATION'].to_s.empty?
+  if readonly
+    UI.important(
+      "Thiếu profile cho: #{missing.join(', ')} — sẽ thử tải bản có sẵn trên portal.\n" \
+      "Cách sửa đúng là thêm chúng vào secret IOS_PROVISIONING_PROFILES_BASE64."
+    )
+  else
+    UI.important("ALLOW_PROFILE_CREATION đang bật — sigh ĐƯỢC PHÉP tạo profile mới trên portal.")
+  end
+
   missing.each do |bundle_id|
     # sigh TRẢ VỀ UUID, không phải đường dẫn (xem return_value của action).
     # Đường dẫn tuyệt đối tới file .mobileprovision nằm ở lane_context.
@@ -664,11 +701,14 @@ def resolve_export_profiles(api_key, bundle_ids)
       api_key: api_key,
       app_identifier: bundle_id,
       platform: 'ios',
-      readonly: false
+      readonly: readonly
     )
     path = Fastlane::Actions.lane_context[Fastlane::Actions::SharedValues::SIGH_PROFILE_PATH]
     UI.user_error!("sigh không trả về đường dẫn profile cho #{bundle_id}.") if path.to_s.empty?
-    profiles[bundle_id] = profile_info(path)[:name]
+    info = profile_info(path)
+    # sigh chỉ cài vào thư mục legacy — nhân bản sang chỗ Xcode 16+ đọc.
+    install_profile_file(path, info[:uuid])
+    profiles[bundle_id] = info[:name]
   end
 
   profiles.slice(*bundle_ids)
@@ -680,7 +720,6 @@ def install_profiles_from_secret
   blobs = ENV['IOS_PROVISIONING_PROFILES_BASE64'].to_s.split(/[\s,]+/).reject(&:empty?)
   return {} if blobs.empty?
 
-  FileUtils.mkdir_p(PROFILE_INSTALL_DIR)
   blobs.each_with_object({}) do |blob, map|
     decoded = Base64.decode64(blob)
     unless decoded.getbyte(0) == DER_SEQUENCE_TAG
@@ -693,10 +732,20 @@ def install_profiles_from_secret
     tmp_path = File.join(Dir.tmpdir, "#{fingerprint(blob)}.mobileprovision")
     File.binwrite(tmp_path, decoded)
     info = profile_info(tmp_path)
-    FileUtils.mv(tmp_path, File.join(PROFILE_INSTALL_DIR, "#{info[:uuid]}.mobileprovision"))
+    install_profile_file(tmp_path, info[:uuid])
+    File.delete(tmp_path)
 
     UI.message("Đã cài profile '#{info[:name]}' cho #{info[:bundle_id]}")
     map[info[:bundle_id]] = info[:name]
+  end
+end
+
+# Chép .mobileprovision vào mọi thư mục Xcode có thể đọc (xem PROFILE_INSTALL_DIRS).
+# Xcode tra profile theo UUID trong tên file, không theo tên gốc.
+def install_profile_file(source_path, uuid)
+  PROFILE_INSTALL_DIRS.each do |dir|
+    FileUtils.mkdir_p(dir)
+    FileUtils.cp(source_path, File.join(dir, "#{uuid}.mobileprovision"))
   end
 end
 
@@ -721,12 +770,48 @@ def profile_info(path)
     UI.important("Profile '#{plist['Name']}' là wildcard (#{bundle_id}) — sẽ không khớp bundle id cụ thể nào.")
   end
 
+  check_profile_expiry(plist)
+
   { bundle_id: bundle_id, name: plist['Name'].to_s, uuid: plist['UUID'].to_s }
 end
 
-# Cho phép xcodebuild tự tạo/tải provisioning profile bằng App Store Connect API
-# key (automatic signing trên runner sạch không có profile nào sẵn).
+# Profile App Store hết hạn sau 1 năm. Hết hạn mà không báo thì lỗi chỉ lộ ra ở
+# codesign dưới dạng khó đọc, nên chặn ngay tại đây và cảnh báo sớm trước đó.
+PROFILE_EXPIRY_WARNING_DAYS = 30
+
+def check_profile_expiry(plist)
+  expires_at = plist['ExpirationDate']
+  return if expires_at.nil?
+
+  days_left = ((expires_at.to_time - Time.now) / 86_400).floor
+  if days_left.negative?
+    UI.user_error!(
+      "Profile '#{plist['Name']}' đã hết hạn #{days_left.abs} ngày trước (#{expires_at}). " \
+      "Tạo lại trên portal và cập nhật secret IOS_PROVISIONING_PROFILES_BASE64."
+    )
+  elsif days_left <= PROFILE_EXPIRY_WARNING_DAYS
+    UI.important("⚠️  Profile '#{plist['Name']}' còn #{days_left} ngày là hết hạn (#{expires_at}).")
+  end
+end
+
+# Mặc định KHÔNG truyền -allowProvisioningUpdates.
+#
+# Flag đó cho phép xcodebuild "create and update profiles, app IDs, and
+# certificates" (Apple docs). Runner là máy sạch mỗi lần chạy: keychain chỉ có cert
+# distribution nạp từ .p12, không có identity development nào. Automatic signing
+# lúc archive vì thế sẽ tạo một cert "Created via API" MỚI mỗi lần build, private
+# key chết theo runner, và danh sách cert của team phình ra tới khi chạm giới hạn
+# của Apple. Bỏ flag đi thì xcodebuild không có quyền ghi lên portal, chấm hết.
+#
+# Escape hatch cho tình huống khẩn (profile hết hạn, cần build gấp): set
+# ALLOW_PROVISIONING_UPDATES=1. Nhớ bỏ ra sau khi đã cập nhật secret.
 def provisioning_xcargs(api_key_path)
+  return nil if ENV['ALLOW_PROVISIONING_UPDATES'].to_s.empty?
+
+  UI.important(
+    "ALLOW_PROVISIONING_UPDATES đang bật — xcodebuild ĐƯỢC PHÉP tạo cert/profile mới trên portal. " \
+    "Chỉ dùng tạm, nhớ tắt lại."
+  )
   args = ["-allowProvisioningUpdates"]
   if api_key_path && File.exist?(api_key_path) && ENV['KEY_ID'] && ENV['ISSUER_ID']
     args << "-authenticationKeyPath #{api_key_path.shellescape}"
@@ -739,12 +824,15 @@ end
 # Ghi output cho GitHub Actions (step upload-artifact đọc từ đây). Gọi ngay sau
 # gym và TRƯỚC pilot: nếu upload TestFlight lỗi thì IPA vẫn còn trên disk và
 # step upload-artifact vẫn lấy được thay vì mất trắng bản build.
-def export_ipa_output(app_name)
+#
+# Tên artifact phải kèm build number: version thường đứng yên nhiều run liền, nên
+# nếu chỉ có version thì các artifact tải về từ những run khác nhau đè lên nhau.
+def export_ipa_output(app_name, build_number)
   return unless ENV['GITHUB_OUTPUT']
 
   File.open(ENV['GITHUB_OUTPUT'], 'a') do |f|
     f.puts "ipa_path=ios/builds/#{app_name}"
-    f.puts "ipa_name=#{File.basename(app_name, '.ipa')}"
+    f.puts "ipa_name=#{File.basename(app_name, '.ipa')}-b#{build_number}"
   end
 end
 
@@ -786,37 +874,6 @@ def set_project_version(version_number:, build_number:)
   project.save
   UI.success("✅ Đã set version #{version_number} (build #{build_number}) cho: #{VERSIONED_TARGETS.join(', ')}")
 end
-
-def update_target_bundle_id(target_name:, plist_path:, bundle_id:)
-  require 'xcodeproj'
-
-  project_path = "#{IOS_DIR}/CoopUse.xcodeproj"
-
-  puts "🔧 Updating target '#{target_name}' with bundle ID '#{bundle_id}'"
-
-  # Open Xcode project
-  project = Xcodeproj::Project.open(project_path)
-  target = project.targets.find { |t| t.name == target_name }
-
-  if target.nil?
-    UI.user_error!("❌ Target '#{target_name}' not found in #{project_path}")
-  end
-
-  # Update build settings
-  target.build_configurations.each do |config|
-    config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = bundle_id
-  end
-
-  project.save
-  UI.success("✅ Updated PRODUCT_BUNDLE_IDENTIFIER for target '#{target_name}'")
-
-  # Optionally update Info.plist too
-  update_info_plist(
-    plist_path: plist_path,
-    app_identifier: bundle_id
-  )
-end
-
 
 def prepare_package(options)
   # nvm chỉ tồn tại trên máy local; trên runner Node đã do actions/setup-node lo.

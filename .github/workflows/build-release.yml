@@ -216,6 +216,9 @@ jobs:
   #         APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
   #         IOS_DIST_CERT_P12_BASE64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
   #         IOS_DIST_CERT_PASSWORD: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
+  #         # Profile App Store cho com.univ.coop + com.univ.coop.NotificationService.
+  #         # Khác secret của beta vì bundle id prod khác dev.
+  #         IOS_PROVISIONING_PROFILES_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILES_PROD_BASE64 }}
   #         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '120'
   #         FASTLANE_XCODEBUILD_SETTINGS_RETRIES: '10'
 

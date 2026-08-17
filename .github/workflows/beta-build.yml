@@ -20,6 +20,15 @@ env:
   # Nếu chưa cấu hình variable thì fallback về '1.0.0'.
   VERSION_NUMBER: ${{ vars.VERSION_NUMBER || '1.0.0' }}
 
+# Build number lấy từ latest_testflight_build_number + 1, tức phụ thuộc trạng thái
+# TestFlight tại thời điểm chạy. Hai run song song sẽ đọc ra cùng một số và bản
+# thứ hai bị Apple từ chối vì trùng build number — nên phải xếp hàng.
+# cancel-in-progress: false chứ không phải true: huỷ giữa chừng có thể vứt bỏ một
+# bản đã archive xong hoặc đã upload dở.
+concurrency:
+  group: beta-build-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build-android:
     name: Build Android Beta
@@ -100,6 +109,9 @@ jobs:
     runs-on: macos-15
     # Build + archive + upload TestFlight thường ~40-60 phút, cho dư biên.
     timeout-minutes: 90
+    # Job chỉ đọc code rồi upload artifact; không tạo release/commit như job Android.
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout Code
@@ -207,6 +219,10 @@ jobs:
           APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
           IOS_DIST_CERT_P12_BASE64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
           IOS_DIST_CERT_PASSWORD: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
+          # Bắt buộc: archive và export đều ký manual bằng profile từ secret này.
+          # Thiếu nó thì build không tự tạo profile nữa mà sẽ fail tường minh.
+          # Nhiều profile ngăn cách bằng khoảng trắng.
+          IOS_PROVISIONING_PROFILES_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILES_DEV_BASE64 }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '120'
           FASTLANE_XCODEBUILD_SETTINGS_RETRIES: '10'

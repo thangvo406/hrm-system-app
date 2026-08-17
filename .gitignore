@@ -91,3 +91,8 @@ ios/tmp.xcconfig
 android/coop-dev-firebase.json
 .claude
 *.lock
+# Gemfile.lock phải được commit: CI chạy `bundle install` mỗi run, không pin thì
+# fastlane tự nhảy lên bản mới nhất và hành vi ký (update_code_signing_settings,
+# sigh, gym) có thể đổi mà không có commit nào liên quan.
+!ios/Gemfile.lock
+!android/Gemfile.lock
