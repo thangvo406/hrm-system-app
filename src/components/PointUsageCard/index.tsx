@@ -1,3 +1,6 @@
+import type { Ref } from 'react';
+import type { TextInput } from 'react-native';
+
 import CheckBox from '@components/CheckBox';
 import TextField from '@components/TextField';
 import { Colors } from '@constants';
@@ -5,17 +8,22 @@ import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from '@utils/product';
 import { useTranslation } from 'react-i18next';
-import React, { useState } from 'react';
+import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 
 const ACCENT_COLOR = '#2DB34A';
+
+export type PointUsageCardHandle = {
+  readonly focus: () => void;
+};
 
 type Properties = {
   readonly onChangePointUsed: (text: number) => void;
   readonly onToggleUsePoints: () => void;
   readonly pointHolding?: number;
   readonly pointUsed: number;
+  readonly ref?: Ref<PointUsageCardHandle>;
   readonly usePoints: boolean;
 };
 
@@ -24,6 +32,7 @@ function PointUsageCard({
   onToggleUsePoints,
   pointHolding,
   pointUsed,
+  ref: reference,
   usePoints,
 }: Properties) {
   const { t } = useTranslation();
@@ -31,6 +40,25 @@ function PointUsageCard({
   const [isFocused, setIsFocused] = useState(false);
   const [inputText, setInputText] = useState('');
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
+  const inputReference = useRef<TextInput>(null);
+
+  useImperativeHandle(
+    reference,
+    () => ({
+      focus: () => {
+        inputReference.current?.focus();
+      },
+    }),
+    [],
+  );
+
+  useEffect(() => {
+    const typedNumber = Number(inputText.replaceAll(/\D/g, '') || 0);
+    if (typedNumber === pointUsed) {
+      return;
+    }
+    setInputText(pointUsed ? formatCurrency(pointUsed) : '');
+  }, [inputText, pointUsed]);
 
   const onChangePoint = (text: string) => {
     const digits = text.replaceAll(/\D/g, '');
@@ -50,12 +78,12 @@ function PointUsageCard({
 
   const onFocusPoint = () => {
     setIsFocused(true);
-    // Đang là 0 thì bỏ số 0 đi để gõ trực tiếp.
     setInputText(pointUsed ? formatCurrency(pointUsed) : '');
   };
 
   const onBlurPoint = () => {
     setIsFocused(false);
+    setErrorInputPoint('');
   };
 
   const renderPointUnit = () => (
@@ -92,6 +120,7 @@ function PointUsageCard({
           onBlur={onBlurPoint}
           onFocus={onFocusPoint}
           placeholder=""
+          ref={inputReference}
           renderRightComponent={renderPointUnit}
           returnKeyType="done"
           style={styles.pointPillText}

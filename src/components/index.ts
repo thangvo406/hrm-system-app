@@ -16,6 +16,7 @@ export { default as HomeHeader } from './HomeHeader';
 export { default as Image } from './Image';
 export { default as PaginationDots } from './PaginationDots';
 export { default as PointUsageCard } from './PointUsageCard';
+export type { PointUsageCardHandle } from './PointUsageCard';
 export { default as ProductDetailLoading } from './Loading/ProductDetail';
 export { default as ProductList } from './ProductList';
 export { default as ProductsLoading } from './Loading/Products';

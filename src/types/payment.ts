@@ -249,6 +249,7 @@ export interface IOrderHistoryDetailItem {
 
 export interface IPriceDetail {
   totalMoney: number;
+  pointApplied: number;
   couponMoney: number;
   membershipDiscount: number;
   pointDiscount: number;
@@ -258,7 +259,7 @@ export interface IPriceDetail {
 
 export interface IRequestCalculatePrice extends AppCallback<IPriceDetail> {
   point: number;
-  couponId: number;
+  couponId?: number;
   storeId: number;
   totalMoney: number;
 }

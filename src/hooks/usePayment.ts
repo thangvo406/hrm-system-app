@@ -1,3 +1,5 @@
+import type { PointUsageCardHandle } from '@components';
+
 import AppNavigator from '@navigation/AppNavigator';
 import { AppStacks, Paths } from '@navigation/paths';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -23,6 +25,7 @@ import { IPriceDetail } from '@type';
 import debounce from 'lodash/debounce';
 
 export type IPaymentCoupon = {
+  readonly couponId?: number;
   readonly id: string;
   readonly name: string;
 };
@@ -39,6 +42,13 @@ export type SelectedPaymentMethod = {
 };
 
 export const PRIMARY_CARD_INDEX = 0;
+const CALCULATE_PRICE_DEBOUNCE_MS = 350;
+
+type CalculatePriceParams = {
+  readonly couponId?: number;
+  readonly point: number;
+  readonly usePoint: boolean;
+};
 
 export const usePayment = (props: any) => {
   const { t } = useTranslation();
@@ -47,21 +57,15 @@ export const usePayment = (props: any) => {
     {} as SelectedPaymentMethod,
   );
   const [usePoints, setUsePoints] = useState(true);
-  const isFirst = useRef(true);
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
   const isEnablePaymentCard = useAppSelector(AppSelector.isEnablePaymentCard);
+  // Số point server thực sự áp dụng — dùng để hiển thị và để tạo đơn. Không có
+  // effect nào theo dõi nó, nên việc server chỉnh lại point không kéo theo một
+  // lần tính giá nữa.
   const [pointUsed, setPointUsed] = useState(0);
   const [priceDetail, setPriceDetail] = useState<IPriceDetail>();
-  const [voucherSelected, setVoucherSelected] = useState();
-  const onToggleUsePoints = () => {
-    setUsePoints(previous => !previous);
-  };
-
-  const onChangePointUsed = (numeric: number) => {
-    // const numeric = Number(text.replaceAll(/\D/g, ''));
-    setPointUsed(Number.isNaN(numeric) ? 0 : numeric);
-    setUsePoints(previous => previous || !previous);
-  };
+  const pointViewRef = useRef<PointUsageCardHandle>(null);
+  const [voucherSelected, setVoucherSelected] = useState<IPaymentCoupon>();
   const { payloadRequest } = AppNavigator.getParams(props);
   const dispatch = useAppDispatch();
   const rawDataBankAccounts = useAppSelector(
@@ -105,46 +109,71 @@ export const usePayment = (props: any) => {
     setSelectedMethod({ id, cardType: 'easyPay', type: 'easy' });
   }, []);
 
-  const onSubmitVoucher = () => {
-    dispatch(
-      calculatePriceRequest({
-        storeId: payloadRequest?.storeId,
-        totalMoney: payloadRequest?.totalAmount,
-        point: usePoints ? pointUsed : 0,
-        couponId: voucherSelected?.couponId,
-        onSuccess: (response: IPriceDetail) => {
-          setPriceDetail(response);
-        },
-        onFailure: () => {
-          setPriceDetail(prev =>
-            prev
-              ? prev
-              : ({ totalMoney: payloadRequest?.totalAmount } as IPriceDetail),
-          );
-        },
-      }),
-    );
+  const calculatePrice = useCallback(
+    ({ couponId, point, usePoint }: CalculatePriceParams) => {
+      dispatch(
+        calculatePriceRequest({
+          storeId: payloadRequest?.storeId,
+          totalMoney: payloadRequest?.totalAmount,
+          point: usePoint ? point : 0,
+          couponId,
+          onSuccess: (response: IPriceDetail) => {
+            setPriceDetail(response);
+            if (usePoint && response.pointApplied < point) {
+              setPointUsed(response.pointApplied);
+              pointViewRef.current?.focus();
+            }
+          },
+          onFailure: () => {
+            setPriceDetail(prev =>
+              prev
+                ? prev
+                : ({ totalMoney: payloadRequest?.totalAmount } as IPriceDetail),
+            );
+          },
+        }),
+      );
+    },
+    [dispatch, payloadRequest?.storeId, payloadRequest?.totalAmount],
+  );
+
+  const debouncedCalculatePrice = useMemo(
+    () => debounce(calculatePrice, CALCULATE_PRICE_DEBOUNCE_MS),
+    [calculatePrice],
+  );
+
+  useEffect(() => {
+    return () => {
+      debouncedCalculatePrice.cancel();
+    };
+  }, [debouncedCalculatePrice]);
+
+  // Việc tính lại giá luôn xuất phát từ hành động của user, nên nó nằm trong
+  // handler thay vì trong effect theo dõi state.
+  const onToggleUsePoints = () => {
+    const nextUsePoints = !usePoints;
+    setUsePoints(nextUsePoints);
+    debouncedCalculatePrice({
+      couponId: voucherSelected?.couponId,
+      point: pointUsed,
+      usePoint: nextUsePoints,
+    });
+  };
+
+  const onChangePointUsed = (numeric: number) => {
+    const point = Number.isNaN(numeric) ? 0 : numeric;
+    setPointUsed(point);
+    setUsePoints(true);
+    debouncedCalculatePrice({
+      couponId: voucherSelected?.couponId,
+      point,
+      usePoint: true,
+    });
   };
 
   useEffect(() => {
-    if (isFirst.current) {
-      isFirst.current = false;
-      return;
-    }
-    const debounceId = debounce(() => {
-      onSubmitVoucher();
-    }, 350);
-
-    debounceId();
-
-    return () => {
-      debounceId.cancel();
-    };
-  }, [usePoints, pointUsed]);
-
-  useEffect(() => {
-    onSubmitVoucher();
-  }, [voucherSelected]);
+    calculatePrice({ point: 0, usePoint: usePoints });
+  }, []);
 
   useEffect(() => {
     onSelectCard(bankAccounts?.[0]);
@@ -154,7 +183,15 @@ export const usePayment = (props: any) => {
     AppNavigator.showDialog({
       screen: VouchersSelection,
       isFullScreen: true,
-      onSubmit: (item: any) => setVoucherSelected(item),
+      // Chọn voucher là hành động rời rạc nên gọi ngay, không debounce.
+      onSubmit: (item: any) => {
+        setVoucherSelected(item);
+        calculatePrice({
+          couponId: item?.couponId,
+          point: pointUsed,
+          usePoint: usePoints,
+        });
+      },
       itemSelected: voucherSelected,
       storeId: payloadRequest?.storeId,
       orderAmount: payloadRequest?.totalAmount,
@@ -341,6 +378,7 @@ export const usePayment = (props: any) => {
     onChangePointUsed,
     onToggleUsePoints,
     onSelectedEasyPay,
+    pointViewRef,
     bankAccounts,
     isEnablePaymentCard,
     payMoneyBalance: currentWallet?.balance,
