@@ -31,7 +31,7 @@ function OrderCompleted(props: any) {
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
-  const theme = THEMES[status ?? 'success'];
+  const theme = THEMES[status ?? 'success'] ?? THEMES.success;
 
   useEffect(() => {
     dispatch(getTotalItemCartRequest());

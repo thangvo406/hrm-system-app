@@ -25,12 +25,12 @@ type CartProductCardProperties = {
 function CartProductCard({
   item,
   onChangeQuantity,
-  ...restProps
+  readOnly,
 }: CartProductCardProperties) {
   const { t } = useTranslation();
   const [quantity, setQuantity] = useState(item.quantity);
   const [error, setError] = useState('');
-  const readOnly = item.isForStudent || restProps?.readOnly;
+  const isDisableUpdateQuantity = item.isForStudent;
 
   useEffect(() => {
     setQuantity(item.quantity);
@@ -117,7 +117,12 @@ function CartProductCard({
           <View style={styles.stepper}>
             <AppButton
               onPress={onPressMinus}
-              style={[styles.stepperBtn, styles.stepperPlus]}
+              disabled={isDisableUpdateQuantity}
+              style={[
+                styles.stepperBtn,
+                styles.stepperPlus,
+                isDisableUpdateQuantity && styles.stepperMinus,
+              ]}
               testID={`cart-minus-${item.id}`}
             >
               <Text style={styles.stepperPlusIcon}>−</Text>
@@ -125,7 +130,12 @@ function CartProductCard({
             <Text style={styles.stepperCount}>{quantity}</Text>
             <AppButton
               onPress={onPressPlus}
-              style={[styles.stepperBtn, styles.stepperPlus]}
+              disabled={isDisableUpdateQuantity}
+              style={[
+                styles.stepperBtn,
+                styles.stepperPlus,
+                isDisableUpdateQuantity && styles.stepperMinus,
+              ]}
               testID={`cart-plus-${item.id}`}
             >
               <Text style={styles.stepperPlusIcon}>+</Text>

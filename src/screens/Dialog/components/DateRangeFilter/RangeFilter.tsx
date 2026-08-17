@@ -76,9 +76,13 @@ const StatusFilter = React.forwardRef<StatusFilterRef, any>(
     }, [statusSelected]);
 
     const getValue = () => statusSelected;
+    const setValue = (value: string) => {
+      setStatusSelected(value);
+    };
 
     useImperativeHandle(ref, () => ({
       reset,
+      setValue,
       getValue,
     }));
 

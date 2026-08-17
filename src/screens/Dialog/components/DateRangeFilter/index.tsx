@@ -35,6 +35,7 @@ function DatePicker({
   maxDate,
 }: DatePickerProps) {
   const datePickerRef = useRef<any>(null);
+  const statusRef = useRef(null);
   const { t } = useTranslation();
   const [filterValue, setFilterValue] = useState();
   const [isShowBtnBottom, setShowBtnBottom] = useState(true);
@@ -95,6 +96,10 @@ function DatePicker({
     };
   }, []);
 
+  const onDateChange = () => {
+    statusRef.current?.setValue('custom');
+  };
+
   return (
     <TouchableWithoutFeedback>
       <View
@@ -107,7 +112,7 @@ function DatePicker({
         ]}
       >
         <Text style={styles.title}>{title}</Text>
-        <DateRangeFilter onDataChange={onFilterChanged} />
+        <DateRangeFilter ref={statusRef} onDataChange={onFilterChanged} />
         <View
           pointerEvents="box-none"
           style={{
@@ -120,6 +125,7 @@ function DatePicker({
             maxDate={maxDate}
             dataInit={dateRangeInit}
             ref={datePickerRef}
+            onDateChange={onDateChange}
             type={type}
             onHideBtnBottom={onHideBtnBottom}
           />

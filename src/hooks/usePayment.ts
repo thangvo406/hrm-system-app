@@ -295,7 +295,7 @@ export const usePayment = (props: any) => {
               dataOrder: {
                 deliveryMethod: payloadRequest?.receiveMethod,
                 paymentMethod: selectedMethod?.displayName,
-                totalAmount: responsePayment?.finalAmount,
+                totalAmount: priceDetail?.finalMoney,
               },
             });
           }
@@ -313,7 +313,7 @@ export const usePayment = (props: any) => {
               dataOrder: {
                 deliveryMethod: payloadRequest?.receiveMethod,
                 paymentMethod: selectedMethod?.displayName,
-                totalAmount: responsePayment?.finalAmount,
+                totalAmount: priceDetail?.finalMoney,
               },
             });
           }

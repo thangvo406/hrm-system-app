@@ -178,7 +178,7 @@ function CapitalWithdrawal() {
                 showClear
               />
             </View>
-            <View style={styles.infoBanner}>
+            {/* <View style={styles.infoBanner}>
               <Image
                 color={INFO_BLUE_ICON}
                 height={BANNER_ICON_SIZE}
@@ -189,7 +189,7 @@ function CapitalWithdrawal() {
               <Text style={styles.infoText}>
                 {t('capital_withdrawal.info_banner')}
               </Text>
-            </View>
+            </View> */}
 
             <View style={styles.cautionBanner}>
               <Image
@@ -201,10 +201,10 @@ function CapitalWithdrawal() {
               />
               <View style={styles.cautionTexts}>
                 <Text style={styles.cautionTitle}>
-                  {t('contribution_input.caution_title')}
+                  {t('capital_withdrawal.caution_title')}
                 </Text>
                 <Text style={styles.cautionDesc}>
-                  {`•  ${t('contribution_input.caution_desc')}`}
+                  {`•  ${t('capital_withdrawal.caution_desc')}`}
                 </Text>
               </View>
             </View>

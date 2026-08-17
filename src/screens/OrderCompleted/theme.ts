@@ -1,7 +1,7 @@
 import type { IconName } from '@assets/icons';
 import { Colors } from '@constants';
 
-export type OrderStatus = 'pending' | 'success';
+export type OrderStatus = 'failed' | 'pending' | 'success';
 
 export const SHARED = {
   divider: '#E5E7EB',
@@ -22,6 +22,19 @@ export type Theme = {
 };
 
 export const THEMES: Record<OrderStatus, Theme> = {
+  failed: {
+    accent: Colors.red03,
+    // Confetti reads as celebration, so the failed theme keeps it muted/neutral
+    // instead of scattering festive dots over an error screen.
+    confetti: [Colors.red02, '#F0D2D2', '#E8DCDC'],
+    heroCircleBg: 'rgba(217,83,79,0.15)',
+    heroIcon: 'x-circle',
+    i18nBase: 'order_completed.failed',
+    iconBg: Colors.red02,
+    notifyIcon: 'ic_alert_triangle',
+    screenBg: '#FDF5F5',
+    titleColor: '#A8302B',
+  },
   pending: {
     accent: Colors.yellow01,
     confetti: [Colors.yellow01, '#4A5568', '#2196F3'],

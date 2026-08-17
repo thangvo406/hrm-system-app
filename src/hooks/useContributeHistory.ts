@@ -47,7 +47,7 @@ const INITIAL_PAGINATION: TTabPaginationState = {
 
 const onCapitalWithdrawal = () => {
   AppNavigator.navigate(Paths.CapitalWithdrawal);
-}
+};
 
 export const useContributeHistory = () => {
   const [historyTab, setHistoryTab] = useState<TPayCardHistoryTab>('pay');
@@ -285,6 +285,7 @@ export const useContributeHistory = () => {
           data: detail,
           screen: ContributionDetail,
           popupType: 'bottomSheet',
+          isIncrease: item.type == 'DECREASE',
           isContribute: isTabContribute,
           title: isTabContribute
             ? t('pay_card.tab_pay')

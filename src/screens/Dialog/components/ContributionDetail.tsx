@@ -50,21 +50,31 @@ function Status({ status }: StatusProps) {
 
 type ContributionDetailProps = {
   readonly data?: IContributeHistoryDetail;
+  readonly isIncrease?: boolean;
   readonly title?: string;
 };
 
-function ContributionDetailComponent({ data, title }: ContributionDetailProps) {
+function ContributionDetailComponent({
+  data,
+  title,
+  isIncrease = false,
+}: ContributionDetailProps) {
   const { t } = useTranslation();
+  // Cùng layout dùng cho cả 출자 (contribute) và 증좌 (increase), chỉ khác nhánh
+  // label — gom vào một prefix thay vì rẽ nhánh ở từng chỗ gọi t().
+  const detailKey = isIncrease
+    ? 'contribute_history.increase_detail'
+    : 'contribute_history.detail';
 
   return (
     <View style={styles.container} testID="contribution-detail">
       <Text style={styles.sectionTitle}>
-        {title ?? t('contribute_history.detail.title')}
+        {title ?? t(`${detailKey}.title`)}
       </Text>
 
       <View style={styles.section}>
         <Text style={styles.date}>
-          {t('contribute_history.detail.date_label')}:
+          {t(`${detailKey}.date_label`)}:
           <Text
             style={{
               fontSize: ScaleSize(16),
@@ -74,7 +84,7 @@ function ContributionDetailComponent({ data, title }: ContributionDetailProps) {
           </Text>
         </Text>
         <Text style={styles.amount}>
-          {t('contribute_history.detail.amount_label')}:
+          {t(`${detailKey}.amount_label`)}:
           <Text
             style={{
               fontSize: ScaleSize(24),
@@ -90,7 +100,7 @@ function ContributionDetailComponent({ data, title }: ContributionDetailProps) {
       <View style={styles.section}>
         <View style={styles.paymentMethodRow}>
           <Text style={styles.paymentMethodSection}>
-            {t('contribute_history.detail.payment_method_label')}
+            {t(`${detailKey}.payment_method_label`)}
           </Text>
           <Status status={data?.status} />
         </View>

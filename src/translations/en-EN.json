@@ -232,6 +232,12 @@
           "pending": "Pending",
           "failed": "Payment failed"
         }
+      },
+      "increase_detail": {
+        "title": "Increase detail",
+        "date_label": "Increase Date",
+        "amount_label": "Increase amount",
+        "payment_method_label": "Increase Type"
       }
     },
     "welcome": {
@@ -854,6 +860,12 @@
         "notify_title": "We are processing your order",
         "notify_subtitle": "You will be notified once your order is confirmed."
       },
+      "failed": {
+        "title": "Order Failed",
+        "subtitle": "Your payment could not be completed.\nPlease try again in a moment.",
+        "notify_title": "Payment was not completed",
+        "notify_subtitle": "Any amount charged is refunded automatically. Please contact support if this keeps happening."
+      },
       "success": {
         "title": "Order Placed Successfully!",
         "subtitle": "Thank you for your purchase.\nYour order is being processed.",
@@ -1055,7 +1067,9 @@
       "option_academic_desc": "When your membership status changes due to completion or graduation",
       "option_refund_title": "Unit decrease & refund request",
       "option_refund_desc": "When you decrease contribution units and receive a refund",
-      "error_units_exceed_current": "Units cannot exceed your current units"
+      "error_units_exceed_current": "Units cannot exceed your current units",
+      "caution_title": "Caution",
+      "caution_desc": "Once submitted, your decrease request is processed after review by cooperative staff"
     },
     "capital_withdrawal_result": {
       "detail_title": "Application Details",
@@ -1074,10 +1088,10 @@
       "status": "Status",
       "confirm": "Confirm",
       "pending": {
-        "title": "Contribution Increase Requested",
-        "subtitle": "Your contribution units will be increased after admin review",
-        "info_line1": "Our cooperative staff is reviewing your increase request",
-        "info_line2": "You'll be notified via the app once it's processed",
+        "title": "Contribution Decrease Requested",
+        "subtitle": "Your contribution units will be decreased after admin review",
+        "info_line1": "Our cooperative staff is reviewing your decrease request",
+        "info_line2": "You'll be notified via the app once the staff has processed the decrease",
         "info_line3": "This usually takes 1–3 business days",
         "status_label": "Processing"
       },

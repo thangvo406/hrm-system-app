@@ -557,6 +557,12 @@
           "pending": "대기",
           "failed": "납부실패"
         }
+      },
+      "increase_detail": {
+        "title": "증좌 내역",
+        "date_label": "증좌일시",
+        "amount_label": "증좌 금액",
+        "payment_method_label": "증좌 유형"
       }
     },
     "announcements": {
@@ -854,6 +860,12 @@
         "notify_title": "주문을 처리하고 있습니다",
         "notify_subtitle": "주문이 확인되면 알림을 보내드립니다."
       },
+      "failed": {
+        "title": "주문에 실패했습니다",
+        "subtitle": "결제가 정상적으로 처리되지 않았습니다.\n잠시 후 다시 시도해 주세요.",
+        "notify_title": "결제가 완료되지 않았습니다",
+        "notify_subtitle": "금액이 출금된 경우 자동으로 환불되며, 계속 실패하면 고객센터로 문의해 주세요."
+      },
       "success": {
         "title": "주문이 완료되었습니다!",
         "subtitle": "구매해 주셔서 감사합니다.\n주문이 처리 중입니다.",
@@ -1056,17 +1068,19 @@
       "option_academic_desc": "수료·졸업 등으로 조합원 자격이 변경되는 경우",
       "option_refund_title": "감좌 및 환불 신청",
       "option_refund_desc": "출자금을 감좌하고 환불을 받는 경우",
-      "error_units_exceed_current": "구좌수는 현재 보유 구좌수를 초과할 수 없습니다"
+      "error_units_exceed_current": "구좌수는 현재 보유 구좌수를 초과할 수 없습니다",
+      "caution_title": "주의사항",
+      "caution_desc": "감좌 신청 후 생협 담당자 확인을 거쳐 처리됩니다"
     },
     "capital_withdrawal_result": {
       "detail_title": "증좌 신청 정보",
       "application_id": "신청 번호",
       "applicant": "신청자",
-      "unit_count": "증좌신청 구좌수",
+      "unit_count": "감좌신청 구좌수",
       "unit_value": "{{count}}구좌",
       "current_unit_count": "현재 구좌수",
       "total_unit_count_after": "증좌 후 구좌수",
-      "amount": "증좌 금액",
+      "amount": "감좌 금액",
       "currency_suffix": "원",
       "deposit_account": "입금계좌",
       "verify_code": "인증코드",
@@ -1075,10 +1089,10 @@
       "status": "상태",
       "confirm": "확인",
       "pending": {
-        "title": "출자금 증좌신청 완료",
-        "subtitle": "관리자 확인 후 출자금 증좌처리 됩니다",
-        "info_line1": "증좌 신청 내용을 생협 담당자가 확인 중입니다",
-        "info_line2": "담당자가 증좌 처리 후 앱 알림으로 안내드립니다",
+        "title": "출자금 감좌신청 완료",
+        "subtitle": "관리자 확인 후 출자금 감좌처리 됩니다",
+        "info_line1": "감좌 신청 내용을 생협 담당자가 확인 중입니다",
+        "info_line2": "담당자가 감좌 처리 후 앱 알림으로 안내드립니다",
         "info_line3": "보통 1~3 영업일 소요됩니다",
         "status_label": "처리 중"
       },

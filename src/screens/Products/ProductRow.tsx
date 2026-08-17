@@ -115,16 +115,10 @@ function ProductRow({
         {quantity > 0 ? (
           <View style={styles.stepper}>
             <AppButton
-              disabled={isDisableUpdateQuantity}
               style={styles.stepperIcon}
               onPress={_onChangeQuantity('')}
             >
-              <View
-                style={[
-                  styles.stepperBar,
-                  isDisableUpdateQuantity && styles.btnDisable,
-                ]}
-              />
+              <View style={styles.stepperBar} />
             </AppButton>
             <Text style={styles.stepperValue}>{quantity}</Text>
             <AppButton

@@ -15,8 +15,8 @@ import isNumber from 'lodash/isNumber';
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#7A7A7A';
 const AMOUNT_CREDIT_COLOR = '#3eb44a';
-const AMOUNT_DEBIT_COLOR = 'rgba(211, 47, 47, 0.5)';
-const AMOUNT_TRAN_FAILED = '#D32F2F';
+const AMOUNT_DEBIT_COLOR = '#EF4444';
+const AMOUNT_TRAN_FAILED = '#9CA3AF';
 const AMOUNT_TRAN_PENDING = '#c9c42e';
 
 function TransactionRow({
