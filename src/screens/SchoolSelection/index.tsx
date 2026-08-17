@@ -122,7 +122,8 @@ function SchoolSelection(props: any) {
   );
 
   return (
-    <AppButton
+    <TouchableOpacity
+      activeOpacity={1}
       style={[
         styles.container,
         { paddingTop: isNumber(topHeader) ? topHeader : insets.top },
@@ -178,7 +179,7 @@ function SchoolSelection(props: any) {
           </View>
         </>
       )}
-    </AppButton>
+    </TouchableOpacity>
   );
 }
 

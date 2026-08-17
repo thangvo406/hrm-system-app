@@ -1,6 +1,7 @@
 import type {
   IStoreCartItem,
   ICheckoutInfo,
+  IRequestCancelOrder,
   IRequestCreateOrder,
   IRequestGenerateQRCode,
   IRequestGetCartDetail,
@@ -204,6 +205,15 @@ export const reorder = async (
     request,
   );
   return response.data;
+};
+
+export const cancelOrder = async (
+  request: WithoutCallbacks<IRequestCancelOrder>,
+): Promise<void> => {
+  // await httpRequest.post(EndPoints.PAYMENT.cancelOrder, request);
+  return new Promise(resolve => {
+    resolve()
+  })
 };
 
 export const increaseContribution = async (

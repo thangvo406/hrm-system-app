@@ -2,6 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   IStoreCartItem,
   ICheckoutInfo,
+  IRequestCancelOrder,
   IRequestCreateOrder,
   ICreateOrderResponse,
   IRequestDecreaseContribute,
@@ -39,6 +40,7 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 
 import {
   calculatePrice,
+  cancelOrder,
   createLinkPaymentOrder,
   createOrder,
   decreaseContribute,
@@ -64,6 +66,7 @@ import { getErrorMessageApi } from '@utils/common';
 
 import {
   calculatePriceRequest,
+  cancelOrderRequest,
   createOrderRequest,
   decreaseContributeRequest,
   generateQRCodePayRequest,
@@ -288,6 +291,19 @@ function* reorderWorker(
   }
 }
 
+function* cancelOrderWorker(
+  action: PayloadAction<IRequestCancelOrder>,
+): Generator<unknown, void, void> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    yield call(cancelOrder, request);
+    onSuccess?.();
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 function* calculatePriceWorker(
   action: PayloadAction<IRequestCalculatePrice>,
 ): Generator<unknown, void, IPriceDetail> {
@@ -390,6 +406,7 @@ function* getDividendDetailWorker(
 
 export function* paymentSaga() {
   yield takeLatest(calculatePriceRequest.type, calculatePriceWorker);
+  yield takeLatest(cancelOrderRequest.type, cancelOrderWorker);
   yield takeLatest(createOrderRequest.type, createOrderWorker);
   yield takeLatest(generateQRCodePayRequest.type, generateQRCodeWorker);
   yield takeLatest(

@@ -89,6 +89,9 @@ export interface IRequestGenerateQRRefundTransaction
   extends AppCallback<IGenerateQRCodeResponse> {
   orderId: number;
 }
+export interface IRequestCancelOrder extends AppCallback {
+  reason: string;
+}
 export interface IRequestGetCartDetail extends AppCallback<IStoreCartItem> {
   readonly cartId: number;
 }

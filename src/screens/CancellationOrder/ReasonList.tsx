@@ -17,7 +17,7 @@ const REASON_ICON_SIZE = ScaleSize(22);
 
 type Properties = {
   readonly onChangeOtherReason: (text: string) => void;
-  readonly onPressReason: (id: CancelReasonId) => () => void;
+  readonly onPressReason: (item: CancelReasonItem) => () => void;
   readonly otherReason: string;
   readonly reasons: readonly CancelReasonItem[];
   readonly selected: CancelReasonId;
@@ -39,7 +39,7 @@ function ReasonList({
         return (
           <React.Fragment key={reason.id}>
             <AppButton
-              onPress={onPressReason(reason.id)}
+              onPress={onPressReason(reason)}
               style={[styles.option, isSelected && styles.optionSelected]}
               testID={`cancellation-order-reason-${reason.id}`}
             >

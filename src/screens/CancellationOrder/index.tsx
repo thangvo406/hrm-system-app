@@ -6,14 +6,12 @@ import { Colors } from '@constants';
 import { useCancellationOrder } from '@hooks';
 import { ScaleSize } from '@kits/core';
 import { DeviceUtils } from '@kits/core/utils';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-
 import CancelNotice from './CancelNotice';
 import OrderSummaryCard from './OrderSummaryCard';
 import ReasonList from './ReasonList';
-import AppNavigator from '@navigation/AppNavigator';
 
 const { ifAndroid } = DeviceUtils;
 
@@ -25,7 +23,9 @@ function CancellationOrder(props: RootScreenProps<Paths.CancellationOrder>) {
   const insets = useSafeAreaInsets();
   const {
     disabledSubmit,
+    keyboardOffset,
     onChangeOtherReason,
+    onPressBack,
     onPressReason,
     onSubmit,
     otherReason,
@@ -39,35 +39,41 @@ function CancellationOrder(props: RootScreenProps<Paths.CancellationOrder>) {
       <HeaderDetail hideNotify title={t('cancellation_order.title')} />
 
       <ScrollView
-        automaticallyAdjustKeyboardInsets
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+        style={styles.scroll}
       >
-        <OrderSummaryCard order={order} />
+        <Animated.View
+          style={[
+            styles.animatedContent,
+            { transform: [{ translateY: keyboardOffset }] },
+          ]}
+        >
+          <OrderSummaryCard order={order} />
 
-        <Text style={styles.heading}>
-          {t('cancellation_order.reason_heading')}
-        </Text>
+          <Text style={styles.heading}>
+            {t('cancellation_order.reason_heading')}
+          </Text>
 
-        <ReasonList
-          onChangeOtherReason={onChangeOtherReason}
-          onPressReason={onPressReason}
-          otherReason={otherReason}
-          reasons={reasons}
-          selected={selectedReason}
-        />
+          <ReasonList
+            onChangeOtherReason={onChangeOtherReason}
+            onPressReason={onPressReason}
+            otherReason={otherReason}
+            reasons={reasons}
+            selected={selectedReason}
+          />
 
-        <View style={styles.noticeWrap}>
-          <CancelNotice />
-        </View>
+          <View style={styles.noticeWrap}>
+            <CancelNotice />
+          </View>
+        </Animated.View>
       </ScrollView>
 
       <View
         style={[
           styles.footer,
           {
-            flex: 1,
             paddingBottom: ifAndroid(
               FOOTER_BOTTOM_ANDROID,
               insets.bottom || FOOTER_BOTTOM_IOS,
@@ -76,12 +82,10 @@ function CancellationOrder(props: RootScreenProps<Paths.CancellationOrder>) {
         ]}
       >
         <Button
+          onPress={onPressBack}
+          style={styles.backButton}
           title={t('cancellation_order.back')}
           type="outline-bordered"
-          onPress={() => AppNavigator.goBack()}
-          style={{
-            flex: 1 / 2,
-          }}
         />
         <AppButton
           disabled={disabledSubmit}
@@ -101,20 +105,11 @@ function CancellationOrder(props: RootScreenProps<Paths.CancellationOrder>) {
 export default CancellationOrder;
 
 const styles = StyleSheet.create({
-  backBtn: {
-    alignItems: 'center',
-    backgroundColor: Colors.white,
-    borderColor: Colors.gray19,
-    borderRadius: ScaleSize(14),
-    borderWidth: ScaleSize(1),
+  animatedContent: {
     flex: 1,
-    height: ScaleSize(52),
-    justifyContent: 'center',
   },
-  backText: {
-    color: Colors.black01,
-    fontSize: ScaleSize(15),
-    fontWeight: '700',
+  backButton: {
+    flex: 1 / 2,
   },
   footer: {
     backgroundColor: Colors.white,
@@ -137,6 +132,9 @@ const styles = StyleSheet.create({
   },
   screen: {
     backgroundColor: Colors.gray10,
+    flex: 1,
+  },
+  scroll: {
     flex: 1,
   },
   scrollContent: {

@@ -110,6 +110,7 @@ export const EndPoints = {
     calculatePrice: 'order/total',
     generateQRRefundTransaction: 'api/v1/pay/qr/cancel',
     reorder: 'order/reorder',
+    cancelOrder: 'order/cancel',
   },
 
   WALLET: {

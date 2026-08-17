@@ -1,6 +1,7 @@
 import type { AppCallback } from '@type/common';
 import type {
   IRequestCalculatePrice,
+  IRequestCancelOrder,
   IRequestCreateOrder,
   IRequestDecreaseContribute,
   IRequestGenerateQRCode,
@@ -41,6 +42,10 @@ const paymentSlice = createSlice({
   reducers: {
     calculatePriceRequest: {
       prepare: (payload: IRequestCalculatePrice) => ({ payload }),
+      reducer: () => {},
+    },
+    cancelOrderRequest: {
+      prepare: (payload: IRequestCancelOrder) => ({ payload }),
       reducer: () => {},
     },
     createOrderRequest: {
@@ -133,6 +138,7 @@ const paymentSlice = createSlice({
 
 export const {
   calculatePriceRequest,
+  cancelOrderRequest,
   createOrderRequest,
   decreaseContributeRequest,
   generateQRCodePayRequest,
