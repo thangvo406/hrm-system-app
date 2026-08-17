@@ -81,6 +81,7 @@ function OrderCompleted(props: any) {
           paddingTop={insets.top}
           subtitle={t(`${theme.i18nBase}.subtitle`)}
           theme={theme}
+          totalAmount={data?.summary?.finalPrice || data?.totalAmount}
           title={t(`${theme.i18nBase}.title`)}
         />
         <InfoCard

@@ -47,9 +47,11 @@ function TransactionRow({
     >
       <View style={styles.topRow}>
         <Text style={[styles.amount, { color: amountColor }]}>
-          {isNumber(item.amount)
-            ? `${isCredit ? '+' : '-'} ${formatCurrency(item.amount)}`
-            : '-'}
+          {t('common.display_price', {
+            amount: isNumber(item.amount)
+              ? `${isCredit ? '+' : '-'} ${formatCurrency(item.amount)}`
+              : '-',
+          })}
         </Text>
         <Text style={styles.date}>
           {dayjs(item.occurredAt).format('YYYY-MM-DD hh:mmA')}
@@ -57,19 +59,19 @@ function TransactionRow({
       </View>
       <View style={styles.bottomRow}>
         <Text style={styles.balance}>
-        {t('pay_card.rows.unit', {
-                amount: formatCurrency(item.units),
-              })}
+          {t('pay_card.rows.unit', {
+            amount: formatCurrency(item.units),
+          })}
         </Text>
         <Text style={styles.balance}>
-        {t('pay_card.rows.unit_price', {
-                amount: formatCurrency(item.unitPrice || 0),
-              })}
+          {t('pay_card.rows.unit_price', {
+            amount: formatCurrency(item.unitPrice || 0),
+          })}
         </Text>
         <Text style={styles.balance}>
-        {t('pay_card.rows.balance_after', {
-                amount: formatCurrency(item.balanceAfter || 0),
-              })}
+          {t('pay_card.rows.balance_after', {
+            amount: formatCurrency(item.balanceAfter || 0),
+          })}
         </Text>
       </View>
       {isPending || isSuccess ? undefined : (
@@ -135,7 +137,7 @@ const styles = StyleSheet.create({
   balance: {
     color: TEXT_MUTED,
     fontSize: ScaleSize(14),
-    lineHeight: 22
+    lineHeight: 22,
   },
   bottomRow: {
     alignItems: 'flex-end',

@@ -66,7 +66,7 @@ function VoucherCard({
   }, [t, voucher]);
 
   const isAvailable = useMemo(() => {
-    if (!isMealTicket) {
+    if (!isExpired && !isMealTicket) {
       return !voucher?.inUsagePeriod;
     }
     return false;

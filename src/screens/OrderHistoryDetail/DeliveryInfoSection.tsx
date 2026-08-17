@@ -11,6 +11,8 @@ import imageNames from '@assets/images/names';
 import SectionCard from './SectionCard';
 import { EMPTY_VALUE, sharedStyles } from './theme';
 import { formatPhoneNumber } from '@utils/common';
+import { useAppSelector } from '@services/common/storeHooks';
+import { AppSelector } from '@services/selectors';
 
 type Properties = {
   readonly order?: IOrderHistoryDetailItem;
@@ -21,11 +23,13 @@ const DELIVERY_METHOD = 'delivery';
 
 function DeliveryInfoSection({ order = undefined }: Properties) {
   const { t } = useTranslation();
+  const isEnableAddress = useAppSelector(AppSelector.isEnableAddress);
   const receiveMethod = order?.orderReceiveMethod?.toLowerCase();
-  const address =
-    receiveMethod === DELIVERY_METHOD
+  const address = !isEnableAddress
+    ? ''
+    : receiveMethod === DELIVERY_METHOD
       ? order?.address?.address_name
-      : order?.storeAddress?.address?.address_name;
+      : order?.storeAddress;
 
   return (
     <SectionCard

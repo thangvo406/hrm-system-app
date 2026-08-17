@@ -70,10 +70,7 @@ platform :ios do
       # đây thì lỗi credential lộ ra sau ~40 giây thay vì sau ~10 phút.
       appId = resolve_ios_app_id
       appName = "#{prefixAppName}#{versionCode}.ipa"
-      puts "api_key_path => #{api_key_path}"
       puts "appId => #{appId}"
-      puts "KEY_ID => #{ENV["KEY_ID"]}"
-      puts "ISSUER_ID => #{ENV["ISSUER_ID"]}"
       api_key = app_store_connect_api_key(
         key_id: ENV["KEY_ID"],
         issuer_id: ENV["ISSUER_ID"],
@@ -141,7 +138,7 @@ platform :ios do
       pilot(
         api_key: api_key,
         app_identifier: appId,
-        changelog: "Dev => #{branchName}",
+        changelog: build_changelog(branchName, "Dev"),
         ipa: "#{IOS_DIR}/builds/#{appName}")
 
       postNotifyMessage("success", branchName, versionCode, build)
@@ -179,7 +176,6 @@ platform :ios do
       # Xem lane beta: cụm App Store Connect chạy trước pod install.
       appId = resolve_ios_app_id
       appName = "#{prefixAppName}#{versionCode}.ipa"
-      puts "api_key_path => #{api_key_path}"
       puts "appId => #{appId}"
 
       api_key = app_store_connect_api_key(
@@ -260,7 +256,7 @@ platform :ios do
       pilot(
         api_key: api_key,
         app_identifier: appId,
-        changelog: "PROD => #{branchName}",
+        changelog: build_changelog(branchName, "PROD"),
         ipa: "#{IOS_DIR}/builds/#{appName}")
 
       postNotifyMessage("success", branchName, versionCode, build)
@@ -302,6 +298,39 @@ def select_env_file(env_file)
   File.write('/tmp/envfile', "#{env_file}\n")
   ENV["ENVFILE"] = env_file
   Dotenv.overload(env_path)
+end
+
+# Số commit đưa vào release note TestFlight. Trường "What to Test" của Apple
+# giới hạn 4000 ký tự, 5 commit thì còn xa mức đó.
+RECENT_COMMITS_LIMIT = 5
+
+# Release note cho TestFlight: tên nhánh + N commit gần nhất.
+# Giữ cùng định dạng với android/fastlane/Fastfile#postNotifyMessage/release_notes
+# để note trên TestFlight và Firebase App Distribution đọc giống nhau.
+def build_changelog(branch_name, env_label)
+  "#{env_label} => #{branch_name}\n\n#{recent_git_commits}"
+end
+
+# N commit gần nhất, mỗi dòng "- (author) subject".
+# Đọc từ REPO_ROOT chứ không phải cwd: cwd của Ruby là ios/ còn cwd của action
+# `sh` là ios/fastlane, dùng đường dẫn tương đối ở đây là nguồn lỗi.
+# CI cần `fetch-depth: 0` ở actions/checkout, nếu không git log chỉ thấy 1 commit.
+def recent_git_commits(limit: RECENT_COMMITS_LIMIT)
+  separator = "\x00"
+  raw = Dir.chdir(REPO_ROOT) do
+    # %an = tên author (không phải %ae = email).
+    `git log -n #{limit.to_i} --no-merges --pretty=%s#{'%x00'}%an 2>/dev/null`.to_s
+  end
+  lines = raw.lines.map(&:strip).reject(&:empty?)
+  return "N/A" if lines.empty?
+
+  lines.map do |line|
+    subject, author = line.split(separator, 2)
+    "- (#{author}) #{subject}"
+  end.join("\n")
+rescue => e
+  UI.error("Không đọc được git log: #{e.message}")
+  "N/A"
 end
 
 # Version/build number: ưu tiên tham số lane, sau đó biến môi trường do
@@ -385,19 +414,6 @@ def resolve_api_key_path
     UI.message("Đã ghi App Store Connect API key ra #{preferred}")
   end
 
-  # GitHub Actions che mọi giá trị secret trong log thành ***, kể cả khi nó nằm
-  # trong tên file (AuthKey_***.p8) — bình thường, không phải lỗi. Hệ quả là
-  # không thể nhìn log để biết giá trị trên runner có trùng máy local không.
-  #
-  # Hash thì không bị che. Đối chiếu 3 dòng dưới với local:
-  #   printf '%s' "$KEY_ID"    | shasum -a 256 | cut -c1-12
-  #   printf '%s' "$ISSUER_ID" | shasum -a 256 | cut -c1-12
-  #   shasum -a 256 ios/AuthKey_<KEY_ID>.p8   | cut -c1-12
-  # Cái nào lệch chính là secret bị sai. (KEY_ID/ISSUER_ID là định danh nằm sẵn
-  # trong header/payload của JWT gửi lên Apple, không phải bí mật như .p8.)
-  UI.message("fp KEY_ID    = #{fingerprint(key_id)}")
-  UI.message("fp ISSUER_ID = #{fingerprint(issuer_id)}")
-  UI.message("fp AuthKey   = #{Digest::SHA256.file(preferred).hexdigest[0, 12]} (#{File.size(preferred)} bytes)")
   preferred
 end
 

@@ -62,11 +62,11 @@ function HistoryCard({ item, onPressItem }: Properties) {
           {dayjs(item.createdDate).format(DATE_FORMAT)}
         </Text>
         <Text style={styles.balance}>
-          {t('pay_point.balance_after', {
-            amount: isNumber(item.pointAfter)
-              ? formatCurrency(item.pointAfter)
+          {`${t('pay_point.balance_after', {
+            amount: isNumber(item.balanceAfter)
+              ? formatCurrency(item.balanceAfter)
               : '-',
-          })}
+          })}P`}
         </Text>
         {!!item.pointExpiresAt && (
           <Text style={styles.expiry}>

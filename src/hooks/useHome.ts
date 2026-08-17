@@ -53,10 +53,6 @@ const onPressSurvey = () => {
   AppNavigator.navigate(Paths.Survey);
 };
 
-const onGoToStore = () => {
-  AppNavigator.navigate(Paths.Products);
-};
-
 const onPressVoucher = () => {
   AppNavigator.navigate(Paths.Vouchers);
 };
@@ -108,6 +104,12 @@ export const useHome = (props: any) => {
       SocketService.disconnect();
     };
   }, [accessToken]);
+
+  const onGoToStore = () => {
+    AppNavigator.navigate(Paths.Products, {
+      storeId: storeOrderRecent?.id,
+    });
+  };
 
   const onPressContribution = () => {
     AppNavigator.navigate(Paths.ContributionHistory);

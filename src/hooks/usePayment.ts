@@ -93,7 +93,12 @@ export const usePayment = (props: any) => {
     selectedMethod.type === 'easy' ? selectedMethod.id : undefined;
 
   const onSelectCard = useCallback((item: any) => {
-    setSelectedMethod({ id: item?.id, displayName: item.displayName, cardType: item?.type, type: 'card' });
+    setSelectedMethod({
+      id: item?.id,
+      displayName: item.displayName,
+      cardType: item?.type,
+      type: 'card',
+    });
   }, []);
 
   const onSelectedEasyPay = useCallback((id: string) => {
@@ -290,6 +295,7 @@ export const usePayment = (props: any) => {
               dataOrder: {
                 deliveryMethod: payloadRequest?.receiveMethod,
                 paymentMethod: selectedMethod?.displayName,
+                totalAmount: responsePayment?.finalAmount,
               },
             });
           }
@@ -307,6 +313,7 @@ export const usePayment = (props: any) => {
               dataOrder: {
                 deliveryMethod: payloadRequest?.receiveMethod,
                 paymentMethod: selectedMethod?.displayName,
+                totalAmount: responsePayment?.finalAmount,
               },
             });
           }
@@ -317,6 +324,7 @@ export const usePayment = (props: any) => {
     selectedMethod,
     payloadRequest,
     usePoints,
+    voucherSelected,
     pointUsed,
     currentWallet?.balance,
   ]);

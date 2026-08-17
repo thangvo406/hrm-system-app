@@ -67,6 +67,7 @@ export interface IProductCart {
   productThumbnailUrl: IImage;
   unitPrice: number;
   quantity: number;
+  isForStudent: boolean;
   totalAmount: number;
   selected: boolean;
   selectedAttributes: IAttributeCart[];
@@ -231,7 +232,7 @@ export interface IOrderHistoryDetailItem {
   userPhone: string;
   storeId: number;
   storeName: string;
-  storeAddress: IStoreAddress;
+  storeAddress: string;
   storeLogo: IImage;
   status: string;
   paymentFundingSource: string;
@@ -283,6 +284,7 @@ export interface IRequestDecreaseContribute
   units: number;
   requestReason?: string;
   refundBankName: string;
+  refundMethod: string;
   refundBankAccountNumber: string;
   refundBankAccountHolder: string;
 }

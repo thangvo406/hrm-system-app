@@ -263,7 +263,7 @@ function ApplicationNavigator() {
       : {};
   return (
     <View
-      {...(IS_PAN_RESPONDER_ENABLED ? panResponder.panHandlers : {})}
+      // {...(IS_PAN_RESPONDER_ENABLED ? panResponder.panHandlers : {})}
       style={{
         flex: 1,
         //  backgroundColor: navigationTheme.colors.background,

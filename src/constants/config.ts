@@ -65,6 +65,11 @@ export const POINT_TAG_STYLE: Record<string, PointTagStyle | undefined> = {
   },
 };
 
+export const SIGN_PREFIX_TRANSACTION = {
+  CREDIT: '+',
+  DEBIT: '-',
+};
+
 export enum OrderTransactionStatus {
   PENDING = 'PENDING',
   PAYMENT_PENDING = 'PAYMENT_PENDING',

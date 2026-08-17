@@ -83,6 +83,7 @@ export const useCapitalWithdrawal = () => {
     AppNavigator.showDialog({
       screen: Selection,
       popupType: 'bottomSheet',
+      title: t('withdrawal.bank_selection_title'),
       itemSelected: selectedBank,
       items: bankData,
       onSelect: setSelectedBank,
@@ -104,6 +105,7 @@ export const useCapitalWithdrawal = () => {
         units: requestedUnits,
         refundBankAccountNumber: accountNumber,
         refundBankName: bankName,
+        refundMethod: 'BANK_TRANSFER',
         refundBankAccountHolder: accountHolder,
         requestReason: withdrawalSelected?.title,
         onSuccess: () => {

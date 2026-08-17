@@ -56,6 +56,7 @@ export const useWithdrawal = () => {
     AppNavigator.showDialog({
       screen: Selection,
       popupType: 'bottomSheet',
+      title: t('withdrawal.bank_selection_title'),
       itemSelected: selectedBank,
       items: bankData,
       onSelect: setSelectedBank,

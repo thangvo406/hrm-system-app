@@ -150,7 +150,7 @@ function Selection({
           // inputWrapperStyle={styles.pointPill}
           // keyboardType="number-pad"
           onChangeText={onChangeSearch}
-          placeholder="Search"
+          placeholder={t('common.search')}
           iconName="ic_search"
           // style={styles.pointPillText}
           // testID="point-usage-input"
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     fontSize: ScaleSize(18),
     fontWeight: '700',
     marginBottom: ScaleSize(16),
-    textAlign: 'center',
+    // textAlign: 'center',
   },
 });
 

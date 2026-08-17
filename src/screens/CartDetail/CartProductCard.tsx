@@ -25,11 +25,12 @@ type CartProductCardProperties = {
 function CartProductCard({
   item,
   onChangeQuantity,
-  readOnly = false,
+  ...restProps
 }: CartProductCardProperties) {
   const { t } = useTranslation();
   const [quantity, setQuantity] = useState(item.quantity);
   const [error, setError] = useState('');
+  const readOnly = item.isForStudent || restProps?.readOnly;
 
   useEffect(() => {
     setQuantity(item.quantity);

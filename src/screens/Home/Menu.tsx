@@ -26,6 +26,7 @@ import AppNavigator from '@navigation/AppNavigator';
 import Information from '@screens/Dialog/components/Information';
 import { useI18n } from '@hooks';
 import RegisterMembership from '@dialogs/RegisterMembership';
+import RequestAddCard from '@dialogs/RequestAddCard';
 import { GRADE_MEMBERSHIP_TYPE } from '@constants/config';
 import set from 'lodash/set';
 
@@ -48,6 +49,7 @@ const HEADER_BACKGROUND = '#4FAA52';
 const LOGO_TEXT = '#FFFFFF';
 const LOGOUT_TEXT = '#FFFFFF';
 const LOGO_INITIALS = '쿠비';
+const NAME_CENTER_MAX_LENGTH = 7;
 const TRANSLATE_HIDDEN = 1000;
 const HIT_SLOP_SMALL = {
   bottom: 8,
@@ -77,13 +79,16 @@ const NAV_TARGETS: Readonly<Record<string, Paths>> = {
   pay_balance: Paths.ContributionHistory,
   survey: Paths.Survey,
   store_search: Paths.Stores,
-  order: Paths.Orders,
+  order: Paths.Stores,
+  order_history: Paths.Orders,
   pay: Paths.PaymentOffline,
   deposit_inquiry: Paths.ContributionHistory,
   deposit_pay: Paths.ContributionInput,
   profile: Paths.Profile,
   coupon: Paths.Vouchers,
   meal_ticket: Paths.MealTickets,
+  pay_point: Paths.PayPointHistories,
+  pay_topup: Paths.TopUp,
 };
 
 const SECTIONS: readonly MenuSection[] = [
@@ -99,13 +104,17 @@ const SECTIONS: readonly MenuSection[] = [
   {
     items: [
       { key: 'pay_point', labelKey: 'home.menu.pay_point' },
+      // { key: 'pay_register', labelKey: 'home.menu.pay_register' },
       { key: 'pay_topup', labelKey: 'home.menu.pay_topup' },
       { key: 'pay', labelKey: 'home.menu.pay' },
     ],
     titleKey: 'home.menu.section_pay',
   },
   {
-    items: [{ key: 'order', labelKey: 'home.menu.order' }],
+    items: [
+      { key: 'order', labelKey: 'home.menu.order' },
+      { key: 'order_history', labelKey: 'home.menu.order_history' },
+    ],
     titleKey: 'home.menu.section_order',
   },
   {
@@ -121,6 +130,10 @@ const SECTIONS: readonly MenuSection[] = [
       {
         key: 'academy_verification',
         labelKey: 'home.menu.academy_verification',
+      },
+      {
+        key: 'organization_request',
+        labelKey: 'home.menu.organization_request',
       },
       { key: 'notification', labelKey: 'home.menu.notification' },
     ],
@@ -150,6 +163,9 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
   const profileName = profile?.name ?? profile?.fullName ?? '';
   const profileInitial =
     profileName.trim().charAt(0).toUpperCase() || LOGO_INITIALS;
+  const displayName = profile?.fullName?.trim() ?? '';
+  // Tên ngắn thì canh giữa theo avatar phía trên, tên dài canh trái như cũ.
+  const isShortDisplayName = displayName.length <= NAME_CENTER_MAX_LENGTH;
 
   const sections = useMemo(() => {
     const isHideContribute =
@@ -211,6 +227,11 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
       } else if (itemKey == 'academy_verification') {
         AppNavigator.showDialog({
           screen: RegisterMembership,
+          isFullScreen: true,
+        });
+      } else if (itemKey == 'pay_register') {
+        AppNavigator.showDialog({
+          screen: RequestAddCard,
           isFullScreen: true,
         });
       } else {
@@ -306,10 +327,18 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
                 />
               </TouchableOpacity>
             </View>
-            {!!profile?.fullName && (
-              <Text numberOfLines={1} style={styles.university}>
-                {profile?.fullName}
-              </Text>
+            {!!displayName && (
+              <View
+                style={
+                  isShortDisplayName
+                    ? styles.universityWrapCenter
+                    : styles.universityWrapLeft
+                }
+              >
+                <Text numberOfLines={1} style={styles.university}>
+                  {displayName}
+                </Text>
+              </View>
             )}
             <View style={styles.headerDivider} />
           </View>
@@ -429,6 +458,15 @@ const styles = StyleSheet.create({
     fontSize: ScaleSize(16),
     fontWeight: '500',
     marginTop: ScaleSize(15),
+  },
+  // Rộng bằng đúng cột avatar (padding trái + avatar + padding phải) nên tâm
+  // của wrapper trùng tâm avatar; minWidth để tên hơi dài không bị cắt.
+  universityWrapCenter: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    minWidth: HEADER_HORIZONTAL * 2 + LOGO_SIZE,
+  },
+  universityWrapLeft: {
     marginLeft: ScaleSize(15),
   },
   logoutText: {

@@ -8,6 +8,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import InfoRow from './InfoRow';
+import { useAppSelector } from '@services/common/storeHooks';
+import { AppSelector } from '@services/selectors';
 
 type OrderInfoData = {
   readonly address?: { readonly address_name?: string };
@@ -37,7 +39,10 @@ function InfoCard({
   theme,
 }: InfoCardProps) {
   const { t } = useTranslation();
-  const address =  data?.address?.address_name ?? data?.storeAddress?.address_name ?? '';
+  const isEnableAddress = useAppSelector(AppSelector.isEnableAddress);
+  const address = !isEnableAddress
+    ? ''
+    : (data?.address?.address_name ?? data?.storeAddress?.address_name ?? '');
   return (
     <View style={styles.card}>
       <InfoRow
@@ -67,22 +72,22 @@ function InfoCard({
         theme={theme}
         value={dayjs(data?.paymentDueAt).format('DD/MM/YYYY HH:mm')}
       />
-      {
-        address?.length > 0 &&
+      {address?.length > 0 && (
         <InfoRow
-        icon="ic_map_pin"
-        label={t('order_completed.delivery_address')}
-        theme={theme}
-        value={address}
-      />
+          icon="ic_map_pin"
+          label={t('order_completed.delivery_address')}
+          theme={theme}
+          value={address}
+        />
+      )}
 
-      }
-     
       <InfoRow
         icon="ic_truck"
         label={t('order_completed.shipping_method')}
         theme={theme}
-        value={t(`order_history_detail.shipping_methods.${(data?.deliveryMethod ?? fallback?.deliveryMethod ?? '').toLowerCase()}`)}
+        value={t(
+          `order_history_detail.shipping_methods.${(data?.deliveryMethod ?? fallback?.deliveryMethod ?? '').toLowerCase()}`,
+        )}
       />
       <InfoRow
         icon="ic_wallet"

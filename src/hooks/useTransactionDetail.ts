@@ -30,13 +30,15 @@ const DEBIT_TYPES = new Set<string>([
 //   HEADLINE_ACTIONS.POINT_GRANT,
 // ];
 
-/** Groups legs sharing the same balanceAccountType, keeping first-seen order. */
 const groupLegsByBalanceAccountType = (
   legs: ITransactionLeg[] | undefined,
 ): TTransactionLegGroup[] => {
   const groups = new Map<string, ITransactionLeg[]>();
 
   for (const leg of legs ?? []) {
+    if (!leg.balanceAccountType?.trim()) {
+      continue;
+    }
     const grouped = groups.get(leg.balanceAccountType);
     if (grouped) {
       grouped.push(leg);
@@ -104,22 +106,24 @@ export function useTransactionDetail(props: any) {
   );
 
   const onPressQR = () => {
-    dispatch(generateQRRefundTransactionRequest({
-      orderId: order?.orderId || 0,
-      onSuccess: (response) => {
-        AppNavigator.showDialog({
-          screen: QRCodeViewerView,
-          isFullScreen: true,
-          showBtnVoucher: true,
-          showIconVoucher: false,
-          titleKey: 'transaction_detail.payment_cancel_qr_title',
-          btnVoucher: t('transaction_detail.back_to_transaction_detail'),
-          titleVoucher: t('transaction_detail.payment_cancel_request'),
-          data: response
-          // onRefresh: onRefreshQR(voucher),
-        });
-      }
-    }))
+    dispatch(
+      generateQRRefundTransactionRequest({
+        orderId: order?.orderId || 0,
+        onSuccess: response => {
+          AppNavigator.showDialog({
+            screen: QRCodeViewerView,
+            isFullScreen: true,
+            showBtnVoucher: true,
+            showIconVoucher: false,
+            titleKey: 'transaction_detail.payment_cancel_qr_title',
+            btnVoucher: t('transaction_detail.back_to_transaction_detail'),
+            titleVoucher: t('transaction_detail.payment_cancel_request'),
+            data: response,
+            // onRefresh: onRefreshQR(voucher),
+          });
+        },
+      }),
+    );
   };
 
   return {

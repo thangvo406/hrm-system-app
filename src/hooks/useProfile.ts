@@ -1,3 +1,4 @@
+import { GRADE_MEMBERSHIP_TYPE } from '@constants/config';
 import { ValidateUtils } from '@kits/core/utils';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
@@ -52,13 +53,22 @@ export function useProfile() {
 
   const membershipType = useMemo(() => {
     const key = `profile.memberships.${profile?.membershipType?.toLowerCase()}`;
-    if (!profile?.membershipType?.trim?.()) {
-      return '-';
-    } else if (TranslationUtils.hasTranslationKey(key)) {
-      return t(key);
+    let result = '';
+    if (profile?.coopMemberGrade) {
+      result = t(
+        `home.member_labels.${profile?.coopMemberGrade?.toLowerCase()}`,
+      );
     }
-    return t('profile.memberships.other');
-  }, [profile?.membershipType]);
+    if (
+      !profile?.membershipType?.trim?.() ||
+      profile?.membershipType == GRADE_MEMBERSHIP_TYPE.GENERAL
+    ) {
+      return result;
+    } else if (TranslationUtils.hasTranslationKey(key)) {
+      return `${result}-${t(key)}`;
+    }
+    return `${result}-${t('profile.memberships.other')}`;
+  }, [profile?.coopMemberGrade, profile?.membershipType]);
 
   const onChangeFullName = useCallback(
     (text: string) => {

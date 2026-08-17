@@ -39,6 +39,7 @@ function ProductRow({
   const originalPrice = isNumber(item.discountPrice)
     ? item.discountPrice
     : item.sellingPrice || 0;
+  const isDisableUpdateQuantity = item.isForStudent;
 
   const isSoldOut = React.useMemo(
     () =>
@@ -114,18 +115,36 @@ function ProductRow({
         {quantity > 0 ? (
           <View style={styles.stepper}>
             <AppButton
+              disabled={isDisableUpdateQuantity}
               style={styles.stepperIcon}
               onPress={_onChangeQuantity('')}
             >
-              <View style={styles.stepperBar} />
+              <View
+                style={[
+                  styles.stepperBar,
+                  isDisableUpdateQuantity && styles.btnDisable,
+                ]}
+              />
             </AppButton>
             <Text style={styles.stepperValue}>{quantity}</Text>
             <AppButton
+              disabled={isDisableUpdateQuantity}
               style={styles.stepperIcon}
               onPress={_onChangeQuantity('plus')}
             >
-              <View style={styles.stepperBar} />
-              <View style={[styles.stepperBar, styles.stepperBarVertical]} />
+              <View
+                style={[
+                  styles.stepperBar,
+                  isDisableUpdateQuantity && styles.btnDisable,
+                ]}
+              />
+              <View
+                style={[
+                  styles.stepperBar,
+                  styles.stepperBarVertical,
+                  isDisableUpdateQuantity && styles.btnDisable,
+                ]}
+              />
             </AppButton>
           </View>
         ) : undefined}
@@ -224,6 +243,9 @@ const styles = StyleSheet.create({
     // paddingHorizontal: ScaleSize(20),
     paddingVertical: ScaleSize(5),
     width: ScaleSize(120),
+  },
+  btnDisable: {
+    backgroundColor: Colors.gray08,
   },
   stepperBar: {
     backgroundColor: PRIMARY_COLOR,
