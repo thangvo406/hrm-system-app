@@ -642,12 +642,16 @@ def resolve_export_profiles(api_key, bundle_ids)
 
   UI.important("Chưa có profile cho: #{missing.join(', ')} — thử tải qua App Store Connect.")
   missing.each do |bundle_id|
-    path = sigh(
+    # sigh TRẢ VỀ UUID, không phải đường dẫn (xem return_value của action).
+    # Đường dẫn tuyệt đối tới file .mobileprovision nằm ở lane_context.
+    sigh(
       api_key: api_key,
       app_identifier: bundle_id,
       platform: 'ios',
       readonly: false
     )
+    path = Fastlane::Actions.lane_context[Fastlane::Actions::SharedValues::SIGH_PROFILE_PATH]
+    UI.user_error!("sigh không trả về đường dẫn profile cho #{bundle_id}.") if path.to_s.empty?
     profiles[bundle_id] = profile_info(path)[:name]
   end
 
@@ -682,6 +686,11 @@ end
 
 # Đọc metadata của .mobileprovision (file là CMS ký, phải bóc bằng `security`).
 def profile_info(path)
+  # Bắt nhầm lẫn kinh điển: truyền UUID (thứ sigh trả về) thay vì đường dẫn.
+  unless File.file?(path.to_s)
+    UI.user_error!("Không tồn tại file provisioning profile: #{path.inspect} — cần đường dẫn tới .mobileprovision, không phải UUID.")
+  end
+
   xml = `security cms -D -i #{path.to_s.shellescape} 2>/dev/null`
   UI.user_error!("Không đọc được provisioning profile: #{path}") if xml.strip.empty?
 
