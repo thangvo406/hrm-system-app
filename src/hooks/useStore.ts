@@ -8,7 +8,7 @@ import {
   getStoresRequest,
 } from '@services/slices/stores/storesSlice';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import AppNavigator from '@navigation/AppNavigator';
 import FilterStore from '@dialogs/FilterStore';
@@ -46,6 +46,20 @@ export const useStore = () => {
   const [refreshIndex, setRefreshIndex] = useState(0);
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
+
+  const isShowList = useMemo(() => {
+    let isShowList = false;
+    if (data?.length > 0) {
+      isShowList = true;
+    } else if (
+      !searchKey?.trim() &&
+      !data?.length &&
+      (storeOrderRecent?.products?.length || 0) > 0
+    ) {
+      isShowList = true;
+    }
+    return isShowList;
+  }, [data, storeOrderRecent]);
 
   const handleSuccess = useCallback(
     (response: ListApiResponse<IStoreItem[]>) => {
@@ -150,6 +164,7 @@ export const useStore = () => {
     refreshing,
     storeOrderRecent,
     searchKey,
+    isShowList,
     onLoadMore,
     onPressProduct,
     onPressOrderHistory,

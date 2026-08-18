@@ -8,6 +8,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
+import { trimSeconds } from '@utils/date';
 
 const ICON_SIZE = ScaleSize(18);
 const TEXT_DARK = '#1A1A1A';
@@ -40,6 +41,17 @@ function StoreCard({ onPressProduct, onPressStore, store }: Properties) {
       ),
     [store, t],
   );
+
+  const openTime = useMemo(() => {
+    let text = '';
+    if (store?.openingTime) {
+      text = trimSeconds(store.openingTime);
+    }
+    if (store?.closedTime) {
+      text += `-${trimSeconds(store.closedTime)}`;
+    }
+    return text;
+  }, [store?.closedTime, store?.openingTime]);
 
   const minOrderText = store.minOrder
     ? t('stores.min_order', {
@@ -75,6 +87,11 @@ function StoreCard({ onPressProduct, onPressStore, store }: Properties) {
             {store.name}
           </Text>
         </View>
+        {!!openTime && (
+          <Text style={styles.openTime}>
+            {t('stores.open_hours', { time: openTime })}
+          </Text>
+        )}
         {!!isOutsideOpenHour && (
           <Text
             numberOfLines={2}
@@ -164,6 +181,12 @@ const styles = StyleSheet.create({
   metaText: {
     color: 'black',
     fontSize: ScaleSize(13),
+  },
+  openTime: {
+    color: Colors.gray06,
+    fontSize: ScaleSize(13),
+    marginLeft: ScaleSize(20),
+    marginTop: ScaleSize(5),
   },
   nameRow: {
     alignItems: 'center',

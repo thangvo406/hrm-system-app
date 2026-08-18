@@ -54,6 +54,7 @@ function Stores() {
     stores,
     storeOrderRecent,
     searchKey,
+    isShowList,
     onBack,
   } = useStore();
 
@@ -66,10 +67,6 @@ function Stores() {
       />
     );
   };
-
-  const isShowList =
-    !searchKey?.trim() &&
-    ((storeOrderRecent?.products?.length || 0) > 0 || stores?.length > 0);
 
   return (
     <View style={styles.safeArea}>
@@ -107,7 +104,7 @@ function Stores() {
             contentContainerStyle={styles.listContent}
             data={stores}
             ListHeaderComponent={
-              storeOrderRecent ? (
+              !searchKey?.trim() && storeOrderRecent ? (
                 <>
                   <Text style={styles.sectionLabel}>
                     {t('stores.section_label')}
