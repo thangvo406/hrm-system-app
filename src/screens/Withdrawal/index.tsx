@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import BalanceCard from './BalanceCard';
 import BankSelector from './BankSelector';
 import NoticeBox from './NoticeBox';
+import ReasonCard from './ReasonCard';
 import { useEffect, useRef } from 'react';
 import type { KeyboardEvent } from 'react-native';
 
@@ -33,13 +34,11 @@ function Withdrawal() {
   const {
     // amount,
     enabledBtnSubmit,
-    onAccountNumberChange,
-    // onAmountChange,
+    onChangeForm,
     onSubmit,
     selectedBank,
     // errorAmount,
     currentWallet,
-    setAccountHolder,
     onPressBank,
   } = useWithdrawal();
 
@@ -103,7 +102,7 @@ function Withdrawal() {
               selectedBank={selectedBank}
             />
             <TextField
-              onChangeText={onAccountNumberChange}
+              onChangeText={onChangeForm('accountNumber')}
               placeholder={t('withdrawal.account_number_placeholder')}
               testID="withdrawal-account-number"
               showClear
@@ -111,13 +110,15 @@ function Withdrawal() {
               keyboardType="number-pad"
             />
             <TextField
-              onChangeText={setAccountHolder}
+              onChangeText={onChangeForm('accountHolder')}
               placeholder={t('withdrawal.account_holder_placeholder')}
               testID="withdrawal-account-holder"
               returnKeyType="done"
               showClear
             />
           </View>
+
+          <ReasonCard onChangeText={onChangeForm('reason')} />
         </Animated.View>
         <NoticeBox />
       </ScrollView>

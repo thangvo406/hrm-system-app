@@ -141,7 +141,7 @@ function CapitalWithdrawalResult(
   const statusDisplay = status.toLocaleLowerCase();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginTop: insets.top }]}>
       <RegisterHeader onBack={onPressBack} showBtnBack />
       <ScrollView
         contentContainerStyle={styles.content}

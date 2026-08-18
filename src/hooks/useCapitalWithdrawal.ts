@@ -9,29 +9,49 @@ import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector, PaymentSelector } from '@services/selectors';
 import { decreaseContributeRequest } from '@services/slices/payment/paymentSlice';
 import { TranslationUtils } from '@utils';
-import { useMemo, useState } from 'react';
+import { useMemo, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { IBankOption } from './useWithdrawal';
 
 const CONTRIBUTION_UNIT_PRICE = 100_000;
 
+export type TCapitalWithdrawalForm = {
+  accountHolder: string;
+  accountNumber: string;
+  amount: string;
+  errorAmount: string;
+  selectedBank: IBankOption | undefined;
+  withdrawalSelected: OptionDef;
+};
+
+export type TCapitalWithdrawalField = keyof TCapitalWithdrawalForm;
+
+const VISIBLE_FIELDS = new Set<TCapitalWithdrawalField>([
+  'amount',
+  'selectedBank',
+  'withdrawalSelected',
+]);
+
 export const useCapitalWithdrawal = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const profile = useAppSelector(AccountSelector.getProfile);
   const summary = useAppSelector(PaymentSelector.getContributeSummary);
-  const [amount, setAmount] = useState('');
-  const [withdrawalSelected, setWithdrawalSelected] = useState<OptionDef>({
-    type: 'decrease_refund',
-    title: t('capital_withdrawal.option_academic_title'),
-  } as OptionDef);
-  const [accountHolder, setAccountHolder] = useState('');
-  const [accountNumber, setAccountNumber] = useState('');
-  const [selectedBank, setSelectedBank] = useState<IBankOption | undefined>(
-    undefined,
-  );
-  const [errorAmount, setErrorAmount] = useState('');
+  const [, refresh] = useReducer((version: number) => version + 1, 0);
+
+  const formData = useRef<TCapitalWithdrawalForm>({
+    accountHolder: '',
+    accountNumber: '',
+    amount: '',
+    errorAmount: '',
+    selectedBank: undefined,
+    withdrawalSelected: {
+      type: 'decrease_refund',
+      title: t('capital_withdrawal.option_academic_title'),
+    } as OptionDef,
+  });
+  const enabledBtnSubmit = useRef(false);
 
   const membershipLabel = useMemo(() => {
     const rawType = profile?.membershipType;
@@ -57,36 +77,63 @@ export const useCapitalWithdrawal = () => {
   const expectedUnits =
     summary?.expectedUnits ?? Math.floor(expectedContribution / unitPrice);
 
-  const enabledBtnSubmit = useMemo(() => {
+  const isSubmitEnabled = () => {
+    const { accountHolder, accountNumber, amount, selectedBank } =
+      formData.current;
     const hasRefundAccount =
       selectedBank !== undefined &&
       accountNumber.trim().length > 0 &&
       accountHolder.trim().length > 0;
     return Number(amount) >= 1 && hasRefundAccount;
-  }, [accountHolder, accountNumber, amount, selectedBank]);
-
-  const onAmountChange = (value: string) => {
-    const _value = value.replaceAll(/\D/g, '').replace(/^0+/, '');
-    if (Number(_value) > (summary?.currentUnits || 0)) {
-      setErrorAmount(t('capital_withdrawal.error_units_exceed_current'));
-    } else {
-      setErrorAmount('');
-      setAmount(_value);
-    }
   };
 
-  const onAccountNumberChange = (value: string) => {
-    setAccountNumber(value.replaceAll(/[^\d-]/g, ''));
-  };
+  const onChangeForm =
+    <T extends TCapitalWithdrawalField>(type: T) =>
+    (value: TCapitalWithdrawalForm[T]) => {
+      const form = formData.current;
+
+      switch (type) {
+        case 'amount': {
+          const digits = (value as string)
+            .replaceAll(/\D/g, '')
+            .replace(/^0+/, '');
+          if (Number(digits) > (summary?.currentUnits || 0)) {
+            form.errorAmount = t(
+              'capital_withdrawal.error_units_exceed_current',
+            );
+          } else {
+            form.errorAmount = '';
+            form.amount = digits;
+          }
+          break;
+        }
+        case 'accountNumber': {
+          form.accountNumber = (value as string).replaceAll(/[^\d-]/g, '');
+          break;
+        }
+        default: {
+          form[type] = value;
+          break;
+        }
+      }
+
+      const nextEnabled = isSubmitEnabled();
+      const hasEnabledChanged = nextEnabled !== enabledBtnSubmit.current;
+      enabledBtnSubmit.current = nextEnabled;
+
+      if (VISIBLE_FIELDS.has(type) || hasEnabledChanged) {
+        refresh();
+      }
+    };
 
   const onPressBank = () => {
     AppNavigator.showDialog({
       screen: Selection,
       popupType: 'bottomSheet',
       title: t('withdrawal.bank_selection_title'),
-      itemSelected: selectedBank,
+      itemSelected: formData.current.selectedBank,
       items: bankData,
-      onSelect: setSelectedBank,
+      onSelect: onChangeForm('selectedBank'),
       emptyType: 'selection',
       pathDisplay: 'name',
       pathSelected: 'name',
@@ -94,6 +141,13 @@ export const useCapitalWithdrawal = () => {
   };
 
   const onSubmit = () => {
+    const {
+      accountHolder,
+      accountNumber,
+      amount,
+      selectedBank,
+      withdrawalSelected,
+    } = formData.current;
     const requestedUnits = Number(amount);
     const bankName =
       typeof selectedBank == 'string'
@@ -135,24 +189,19 @@ export const useCapitalWithdrawal = () => {
   };
 
   return {
-    accountHolder,
-    accountNumber,
-    amount,
+    amount: formData.current.amount,
     currentContribution,
     currentUnits,
-    enabledBtnSubmit,
+    enabledBtnSubmit: enabledBtnSubmit.current,
+    errorAmount: formData.current.errorAmount,
     expectedContribution,
     expectedUnits,
     membershipLabel,
-    errorAmount,
-    onAccountNumberChange,
-    onAmountChange,
+    onChangeForm,
     onPressBank,
     onSubmit,
-    selectedBank,
-    setAccountHolder,
-    setWithdrawalSelected,
+    selectedBank: formData.current.selectedBank,
     unitPrice,
-    withdrawalType: withdrawalSelected?.type,
+    withdrawalType: formData.current.withdrawalSelected.type,
   };
 };

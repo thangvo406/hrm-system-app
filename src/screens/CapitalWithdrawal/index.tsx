@@ -54,13 +54,10 @@ function CapitalWithdrawal() {
     expectedUnits,
     membershipLabel,
     errorAmount,
-    onAccountNumberChange,
-    onAmountChange,
+    onChangeForm,
     onPressBank,
     onSubmit,
     selectedBank,
-    setAccountHolder,
-    setWithdrawalSelected,
     unitPrice,
     withdrawalType,
   } = useCapitalWithdrawal();
@@ -131,7 +128,7 @@ function CapitalWithdrawal() {
 
             <View style={styles.typeCardWrap}>
               <WithdrawalTypeCard
-                onSelect={setWithdrawalSelected}
+                onSelect={onChangeForm('withdrawalSelected')}
                 selected={withdrawalType}
               />
             </View>
@@ -146,7 +143,7 @@ function CapitalWithdrawal() {
                   count: expectedUnits,
                 })}
                 errorAmount={errorAmount}
-                onAmountChange={onAmountChange}
+                onAmountChange={onChangeForm('amount')}
                 unitPriceText={t('contribution_input.amount_won', {
                   amount: formatCurrency(unitPrice),
                 })}
@@ -163,7 +160,7 @@ function CapitalWithdrawal() {
                 selectedBank={selectedBank}
               />
               <TextField
-                onChangeText={onAccountNumberChange}
+                onChangeText={onChangeForm('accountNumber')}
                 placeholder={t('withdrawal.account_number_placeholder')}
                 testID="capital-withdrawal-account-number"
                 showClear
@@ -171,7 +168,7 @@ function CapitalWithdrawal() {
                 keyboardType="number-pad"
               />
               <TextField
-                onChangeText={setAccountHolder}
+                onChangeText={onChangeForm('accountHolder')}
                 placeholder={t('withdrawal.account_holder_placeholder')}
                 testID="capital-withdrawal-account-holder"
                 returnKeyType="done"

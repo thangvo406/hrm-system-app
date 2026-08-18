@@ -131,10 +131,6 @@ const SECTIONS: readonly MenuSection[] = [
         key: 'academy_verification',
         labelKey: 'home.menu.academy_verification',
       },
-      {
-        key: 'organization_request',
-        labelKey: 'home.menu.organization_request',
-      },
       { key: 'notification', labelKey: 'home.menu.notification' },
     ],
     titleKey: 'home.menu.section_mypage',
