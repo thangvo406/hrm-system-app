@@ -1,8 +1,9 @@
 import type { AppStacks, Paths } from '@navigation/paths';
 import type { BankInformationOrigin } from '@hooks/useBankInformation';
-import type { IQRCodeViewerData } from '@components/QRCodeViewerView';
+import type { IBankOption } from '@hooks/useWithdrawal';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { StackScreenProps } from '@react-navigation/stack';
-import { TNotificationItem } from '@type';
+import { IQRCodeViewerData, TNotificationItem } from '@type';
 import { IStoreItem } from '@type/store';
 import type { IManualTransfer, ITransactionDetail } from '@type/payment';
 
@@ -10,12 +11,15 @@ export type RootScreenProps<
   S extends keyof RootStackParamList = keyof RootStackParamList,
 > = StackScreenProps<RootStackParamList, S>;
 
+export type TabScreenProps<S extends keyof TabParamList = keyof TabParamList> =
+  BottomTabScreenProps<TabParamList, S>;
+
 export type TransactionResultStatus = 'FAILED' | 'PENDING' | 'SUCCESS';
 
 export type TabParamList = {
-  [Paths.PaymentOffline]: undefined;
+  [Paths.PaymentOffline]: { isTab?: boolean } | undefined;
   [Paths.Home]: undefined;
-  [Paths.QRCodeViewer]: undefined;
+  [Paths.QRCodeViewer]: { isTab?: boolean } | undefined;
   [Paths.Carts]: undefined;
   [Paths.Profile]: undefined;
 };
@@ -40,6 +44,39 @@ export type RootStackParamList = {
       }
     | undefined;
   [Paths.SchoolSelection]: undefined;
+  [Paths.CapitalWithdrawal]: undefined;
+  [Paths.CapitalWithdrawalResult]:
+    | {
+        accountHolder?: string;
+        accountNumber?: string;
+        amount: number;
+        applicantName?: string;
+        applicationId?: string;
+        bankInfo?: {
+          accountHolder?: string;
+          accountNumber?: string;
+          bank?: IBankOption;
+        };
+        bankName?: string;
+        currentUnitCount?: number;
+        expectedCompletionAt?: number | string;
+        memberId?: string;
+        requestedAt: number | string;
+        status?: TransactionResultStatus;
+        totalUnitCountAfter?: number;
+        unitCount: number;
+        verifyCode?: string;
+      }
+    | undefined;
+  [Paths.CancellationOrder]:
+    | {
+        itemsSummary?: string;
+        orderId?: number;
+        orderNumber?: string;
+        storeName?: string;
+        totalAmount?: number;
+      }
+    | undefined;
   [Paths.Carts]: undefined;
   [Paths.Contribution]: undefined;
   [Paths.ContributionInput]: undefined;
@@ -55,7 +92,13 @@ export type RootStackParamList = {
         status?: 'pending' | 'success';
       }
     | undefined;
-  [Paths.OrderHistories]: undefined;
+  [Paths.OrderShipping]:
+    | {
+        addressOrderRecent?: unknown;
+        data?: unknown;
+      }
+    | undefined;
+  [Paths.Orders]: undefined;
   [Paths.TransactionDetail]: { data?: ITransactionDetail } | undefined;
   [Paths.TransactionResult]:
     | {
@@ -72,10 +115,18 @@ export type RootStackParamList = {
   [Paths.PointExpiring]: undefined;
   [Paths.Payment]: undefined;
   [Paths.MealTickets]: undefined;
-  [Paths.PaymentOffline]: undefined;
-  [Paths.CartDetail]: undefined;
+  [Paths.PaymentOffline]: { isTab?: boolean } | undefined;
+  [Paths.CartDetail]:
+    | {
+        address?: unknown;
+        cartId?: number;
+        data?: unknown;
+        isShowConfirmPayment?: boolean;
+        shipping?: string;
+      }
+    | undefined;
   [Paths.QRCodeViewer]:
-    | { data?: IQRCodeViewerData; durationSeconds?: number }
+    | { data?: IQRCodeViewerData; durationSeconds?: number; isTab?: boolean }
     | undefined;
   [Paths.RegisterCompleted]: { goFrom: 'forgot_pass' } | undefined;
   [Paths.ProductDetail]: { id: number; storeId: number } | undefined;

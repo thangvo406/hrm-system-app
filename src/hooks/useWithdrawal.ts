@@ -1,7 +1,7 @@
 import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
-import { useMemo, useState } from 'react';
+import { useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import bankData from '@constants/banks.json';
 import Selection from '@dialogs/Selection';
@@ -15,72 +15,117 @@ export type IBankOption = {
   readonly name: string;
 };
 
+export type TWithdrawalForm = {
+  accountHolder: string;
+  accountNumber: string;
+  amount: string;
+  errorAmount: string;
+  reason: string;
+  selectedBank: IBankOption | undefined;
+};
+
+export type TWithdrawalField = keyof TWithdrawalForm;
+
+const VISIBLE_FIELDS = new Set<TWithdrawalField>(['amount', 'selectedBank']);
+
 export const useWithdrawal = () => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
-  const [amount, setAmount] = useState('');
-  const [accountHolder, setAccountHolder] = useState('');
-  const [accountNumber, setAccountNumber] = useState('');
-  const [selectedBank, setSelectedBank] = useState<IBankOption | undefined>(
-    undefined,
-  );
-  const [errorAmount, setErrorAmount] = useState('');
+  const [, refresh] = useReducer((version: number) => version + 1, 0);
 
-  const enabledBtnSubmit = useMemo(() => {
-    const numericAmount = Number(amount);
+  const formData = useRef<TWithdrawalForm>({
+    accountHolder: '',
+    accountNumber: '',
+    amount: String(currentWallet?.balance ?? ''),
+    errorAmount: '',
+    reason: '',
+    selectedBank: undefined,
+  });
+  const enabledBtnSubmit = useRef(false);
+
+  const isSubmitEnabled = () => {
+    const { accountHolder, accountNumber, selectedBank } = formData.current;
+    // const numericAmount = Number(formData.current.amount);
     return (
-      numericAmount > 0 &&
-      numericAmount <= (currentWallet?.withdrawableBalance || 0) &&
+      // numericAmount > 0 &&
+      // numericAmount <= (currentWallet?.withdrawableBalance || 0) &&
+      (currentWallet?.balance || 0) > 0 &&
       selectedBank !== undefined &&
       accountNumber.trim().length > 0 &&
       accountHolder.trim().length > 0
     );
-  }, [accountHolder, accountNumber, amount, selectedBank, currentWallet]);
-
-  const onAmountChange = (value: string) => {
-    const digits = value.replaceAll(/\D/g, '');
-    setAmount(digits);
-    setErrorAmount(
-      Number(digits) > (currentWallet?.withdrawableBalance ?? 0)
-        ? t('withdrawal.error_amount_exceed')
-        : '',
-    );
   };
 
-  const onAccountNumberChange = (value: string) => {
-    setAccountNumber(value.replaceAll(/[^\d-]/g, ''));
-  };
+  const onChangeForm =
+    <T extends TWithdrawalField>(type: T) =>
+    (value: TWithdrawalForm[T]) => {
+      const form = formData.current;
+
+      switch (type) {
+        case 'amount': {
+          const digits = (value as string).replaceAll(/\D/g, '');
+          form.amount = digits;
+          form.errorAmount =
+            Number(digits) > (currentWallet?.withdrawableBalance ?? 0)
+              ? t('withdrawal.error_amount_exceed')
+              : '';
+          break;
+        }
+        case 'accountNumber': {
+          form.accountNumber = (value as string).replaceAll(/[^\d-]/g, '');
+          break;
+        }
+        default: {
+          form[type] = value;
+          break;
+        }
+      }
+
+      const nextEnabled = isSubmitEnabled();
+      const hasEnabledChanged = nextEnabled !== enabledBtnSubmit.current;
+      enabledBtnSubmit.current = nextEnabled;
+
+      if (VISIBLE_FIELDS.has(type) || hasEnabledChanged) {
+        refresh();
+      }
+    };
 
   const onPressBank = () => {
     AppNavigator.showDialog({
       screen: Selection,
       popupType: 'bottomSheet',
-      itemSelected: selectedBank,
+      title: t('withdrawal.bank_selection_title'),
+      itemSelected: formData.current.selectedBank,
       items: bankData,
-      onSelect: setSelectedBank,
+      onSelect: onChangeForm('selectedBank'),
       emptyType: 'selection',
       pathDisplay: 'name',
       pathSelected: 'name',
     });
   };
+
   const onSubmit = () => {
+    const { accountHolder, accountNumber, amount, reason, selectedBank } =
+      formData.current;
+    const requestedAmount = Number(amount);
     const bankName =
       typeof selectedBank == 'string'
         ? selectedBank
         : (selectedBank?.name ?? '');
     dispatch(
       withdrawalBalanceRequest({
-        requestedAmount: Number(amount),
+        requestedAmount,
         bankName,
         accountNumber: accountNumber,
         accountHolder: accountHolder,
+        reason,
         onSuccess: () => {
           dispatch(getCurrentWalletRequest());
           AppNavigator.goBack();
           AppNavigator.showDialog({
             screen: WithdrawalResult,
-            amount,
+            amount: requestedAmount,
             bankName,
             accountNumber,
             isFullScreen: true,
@@ -97,18 +142,15 @@ export const useWithdrawal = () => {
   };
 
   return {
-    accountHolder,
-    accountNumber,
-    amount,
-    enabledBtnSubmit,
-    errorAmount,
-    onAccountNumberChange,
-    onPressBank,
-    onAmountChange,
-    onSubmit,
-    selectedBank,
-    setAccountHolder,
-    setSelectedBank,
+    accountHolder: formData.current.accountHolder,
+    accountNumber: formData.current.accountNumber,
+    amount: formData.current.amount,
     currentWallet,
+    enabledBtnSubmit: enabledBtnSubmit.current,
+    errorAmount: formData.current.errorAmount,
+    onChangeForm,
+    onPressBank,
+    onSubmit,
+    selectedBank: formData.current.selectedBank,
   };
 };

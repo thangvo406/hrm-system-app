@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 
 import PointItem from './PointItem';
 import AppButton from '@components/AppButton';
+import { SIGN_PREFIX_TRANSACTION } from '@constants/config';
 
 export type PayPointHistoryType = 'pay' | 'point';
 
@@ -27,18 +28,15 @@ type PayItemProperties = {
 
 const DATE_FORMAT = 'YYYY-MM-DD hh:mmA';
 const EMPTY_VALUE = '-';
-const MINUS_SIGN = '-';
-const PLUS_SIGN = '+';
 const POINT_TYPE: PayPointHistoryType = 'point';
-const TOP_UP_DIRECTION = 'DEBIT';
 
 // Tag label + colour per ledger direction: money spent vs money topped up.
 const TAG_STYLE: Record<
   string,
   { readonly color: string; readonly title: TranslationKeys }
 > = {
-  CREDIT: { color: Colors.red03, title: 'pay_point.tags.money_use' },
-  DEBIT: { color: Colors.green02, title: 'pay_point.tags.money_charge' },
+  DEBIT: { color: Colors.red03, title: 'pay_point.tags.money_use' },
+  CREDIT: { color: Colors.green02, title: 'pay_point.tags.money_charge' },
 };
 
 const COLORS_AMOUNT: Record<string, string> = {
@@ -50,8 +48,7 @@ function PayItem({ item, onPressItem }: PayItemProperties) {
   const { t } = useTranslation();
   const tag = TAG_STYLE[item?.transactionDirection];
   const amountColor = COLORS_AMOUNT[item?.transactionDirection];
-  const sign =
-    item?.transactionDirection === TOP_UP_DIRECTION ? PLUS_SIGN : MINUS_SIGN;
+  const sign = SIGN_PREFIX_TRANSACTION[item?.transactionDirection] || '';
 
   return (
     <AppButton style={styles.card} onPress={() => onPressItem?.(item)}>

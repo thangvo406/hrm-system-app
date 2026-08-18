@@ -4,6 +4,7 @@
       "confirm": "확인",
       "cancel": "취소",
       "no_data": "데이터 없음",
+      "search": "검색",
       "payment": "지불",
       "display_price": "{{amount}} 원",
       "display_time": "{{time}}초",
@@ -233,7 +234,6 @@
     "bank_information": {
       "transfer_title": "생협페이머니 충전금액을\n아래의 계좌로 입금해주세요.",
       "transfer_desc": "*입금하신 금액은 관리자 확인 후\n생협페이머니로 지급됩니다.\n(영업일 기준 1~3일 소요)",
-      "intro": "조합원 최초 가입시,\n출자금 납부가 필요합니다.",
       "bank_label": "은행",
       "account_number": "계좌번호",
       "account_holder": "예금주",
@@ -281,7 +281,6 @@
       "tab_vouchers": "혜택",
       "tab_pay": "결제",
       "tab_qr_member": "회원QR",
-      "tab_benefit": "혜택",
       "tab_mypage": "내정보",
       "member_labels": {
         "general": "일반회원",
@@ -323,12 +322,14 @@
         "coupon": "쿠폰함",
         "meal_ticket": "식권",
         "dividend_inquiry": "배당금 조회",
-        "pay_point": "생협페이머니 / 포인트 조회",
-        "pay": "생협페이 결제",
+        "pay_point": "생협페이 / 포인트",
+        "pay_register": "생협페이등록",
         "pay_topup": "생협페이머니 충전",
+        "pay": "생협페이 결제",
         "pay_balance": "생협Pay 잔액 조회",
         "academy_verification": "구성원 인증",
         "order": "주문하기",
+        "order_history": "주문내역",
         "store_search": "매장검색",
         "notice": "공지사항",
         "community": "커뮤니티",
@@ -355,6 +356,11 @@
       },
       "need_contribution_dialog": {
         "title": "조합원 가입을 위해 최초 1회 출자금 납부가 필요합니다.\n계속 진행하시겠습니까?"
+      },
+      "membership_pending_dialog": {
+        "title": "안내",
+        "desc": "조합원 가입 요청이 승인 대기 중입니다.\n관리자의 승인 후 해당 기능을 이용하실 수 있습니다.",
+        "confirm": "닫기"
       }
     },
     "notifications": {
@@ -372,9 +378,13 @@
       "history_title": "이력정보",
       "tab_pay": "출자 이력",
       "tab_point": "배당 이력",
-      "balance_after": "잔액 : {{amount}}원",
       "empty": "이력이 없습니다.",
       "transaction_failed": "거래 실패",
+      "rows": {
+        "unit": "구좌 : {{amount}}",
+        "unit_price": "좌당 금액 : {{amount}}원",
+        "balance_after": "잔액 : {{amount}}원"
+      },
       "transaction_detail": {
         "title": "출자 내역",
         "date_label": "출자일시: {{date}}",
@@ -410,6 +420,7 @@
         "refund": "환불",
         "manual_adjustment": "수동 조정",
         "point_earn": "포인트 적립",
+        "point_grant": "관리자 지급",
         "point_use": "포인트 사용",
         "contribution_earn": "출자금 적립",
         "contribution_decrease": "출자금 감소",
@@ -419,7 +430,9 @@
         "usage_dividend_earn": "이용배당",
         "point_expire": "포인트 소멸",
         "pay_money_withdrawal": "페이머니 출금",
-        "pay_money_charge_bonus": "충전 보너스"
+        "pay_money_charge_bonus": "충전 보너스",
+        "charge_bonus_point": "충전 보너스 포인트",
+        "org_payment": "단체 결제"
       },
       "tags": {
         "point_expired": "만료",
@@ -507,13 +520,15 @@
       "nearest_date": "가장 빠른 소멸일 : {{date}}",
       "list_title": "소멸 예정 내역",
       "expire_at": "{{date}} 소멸",
-      "info": "포인트는 적립일로부터 30일 후 자동으로 소멸되며, 유효기간이 임박한 포인트부터 먼저 사용됩니다.",
+      "expiry_soonest_info": "포인트는 적립일로부터 {{time}}일 후 자동으로 소멸됩니다. 유효기간이 가장 임박한 포인트부터 우선 사용됩니다.",
+      "earned_oldest_info": "포인트는 적립일로부터 {{time}}일 후 자동으로 소멸됩니다. 먼저 적립된 포인트부터 우선 차감됩니다.",
       "use_action": "포인트 사용하러 가기"
     },
     "contribute_history": {
       "title": "출자 내역",
       "contribution_status_title": "출자금 현황",
       "add_contribute": "추가 출자",
+      "capital_withdrawal": "감좌 신청",
       "cumulative_contribution": "누적 출자금 : {{amount}}원",
       "dividend_info_title": "배당금 정보",
       "btn_dividend_detail": "상세 조회",
@@ -542,6 +557,12 @@
           "pending": "대기",
           "failed": "납부실패"
         }
+      },
+      "increase_detail": {
+        "title": "증좌 내역",
+        "date_label": "증좌일시",
+        "amount_label": "증좌 금액",
+        "payment_method_label": "증좌 유형"
       }
     },
     "announcements": {
@@ -567,10 +588,14 @@
       "title": "스마트오더",
       "search_placeholder": "매장 이름",
       "delivery_label": {
-        "pickup": "픽업",
-        "delivery": "배달"
+        "pickup": "포장",
+        "delivery": "배달",
+        "hall": "매장"
       },
       "section_label": "자주 주문한 매장",
+      "view_all_orders": "주문내역 전체보기",
+      "min_order": "최소주문 : {{amount}}원",
+      "open_hours": "영업시간: {{time}}",
       "filter": {
         "title": "저장",
         "sort_by": "정렬 기준",
@@ -621,8 +646,14 @@
     "products": {
       "cart_button": "장바구니 {{amount}}원",
       "empty": "표시할 상품이 없습니다.",
+      "limit_reached": "구매 한도 초과",
+      "limit_reached_desc": "구매 한도에 도달했습니다",
       "out_of_stock": "품절",
-      "sold_out": "품절"
+      "sold_out": "품절",
+      "search_placeholder": "상품명",
+      "store_closed": "영업 종료",
+      "store_reopen_at": "{{time}} 오픈",
+      "store_reopen_date_format": "M월 D일"
     },
     "contribution": {
       "title": "마이페이지",
@@ -695,9 +726,14 @@
       "amount_placeholder": "금액 입력",
       "account_section": "환불 계좌",
       "bank_placeholder": "은행 선택",
+      "bank_selection_title": "은행 선택",
       "account_number_placeholder": "계좌번호 입력",
       "account_holder_placeholder": "예금주 입력",
       "error_amount_exceed": "환불 금액은 환불 가능 금액을 초과할 수 없습니다",
+      "reason_title": "사유",
+      "reason_optional": "(선택)",
+      "reason_desc": "환불 사유를 알려주세요.",
+      "reason_placeholder": "사유를 입력해 주세요",
       "notice_title": "주의사항",
       "notice_1": "보너스머니는 환불 대상에서 제외됩니다",
       "notice_2": "환불 처리는 영업일 기준 1~3일 소요됩니다",
@@ -777,6 +813,28 @@
         "credit_limit": "여신 한도",
         "spendable_amount": "사용 가능 금액",
         "tag": "단체"
+      },
+      "transaction_detail_texts": {
+        "charge": "충전",
+        "charge_bonus_point": "충전 보너스",
+        "payment": "결제",
+        "withdrawal": "출금",
+        "point_earn": "매장 적립",
+        "point_grant": "관리자 지급",
+        "point_use": "포인트 사용",
+        "point_expire": "포인트 소멸",
+        "refund": "환불",
+        "adjustment": "관리자 조정",
+        "org_payment": "단체 결제"
+      },
+      "transaction_titles": {
+        "balance_charge": "잔액 충전",
+        "order_checkout": "주문 결제",
+        "pos_payment": "POS 결제",
+        "manual_balance_adjustment": "잔액 조정",
+        "pay_money_withdrawal": "출금",
+        "contribution_increase": "출자금 증자",
+        "contribution_decrease_refund": "출자금 감자 및 환불"
       }
     },
     "request_add_card": {
@@ -805,6 +863,7 @@
       "order_code": "주문 코드",
       "copy": "복사",
       "order_date": "주문 일시",
+      "display_price": "주문 금액 {{amount}}원",
       "delivery_address": "배송 주소",
       "shipping_method": "배송 방법",
       "payment_method": "결제 수단",
@@ -817,6 +876,12 @@
         "notify_title": "주문을 처리하고 있습니다",
         "notify_subtitle": "주문이 확인되면 알림을 보내드립니다."
       },
+      "failed": {
+        "title": "주문에 실패했습니다",
+        "subtitle": "결제가 정상적으로 처리되지 않았습니다.\n잠시 후 다시 시도해 주세요.",
+        "notify_title": "결제가 완료되지 않았습니다",
+        "notify_subtitle": "금액이 출금된 경우 자동으로 환불되며, 계속 실패하면 고객센터로 문의해 주세요."
+      },
       "success": {
         "title": "주문이 완료되었습니다!",
         "subtitle": "구매해 주셔서 감사합니다.\n주문이 처리 중입니다.",
@@ -826,7 +891,12 @@
     },
     "order_histories": {
       "title": "주문 내역",
-      "reorder": "재주문"
+      "reorder": "재주문",
+      "tabs": {
+        "all": "전체",
+        "pickup": "포장",
+        "hall": "매장"
+      }
     },
     "qr_code_member": {
       "title": "모바일 회원QR",
@@ -862,6 +932,7 @@
       "show_more": "상품 전체 보기",
       "show_less": "접기",
       "reorder": "재주문",
+      "go_smart_order": "스마트오더 홈",
       "contact_support": "고객 지원 문의",
       "payment_methods": {
         "pay_money": "생협페이머니",
@@ -876,12 +947,14 @@
         "payment_completed": "결제 완료",
         "shipping": "배송 중",
         "completed": "배송 완료",
+        "payment_integrated_completed": "배송 완료",
         "cancel_requested": "취소 요청",
         "canceled": "취소 완료"
       },
       "shipping_methods": {
         "pickup": "포장",
-        "delivery": "배달"
+        "delivery": "배달",
+        "hall": "매장"
       },
       "status_pending": "대기 중",
       "status_completed": "완료",
@@ -892,11 +965,22 @@
       "payment_amount_label": "결제 금액",
       "coupon_discount_label": "쿠폰 할인",
       "point_used_label": "포인트 사용",
+      "member_discount": "조합원 할인",
       "payment_summary_section_title": "결제 요약",
       "final_payment_label": "실결제 금액",
       "pay_money_label": "생협페이머니",
+      "section_detail": {
+        "pay_money": "생협페이머니",
+        "point": "포인트",
+        "contribution": "출자금",
+        "dividend": "배당금"
+      },
       "point_section_title": "포인트",
-      "point_earned_label": "포인트 적립"
+      "point_earned_label": "포인트 적립",
+      "payment_cancel_qr_title": "결제취소 QR",
+      "payment_cancel_request": "결제취소 요청",
+      "back_to_transaction_detail": "‹ 거래 상세로 돌아가기",
+      "create_payment_cancel_qr_button": "결제취소 QR 생성"
     },
     "input_address": {
       "search_placeholder": "도/시 및 동/면 검색",
@@ -910,7 +994,7 @@
     "payment_cart": {
       "remove_cart_success": "장바구니가 삭제되었습니다",
       "select_pickup_time": "픽업 시간 선택",
-      "title": "장바구니",
+      "title": "장바구니 상세",
       "badge_delivery": "배달",
       "badge_pickup": "픽업",
       "order_button": "주문하기",
@@ -947,12 +1031,103 @@
       "change": "변경",
       "btn_submit": "계속하기"
     },
+    "cancellation_order": {
+      "title": "주문 취소",
+      "order_label": "취소할 주문",
+      "order_number": "주문 #{{number}}",
+      "order_items": "{{items}} · {{amount}}원",
+      "reason_heading": "취소 사유를 선택해 주세요",
+      "reason_change_mind": "단순 변심",
+      "reason_order_mistake": "주문 실수",
+      "reason_delivery_delay": "배달 지연",
+      "reason_store_issue": "매장 사정",
+      "reason_other": "기타",
+      "other_placeholder": "취소 사유를 입력해 주세요",
+      "notice_title": "취소 안내",
+      "notice_desc": "준비 중인 주문은 취소 수수료가 발생할 수 있습니다.",
+      "back": "돌아가기",
+      "submit": "취소 요청하기"
+    },
     "contribution_input": {
-      "title": "출자금 입력",
+      "title": "출자금 증좌 신청",
       "subtitle": "추가 출자를 위한 금액을 입력해주세요",
       "amount_label": "금액 입력",
       "amount_placeholder": "금액을 입력해주세요",
-      "next": "다음"
+      "next": "다음",
+      "hero_title": "출자금 증좌 신청",
+      "hero_subtitle": "추가로 출자하시면 배당 혜택이 늘어납니다.\n증좌를 신청해보세요.",
+      "member_type_label": "조합원 유형",
+      "member_status_enrolled": "(재학)",
+      "current_contribution_label": "출자금",
+      "current_units_value": "{{count}}구좌",
+      "current_units_amount": "({{amount}}원)",
+      "info_banner": "추가로 출자하시면 배당 혜택이 늘어납니다.\n증좌를 신청해보세요.",
+      "caution_title": "주의사항",
+      "caution_desc": "증좌 신청 후 결제가 완료되면 즉시 출자금에 반영됩니다.",
+      "units_input_label": "증좌 신청 구좌수",
+      "unit_suffix": "구좌",
+      "unit_price_label": "1구좌",
+      "expected_amount_label": "증좌 후 예상 출자금",
+      "expected_units_label": "총 예상 구좌수",
+      "amount_won": "{{amount}}원",
+      "units_count": "{{count}}구좌",
+      "submit": "신청하기",
+      "title_transfer_amount": "아래 계좌로 출자금을 송금해 주세요.",
+      "desc_transfer_amount": "입금하신 출자금은 관리자 확인 후 출자금으로 반영됩니다.(영업일 기준 1~3일 소요)",
+      "error_amount_required": "증좌할 금액을 입력해 주세요"
+    },
+    "capital_withdrawal": {
+      "hero_title": "출자금 감좌 신청",
+      "hero_subtitle": "수료·졸업 후 조합원 자격 변경이 필요한 경우\n감좌를 신청할 수 있습니다.",
+      "info_banner": "수료·졸업 후 조합원 자격 변경이 필요한 경우 감좌를 신청할 수 있습니다.",
+      "option_academic_title": "학적 변경 신고 (수료·졸업 등)",
+      "option_academic_desc": "수료·졸업 등으로 조합원 자격이 변경되는 경우",
+      "option_refund_title": "감좌 및 환불 신청",
+      "option_refund_desc": "출자금을 감좌하고 환불을 받는 경우",
+      "error_units_exceed_current": "구좌수는 현재 보유 구좌수를 초과할 수 없습니다",
+      "caution_title": "주의사항",
+      "caution_desc": "감좌 신청 후 생협 담당자 확인을 거쳐 처리됩니다"
+    },
+    "capital_withdrawal_result": {
+      "detail_title": "증좌 신청 정보",
+      "application_id": "신청 번호",
+      "applicant": "신청자",
+      "unit_count": "감좌신청 구좌수",
+      "unit_value": "{{count}}구좌",
+      "current_unit_count": "현재 구좌수",
+      "total_unit_count_after": "증좌 후 구좌수",
+      "amount": "감좌 금액",
+      "currency_suffix": "원",
+      "deposit_account": "입금계좌",
+      "verify_code": "인증코드",
+      "requested_at": "신청 일시",
+      "expected_completion_at": "예상 처리 완료일",
+      "status": "상태",
+      "confirm": "확인",
+      "pending": {
+        "title": "출자금 감좌신청 완료",
+        "subtitle": "관리자 확인 후 출자금 감좌처리 됩니다",
+        "info_line1": "감좌 신청 내용을 생협 담당자가 확인 중입니다",
+        "info_line2": "담당자가 감좌 처리 후 앱 알림으로 안내드립니다",
+        "info_line3": "보통 1~3 영업일 소요됩니다",
+        "status_label": "처리 중"
+      },
+      "success": {
+        "title": "출자금 증좌가 완료되었습니다",
+        "subtitle": "출자금 구좌가 정상적으로 증좌되었습니다",
+        "info_line1": "증좌 신청이 승인되었습니다",
+        "info_line2": "증좌된 구좌가 출자금에 반영되었습니다",
+        "info_line3": "",
+        "status_label": "완료"
+      },
+      "failed": {
+        "title": "출자금 증좌신청 실패",
+        "subtitle": "증좌 신청을 처리할 수 없습니다",
+        "info_line1": "신청 처리 중 오류가 발생했습니다",
+        "info_line2": "다시 시도해 주세요",
+        "info_line3": "",
+        "status_label": "실패"
+      }
     },
     "transaction_result": {
       "close": "확인",
@@ -1036,7 +1211,8 @@
       "reactivation_desc": "본인 인증을 통해 즉시 계정을 다시 활성화할 수 있습니다.",
       "reactivation_note": "포인트와 혜택은 그대로 유지됩니다.",
       "reactivate_button": "본인 인증 후 계정 재활성화",
-      "delete_button": "계정 삭제"
+      "delete_button": "계정 삭제",
+      "active_account_success": "계정이 성공적으로 활성화되었습니다. 다시 로그인해 주세요."
     },
     "deletion_account": {
       "title": "회원 탈퇴",
@@ -1068,8 +1244,10 @@
       "tab_available": "사용 가능",
       "tab_used": "사용 완료",
       "tab_expired": "만료",
+      "used": "사용 완료",
       "expired": "만료",
       "dday": "D-{{days}}",
+      "available_to": "{{date}}까지 사용 가능",
       "valid_until": "유효기간: {{date}}",
       "min_payment": "최소 결제금액: {{amount}}",
       "min_payment_none": "없음",

@@ -227,12 +227,12 @@ function ProductHero({
 }
 
 function ProductInfo({
-  discountPrice = 0,
+  // discountPrice = 0,
   originalPrice = 0,
   description = '',
   name = '',
 }: {
-  readonly discountPrice?: number;
+  // readonly discountPrice?: number;
   readonly originalPrice?: number;
   readonly description?: string;
   readonly name?: string;
@@ -325,6 +325,7 @@ function ProductDetail(props: any) {
     minChooseQuantity,
     totalAmount,
     disabledBtnSubmit,
+    isHideUpdateQuantity,
   } = useProductDetail(props);
   const { t } = useTranslation();
   const backBtnRef = useRef<TButtonBackRef>(null);
@@ -397,7 +398,7 @@ function ProductDetail(props: any) {
                 description={data?.description}
                 name={data?.name}
                 originalPrice={data?.sellingPrice}
-                discountPrice={data?.discountPrice}
+                // discountPrice={data?.discountPrice}
               />
               <ProductAttributes
                 data={data?.attributes ?? []}
@@ -405,15 +406,17 @@ function ProductDetail(props: any) {
                 onChangeQuantity={onChangeQuantityAttrItem}
                 selected={selectedAttributes}
               />
-              <View style={styles.quantityWrap}>
-                <ProductQuantity
-                  onChange={onChangeQuantity}
-                  quantity={quantity}
-                  minChooseQuantity={minChooseQuantity}
-                  maxQuantity={data?.stockQuantity}
-                  isStockManaged={data?.isStockManaged}
-                />
-              </View>
+              {!isHideUpdateQuantity && (
+                <View style={styles.quantityWrap}>
+                  <ProductQuantity
+                    onChange={onChangeQuantity}
+                    quantity={quantity}
+                    minChooseQuantity={minChooseQuantity}
+                    maxQuantity={data?.stockQuantity}
+                    isStockManaged={data?.isStockManaged}
+                  />
+                </View>
+              )}
             </View>
           </Animated.ScrollView>
           <StickyHeader

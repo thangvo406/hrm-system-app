@@ -40,7 +40,7 @@ const EMPTY_HISTORIES: Record<TPayPointTab, IPointPayHistory[]> = {
 };
 
 const onPressTransaction = (item: any) => {
-  AppNavigator.navigate(Paths.TransactionDetail, { transId: item?.id });
+  // AppNavigator.navigate(Paths.TransactionDetail, { transId: item?.id });
 };
 
 const onViewExpireDetail = () => {

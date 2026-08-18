@@ -1,5 +1,7 @@
 import { Environment } from '@constants';
 import { FileManager } from '@kits/core/utils/FileManager';
+import AppNavigator from '@navigation/AppNavigator';
+import { Paths } from '@navigation/paths';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { updatePushIdRequest } from '@services/slices/account/accountSlice';
@@ -12,8 +14,35 @@ import { useSelector } from 'react-redux';
 const CLICK_DEBOUNCE_MS = 500;
 const DEVICE_ID_RETRY_MS = 1000;
 
-const onHandleNotificationClick = () => {
+const NOTIFICATION_TYPES = {
+  ORDER_CREATED: Paths.OrderHistoryDetail,
+  PAYMENT_COMPLETED: Paths.OrderHistoryDetail,
+  ORDER_ACCEPTED: Paths.OrderHistoryDetail,
+  ORDER_CANCEL_REJECTED: Paths.OrderHistoryDetail,
+  ORDER_CANCEL_APPROVED: Paths.OrderHistoryDetail,
+  ORDER_REFUNDED: Paths.OrderHistoryDetail,
+  ORDER_CANCELED: Paths.OrderHistoryDetail,
+  ORDER_REJECTED_BY_STORE: Paths.OrderHistoryDetail,
+  ORDER_EXPIRED: Paths.OrderHistoryDetail,
+  CONTRIBUTION_REQUEST_RECEIVED: Paths.ContributionHistory,
+  CONTRIBUTION_APPROVED: Paths.ContributionHistory,
+  CONTRIBUTION_DECREASE_APPROVED: Paths.ContributionHistory,
+  CONTRIBUTION_REJECTED: Paths.ContributionHistory,
+  TOPUP_APPROVED: Paths.AccountManagement,
+  POINT_EXPIRY_UPCOMING: Paths.PointExpiring,
+};
+
+const onHandleNotificationClick = (event: any) => {
   //TODO: implement logic notification click
+  console.log('onHandleNotificationClick', event);
+  const { type, referenceId } = event?.notification?.additionalData || {};
+  const destination = NOTIFICATION_TYPES[type];
+  // console.log('destination', destination, type);
+  if (destination) {
+    AppNavigator.navigate(destination, {
+      data: { id: referenceId },
+    });
+  }
 };
 
 const useNotification = () => {
@@ -54,7 +83,7 @@ const useNotification = () => {
   };
 
   const checkPermission = async () => {
-    if (!profile?.identityNumber) {
+    if (!profile?.id) {
       return;
     }
     // const statusPermission = AppStorage.getBoolean(
@@ -91,7 +120,7 @@ const useNotification = () => {
               'Notification click event: ',
               JSON.stringify(event),
             );
-            onHandleNotificationClick();
+            onHandleNotificationClick(event);
           }, CLICK_DEBOUNCE_MS) as unknown as number;
         },
       );

@@ -10,9 +10,12 @@ import { IStoreItem } from '@type/store';
 import type { AttributeCheckout } from '@type/products';
 import { IProduct } from '@type';
 import { updateCartItemRequest } from '@services/slices/payment/paymentSlice';
-import set from 'lodash/set';
+import debounce from 'lodash/debounce';
+import { CommonUtils } from '@utils';
 import { useFocusEffect } from '@react-navigation/native';
 import { useReturnParams } from '@hooks/useReturnParams';
+
+const QUANTITY_UPDATE_DEBOUNCE_MS = 350;
 
 export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   const dispatch = useAppDispatch();
@@ -24,6 +27,9 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   const [searchKey, setSearchKey] = useState('');
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
+  const debouncedUpdatesByCartItemId = useRef<
+    Map<number, ReturnType<typeof debounce>>
+  >(new Map());
   useReturnParams<{ dataGoBack: any }>(
     props,
     ['dataGoBack'],
@@ -41,6 +47,11 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
         }
       }
     },
+  );
+
+  const isOutsideOpenHour = useMemo(
+    () => CommonUtils.isStoreOutsideOpenHour(storeInfo),
+    [storeInfo],
   );
 
   const goToCart = () => {
@@ -70,8 +81,8 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   }, []);
 
   const isShowBtnCart = useMemo(() => {
-    return (storeInfo?.cartId ?? 0) > 0;
-  }, [storeInfo]);
+    return !isOutsideOpenHour && (storeInfo?.cartId ?? 0) > 0;
+  }, [storeInfo, isOutsideOpenHour]);
 
   const onLoadMore = useCallback(() => {
     if (isLast.current || isLoadingMore.current) {
@@ -81,61 +92,94 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
     setCurrentPage(prev => prev + 1);
   }, []);
 
-  const onChangeQuantity = (item: any, index: number) => {
-    if (
-      data[index]?.cartItemInfo &&
-      data[index]?.cartItemInfo?.quantity == item?.cartItemInfo?.quantity
-    ) {
-      return;
-    }
-    const { quantity, selectedAttributes, cartItemId } =
-      item.cartItemInfo || {};
-    const flatAttributes = Object.values(selectedAttributes || [])
-      .flat()
-      .map(attribute => ({
-        attributeItemId: attribute?.attributeItemId,
-        quantity: attribute?.quantity,
-      })) as AttributeCheckout[];
-    dispatch(
-      updateCartItemRequest({
-        quantity,
-        productId: item?.id,
-        selectedAttributes: flatAttributes,
-        cartItemId,
-        onSuccess: (response: any) => {
-          set(data, `[${index}].cartItemInfo`, item.cartItemInfo);
-          setStoreInfo(prev =>
-            prev ? { ...prev, totalAmountCart: response?.subTotal } : prev,
-          );
-        },
-        onFailure: (message: string) => {
-          AppNavigator.showSnackBar({
-            message: message || '',
-            type: 'failed',
-          });
-        },
-      }),
-    );
-  };
+  const onChangeQuantity = useCallback(
+    (item: any, index: number) => {
+      const cartItemInfo = item?.cartItemInfo;
+      if (!cartItemInfo) {
+        return;
+      }
+      setData(prev => {
+        const next = [...prev];
+        next[index] = { ...next[index], cartItemInfo };
+        return next;
+      });
+
+      const { quantity, selectedAttributes, cartItemId } = cartItemInfo;
+      const flatAttributes = Object.values(selectedAttributes || [])
+        .flat()
+        .map(attribute => ({
+          attributeItemId: attribute?.attributeItemId,
+          quantity: attribute?.quantity,
+        })) as AttributeCheckout[];
+
+      let scheduleUpdate = debouncedUpdatesByCartItemId.current.get(cartItemId);
+      if (!scheduleUpdate) {
+        scheduleUpdate = debounce(
+          (nextQuantity: number, nextAttributes: AttributeCheckout[]) => {
+            dispatch(
+              updateCartItemRequest({
+                quantity: nextQuantity,
+                productId: item?.id,
+                selectedAttributes: nextAttributes,
+                cartItemId,
+                onSuccess: (response: any) => {
+                  setStoreInfo(prev =>
+                    prev
+                      ? { ...prev, totalAmountCart: response?.subTotal }
+                      : prev,
+                  );
+                },
+                onFailure: (message: string) => {
+                  AppNavigator.showSnackBar({
+                    message: message || '',
+                    type: 'failed',
+                  });
+                },
+              }),
+            );
+          },
+          QUANTITY_UPDATE_DEBOUNCE_MS,
+        );
+        debouncedUpdatesByCartItemId.current.set(cartItemId, scheduleUpdate);
+      }
+      scheduleUpdate(quantity, flatAttributes);
+    },
+    [dispatch],
+  );
   const handleFailure = () => {
     setLoading(false);
   };
 
   useEffect(() => {
-    if (!storeInfo) {
-      return;
-    }
-    dispatch(
-      getProductsRequest({
-        storeId: storeInfo?.id || 1,
-        page: currentPage,
-        keyword: searchKey,
-        size: 10,
-        onFailure: handleFailure,
-        onSuccess: handleSuccess,
-      }),
-    );
-  }, [dispatch, storeInfo?.id, searchKey, currentPage]);
+    const debouncedUpdates = debouncedUpdatesByCartItemId.current;
+    return () => {
+      for (const scheduled of debouncedUpdates.values()) {
+        scheduled.cancel();
+      }
+    };
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!storeInfo) {
+        return;
+      }
+      if (!isLoadingMore.current && currentPage != 0) {
+        setCurrentPage(0);
+        return;
+      }
+      dispatch(
+        getProductsRequest({
+          storeId: storeInfo?.id || 1,
+          page: currentPage,
+          keyword: searchKey,
+          size: 10,
+          onFailure: handleFailure,
+          onSuccess: handleSuccess,
+        }),
+      );
+    }, [dispatch, storeInfo?.id, searchKey, currentPage]),
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -157,6 +201,7 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   return {
     data,
     loading,
+    isOutsideOpenHour,
     onSearchChange,
     goToCart,
     onChangeQuantity,

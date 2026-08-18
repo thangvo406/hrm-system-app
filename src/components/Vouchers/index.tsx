@@ -30,7 +30,7 @@ function Vouchers(props: any) {
     backgroundExpired,
     isHideLabelExpired,
     title,
-    isMealTicket
+    isMealTicket,
   } = props || {};
   const tabs = useMemo(
     () => [
@@ -69,7 +69,7 @@ function Vouchers(props: any) {
             refreshing={refreshing}
             vouchers={usedVouchers}
             backgroundExpired={backgroundExpired}
-            expiredLabel={expiredLabel}
+            expiredLabel={expiredLabel ? expiredLabel : t('vouchers.used')}
             btnUseLabel={btnUseLabel}
             isExpired
             isMealTicket={isMealTicket}

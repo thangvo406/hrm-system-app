@@ -10,10 +10,12 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { IStoreItem } from '@type/store';
 import isNumber from 'lodash/isNumber';
+import { trimSeconds } from '@utils/date';
+import StoreClosedBanner from './StoreClosedBanner';
 
 const CARD_OVERLAP = ScaleSize(68);
 const CARD_BORDER_RADIUS = ScaleSize(16);
@@ -25,15 +27,18 @@ const META_ICON_SIZE = ScaleSize(14);
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = Colors.gray1;
 const COLLAPSE_TITLE_START = 0.8;
+// API trả giờ dạng HH:mm:ss — cắt 3 ký tự cuối (`:ss`) để hiển thị HH:mm.
 
 type Properties = {
   readonly collapseScroll?: number;
+  readonly isOutsideOpenHour?: boolean;
   readonly scrollY?: SharedValue<number>;
   readonly storeInfo?: IStoreItem;
 };
 
 function StoreInfo({
   collapseScroll = 0,
+  isOutsideOpenHour = false,
   scrollY = undefined,
   storeInfo = undefined,
 }: Properties) {
@@ -58,8 +63,18 @@ function StoreInfo({
     ? `${t('product_detail.min_order_label')}: ${ProductUtils.formatCurrency(storeInfo.minOrder)}`
     : '';
 
+  const openTime = useMemo(() => {
+    let text = '';
+    if (storeInfo?.openingTime) {
+      text = trimSeconds(storeInfo.openingTime);
+    }
+    if (storeInfo?.closedTime) {
+      text += `-${trimSeconds(storeInfo.closedTime)}`;
+    }
+    return text;
+  }, [storeInfo?.closedTime, storeInfo?.openingTime]);
   const logoUri = storeInfo?.logo?.fileUrl;
-  const hasMeta = storeInfo?.estimateTime || minOrderText;
+  const hasMeta = storeInfo?.estimateTime || minOrderText || openTime;
 
   if (!storeInfo) {
     return <></>;
@@ -67,7 +82,11 @@ function StoreInfo({
 
   return (
     <View style={styles.wrapper}>
-      <View style={styles.card}>
+      {isOutsideOpenHour ? (
+        <StoreClosedBanner storeInfo={storeInfo} />
+      ) : undefined}
+
+      <View style={[styles.card, isOutsideOpenHour && styles.cardBelowBanner]}>
         <View style={styles.logoWrap}>
           {logoUri ? (
             <ProgressiveImage
@@ -97,23 +116,32 @@ function StoreInfo({
             {storeInfo?.name}
           </Animated.Text>
           {hasMeta ? (
-            <View style={styles.metaRow}>
-              {storeInfo?.estimateTime ? (
-                <View style={styles.metaItem}>
-                  <Image
-                    color={TEXT_MUTED}
-                    height={META_ICON_SIZE}
-                    name="ic_clock"
-                    type="svg"
-                    width={META_ICON_SIZE}
-                  />
-                  <Text style={styles.metaText}>{storeInfo.estimateTime}</Text>
-                </View>
-              ) : undefined}
-              {minOrderText ? (
-                <Text style={styles.metaText}>{minOrderText}</Text>
-              ) : undefined}
-            </View>
+            <>
+              <View style={styles.metaRow}>
+                {storeInfo?.estimateTime ? (
+                  <View style={styles.metaItem}>
+                    <Image
+                      color={TEXT_MUTED}
+                      height={META_ICON_SIZE}
+                      name="ic_clock"
+                      type="svg"
+                      width={META_ICON_SIZE}
+                    />
+                    <Text style={styles.metaText}>
+                      {storeInfo.estimateTime}
+                    </Text>
+                  </View>
+                ) : undefined}
+                {minOrderText ? (
+                  <Text style={styles.metaText}>{minOrderText}</Text>
+                ) : undefined}
+              </View>
+              {!!openTime && (
+                <Text style={styles.metaText}>
+                  {t('stores.open_hours', { time: openTime })}
+                </Text>
+              )}
+            </>
           ) : undefined}
           <View
             style={{
@@ -148,6 +176,9 @@ const styles = StyleSheet.create({
     shadowOffset: { height: ScaleSize(4), width: 0 },
     shadowOpacity: 0.12,
     shadowRadius: ScaleSize(12),
+  },
+  cardBelowBanner: {
+    marginTop: -ScaleSize(12),
   },
   containerDeliver: {
     paddingVertical: ScaleSize(3),

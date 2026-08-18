@@ -4,9 +4,13 @@ import { IKcpInitParams, IPaymentRequest } from './payment';
 
 export interface IContributeSummary {
   readonly currentContribution: number;
+  readonly currentUnits: number;
   readonly totalDividend: number;
   readonly expectedDividend: number;
   readonly expectedDividendDate: string;
+  readonly unitPrice?: number;
+  readonly expectedContribution?: number;
+  readonly expectedUnits?: number;
 }
 
 export interface IContributeHistoryDetail {
@@ -53,6 +57,8 @@ export interface IContributeHistory {
   amount: number;
   balanceBefore: number;
   balanceAfter: number;
+  units: number;
+  unitPrice: number;
   paymentMethod: string;
   status: string;
   occurredAt: string;

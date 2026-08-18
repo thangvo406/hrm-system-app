@@ -1,0 +1,26 @@
+source "https://rubygems.org"
+
+# Khớp với Gemfile ở repo root: CI chạy `pod install` qua `yarn pod` bên trong
+# `bundle exec fastlane`, nên cocoapods phải nằm trong bundle của thư mục ios.
+gem "cocoapods", ">= 1.13", "!= 1.15.0", "!= 1.15.1"
+gem "activesupport", ">= 6.1.7.5", "!= 7.1.0"
+# KHÔNG pin `xcodeproj < 1.26.0` như Gemfile template của React Native.
+# CoopUse.xcodeproj ở objectVersion 70 và dùng PBXFileSystemSynchronizedRootGroup
+# (folder đồng bộ của Xcode 16) cho target OneSignalNotificationService — ISA đó
+# chỉ được xcodeproj hiểu từ 1.26.0. Với pin cũ, fastlane crash ngay ở
+# increment_version_number: "unknown ISA PBXFileSystemSynchronizedRootGroup".
+# Ngoài ra cocoapods 1.17.0 (bản Podfile.lock ghi) yêu cầu xcodeproj >= 1.28.1,
+# nên pin cũ còn buộc bundler hạ cocoapods xuống bản không khớp Podfile.lock.
+gem "xcodeproj", ">= 1.28.1"
+gem "concurrent-ruby", "< 1.3.4"
+
+gem "fastlane"
+
+# Ruby 3.4 đã bỏ các thư viện này khỏi standard library.
+gem "bigdecimal"
+gem "logger"
+gem "benchmark"
+gem "mutex_m"
+
+plugins_path = File.join(File.dirname(__FILE__), 'fastlane', 'Pluginfile')
+eval_gemfile(plugins_path) if File.exist?(plugins_path)

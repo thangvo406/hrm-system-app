@@ -39,7 +39,11 @@ function PointCouponCard({ coupon, onSelectCoupon }: Properties) {
             <Text style={styles.rowLabel}>{t('payment.select_coupon')}</Text>
           </View>
           <View style={styles.rowRight}>
-            {!!coupon && <Text style={styles.couponValue}>{coupon?.name}</Text>}
+            {!!coupon && (
+              <Text numberOfLines={1} style={styles.couponValue}>
+                {coupon?.name}
+              </Text>
+            )}
             <Image
               color={ACCENT_COLOR}
               height={CHEVRON_SIZE}
@@ -66,6 +70,9 @@ const styles = StyleSheet.create({
   },
   couponValue: {
     color: ACCENT_COLOR,
+    // Let a long coupon name give way and ellipsize instead of pushing the
+    // chevron out of the card.
+    flexShrink: 1,
     fontSize: ScaleSize(14),
     fontWeight: '600',
   },
@@ -88,7 +95,10 @@ const styles = StyleSheet.create({
   rowRight: {
     alignItems: 'center',
     flexDirection: 'row',
+    // RN defaults flexShrink to 0, so this side has to opt in to shrinking.
+    flexShrink: 1,
     gap: ScaleSize(4),
+    justifyContent: 'flex-end',
   },
   section: {
     marginTop: ScaleSize(24),

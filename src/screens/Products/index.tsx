@@ -51,6 +51,7 @@ function Products(props: RootScreenProps<Paths.Products>) {
     storeInfo,
     isShowBtnCart,
     loading,
+    isOutsideOpenHour,
     goToCart,
     onChangeQuantity,
     onLoadMore,
@@ -58,10 +59,6 @@ function Products(props: RootScreenProps<Paths.Products>) {
   } = useProducts(props);
   const { t } = useTranslation();
 
-  // scrollY always tracks the FlatList offset; frozenScrollY is what every
-  // header interpolation reads. While search is open the mirror is paused,
-  // so the hero header stays put no matter how the list scrolls behind the
-  // keyboard (filter results, inset adjustments...).
   const scrollY = useSharedValue(0);
   const frozenScrollY = useSharedValue(0);
   const isSearchActive = useSharedValue(false);
@@ -87,8 +84,6 @@ function Products(props: RootScreenProps<Paths.Products>) {
     StatusBar.setBarStyle(isHeaderVisible ? 'dark-content' : 'light-content');
   }, []);
 
-  // Drive the status bar off the same (frozen) scroll value the header reads,
-  // so opening search doesn't desync the bar from the visible header.
   useAnimatedReaction(
     () => frozenScrollY.value >= collapseScroll * STATUS_BAR_FLIP_RATIO,
     (isHeaderVisible, previous) => {
@@ -111,8 +106,6 @@ function Products(props: RootScreenProps<Paths.Products>) {
   }, [isSearchActive]);
 
   const handleSearchClose = useCallback(() => {
-    // Re-attach the hero to live scroll and snap it to wherever the list
-    // currently sits so the next scroll event doesn't jump the banner.
     isSearchActive.value = false;
     frozenScrollY.value = scrollY.value;
   }, [frozenScrollY, isSearchActive, scrollY]);
@@ -136,12 +129,13 @@ function Products(props: RootScreenProps<Paths.Products>) {
             isFirst={index == 0}
             item={item}
             onPress={onPressProduct}
+            isOutsideOpenHour={isOutsideOpenHour}
             index={index}
             onChangeQuantity={onChangeQuantity}
           />
         );
       },
-    [onPressProduct, data],
+    [onPressProduct, isOutsideOpenHour, data],
   );
 
   return (
@@ -170,6 +164,7 @@ function Products(props: RootScreenProps<Paths.Products>) {
             ListHeaderComponent={
               <StoreInfo
                 collapseScroll={collapseScroll}
+                isOutsideOpenHour={isOutsideOpenHour}
                 scrollY={frozenScrollY}
                 storeInfo={storeInfo}
               />

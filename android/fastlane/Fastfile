@@ -269,17 +269,19 @@ def update_android_version_name(gradle_file:, version_name:)
 end
 
 # Lấy danh sách N commit gần nhất trong repo git, trả về chuỗi nhiều dòng:
-#   <subject> (<author>, <date>)
-#   <subject> (<author>, <date>)
+#   - (<author>) <subject>
+#   - (<author>) <subject>
 #   ...
+# Giữ cùng định dạng với ios/fastlane/Fastfile#recent_git_commits.
 def get_recent_git_commits(repo_dir:, limit: 5)
   Dir.chdir(repo_dir) do
-    format = '%s%x00%ae%x00%ad'
-    raw = `git log -n #{limit} --no-merges --pretty=#{format} --date=short`.strip
+    # %an = tên author (không phải %ae = email).
+    format = '%s%x00%an'
+    raw = `git log -n #{limit} --no-merges --pretty=#{format}`.strip
     return "N/A" if raw.empty?
 
     raw.lines.map(&:strip).reject(&:empty?).map do |line|
-      subject, author, date = line.split("\x00", 3)
+      subject, author = line.split("\x00", 2)
       "- (#{author}) #{subject}"
     end.join("\n")
   end

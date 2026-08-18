@@ -9,7 +9,7 @@ import React from 'react';
 const CARD_GRADIENT = ['#4EBE5B', '#39AD48'];
 
 type Properties = {
-  readonly balance: number;
+  readonly balance?: number;
   readonly onUse: () => void;
 };
 
@@ -41,7 +41,9 @@ function PointBalanceCard({ balance, onUse }: Properties) {
           style={styles.useButton}
           testID="point-dashboard-use"
         >
-          <Text style={styles.useButtonText}>{t('point_dashboard.use_action')}</Text>
+          <Text style={styles.useButtonText}>
+            {t('point_dashboard.use_action')}
+          </Text>
         </AppButton>
       </LinearGradient>
     </View>

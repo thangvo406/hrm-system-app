@@ -2,10 +2,11 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   IStoreCartItem,
   ICheckoutInfo,
+  IRequestCancelOrder,
   IRequestCreateOrder,
   ICreateOrderResponse,
+  IRequestDecreaseContribute,
   IRequestGenerateQRCode,
-  IGenerateQRCodeResponse,
   IRequestGetCartDetail,
   IRequestGetInfoProductCheckout,
   IRequestGetListCart,
@@ -20,7 +21,11 @@ import type {
   IRequestUpdateCartItem,
   IResponseInitPayment,
   IKcpInitParams,
+  IRequestGenerateQRRefundTransaction,
+  IRequestReOrder,
 } from '@type/payment';
+import { IGenerateQRCodeResponse } from '@type/account';
+
 import {
   IRequestIncreaseContribute,
   IContributeHistoryDetail,
@@ -31,12 +36,14 @@ import {
 } from '@type/wallet';
 import type { AppCallback, ListApiResponse } from '@type/common';
 
-import { call, takeLatest } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
 
 import {
   calculatePrice,
+  cancelOrder,
   createLinkPaymentOrder,
   createOrder,
+  decreaseContribute,
   generateQRCodePay,
   getAddressOrderRecent,
   getCartDetail,
@@ -50,19 +57,24 @@ import {
   getOrderHistoryDetail,
   increaseContribution,
   balanceCharge,
+  reorder,
   removeCartItem,
   updateCartItem,
+  generateQRRefundTransaction,
 } from '@services/request/payment';
 import { getErrorMessageApi } from '@utils/common';
 
 import {
   calculatePriceRequest,
+  cancelOrderRequest,
   createOrderRequest,
+  decreaseContributeRequest,
   generateQRCodePayRequest,
   getAddressOrderRecentRequest,
   getCartDetailRequest,
   getContributeHistoryDetailRequest,
   getContributeSummaryRequest,
+  getContributeSummarySuccess,
   getDividendDetailRequest,
   getHistoriesDividendRequest,
   getInfoProductCheckoutRequest,
@@ -71,8 +83,10 @@ import {
   getOrderHistoryDetailRequest,
   increaseContributionRequest,
   balanceChargeRequest,
+  reorderRequest,
   removeCartItemRequest,
   updateCartItemRequest,
+  generateQRRefundTransactionRequest,
 } from './paymentSlice';
 import { IDividendHistory } from '@type';
 
@@ -162,11 +176,11 @@ function* createOrderWorker(
 function* getOrderHistoriesWorker(
   action: PayloadAction<IRequestGetOrderHistories>,
 ): Generator<unknown, void, ListApiResponse<IOrderHistoryItem[]>> {
-  const { onFailure, onSuccess, page, size } = action.payload;
+  const { onFailure, onSuccess, ...request } = action.payload;
   try {
     const response: ListApiResponse<IOrderHistoryItem[]> = yield call(
       getOrderHistories,
-      { page, size },
+      request,
     );
     onSuccess?.(response);
   } catch (error_) {
@@ -264,6 +278,32 @@ function* balanceChargeWorker(
   }
 }
 
+function* reorderWorker(
+  action: PayloadAction<IRequestReOrder>,
+): Generator<unknown, void, IStoreCartItem> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: IStoreCartItem = yield call(reorder, request);
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* cancelOrderWorker(
+  action: PayloadAction<IRequestCancelOrder>,
+): Generator<unknown, void, void> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    yield call(cancelOrder, request);
+    onSuccess?.();
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 function* calculatePriceWorker(
   action: PayloadAction<IRequestCalculatePrice>,
 ): Generator<unknown, void, IPriceDetail> {
@@ -290,12 +330,42 @@ function* increaseContributionWorker(
   }
 }
 
+function* decreaseContributeWorker(
+  action: PayloadAction<IRequestDecreaseContribute>,
+): Generator<unknown, void, IKcpInitParams> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: IKcpInitParams = yield call(decreaseContribute, request);
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
 function* getContributeSummaryWorker(
   action: PayloadAction<AppCallback<IContributeSummary>>,
 ): Generator<unknown, void, IContributeSummary> {
   const { onFailure, onSuccess } = action.payload;
   try {
     const response: IContributeSummary = yield call(getContributeSummary);
+    yield put(getContributeSummarySuccess(response));
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* generateQRRefundTransactionWorker(
+  action: PayloadAction<IRequestGenerateQRRefundTransaction>,
+): Generator<unknown, void, IGenerateQRCodeResponse> {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: IGenerateQRCodeResponse = yield call(
+      generateQRRefundTransaction,
+      request,
+    );
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -336,6 +406,7 @@ function* getDividendDetailWorker(
 
 export function* paymentSaga() {
   yield takeLatest(calculatePriceRequest.type, calculatePriceWorker);
+  yield takeLatest(cancelOrderRequest.type, cancelOrderWorker);
   yield takeLatest(createOrderRequest.type, createOrderWorker);
   yield takeLatest(generateQRCodePayRequest.type, generateQRCodeWorker);
   yield takeLatest(
@@ -365,8 +436,14 @@ export function* paymentSaga() {
     increaseContributionRequest.type,
     increaseContributionWorker,
   );
+  yield takeLatest(decreaseContributeRequest.type, decreaseContributeWorker);
   yield takeLatest(balanceChargeRequest.type, balanceChargeWorker);
+  yield takeLatest(reorderRequest.type, reorderWorker);
   yield takeLatest(removeCartItemRequest.type, removeCartItemWorker);
+  yield takeLatest(
+    generateQRRefundTransactionRequest.type,
+    generateQRRefundTransactionWorker,
+  );
   yield takeLatest(updateCartItemRequest.type, updateCartItemWorker);
   yield takeLatest(getCartDetailRequest.type, getCartDetailWorker);
   yield takeLatest(

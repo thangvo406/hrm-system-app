@@ -2,7 +2,12 @@ import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
-import { COLORS_POINT_AMOUNT, EMPTY_VALUE, POINT_TAG_STYLE, TRANSACTION_DETAIL_DISPLAY } from '@constants/config';
+import {
+  COLORS_POINT_AMOUNT,
+  EMPTY_VALUE,
+  POINT_TAG_STYLE,
+  TRANSACTION_DETAIL_DISPLAY,
+} from '@constants/config';
 import { TranslationKeys } from '@translations/i18next';
 import { formatTransactionPoint } from '@utils/common';
 import { IPointPayHistory } from '@type';
@@ -25,14 +30,13 @@ function PointHistoryRow({ item, onPressItem }: Properties) {
   const { t } = useTranslation();
   const tag = POINT_TAG_STYLE[item?.entryType];
   const detailLabel = DETAIL_LABELS[item.entryType];
-  const amountColor = COLORS_POINT_AMOUNT[item.entryType];
+  const amountColor = COLORS_POINT_AMOUNT[item.transactionDirection];
   return (
-    <AppButton style={styles.row}
-      onPress={onPressItem?.(item)}>
+    <AppButton style={styles.row} onPress={onPressItem?.(item)}>
       <View style={styles.leftColumn}>
         <Text style={styles.type}>{t(tag?.title as TranslationKeys)}</Text>
         <Text style={styles.description}>
-        {detailLabel ? t(detailLabel as TranslationKeys) : EMPTY_VALUE}
+          {detailLabel ? t(detailLabel as TranslationKeys) : EMPTY_VALUE}
         </Text>
       </View>
 
@@ -40,7 +44,9 @@ function PointHistoryRow({ item, onPressItem }: Properties) {
         <Text style={[styles.amount, { color: amountColor }]}>
           {formatTransactionPoint(item)}
         </Text>
-        <Text style={styles.date}>{dayjs(item.createdDate).format(DATE_FORMAT)}</Text>
+        <Text style={styles.date}>
+          {dayjs(item.createdDate).format(DATE_FORMAT)}
+        </Text>
       </View>
     </AppButton>
   );

@@ -3,7 +3,7 @@ import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from '@utils/product';
 import type { IAttributeCart, IProductCart } from '@type';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AppButton, Image } from '@components';
 import AppNavigator from '@navigation/AppNavigator';
 import Information from '@dialogs/Information';
@@ -20,16 +20,20 @@ type CartProductCardProperties = {
   readonly item: IProductCart;
   readonly onChangeQuantity: (item: IProductCart) => void;
   readonly readOnly?: boolean;
+  readonly isOutsideOpenHour?: boolean;
 };
 
 function CartProductCard({
   item,
   onChangeQuantity,
-  readOnly = false,
+  readOnly,
+  isOutsideOpenHour,
 }: CartProductCardProperties) {
   const { t } = useTranslation();
   const [quantity, setQuantity] = useState(item.quantity);
   const [error, setError] = useState('');
+  const isDisableUpdateQuantity = item.isForStudent || isOutsideOpenHour;
+  const isShowConfirmRemove = useRef(false);
 
   useEffect(() => {
     setQuantity(item.quantity);
@@ -41,6 +45,10 @@ function CartProductCard({
       title: t('payment_cart.product_info.remove_dialog_title'),
       cancelTitle: t('payment_cart.product_info.remove_dialog_cancel'),
       confirmTitle: t('payment_cart.product_info.remove_dialog_confirm'),
+      cancelable: false,
+      onDismiss: () => {
+        isShowConfirmRemove.current = false;
+      },
       onConfirm: () => {
         onChangeQuantity({ ...item, quantity: 0 });
       },
@@ -61,7 +69,10 @@ function CartProductCard({
   const onPressMinus = () => {
     const newQuantity = quantity - 1;
     if (newQuantity <= 0) {
-      confirmRemove();
+      if (!isShowConfirmRemove.current) {
+        confirmRemove();
+      }
+      isShowConfirmRemove.current = true;
       return;
     }
     setError('');
@@ -83,13 +94,17 @@ function CartProductCard({
       <View style={styles.info}>
         <Text style={styles.name}>{item.productName}</Text>
         <Text style={styles.price}>
-          {t('common.display_price', { amount: formatCurrency(item.unitPrice) })}
+          {t('common.display_price', {
+            amount: formatCurrency(item.unitPrice),
+          })}
         </Text>
-        {item.selectedAttributes?.map((attribute: IAttributeCart) => (
-          <Text style={styles.attribute} key={attribute.attributeId}>
-            {attribute.attributeName}
-          </Text>
-        ))}
+        {item.selectedAttributes?.map(
+          (attribute: IAttributeCart, index: number) => (
+            <Text style={styles.attribute} key={index}>
+              {attribute.attributeName}
+            </Text>
+          ),
+        )}
         {error ? <Text style={styles.error}>{error}</Text> : undefined}
       </View>
 
@@ -104,6 +119,7 @@ function CartProductCard({
           <AppButton
             onPress={confirmRemove}
             style={styles.closeBtn}
+            disabled={isOutsideOpenHour}
             testID={`cart-remove-${item.id}`}
           >
             <Text style={styles.closeIcon}>×</Text>
@@ -112,15 +128,25 @@ function CartProductCard({
           <View style={styles.stepper}>
             <AppButton
               onPress={onPressMinus}
-              style={[styles.stepperBtn, styles.stepperMinus]}
+              disabled={isDisableUpdateQuantity}
+              style={[
+                styles.stepperBtn,
+                styles.stepperPlus,
+                isDisableUpdateQuantity && styles.stepperMinus,
+              ]}
               testID={`cart-minus-${item.id}`}
             >
-              <Text style={styles.stepperMinusIcon}>−</Text>
+              <Text style={styles.stepperPlusIcon}>−</Text>
             </AppButton>
             <Text style={styles.stepperCount}>{quantity}</Text>
             <AppButton
               onPress={onPressPlus}
-              style={[styles.stepperBtn, styles.stepperPlus]}
+              disabled={isDisableUpdateQuantity}
+              style={[
+                styles.stepperBtn,
+                styles.stepperPlus,
+                isDisableUpdateQuantity && styles.stepperMinus,
+              ]}
               testID={`cart-plus-${item.id}`}
             >
               <Text style={styles.stepperPlusIcon}>+</Text>

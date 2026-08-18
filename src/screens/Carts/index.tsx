@@ -18,10 +18,11 @@ import {
 } from '@components';
 import { useCart } from '@hooks';
 import { useTranslation } from 'react-i18next';
-import { ProductUtils } from '@utils';
-import React from 'react';
+import { CommonUtils, ProductUtils } from '@utils';
+import React, { useMemo } from 'react';
 import HeaderDetail from '@components/HeaderDetail';
 import imageNames from '@assets/images/names';
+import { Colors } from '@constants';
 
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#8A8A8A';
@@ -45,6 +46,25 @@ const CartRow = React.memo(
       onRemove(item.id);
     };
 
+    const { isOutsideOpenHour, reopenText } = useMemo(() => {
+      const newItem = {
+        ...(item || ({} as any)),
+        openingTime: item?.storeOpeningTime,
+        closedTime: item?.storeClosedTime,
+      };
+      const isOutsideOpenHour = CommonUtils.isStoreOutsideOpenHour(
+        newItem as any,
+      );
+      const reopenText = CommonUtils.getStoreReopenText(
+        newItem as any,
+        t('products.store_reopen_date_format'),
+      );
+      return {
+        reopenText,
+        isOutsideOpenHour,
+      };
+    }, [item]);
+
     return (
       <AppButton
         style={styles.row}
@@ -60,12 +80,29 @@ const CartRow = React.memo(
             name={imageNames.img_store_recent_default}
           />
           <View style={styles.info}>
-            <Text numberOfLines={2} style={styles.productName}>
+            <Text
+              numberOfLines={2}
+              style={[styles.productName, isOutsideOpenHour && styles.textGray]}
+            >
               {item.storeName}
             </Text>
             <Text style={styles.metaText}>
               {t('carts.item_count', { count: item.totalQuantity })}
             </Text>
+            {!!isOutsideOpenHour && (
+              <Text
+                numberOfLines={2}
+                style={styles.labelClosed}
+                testID="store-closed-label"
+              >
+                {t('products.store_closed')}
+                {reopenText ? (
+                  <Text style={styles.detail}>
+                    {` · ${t('products.store_reopen_at', { time: reopenText })}`}
+                  </Text>
+                ) : undefined}
+              </Text>
+            )}
             <Text style={styles.totalPrice}>
               {t('common.display_price', {
                 amount: ProductUtils.formatCurrency(item.subTotal),
@@ -87,6 +124,18 @@ const CartRow = React.memo(
             />
           </TouchableOpacity>
         ) : undefined}
+        {!!isOutsideOpenHour && (
+          <View
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(255,255,255,0.5)',
+            }}
+          />
+        )}
       </AppButton>
     );
   },
@@ -159,6 +208,18 @@ const styles = StyleSheet.create({
     gap: ScaleSize(4),
     paddingLeft: ScaleSize(12),
   },
+  labelClosed: {
+    color: Colors.red03,
+    flex: 1,
+    fontSize: ScaleSize(14),
+    fontWeight: 'bold',
+    // marginLeft: ScaleSize(20),
+    // paddingVertical: ScaleSize(6),
+  },
+  detail: {
+    color: Colors.red04,
+    fontWeight: 'bold',
+  },
   listContent: {
     paddingBottom: ScaleSize(32),
     paddingHorizontal: ScaleSize(16),
@@ -183,6 +244,9 @@ const styles = StyleSheet.create({
     color: TEXT_MUTED,
     fontSize: ScaleSize(13),
   },
+  textGray: {
+    color: Colors.gray4,
+  },
   productName: {
     color: TEXT_DARK,
     fontSize: ScaleSize(15),
@@ -194,6 +258,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: ScaleSize(12),
     backgroundColor: '#E53935',
     height: '100%',
+    zIndex: 9999,
   },
   row: {
     alignItems: 'center',

@@ -25,11 +25,6 @@ type Properties = {
   readonly onRequestClose?: () => void;
 };
 
-/**
- * Full-screen dormant-account notice rendered as a Dialog `screen`
- * (`isFullScreen`). Shows when/why the account went dormant, what data is
- * archived, and offers reactivation (identity verification) or deletion.
- */
 function InActiveAccount({
   archivedInformation = '',
   dormantDate = '',
@@ -42,11 +37,9 @@ function InActiveAccount({
   const { t } = useTranslation();
 
   const _onDeleteAccount = () => {
-    onRequestClose();
     onDeleteAccount();
   };
   const _onReactivate = () => {
-    onRequestClose();
     onReactivate();
   };
 

@@ -1,3 +1,4 @@
+import { GRADE_MEMBERSHIP_TYPE } from '@constants/config';
 import { ValidateUtils } from '@kits/core/utils';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
@@ -36,8 +37,9 @@ export function useProfile() {
   const onChangeReceiptPhone = useCallback((text: string) => {
     const phone = text.replaceAll(/\D/g, '');
     setReceiptPhone(phone);
-    const error =
-      phone && ValidateUtils.isPhoneNumber(text)
+    const error = !phone
+      ? ''
+      : phone && ValidateUtils.isPhoneNumber(text)
         ? ''
         : t('authorisation.error_phone_invalid');
     setErrors(prev =>
@@ -51,13 +53,22 @@ export function useProfile() {
 
   const membershipType = useMemo(() => {
     const key = `profile.memberships.${profile?.membershipType?.toLowerCase()}`;
-    if (!profile?.membershipType?.trim?.()) {
-      return '-';
-    } else if (TranslationUtils.hasTranslationKey(key)) {
-      return t(key);
+    let result = '';
+    if (profile?.coopMemberGrade) {
+      result = t(
+        `home.member_labels.${profile?.coopMemberGrade?.toLowerCase()}`,
+      );
     }
-    return t('profile.memberships.other');
-  }, [profile?.membershipType]);
+    if (
+      !profile?.membershipType?.trim?.() ||
+      profile?.membershipType == GRADE_MEMBERSHIP_TYPE.GENERAL
+    ) {
+      return result;
+    } else if (TranslationUtils.hasTranslationKey(key)) {
+      return `${result}-${t(key)}`;
+    }
+    return `${result}-${t('profile.memberships.other')}`;
+  }, [t, profile?.coopMemberGrade, profile?.membershipType]);
 
   const onChangeFullName = useCallback(
     (text: string) => {

@@ -42,6 +42,7 @@ function PayCard() {
     refreshing,
     filterCount,
     isEnablePaymentCard,
+    onCapitalWithdrawal,
     onChangeTab,
     onPressTranItem,
   } = useContributeHistory();
@@ -95,17 +96,28 @@ function PayCard() {
         style={styles.scrollView}
       >
         <View style={styles.section}>
-          <View style={styles.payHeaderRow}>
+          <View style={styles.contributionHeaderRow}>
             <Text style={styles.sectionTitle}>
               {t('contribute_history.contribution_status_title')}
             </Text>
-            <Button
-              onPress={onRecharge}
-              style={styles.rechargeButton}
-              testID="contribute-history-add"
-              title={t('contribute_history.add_contribute')}
-              type="primary"
-            />
+            <View style={styles.headerActions}>
+              <Button
+                onPress={onRecharge}
+                style={styles.primaryActionButton}
+                testID="contribute-history-add"
+                title={t('contribute_history.add_contribute')}
+                titleStyle={styles.actionButtonLabel}
+                type="primary"
+              />
+              <Button
+                onPress={onCapitalWithdrawal}
+                style={styles.secondaryActionButton}
+                testID="contribute-history-withdrawal"
+                title={t('contribute_history.capital_withdrawal')}
+                titleStyle={styles.actionButtonLabel}
+                type="outline-green"
+              />
+            </View>
           </View>
           <Text style={styles.balanceText}>
             {t('contribute_history.cumulative_contribution', {
@@ -121,7 +133,7 @@ function PayCard() {
             <Text style={styles.sectionTitle}>
               {t('contribute_history.dividend_info_title')}
             </Text>
-            <Button
+            {/* <Button
               onPress={() => {}}
               style={styles.dividendDetailButton}
               titleStyle={{
@@ -130,7 +142,7 @@ function PayCard() {
               testID="contribute-history-dividend-detail"
               title={t('contribute_history.btn_dividend_detail')}
               type="outline-bordered"
-            />
+            /> */}
           </View>
           {isEnablePaymentCard ? (
             <>
@@ -255,14 +267,36 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: ScaleSize(14),
   },
+  actionButtonLabel: {
+    fontSize: ScaleSize(14),
+  },
+  contributionHeaderRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: ScaleSize(10),
+    width: '100%',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: ScaleSize(8),
+  },
   payHeaderRow: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  rechargeButton: {
-    borderRadius: ScaleSize(20),
-    height: ScaleSize(36),
+  primaryActionButton: {
+    borderRadius: ScaleSize(19),
+    height: ScaleSize(38),
+    paddingHorizontal: ScaleSize(14),
+    width: undefined,
+  },
+  secondaryActionButton: {
+    borderColor: Colors.primary,
+    borderRadius: ScaleSize(19),
+    height: ScaleSize(38),
     paddingHorizontal: ScaleSize(14),
     width: undefined,
   },
@@ -288,6 +322,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: TEXT_DARK,
+    flexShrink: 1,
     fontSize: ScaleSize(16),
     fontWeight: '700',
   },

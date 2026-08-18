@@ -12,6 +12,7 @@ import type { ITotalItemCart } from '@type/payment';
 import type {
   IRequestAutoCompleteAddress,
   IResponseOrganizationInfo,
+  IRequestGenerateQRCodeMealTicket,
   IRequestGetTransactionDetail,
   IRequestGetTransactionMovement,
   IRequestGetPayPointHistories,
@@ -27,6 +28,7 @@ import type {
 import type {
   IRequestConfirmMemberShipVerify,
   IRequestDeleteAccount,
+  IResponseCreateLinkVerifyInfoUser,
 } from '@type/auth';
 
 import { createSlice } from '@reduxjs/toolkit';
@@ -55,7 +57,9 @@ const accountSlice = createSlice({
   name: 'account',
   reducers: {
     activeAccountRequest: {
-      prepare: (payload: AppCallback = {}) => ({ payload }),
+      prepare: (payload: AppCallback<IResponseCreateLinkVerifyInfoUser>) => ({
+        payload,
+      }),
       reducer: () => {},
     },
     autoCompleteAddressRequest: {
@@ -70,6 +74,10 @@ const accountSlice = createSlice({
     },
     deleteAccountRequest: {
       prepare: (payload: IRequestDeleteAccount) => ({ payload }),
+      reducer: () => {},
+    },
+    generateQRCodeMealTicketRequest: {
+      prepare: (payload: IRequestGenerateQRCodeMealTicket) => ({ payload }),
       reducer: () => {},
     },
     generateQRCodeMemberRequest: {
@@ -178,6 +186,7 @@ export const {
   clearProfile,
   confirmOTPRequestMembershipRequest,
   deleteAccountRequest,
+  generateQRCodeMealTicketRequest,
   generateQRCodeMemberRequest,
   getCurrentWalletRequest,
   getCurrentWalletSuccess,

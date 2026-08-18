@@ -1,21 +1,27 @@
-import AppButton from '@components/AppButton';
-import CheckBox from '@components/CheckBox';
-import TextField from '@components/TextField';
+import type { Ref } from 'react';
+import type { TextInput } from 'react-native';
+import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from '@utils/product';
 import { useTranslation } from 'react-i18next';
-import React, { useState } from 'react';
+import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
+import { AppButton, TextField, CheckBox } from '@components';
 
 const ACCENT_COLOR = '#2DB34A';
+
+export type PointUsageCardHandle = {
+  readonly focus: () => void;
+};
 
 type Properties = {
   readonly onChangePointUsed: (text: number) => void;
   readonly onToggleUsePoints: () => void;
   readonly pointHolding?: number;
   readonly pointUsed: number;
+  readonly ref?: Ref<PointUsageCardHandle>;
   readonly usePoints: boolean;
 };
 
@@ -24,19 +30,38 @@ function PointUsageCard({
   onToggleUsePoints,
   pointHolding,
   pointUsed,
+  ref: reference,
   usePoints,
 }: Properties) {
   const { t } = useTranslation();
   const [errorInputPoint, setErrorInputPoint] = useState('');
+  const [isFocused, setIsFocused] = useState(false);
+  const [inputText, setInputText] = useState('');
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
+  const inputReference = useRef<TextInput>(null);
+
+  useImperativeHandle(
+    reference,
+    () => ({
+      focus: () => {
+        inputReference.current?.focus();
+      },
+    }),
+    [],
+  );
+
+  useEffect(() => {
+    const typedNumber = Number(inputText.replaceAll(/\D/g, '') || 0);
+    if (typedNumber === pointUsed) {
+      return;
+    }
+    setInputText(pointUsed ? formatCurrency(pointUsed) : '');
+  }, [inputText, pointUsed]);
 
   const onChangePoint = (text: string) => {
-    const newText = text.replaceAll(/\D/g, '');
-    const newNumber =
-      newText == String(pointUsed)
-        ? Number(newText.slice(0, -1))
-        : Number(newText);
-    if (newNumber > currentWallet?.pointBalance) {
+    const digits = text.replaceAll(/\D/g, '');
+    const newNumber = digits ? Number(digits) : 0;
+    if (newNumber > (currentWallet?.pointBalance || 0)) {
       setErrorInputPoint(
         t('point_usage.max_point_error', {
           amount: formatCurrency(currentWallet?.pointBalance),
@@ -45,11 +70,26 @@ function PointUsageCard({
       return;
     }
     setErrorInputPoint('');
-    onChangePointUsed(Number(newNumber));
+    setInputText(digits ? formatCurrency(newNumber) : '');
+    onChangePointUsed(newNumber);
   };
 
+  const onFocusPoint = () => {
+    setIsFocused(true);
+    setInputText(pointUsed ? formatCurrency(pointUsed) : '');
+  };
+
+  const onBlurPoint = () => {
+    setIsFocused(false);
+    setErrorInputPoint('');
+  };
+
+  const renderPointUnit = () => (
+    <Text style={styles.pointUnit}>{t('point_usage.point_unit')}</Text>
+  );
+
   return (
-    <AppButton style={styles.card} onPress={onToggleUsePoints}>
+    <View style={styles.card}>
       <View
         style={{
           flexDirection: 'row',
@@ -71,21 +111,31 @@ function PointUsageCard({
           </Text>
         </View>
 
-        <TextField
-          inputWrapperStyle={styles.pointPill}
-          keyboardType="number-pad"
-          onChangeText={onChangePoint}
-          placeholder="0"
-          returnKeyType="done"
-          style={styles.pointPillText}
-          testID="point-usage-input"
-          value={`${formatCurrency(pointUsed)} ${t('point_usage.point_unit')}`}
-        />
+        <AppButton
+          onPress={() => {
+            inputReference.current?.focus();
+          }}
+        >
+          <TextField
+            inputWrapperStyle={styles.pointPill}
+            keyboardType="number-pad"
+            onChangeText={onChangePoint}
+            onBlur={onBlurPoint}
+            onFocus={onFocusPoint}
+            placeholder=""
+            ref={inputReference}
+            renderRightComponent={renderPointUnit}
+            returnKeyType="done"
+            style={styles.pointPillText}
+            testID="point-usage-input"
+            value={isFocused ? inputText : formatCurrency(pointUsed)}
+          />
+        </AppButton>
       </View>
       {!!errorInputPoint && (
         <Text style={styles.errorMaxQuantity}>{errorInputPoint}</Text>
       )}
-    </AppButton>
+    </View>
   );
 }
 
@@ -125,6 +175,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: ACCENT_COLOR,
     borderRadius: ScaleSize(8),
+    gap: ScaleSize(4),
     justifyContent: 'center',
     marginBottom: 0,
     maxWidth: ScaleSize(120),
@@ -132,13 +183,18 @@ const styles = StyleSheet.create({
     paddingVertical: ScaleSize(10),
   },
   pointPillText: {
-    color: '#FFFFFF',
+    color: Colors.white,
     flex: 0,
-    // Giữ text trong maxWidth của pill khi số điểm dài, không tràn ra ngoài.
     flexShrink: 1,
     fontSize: ScaleSize(15),
     fontWeight: '700',
+    minWidth: ScaleSize(24),
     paddingVertical: 0,
     textAlign: 'center',
+  },
+  pointUnit: {
+    color: Colors.white,
+    fontSize: ScaleSize(15),
+    fontWeight: '700',
   },
 });

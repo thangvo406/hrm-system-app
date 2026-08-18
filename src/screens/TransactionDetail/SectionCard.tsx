@@ -1,4 +1,5 @@
 import type { IconName } from '@assets/icons';
+import type { StyleProp, ViewStyle } from 'react-native';
 
 import { Colors } from '@constants';
 import { Image } from '@components';
@@ -10,6 +11,7 @@ type Properties = {
   readonly badge?: string;
   readonly children: React.ReactNode;
   readonly icon?: IconName;
+  readonly style?: StyleProp<ViewStyle>;
   readonly title: string;
 };
 
@@ -19,10 +21,11 @@ function SectionCard({
   badge = undefined,
   children,
   icon = undefined,
+  style = undefined,
   title,
 }: Properties) {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, style]}>
       <View style={styles.header}>
         <View style={styles.iconWrap}>
           {icon ? (

@@ -3,9 +3,9 @@ import type { Profile } from '@services/request/account';
 import type { AddressSuggestion } from '@services/request/account';
 
 import type {
-  IResponseCreateQRCodeMember,
   IResponseOrganizationInfo,
   IRequestAutoCompleteAddress,
+  IRequestGenerateQRCodeMealTicket,
   IRequestGetPayPointHistories,
   IRequestGetVouchers,
   IRequestUpdateMembership,
@@ -20,6 +20,7 @@ import type {
   ITransactionMovement,
   IVoucher,
   IPointPayHistory,
+  IGenerateQRCodeResponse,
 } from '@type/account';
 import type { ITransactionDetail } from '@type/payment';
 import type {
@@ -38,6 +39,8 @@ import type {
   IRequestConfirmMemberShipVerify,
   IRequestDeleteAccount,
   IResponseConfirmMemberShipVerify,
+  IResponseCreateLinkVerifyInfoUser,
+  IResponseSendOtpVerifyMembership,
 } from '@type/auth';
 
 import {
@@ -46,6 +49,7 @@ import {
   confirmOTPRequestMembership,
   createQRCodeMember,
   deleteAccount,
+  generateQRCodeMealTicket,
   getMealTickets,
   getOrganizationInfo,
   getPayPointHistories,
@@ -77,6 +81,7 @@ import {
   autoCompleteAddressRequest,
   confirmOTPRequestMembershipRequest,
   deleteAccountRequest,
+  generateQRCodeMealTicketRequest,
   generateQRCodeMemberRequest,
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
@@ -242,13 +247,10 @@ function* getTotalItemCartWorker(
 
 function* generateQRCodeMemberWorker(
   action: PayloadAction<IRequestCreateQRCodeMember>,
-): Generator<unknown, void, IResponseCreateQRCodeMember> {
+): Generator<unknown, void, IGenerateQRCodeResponse> {
   const { onFailure, onSuccess, ...request } = action.payload || {};
   try {
-    const response: IResponseCreateQRCodeMember = yield call(
-      createQRCodeMember,
-      request,
-    );
+    const response = yield call(createQRCodeMember, request);
     onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
@@ -256,11 +258,26 @@ function* generateQRCodeMemberWorker(
   }
 }
 
-function* activeAccountWorker(action: PayloadAction<AppCallback>) {
+function* generateQRCodeMealTicketWorker(
+  action: PayloadAction<IRequestGenerateQRCodeMealTicket>,
+): Generator<unknown, void, IGenerateQRCodeResponse> {
+  const { onFailure, onSuccess, ...request } = action.payload || {};
+  try {
+    const response = yield call(generateQRCodeMealTicket, request);
+    onSuccess?.(response);
+  } catch (error_) {
+    const message = getErrorMessageApi(error_);
+    onFailure?.(message);
+  }
+}
+
+function* activeAccountWorker(
+  action: PayloadAction<AppCallback<IResponseCreateLinkVerifyInfoUser>>,
+): Generator<unknown, void, IResponseCreateLinkVerifyInfoUser> {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    yield call(activeAccount, request);
-    onSuccess?.();
+    const response = yield call(activeAccount, request);
+    onSuccess?.(response);
   } catch (error_) {
     const message = getErrorMessageApi(error_);
     onFailure?.(message);
@@ -322,7 +339,7 @@ function* confirmOTPRequestMembershipWorker(
 
 function* updateMembershipWorker(
   action: PayloadAction<IRequestUpdateMembership>,
-) {
+): Generator<unknown, void, IResponseSendOtpVerifyMembership> {
   const { onSuccess, onFailure, ...request } = action.payload;
   try {
     const response = yield call(updateMembership, request);
@@ -456,16 +473,16 @@ export function* accountSaga() {
   );
   yield takeLatest(deleteAccountRequest.type, deleteAccountWorker);
   yield takeLatest(
+    generateQRCodeMealTicketRequest.type,
+    generateQRCodeMealTicketWorker,
+  );
+  yield takeLatest(
     generateQRCodeMemberRequest.type,
     generateQRCodeMemberWorker,
   );
   yield takeLatest(getTotalItemCartRequest.type, getTotalItemCartWorker);
-  // takeEvery (not takeLatest): voucher tabs share one action type, so a new
-  // fetch (tab switch / refresh) must not cancel an in-flight one. Duplicate
-  // work is already guarded in the hook (requestedTabs / isLoadingMore).
+
   yield takeEvery(getVouchersRequest.type, getVouchersWorker);
-  // takeEvery for the same reason as vouchers: meal-ticket tabs share one
-  // action type, so a tab switch / refresh must not cancel an in-flight fetch.
   yield takeEvery(getMealTicketsRequest.type, getMealTicketsWorker);
   yield takeLatest(getOrganizationInfoRequest.type, getOrganizationInfoWorker);
   yield takeLatest(

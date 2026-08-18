@@ -18,6 +18,11 @@ const isLeapYear = (year: number): boolean => {
   );
 };
 
+const SECONDS_SUFFIX_LENGTH = 3;
+
+export const trimSeconds = (time: string) =>
+  time.slice(0, -SECONDS_SUFFIX_LENGTH);
+
 export function isDateInCurrentWeek(
   currentWeek: any,
   date = Globals.currentTime,

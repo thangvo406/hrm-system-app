@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useFocusEffect } from '@react-navigation/native';
 import {
+  generateQRCodeMealTicketRequest,
   generateQRCodeMemberRequest,
   getMealTicketsRequest,
 } from '@services/slices/account/accountSlice';
@@ -142,10 +143,16 @@ export function useMealTickets() {
 
   const onRefreshQR = (voucher: any) => (callback: any) => {
     dispatch(
-      generateQRCodeMemberRequest({
-        cpn: [voucher.code],
+      generateQRCodeMealTicketRequest({
+        ticketCode: voucher.code,
         onSuccess: response => {
-          callback(response);
+          callback({
+            ...(response || ({} as any)),
+            token:
+              typeof response?.data == 'string'
+                ? response?.data
+                : JSON.stringify(response?.data),
+          });
         },
       }),
     );
@@ -153,8 +160,8 @@ export function useMealTickets() {
 
   const onUseVoucher = useCallback((voucher: IMealTicket) => {
     dispatch(
-      generateQRCodeMemberRequest({
-        cpn: [voucher.code],
+      generateQRCodeMealTicketRequest({
+        ticketCode: voucher.code,
         onSuccess: response => {
           AppNavigator.showDialog({
             screen: QRCodeViewerView,
@@ -164,7 +171,13 @@ export function useMealTickets() {
             titleKey: 'meal_ticket.detail.title',
             btnVoucher: `‹${t('meal_ticket.detail.btn_back')}`,
             titleVoucher: voucher?.productName,
-            data: response,
+            data: {
+              ...(response || ({} as any)),
+              token:
+                typeof response?.data == 'string'
+                  ? response?.data
+                  : JSON.stringify(response?.data),
+            },
             onRefresh: onRefreshQR(voucher),
           });
         },

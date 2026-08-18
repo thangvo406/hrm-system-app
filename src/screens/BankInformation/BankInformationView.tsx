@@ -22,6 +22,8 @@ type BankInformationViewProps = {
   readonly onSubmit: () => void;
   readonly showBtnBack?: boolean;
   readonly titleBtn?: string;
+  readonly title?: string;
+  readonly desc?: string;
   readonly data?: IManualTransfer;
 };
 
@@ -32,6 +34,8 @@ function BankInformationView({
   onSubmit,
   showBtnBack,
   data,
+  title,
+  desc,
   titleBtn = 'bank_information.next',
 }: BankInformationViewProps) {
   const { t } = useTranslation();
@@ -60,7 +64,7 @@ function BankInformationView({
             width={BURST_SIZE}
           />
           <Text style={styles.title}>
-            {t('bank_information.transfer_title')}
+            {title || t('bank_information.transfer_title')}
           </Text>
           <Image
             color={TITLE_COLOR}
@@ -72,7 +76,9 @@ function BankInformationView({
           />
         </View>
 
-        <Text style={styles.intro}>{t('bank_information.transfer_desc')}</Text>
+        <Text style={styles.intro}>
+          {desc || t('bank_information.transfer_desc')}
+        </Text>
         <BankInfoCard data={data} />
       </ScrollView>
 

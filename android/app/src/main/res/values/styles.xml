@@ -10,12 +10,12 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
-    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
-        <item name="android:windowLightStatusBar">true</item>
+    <!-- Theme của MainActivity (launcher). Kế thừa AppTheme để giữ nguyên
+         hành vi app, chỉ thêm windowBackground trùng nền launch_screen.xml
+         nên cold start không nháy màu trước khi splash của
+         react-native-splash-screen được gắn vào. -->
+    <style name="LaunchTheme" parent="AppTheme">
+        <item name="android:windowBackground">@color/splash_background</item>
     </style>
 
 </resources>

@@ -15,7 +15,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ScaleSize } from '@kits/core';
 import imageNames from '@assets/images/names';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
@@ -26,6 +26,9 @@ import AppNavigator from '@navigation/AppNavigator';
 import Information from '@screens/Dialog/components/Information';
 import { useI18n } from '@hooks';
 import RegisterMembership from '@dialogs/RegisterMembership';
+import RequestAddCard from '@dialogs/RequestAddCard';
+import { GRADE_MEMBERSHIP_TYPE } from '@constants/config';
+import set from 'lodash/set';
 
 const MENU_WIDTH_RATIO = 0.78;
 const SLIDE_DURATION = 280;
@@ -46,6 +49,7 @@ const HEADER_BACKGROUND = '#4FAA52';
 const LOGO_TEXT = '#FFFFFF';
 const LOGOUT_TEXT = '#FFFFFF';
 const LOGO_INITIALS = '쿠비';
+const NAME_CENTER_MAX_LENGTH = 7;
 const TRANSLATE_HIDDEN = 1000;
 const HIT_SLOP_SMALL = {
   bottom: 8,
@@ -75,16 +79,19 @@ const NAV_TARGETS: Readonly<Record<string, Paths>> = {
   pay_balance: Paths.ContributionHistory,
   survey: Paths.Survey,
   store_search: Paths.Stores,
-  order: Paths.OrderHistories,
+  order: Paths.Stores,
+  order_history: Paths.Orders,
   pay: Paths.PaymentOffline,
   deposit_inquiry: Paths.ContributionHistory,
   deposit_pay: Paths.ContributionInput,
   profile: Paths.Profile,
   coupon: Paths.Vouchers,
   meal_ticket: Paths.MealTickets,
+  pay_point: Paths.PayPointHistories,
+  pay_topup: Paths.TopUp,
 };
 
-const sections: readonly MenuSection[] = [
+const SECTIONS: readonly MenuSection[] = [
   {
     items: [
       { key: 'deposit_inquiry', labelKey: 'home.menu.deposit_inquiry' },
@@ -97,13 +104,17 @@ const sections: readonly MenuSection[] = [
   {
     items: [
       { key: 'pay_point', labelKey: 'home.menu.pay_point' },
+      // { key: 'pay_register', labelKey: 'home.menu.pay_register' },
       { key: 'pay_topup', labelKey: 'home.menu.pay_topup' },
       { key: 'pay', labelKey: 'home.menu.pay' },
     ],
     titleKey: 'home.menu.section_pay',
   },
   {
-    items: [{ key: 'order', labelKey: 'home.menu.order' }],
+    items: [
+      { key: 'order', labelKey: 'home.menu.order' },
+      { key: 'order_history', labelKey: 'home.menu.order_history' },
+    ],
     titleKey: 'home.menu.section_order',
   },
   {
@@ -148,6 +159,23 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
   const profileName = profile?.name ?? profile?.fullName ?? '';
   const profileInitial =
     profileName.trim().charAt(0).toUpperCase() || LOGO_INITIALS;
+  const displayName = profile?.fullName?.trim() ?? '';
+  // Tên ngắn thì canh giữa theo avatar phía trên, tên dài canh trái như cũ.
+  const isShortDisplayName = displayName.length <= NAME_CENTER_MAX_LENGTH;
+
+  const sections = useMemo(() => {
+    const isHideContribute =
+      profile?.coopMemberGrade == GRADE_MEMBERSHIP_TYPE.GENERAL;
+    const _sections = SECTIONS;
+    let firstItem = _sections[0].items;
+    if (isHideContribute) {
+      firstItem = firstItem.filter(
+        it => !['deposit_inquiry', 'deposit_pay'].includes(it.key),
+      );
+    }
+    set(_sections, `[0].items`, firstItem);
+    return _sections;
+  }, []);
 
   useEffect(() => {
     if (closing) {
@@ -195,6 +223,11 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
       } else if (itemKey == 'academy_verification') {
         AppNavigator.showDialog({
           screen: RegisterMembership,
+          isFullScreen: true,
+        });
+      } else if (itemKey == 'pay_register') {
+        AppNavigator.showDialog({
+          screen: RequestAddCard,
           isFullScreen: true,
         });
       } else {
@@ -290,10 +323,18 @@ function Menu({ onRequestClose, zIndex = undefined }: MenuProperties) {
                 />
               </TouchableOpacity>
             </View>
-            {!!profile?.fullName && (
-              <Text numberOfLines={1} style={styles.university}>
-                {profile?.fullName}
-              </Text>
+            {!!displayName && (
+              <View
+                style={
+                  isShortDisplayName
+                    ? styles.universityWrapCenter
+                    : styles.universityWrapLeft
+                }
+              >
+                <Text numberOfLines={1} style={styles.university}>
+                  {displayName}
+                </Text>
+              </View>
             )}
             <View style={styles.headerDivider} />
           </View>
@@ -413,6 +454,15 @@ const styles = StyleSheet.create({
     fontSize: ScaleSize(16),
     fontWeight: '500',
     marginTop: ScaleSize(15),
+  },
+  // Rộng bằng đúng cột avatar (padding trái + avatar + padding phải) nên tâm
+  // của wrapper trùng tâm avatar; minWidth để tên hơi dài không bị cắt.
+  universityWrapCenter: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    minWidth: HEADER_HORIZONTAL * 2 + LOGO_SIZE,
+  },
+  universityWrapLeft: {
     marginLeft: ScaleSize(15),
   },
   logoutText: {

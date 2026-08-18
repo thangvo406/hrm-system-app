@@ -3,7 +3,10 @@ import type { IStoreItem } from '@type/store';
 import type { StoreFilterValue } from '@dialogs/FilterStore';
 
 import { Paths } from '@navigation/paths';
-import { getStoresRequest } from '@services/slices/stores/storesSlice';
+import {
+  getStoreOrderRecentRequest,
+  getStoresRequest,
+} from '@services/slices/stores/storesSlice';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
@@ -26,6 +29,10 @@ const onBack = () => {
   }
 };
 
+const onPressOrderHistory = () => {
+  AppNavigator.navigate(Paths.Orders);
+};
+
 export const useStore = () => {
   const dispatch = useAppDispatch();
   const storeOrderRecent = useAppSelector(StoresSelector.getStoreOrderRecent);
@@ -35,13 +42,30 @@ export const useStore = () => {
   const [searchKey, setSearchKey] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
   const [filter, setFilter] = useState<StoreFilterValue>(DEFAULT_FILTER);
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshIndex, setRefreshIndex] = useState(0);
   const isLast = useRef(false);
   const isLoadingMore = useRef(false);
+
+  const isShowList = useMemo(() => {
+    let isShowList = false;
+    if (data?.length > 0) {
+      isShowList = true;
+    } else if (
+      !searchKey?.trim() &&
+      !data?.length &&
+      (storeOrderRecent?.products?.length || 0) > 0
+    ) {
+      isShowList = true;
+    }
+    return isShowList;
+  }, [data, storeOrderRecent]);
 
   const handleSuccess = useCallback(
     (response: ListApiResponse<IStoreItem[]>) => {
       isLast.current = response.last;
       setLoading(false);
+      setRefreshing(false);
       const items = response?.content || [];
       setData(prev => (currentPage === 0 ? items : [...prev, ...items]));
       isLoadingMore.current = false;
@@ -52,12 +76,14 @@ export const useStore = () => {
   const handleFailure = useCallback((message: string) => {
     setError(message);
     setLoading(false);
+    setRefreshing(false);
     isLoadingMore.current = false;
   }, []);
 
   useFocusEffect(
     useCallback(() => {
       isLoadingMore.current = true;
+      dispatch(getStoreOrderRecentRequest());
       dispatch(
         getStoresRequest({
           onFailure: handleFailure,
@@ -71,12 +97,24 @@ export const useStore = () => {
     }, [
       currentPage,
       filter,
+      refreshIndex,
       searchKey,
       dispatch,
       handleFailure,
       handleSuccess,
     ]),
   );
+
+  // Pulling resets to the first page and bumps the token. When the page is
+  // already 0 the token is the only thing that changes, so the focus effect
+  // still refetches — and it fires exactly once either way.
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    isLast.current = false;
+    isLoadingMore.current = false;
+    setCurrentPage(0);
+    setRefreshIndex(prev => prev + 1);
+  }, []);
 
   const onLoadMore = useCallback(() => {
     if (isLast.current || isLoadingMore.current) {
@@ -123,11 +161,16 @@ export const useStore = () => {
     error,
     filter,
     loading,
+    refreshing,
     storeOrderRecent,
+    searchKey,
+    isShowList,
     onLoadMore,
     onPressProduct,
+    onPressOrderHistory,
     onPressStore,
     onPressFilter,
+    onRefresh,
     onSearchChange,
     onBack,
     stores: data,

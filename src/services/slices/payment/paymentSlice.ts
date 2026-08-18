@@ -1,15 +1,18 @@
 import type { AppCallback } from '@type/common';
 import type {
-  ICheckoutInfo,
   IRequestCalculatePrice,
+  IRequestCancelOrder,
   IRequestCreateOrder,
+  IRequestDecreaseContribute,
   IRequestGenerateQRCode,
+  IRequestGenerateQRRefundTransaction,
   IRequestGetCartDetail,
   IRequestGetInfoProductCheckout,
   IRequestGetListCart,
   IRequestGetOrderHistories,
   IRequestGetOrderHistoryDetail,
   IRequestInitCharge,
+  IRequestReOrder,
   IRequestRemoveCartItem,
   IRequestUpdateCartItem,
 } from '@type/payment';
@@ -21,14 +24,16 @@ import {
   IRequestIncreaseContribute,
 } from '@type/wallet';
 
+import type { PayloadAction } from '@reduxjs/toolkit';
+
 import { createSlice } from '@reduxjs/toolkit';
 
 export interface PaymentState {
-  checkoutInfo: ICheckoutInfo | undefined;
+  contributeSummary: IContributeSummary | undefined;
 }
 
 const initialState: PaymentState = {
-  checkoutInfo: undefined,
+  contributeSummary: undefined,
 };
 
 const paymentSlice = createSlice({
@@ -37,6 +42,10 @@ const paymentSlice = createSlice({
   reducers: {
     calculatePriceRequest: {
       prepare: (payload: IRequestCalculatePrice) => ({ payload }),
+      reducer: () => {},
+    },
+    cancelOrderRequest: {
+      prepare: (payload: IRequestCancelOrder) => ({ payload }),
       reducer: () => {},
     },
     createOrderRequest: {
@@ -71,6 +80,10 @@ const paymentSlice = createSlice({
       prepare: (payload: IRequestGetOrderHistoryDetail) => ({ payload }),
       reducer: () => {},
     },
+    reorderRequest: {
+      prepare: (payload: IRequestReOrder) => ({ payload }),
+      reducer: () => {},
+    },
     removeCartItemRequest: {
       prepare: (payload: IRequestRemoveCartItem) => ({ payload }),
       reducer: () => {},
@@ -83,12 +96,29 @@ const paymentSlice = createSlice({
       prepare: (payload: IRequestIncreaseContribute) => ({ payload }),
       reducer: () => {},
     },
+    decreaseContributeRequest: {
+      prepare: (payload: IRequestDecreaseContribute) => ({ payload }),
+      reducer: () => {},
+    },
     getContributeSummaryRequest: {
       prepare: (payload: AppCallback<IContributeSummary>) => ({ payload }),
       reducer: () => {},
     },
+    getContributeSummarySuccess: {
+      prepare: (payload: IContributeSummary | undefined) => ({ payload }),
+      reducer: (
+        state,
+        action: PayloadAction<IContributeSummary | undefined>,
+      ) => {
+        state.contributeSummary = action.payload;
+      },
+    },
     getContributeHistoryDetailRequest: {
       prepare: (payload: IRequestGetContributeHistoryDetail) => ({ payload }),
+      reducer: () => {},
+    },
+    generateQRRefundTransactionRequest: {
+      prepare: (payload: IRequestGenerateQRRefundTransaction) => ({ payload }),
       reducer: () => {},
     },
     getCartDetailRequest: {
@@ -108,12 +138,15 @@ const paymentSlice = createSlice({
 
 export const {
   calculatePriceRequest,
+  cancelOrderRequest,
   createOrderRequest,
+  decreaseContributeRequest,
   generateQRCodePayRequest,
   getAddressOrderRecentRequest,
   getCartDetailRequest,
   getContributeHistoryDetailRequest,
   getContributeSummaryRequest,
+  getContributeSummarySuccess,
   getDividendDetailRequest,
   getHistoriesDividendRequest,
   getInfoProductCheckoutRequest,
@@ -122,7 +155,9 @@ export const {
   getOrderHistoryDetailRequest,
   increaseContributionRequest,
   balanceChargeRequest,
+  reorderRequest,
   removeCartItemRequest,
   updateCartItemRequest,
+  generateQRRefundTransactionRequest,
 } = paymentSlice.actions;
 export const paymentReducer = paymentSlice.reducer;

@@ -20,7 +20,9 @@ const TEXT_MUTED = '#8A8F94';
 
 function PointNotice({ amount, onDismiss }: Properties) {
   const { t } = useTranslation();
-
+  if (!amount) {
+    return <></>;
+  }
   return (
     <View style={styles.container}>
       <View style={styles.banner}>

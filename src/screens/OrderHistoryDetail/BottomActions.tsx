@@ -10,13 +10,16 @@ import React from 'react';
 const { ifAndroid } = DeviceUtils;
 
 type Properties = {
-  readonly onPressContactSupport: () => void;
-  readonly onPressReorder: () => void;
+  readonly onPressGoSmartOrder: () => void;
+  readonly onPressCancelOrder: () => void;
 };
 
 const ANDROID_BOTTOM_SPACE = 16;
 
-function BottomActions({ onPressContactSupport, onPressReorder }: Properties) {
+function BottomActions({
+  onPressGoSmartOrder,
+  onPressCancelOrder,
+}: Properties) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
 
@@ -32,18 +35,17 @@ function BottomActions({ onPressContactSupport, onPressReorder }: Properties) {
         },
       ]}
     >
-      <Button
-        onPress={onPressReorder}
-        style={styles.action}
+      {/* <Button
+        onPress={onPressCancelOrder}
+        style={styles.cancelOrder}
         testID="order-detail-reorder"
-        title={t('order_history_detail.reorder')}
-        type="outline-bordered"
-      />
+        title={t('cancellation_order.title')}
+      /> */}
       <Button
-        onPress={onPressContactSupport}
+        onPress={onPressGoSmartOrder}
         style={styles.action}
         testID="order-detail-support"
-        title={t('order_history_detail.contact_support')}
+        title={t('order_history_detail.go_smart_order')}
         type="rounded"
       />
     </View>
@@ -53,6 +55,14 @@ function BottomActions({ onPressContactSupport, onPressReorder }: Properties) {
 export default React.memo(BottomActions);
 
 const styles = StyleSheet.create({
+  cancelOrder: {
+    alignItems: 'center',
+    backgroundColor: Colors.red03,
+    borderRadius: ScaleSize(14),
+    flex: 1,
+    height: ScaleSize(52),
+    justifyContent: 'center',
+  },
   action: {
     flex: 1,
   },

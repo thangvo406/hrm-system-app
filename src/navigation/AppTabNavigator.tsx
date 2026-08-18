@@ -17,9 +17,14 @@ export function AppTabNavigator() {
       <Tab.Screen component={Screens.Carts} name={Paths.Carts} />
       <Tab.Screen
         component={Screens.PaymentOffline}
+        initialParams={{ isTab: true }}
         name={Paths.PaymentOffline}
       />
-      <Tab.Screen component={Screens.QRCodeViewer} name={Paths.QRCodeViewer} />
+      <Tab.Screen
+        component={Screens.QRCodeViewer}
+        initialParams={{ isTab: true }}
+        name={Paths.QRCodeViewer}
+      />
       <Tab.Screen component={Screens.Profile} name={Paths.Profile} />
     </Tab.Navigator>
   );

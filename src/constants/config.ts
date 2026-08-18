@@ -1,4 +1,5 @@
 import { RegisterMembershipStep, AuthStep, PointTagStyle } from '@type';
+import { Environment } from './environment';
 
 export const initialLoginForm = {
   email: '',
@@ -6,6 +7,7 @@ export const initialLoginForm = {
 };
 
 export const PASSWORD_MIN_LENGTH = 6;
+export const URL_TRANSLATION = `${Environment.DOMAIN_CDN}uploads/{{lng}}.json`;
 
 export const NEED_INFO_LOGIN_CODE = {
   MEMBERSHIP_INCOMPLETE: 'AUTH_002',
@@ -26,9 +28,8 @@ export const DayOfWeek = {
 export const EMPTY_VALUE = '-';
 
 export const COLORS_POINT_AMOUNT: Record<string, string | undefined> = {
-  POINT_EXPIRE: '#D9534F',
-  POINT_USE: '#1A1A1A',
-  POINT_EARN: '#2DB34A',
+  DEBIT: '#E14B4B',
+  CREDIT: '#2DB34A',
 };
 
 export const POINT_TAG_STYLE: Record<string, PointTagStyle | undefined> = {
@@ -36,6 +37,16 @@ export const POINT_TAG_STYLE: Record<string, PointTagStyle | undefined> = {
     background: '#FBE0E0',
     color: '#D9534F',
     title: 'pay_point.tags.point_expired',
+  },
+  CHARGE_BONUS_POINT: {
+    background: '#DFF3E1',
+    color: '#2DB34A',
+    title: 'pay_point.tags.point_accrue',
+  },
+  REFUND: {
+    background: '#DFF3E1',
+    color: '#2DB34A',
+    title: 'pay_point.tags.point_accrue',
   },
   POINT_USE: {
     background: '#ECECEC',
@@ -47,7 +58,28 @@ export const POINT_TAG_STYLE: Record<string, PointTagStyle | undefined> = {
     color: '#2DB34A',
     title: 'pay_point.tags.point_accrue',
   },
+  POINT_GRANT: {
+    background: '#DFF3E1',
+    color: '#2DB34A',
+    title: 'pay_point.tags.point_accrue',
+  },
 };
+
+export const SIGN_PREFIX_TRANSACTION = {
+  CREDIT: '+',
+  DEBIT: '-',
+};
+
+export enum OrderTransactionStatus {
+  PENDING = 'PENDING',
+  PAYMENT_PENDING = 'PAYMENT_PENDING',
+  PAYMENT_COMPLETED = 'PAYMENT_COMPLETED',
+  PAYMENT_INTEGRATED_COMPLETED = 'PAYMENT_INTEGRATED_COMPLETED',
+  SHIPPING = 'SHIPPING',
+  COMPLETED = 'COMPLETED',
+  CANCEL_REQUESTED = 'CANCEL_REQUESTED',
+  CANCELED = 'CANCELED',
+}
 
 export const REQUEST_ADD_CARD_METHOD_TYPES = {
   ACCOUNT: 'PABK',
@@ -138,6 +170,7 @@ enum TransactionType {
   REFUND = 'REFUND',
   MANUAL_ADJUSTMENT = 'MANUAL_ADJUSTMENT',
   POINT_EARN = 'POINT_EARN',
+  POINT_GRANT = 'POINT_GRANT',
   POINT_USE = 'POINT_USE',
   CONTRIBUTION_EARN = 'CONTRIBUTION_EARN',
   CONTRIBUTION_DECREASE = 'CONTRIBUTION_DECREASE',
@@ -148,7 +181,68 @@ enum TransactionType {
   POINT_EXPIRE = 'POINT_EXPIRE',
   PAY_MONEY_WITHDRAWAL = 'PAY_MONEY_WITHDRAWAL',
   PAY_MONEY_CHARGE_BONUS = 'PAY_MONEY_CHARGE_BONUS',
+  CHARGE_BONUS_POINT = 'CHARGE_BONUS_POINT',
+  ORG_PAYMENT = 'ORG_PAYMENT',
 }
+
+export enum HEADLINE_ACTIONS {
+  CHARGE = 'CHARGE',
+  CHARGE_BONUS_POINT = 'CHARGE_BONUS_POINT',
+  POINT_EARN = 'POINT_EARN',
+  PAYMENT = 'PAYMENT',
+  WITHDRAWAL = 'WITHDRAWAL',
+  POINT_GRANT = 'POINT_GRANT',
+  POINT_USE = 'POINT_USE',
+  POINT_EXPIRE = 'POINT_EXPIRE',
+  REFUND = 'REFUND',
+  ADJUSTMENT = 'ADJUSTMENT',
+  ORG_PAYMENT = 'ORG_PAYMENT',
+}
+
+export enum BALANCE_ACCOUNT_TYPE {
+  PAY_MONEY = 'PAY_MONEY',
+  POINT = 'POINT',
+  CONTRIBUTION = 'CONTRIBUTION',
+  DIVIDEND = 'DIVIDEND',
+}
+
+export const SUMMARY_TRANSACTION_DETAIL_DISPLAY: Record<
+  HEADLINE_ACTIONS,
+  string
+> = {
+  [HEADLINE_ACTIONS.CHARGE]:
+    'account_management.transaction_detail_texts.charge',
+
+  [HEADLINE_ACTIONS.CHARGE_BONUS_POINT]:
+    'account_management.transaction_detail_texts.charge_bonus_point',
+
+  [HEADLINE_ACTIONS.PAYMENT]:
+    'account_management.transaction_detail_texts.payment',
+
+  [HEADLINE_ACTIONS.WITHDRAWAL]:
+    'account_management.transaction_detail_texts.withdrawal',
+
+  [HEADLINE_ACTIONS.POINT_EARN]:
+    'account_management.transaction_detail_texts.point_earn',
+
+  [HEADLINE_ACTIONS.POINT_GRANT]:
+    'account_management.transaction_detail_texts.point_grant',
+
+  [HEADLINE_ACTIONS.POINT_USE]:
+    'account_management.transaction_detail_texts.point_use',
+
+  [HEADLINE_ACTIONS.POINT_EXPIRE]:
+    'account_management.transaction_detail_texts.point_expire',
+
+  [HEADLINE_ACTIONS.REFUND]:
+    'account_management.transaction_detail_texts.refund',
+
+  [HEADLINE_ACTIONS.ADJUSTMENT]:
+    'account_management.transaction_detail_texts.adjustment',
+
+  [HEADLINE_ACTIONS.ORG_PAYMENT]:
+    'account_management.transaction_detail_texts.org_payment',
+};
 
 export const TRANSACTION_DETAIL_DISPLAY: Record<TransactionType, string> = {
   [TransactionType.PAY_MONEY_CHARGE]:
@@ -166,6 +260,9 @@ export const TRANSACTION_DETAIL_DISPLAY: Record<TransactionType, string> = {
     'pay_point.transaction_detail_texts.manual_adjustment',
 
   [TransactionType.POINT_EARN]: 'pay_point.transaction_detail_texts.point_earn',
+
+  [TransactionType.POINT_GRANT]:
+    'pay_point.transaction_detail_texts.point_grant',
 
   [TransactionType.POINT_USE]: 'pay_point.transaction_detail_texts.point_use',
 
@@ -195,6 +292,12 @@ export const TRANSACTION_DETAIL_DISPLAY: Record<TransactionType, string> = {
 
   [TransactionType.PAY_MONEY_CHARGE_BONUS]:
     'pay_point.transaction_detail_texts.pay_money_charge_bonus',
+
+  [TransactionType.CHARGE_BONUS_POINT]:
+    'pay_point.transaction_detail_texts.charge_bonus_point',
+
+  [TransactionType.ORG_PAYMENT]:
+    'pay_point.transaction_detail_texts.org_payment',
 };
 
 export const MEMBERSHIP_OPTIONS = [

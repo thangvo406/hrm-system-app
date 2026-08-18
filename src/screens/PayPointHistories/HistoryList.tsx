@@ -57,7 +57,7 @@ function HistoryList({
       loading ? undefined : (
         <EmptyView
           desc={t('pay_point.empty')}
-          icon={imageNames.ic_package}
+          icon={imageNames.ic_placeholder_transaction}
           style={styles.empty}
         />
       ),

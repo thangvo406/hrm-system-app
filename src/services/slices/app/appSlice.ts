@@ -9,12 +9,14 @@ export interface AppState {
   counter: number;
   showFloatingCart: boolean;
   isEnablePaymentCard: boolean;
+  isEnableAddress: boolean;
 }
 
 const initialState: AppState = {
   counter: 0,
   showFloatingCart: false,
   isEnablePaymentCard: false,
+  isEnableAddress: false,
 };
 
 const appSlice = createSlice({

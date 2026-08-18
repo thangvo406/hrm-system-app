@@ -24,14 +24,18 @@ import { THEMES } from './theme';
 function OrderCompleted(props: any) {
   const { data, dataOrder, status } = AppNavigator.getParams(props) as {
     data?: any;
-    dataOrder?: { deliveryMethod?: string; paymentMethod?: string };
+    dataOrder?: {
+      deliveryMethod?: string;
+      paymentMethod?: string;
+      totalAmount: number;
+    };
     status?: OrderStatus;
   };
   const insets = useSafeAreaInsets();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
-  const theme = THEMES[status ?? 'success'];
+  const theme = THEMES[status ?? 'success'] ?? THEMES.success;
 
   useEffect(() => {
     dispatch(getTotalItemCartRequest());
@@ -81,6 +85,7 @@ function OrderCompleted(props: any) {
           paddingTop={insets.top}
           subtitle={t(`${theme.i18nBase}.subtitle`)}
           theme={theme}
+          totalAmount={dataOrder?.totalAmount}
           title={t(`${theme.i18nBase}.title`)}
         />
         <InfoCard
