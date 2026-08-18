@@ -39,9 +39,23 @@ function ProductRow({ product }: Properties) {
         ))}
         <Text style={styles.qty}>x{product?.quantity}</Text>
       </View>
-      <Text style={styles.price}>
-        {t('common.display_price', { amount: formatCurrency(product.price) })}
-      </Text>
+      <View
+        style={{
+          alignItems: 'flex-end',
+        }}
+      >
+        <Text style={styles.price}>
+          {t('common.display_price', { amount: formatCurrency(product.price) })}
+        </Text>
+        {!!product?.discountEligible && (
+          <Text style={styles.discountPrice}>
+            {t('order_history_detail.price_detail.memberDiscountPrice')}
+            {` -${t('common.display_price', {
+              amount: formatCurrency(product.discountMemberAmount),
+            })}`}
+          </Text>
+        )}
+      </View>
     </View>
   );
 }
@@ -62,6 +76,11 @@ const styles = StyleSheet.create({
     color: Colors.black01,
     fontSize: ScaleSize(14),
     fontWeight: '500',
+  },
+  discountPrice: {
+    color: Colors.red03,
+    fontSize: ScaleSize(9),
+    fontWeight: '600',
   },
   price: {
     color: Colors.black01,

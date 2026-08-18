@@ -28,7 +28,10 @@ function StoreCard({ onPressProduct, onPressStore, store }: Properties) {
     onPressProduct(store, productId);
   };
 
-  const isOutsideOpenHour = useMemo( () => CommonUtils.isStoreOutsideOpenHour(store), [store]);
+  const isOutsideOpenHour = useMemo(
+    () => CommonUtils.isStoreOutsideOpenHour(store),
+    [store],
+  );
   const reopenText = useMemo(
     () =>
       CommonUtils.getStoreReopenText(
@@ -46,7 +49,6 @@ function StoreCard({ onPressProduct, onPressStore, store }: Properties) {
 
   return (
     <View style={styles.card} testID={`store-${store.id}`}>
- 
       <ProductList
         onPressProduct={handlePressProduct}
         products={store.products as IProduct[]}
@@ -57,22 +59,28 @@ function StoreCard({ onPressProduct, onPressStore, store }: Properties) {
       <TouchableOpacity
         activeOpacity={0.85}
         onPress={handlePressStore}
-        style={styles.nameRow}
         testID={`store-${store.id}-title`}
       >
-        <Image
-          color={isOutsideOpenHour ? Colors.gray4 : TEXT_DARK}
-          height={ICON_SIZE}
-          name="ic_store"
-          type="svg"
-          width={ICON_SIZE}
-        />
-        <Text style={[styles.storeName, isOutsideOpenHour && styles.textGray]}>{store.name}</Text>
-      
-      </TouchableOpacity>
-      {
-        !!isOutsideOpenHour &&
-            <Text numberOfLines={2} style={styles.labelClosed} testID="store-closed-label">
+        <View style={styles.nameRow}>
+          <Image
+            color={isOutsideOpenHour ? Colors.gray4 : TEXT_DARK}
+            height={ICON_SIZE}
+            name="ic_store"
+            type="svg"
+            width={ICON_SIZE}
+          />
+          <Text
+            style={[styles.storeName, isOutsideOpenHour && styles.textGray]}
+          >
+            {store.name}
+          </Text>
+        </View>
+        {!!isOutsideOpenHour && (
+          <Text
+            numberOfLines={2}
+            style={styles.labelClosed}
+            testID="store-closed-label"
+          >
             {t('products.store_closed')}
             {reopenText ? (
               <Text style={styles.detail}>
@@ -80,26 +88,27 @@ function StoreCard({ onPressProduct, onPressStore, store }: Properties) {
               </Text>
             ) : undefined}
           </Text>
-      }
-    
-      <View style={styles.metaRow}>
-        <View style={styles.metaItem}>
-          {store.receiveMethod?.length > 0 ? (
-            store.receiveMethod?.map(item => (
-              <View key={item} style={styles.containerDeliver}>
-                <Text style={styles.labelDeliver}>
-                  {t(`stores.delivery_label.${item?.toLowerCase()}`)}
-                </Text>
-              </View>
-            ))
-          ) : (
-            <Text style={styles.metaText}>--</Text>
-          )}
+        )}
+
+        <View style={styles.metaRow}>
+          <View style={styles.metaItem}>
+            {store.receiveMethod?.length > 0 ? (
+              store.receiveMethod?.map(item => (
+                <View key={item} style={styles.containerDeliver}>
+                  <Text style={styles.labelDeliver}>
+                    {t(`stores.delivery_label.${item?.toLowerCase()}`)}
+                  </Text>
+                </View>
+              ))
+            ) : (
+              <Text style={styles.metaText}>--</Text>
+            )}
+          </View>
+          {minOrderText ? (
+            <Text style={styles.metaText}>{minOrderText}</Text>
+          ) : undefined}
         </View>
-        {minOrderText ? (
-          <Text style={styles.metaText}>{minOrderText}</Text>
-        ) : undefined}
-      </View>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -116,7 +125,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   textGray: {
-    color: Colors.gray4
+    color: Colors.gray4,
   },
   labelClosed: {
     color: Colors.red03,
@@ -124,7 +133,7 @@ const styles = StyleSheet.create({
     fontSize: ScaleSize(14),
     fontWeight: 'bold',
     marginLeft: ScaleSize(20),
-    marginTop: ScaleSize(10)
+    marginTop: ScaleSize(10),
   },
   containerDeliver: {
     paddingVertical: ScaleSize(4),

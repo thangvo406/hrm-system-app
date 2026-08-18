@@ -24,7 +24,11 @@ import { THEMES } from './theme';
 function OrderCompleted(props: any) {
   const { data, dataOrder, status } = AppNavigator.getParams(props) as {
     data?: any;
-    dataOrder?: { deliveryMethod?: string; paymentMethod?: string };
+    dataOrder?: {
+      deliveryMethod?: string;
+      paymentMethod?: string;
+      totalAmount: number;
+    };
     status?: OrderStatus;
   };
   const insets = useSafeAreaInsets();
@@ -81,7 +85,7 @@ function OrderCompleted(props: any) {
           paddingTop={insets.top}
           subtitle={t(`${theme.i18nBase}.subtitle`)}
           theme={theme}
-          totalAmount={data?.summary?.finalPrice || data?.totalAmount}
+          totalAmount={dataOrder?.totalAmount}
           title={t(`${theme.i18nBase}.title`)}
         />
         <InfoCard

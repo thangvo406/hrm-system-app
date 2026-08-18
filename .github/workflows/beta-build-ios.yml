@@ -1,23 +1,24 @@
-name: React Native CI/CD Beta Build
+name: iOS Beta Build (TestFlight)
 
 on:
   push:
     branches:
       - dev
+  # Cho phép chạy lại riêng iOS từ tab Actions mà không kéo theo Android.
+  workflow_dispatch:
 
-# Thiết lập biến môi trường toàn cục cho toàn bộ workflow
 env:
-  # github.run_number: Tự động tăng mỗi khi workflow chạy (ví dụ: 1, 2, 3...)
-  # Hoặc bạn có thể hardcode là '8929' nếu muốn.
+  # github.run_number: tự tăng mỗi lần workflow chạy. Lưu ý sau khi tách, iOS và
+  # Android có counter RIÊNG — số của hai bên không còn trùng nhau nữa.
+  # Với iOS đây chỉ là fallback: build number thật lấy từ
+  # latest_testflight_build_number + 1.
   BUILD_NUMBER: ${{ github.run_number }}
 
-  PREFIX_APP_NAME: 'COOP_DEV_v'
-
-  # github.ref_name: Tự động lấy tên nhánh đang trigger workflow (ở đây là master_icourse)
+  # github.ref_name: tên nhánh đang trigger workflow.
   BRANCH_NAME: ${{ github.ref_name }}
 
-  # Lấy từ GitHub Variables (Settings > Secrets and variables > Variables) để dễ đổi version sau này mà không cần sửa code.
-  # Nếu chưa cấu hình variable thì fallback về '1.0.0'.
+  # Lấy từ GitHub Variables (Settings > Secrets and variables > Variables) để đổi
+  # version không cần sửa code. Chưa cấu hình thì fallback '1.0.0'.
   VERSION_NUMBER: ${{ vars.VERSION_NUMBER || '1.0.0' }}
 
 # Build number lấy từ latest_testflight_build_number + 1, tức phụ thuộc trạng thái
@@ -25,91 +26,20 @@ env:
 # thứ hai bị Apple từ chối vì trùng build number — nên phải xếp hàng.
 # cancel-in-progress: false chứ không phải true: huỷ giữa chừng có thể vứt bỏ một
 # bản đã archive xong hoặc đã upload dở.
+#
+# Group có hậu tố -ios: nếu dùng chung group với workflow Android thì tách file ra
+# cũng vô nghĩa, hai bên vẫn phải xếp hàng chờ nhau.
 concurrency:
-  group: beta-build-${{ github.ref }}
+  group: beta-build-ios-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  build-android:
-    name: Build Android Beta
-    runs-on: macos-14
-    # QUAN TRỌNG: Cấp quyền để GitHub Actions tạo được Release và lưu file APK
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.13.0'
-
-      - name: Enable Corepack (Yarn 3.6)
-        run: |
-          corepack enable
-          corepack prepare yarn@3.6.4 --activate
-          yarn --version
-
-      - name: Cache Yarn dependencies
-        uses: actions/cache@v4
-        with:
-          path: .yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: yarn-${{ runner.os }}-
-
-      - name: Install Dependencies
-        run: yarn install --no-immutable
-
-      - name: Setup Java JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-          # cache: 'gradle'
-      # (Cấp độ 2 & 3: Thêm Action này để quản lý toàn bộ Cache của Android)
-      - name: Setup Gradle Cache
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          # Chỉ ghi đè cache mới khi build trên nhánh chính để tránh rác cache
-          cache-read-only: ${{ github.ref != 'refs/heads/dev' }}
-
-      - name: Setup Ruby and Fastlane
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-          bundler-cache: true
-          working-directory: android
-
-      - name: Decode & Generate Google Services and Firebase Credentials
-        run: |
-          # 1. Giải mã google-services.json và đặt đúng thư mục app/
-          # echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 --decode > android/app/google-services.json
-
-          # 2. Giải mã file credential để Fastlane upload (đặt tạm ở thư mục android/)
-          echo "${{ secrets.FIREBASE_CREDENTIALS_DEV_BASE64 }}" | base64 --decode > android/coop-dev-firebase.json
-
-          # In ra thông báo check xem file đã tồn tại chưa
-          # ls -la android/app/google-services.json
-          ls -la android/coop-dev-firebase.json
-
-      - name: Run Fastlane Android Beta
-        # Không cần truyền tham số ở đây nữa, Fastlane sẽ tự đọc từ biến môi trường
-        run: bundle exec fastlane beta
-        working-directory: android
-        env:
-          GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
   build-ios:
     name: Build iOS Beta (TestFlight)
     runs-on: macos-15
     # Build + archive + upload TestFlight thường ~40-60 phút, cho dư biên.
     timeout-minutes: 90
-    # Job chỉ đọc code rồi upload artifact; không tạo release/commit như job Android.
+    # Job chỉ đọc code rồi upload artifact; không tạo release/commit.
     permissions:
       contents: read
 
@@ -117,6 +47,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
+          # Cần full history: release note TestFlight lấy từ `git log`.
           fetch-depth: 0
 
       - name: Select Xcode
