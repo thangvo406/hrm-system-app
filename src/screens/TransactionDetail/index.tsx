@@ -44,7 +44,7 @@ const LEG_LABELS: Record<string, string | undefined> =
 const formatWon = (t: any, value: number | undefined, negative = false) =>
   `${negative ? EMPTY_VALUE : ''}${t('common.display_price', { amount: formatCurrency(value) })}`;
 
-const formatPoint = (value: number | undefined, negative = false) =>
+const formatPoint = (_, value: number | undefined, negative = false) =>
   `${negative ? EMPTY_VALUE : ''}${formatCurrency(value)}${POINT_SUFFIX}`;
 
 const getAmount = (data: any, fieldName: string) => {
@@ -163,6 +163,9 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
                   >
                     {it.legs.map((le, i) => {
                       const title = LEG_LABELS[le.entryType];
+                      const formatFunc = le.entryType?.startsWith('POINT')
+                        ? formatPoint
+                        : formatWon;
                       return (
                         <PointRow
                           key={`${index}_${i}`}
@@ -172,7 +175,8 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
                           label={
                             title ? t(title as TranslationKeys) : EMPTY_VALUE
                           }
-                          value={formatPoint(
+                          value={formatFunc(
+                            t,
                             le.amount,
                             le.direction == 'DEBIT',
                           )}
@@ -184,19 +188,17 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
               })}
             </View>
           </ScrollView>
-          {
-            !!order?.cancelQrAvailable &&
+          {!!order?.cancelQrAvailable && (
             <Button
-            title={t('transaction_detail.create_payment_cancel_qr_button')}
-            onPress={onPressQR}
-            style={{
-              width: '90%',
-              alignSelf: 'center',
-              bottom: 20,
-            }}
-          />
-
-          }
+              title={t('transaction_detail.create_payment_cancel_qr_button')}
+              onPress={onPressQR}
+              style={{
+                width: '90%',
+                alignSelf: 'center',
+                bottom: 20,
+              }}
+            />
+          )}
         </>
       )}
     </View>

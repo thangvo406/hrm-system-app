@@ -9,6 +9,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
 import { trimSeconds } from '@utils/date';
+import isNumber from 'lodash/isNumber';
 
 const ICON_SIZE = ScaleSize(18);
 const TEXT_DARK = '#1A1A1A';
@@ -53,7 +54,7 @@ function StoreCard({ onPressProduct, onPressStore, store }: Properties) {
     return text;
   }, [store?.closedTime, store?.openingTime]);
 
-  const minOrderText = store.minOrder
+  const minOrderText = isNumber(store.minOrder)
     ? t('stores.min_order', {
         amount: ProductUtils.formatCurrency(store.minOrder),
       })

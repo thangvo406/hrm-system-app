@@ -623,7 +623,7 @@
       "search_placeholder": "Store name",
       "section_label": "Frequently Ordered Store",
       "view_all_orders": "View all orders",
-      "min_order": "Min. order : {{amount}}",
+      "min_order": "Min. order : {{amount}}KRW",
       "open_hours": "Opening hours: {{time}}",
       "delivery_label": {
         "pickup": "Pickup",
