@@ -81,8 +81,8 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
   }, []);
 
   const isShowBtnCart = useMemo(() => {
-    return (storeInfo?.cartId ?? 0) > 0;
-  }, [storeInfo]);
+    return !isOutsideOpenHour && (storeInfo?.cartId ?? 0) > 0;
+  }, [storeInfo, isOutsideOpenHour]);
 
   const onLoadMore = useCallback(() => {
     if (isLast.current || isLoadingMore.current) {
@@ -164,8 +164,8 @@ export const useProducts = (props: RootScreenProps<Paths.Products>) => {
       if (!storeInfo) {
         return;
       }
-      if(!isLoadingMore.current && currentPage != 0) {
-        setCurrentPage(0)
+      if (!isLoadingMore.current && currentPage != 0) {
+        setCurrentPage(0);
         return;
       }
       dispatch(

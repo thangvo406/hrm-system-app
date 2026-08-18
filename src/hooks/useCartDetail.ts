@@ -10,6 +10,7 @@ import {
   updateCartItemRequest,
 } from '@services/slices/payment/paymentSlice';
 import type { SearchAddressItem } from '@type';
+import { CommonUtils } from '@utils';
 import { upperCaseFirstChar } from '@utils/common';
 import type { DebouncedFunc } from 'lodash';
 import debounce from 'lodash/debounce';
@@ -54,6 +55,25 @@ export const useCartDetail = (props: any) => {
   );
   const [addressDelivery, setAddressDelivery] =
     useState<AddressDelivery>(address);
+
+  const { isOutsideOpenHour, reopenText } = useMemo(() => {
+    const newItem = {
+      ...(data || ({} as any)),
+      openingTime: data?.storeOpeningTime,
+      closedTime: data?.storeClosedTime,
+    };
+    const isOutsideOpenHour = CommonUtils.isStoreOutsideOpenHour(
+      newItem as any,
+    );
+    const reopenText = CommonUtils.getStoreReopenText(
+      newItem as any,
+      t('products.store_reopen_date_format'),
+    );
+    return {
+      reopenText,
+      isOutsideOpenHour,
+    };
+  }, [data]);
 
   const shippingTabs = useMemo(() => {
     return (
@@ -213,6 +233,8 @@ export const useCartDetail = (props: any) => {
     error,
     products,
     isShowConfirmPayment,
+    isOutsideOpenHour,
+    reopenText,
     addressDelivery: getAddressDisplay(),
     onPressOrder,
     onBack,

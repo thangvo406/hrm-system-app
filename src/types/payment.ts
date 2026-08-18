@@ -30,6 +30,8 @@ export interface IStoreCartItem {
   userId: number;
   storeId: number;
   storeName: string;
+  storeOpeningTime: string;
+  storeClosedTime: string;
   storeAddress: IStoreAddress;
   subTotal: number;
   totalQuantity: number;

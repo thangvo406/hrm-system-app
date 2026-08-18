@@ -43,6 +43,7 @@ const getDeviceHeader = () => ({
   'device-deviceId': DeviceUtils.getDeviceId(),
   'device-manufacturer': deviceManufacturer,
   'accept-language': ApiLanguages[i18next.language as any],
+  'device-timezone': DeviceUtils.getTimeZone(),
 });
 
 const delay = (ms: number) =>

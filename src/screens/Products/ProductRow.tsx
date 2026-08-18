@@ -41,7 +41,7 @@ function ProductRow({
   const originalPrice = isNumber(item.discountPrice)
     ? item.discountPrice
     : item.sellingPrice || 0;
-  const isDisableUpdateQuantity = item.isForStudent;
+  const isDisableUpdateQuantity = item.isForStudent || isOutsideOpenHour;
 
   const isSoldOut = React.useMemo(
     () =>
@@ -118,9 +118,15 @@ function ProductRow({
           <View style={styles.stepper}>
             <AppButton
               style={styles.stepperIcon}
+              disabled={isOutsideOpenHour}
               onPress={_onChangeQuantity('')}
             >
-              <View style={styles.stepperBar} />
+              <View
+                style={[
+                  styles.stepperBar,
+                  isOutsideOpenHour && styles.btnDisable,
+                ]}
+              />
             </AppButton>
             <Text style={styles.stepperValue}>{quantity}</Text>
             <AppButton

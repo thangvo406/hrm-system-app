@@ -20,17 +20,19 @@ type CartProductCardProperties = {
   readonly item: IProductCart;
   readonly onChangeQuantity: (item: IProductCart) => void;
   readonly readOnly?: boolean;
+  readonly isOutsideOpenHour?: boolean;
 };
 
 function CartProductCard({
   item,
   onChangeQuantity,
   readOnly,
+  isOutsideOpenHour,
 }: CartProductCardProperties) {
   const { t } = useTranslation();
   const [quantity, setQuantity] = useState(item.quantity);
   const [error, setError] = useState('');
-  const isDisableUpdateQuantity = item.isForStudent;
+  const isDisableUpdateQuantity = item.isForStudent || isOutsideOpenHour;
 
   useEffect(() => {
     setQuantity(item.quantity);
@@ -109,6 +111,7 @@ function CartProductCard({
           <AppButton
             onPress={confirmRemove}
             style={styles.closeBtn}
+            disabled={isOutsideOpenHour}
             testID={`cart-remove-${item.id}`}
           >
             <Text style={styles.closeIcon}>×</Text>

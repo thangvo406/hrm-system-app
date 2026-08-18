@@ -1,7 +1,13 @@
 import { Button, EmptyView, HeaderDetail } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useCartDetail } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +33,8 @@ function CartDetail(props: any) {
     loading,
     error,
     isShowConfirmPayment,
+    isOutsideOpenHour,
+    reopenText,
     onBack,
     onPressOrder,
     onPressPayment,
@@ -51,10 +59,40 @@ function CartDetail(props: any) {
         </View>
       ) : (
         <>
+          {!!isOutsideOpenHour && (
+            <View
+              pointerEvents="none"
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                zIndex: 9,
+                backgroundColor: 'rgba(255,255,255,0.5)',
+              }}
+            />
+          )}
+
           <ScrollView
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
+            {!!isOutsideOpenHour && (
+              <Text
+                numberOfLines={2}
+                style={styles.labelClosed}
+                testID="store-closed-label"
+              >
+                {t('products.store_closed')}
+                {reopenText ? (
+                  <Text style={styles.detail}>
+                    {` · ${t('products.store_reopen_at', { time: reopenText })}`}
+                  </Text>
+                ) : undefined}
+              </Text>
+            )}
+
             <StoreHeader method={deliveryTab} storeName={data?.storeName} />
 
             {products?.map((item: IProductCart) => (
@@ -62,6 +100,7 @@ function CartDetail(props: any) {
                 item={item}
                 key={item.id}
                 onChangeQuantity={onChangeQuantity}
+                isOutsideOpenHour={isOutsideOpenHour}
                 readOnly={isShowConfirmPayment}
               />
             ))}
@@ -82,6 +121,7 @@ function CartDetail(props: any) {
             <Button
               onPress={isShowConfirmPayment ? onPressPayment : onPressOrder}
               style={styles.orderButton}
+              disabled={isOutsideOpenHour}
               testID="cart-order-now"
               title={t(
                 isShowConfirmPayment
@@ -112,6 +152,18 @@ const styles = StyleSheet.create({
   },
   deliveryAddressInfo: {
     flex: 1,
+  },
+  labelClosed: {
+    color: Colors.red03,
+    flex: 1,
+    fontSize: ScaleSize(14),
+    fontWeight: 'bold',
+    // marginLeft: ScaleSize(20),
+    marginBottom: ScaleSize(10),
+  },
+  detail: {
+    color: Colors.red04,
+    fontWeight: 'bold',
   },
   deliveryAddressLabel: {
     color: Colors.gray4,
