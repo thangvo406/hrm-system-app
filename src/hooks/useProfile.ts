@@ -68,7 +68,7 @@ export function useProfile() {
       return `${result}-${t(key)}`;
     }
     return `${result}-${t('profile.memberships.other')}`;
-  }, [profile?.coopMemberGrade, profile?.membershipType]);
+  }, [t, profile?.coopMemberGrade, profile?.membershipType]);
 
   const onChangeFullName = useCallback(
     (text: string) => {

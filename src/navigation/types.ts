@@ -1,6 +1,7 @@
 import type { AppStacks, Paths } from '@navigation/paths';
 import type { BankInformationOrigin } from '@hooks/useBankInformation';
 import type { IBankOption } from '@hooks/useWithdrawal';
+import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { StackScreenProps } from '@react-navigation/stack';
 import { IQRCodeViewerData, TNotificationItem } from '@type';
 import { IStoreItem } from '@type/store';
@@ -10,12 +11,15 @@ export type RootScreenProps<
   S extends keyof RootStackParamList = keyof RootStackParamList,
 > = StackScreenProps<RootStackParamList, S>;
 
+export type TabScreenProps<S extends keyof TabParamList = keyof TabParamList> =
+  BottomTabScreenProps<TabParamList, S>;
+
 export type TransactionResultStatus = 'FAILED' | 'PENDING' | 'SUCCESS';
 
 export type TabParamList = {
-  [Paths.PaymentOffline]: undefined;
+  [Paths.PaymentOffline]: { isTab?: boolean } | undefined;
   [Paths.Home]: undefined;
-  [Paths.QRCodeViewer]: undefined;
+  [Paths.QRCodeViewer]: { isTab?: boolean } | undefined;
   [Paths.Carts]: undefined;
   [Paths.Profile]: undefined;
 };
@@ -111,7 +115,7 @@ export type RootStackParamList = {
   [Paths.PointExpiring]: undefined;
   [Paths.Payment]: undefined;
   [Paths.MealTickets]: undefined;
-  [Paths.PaymentOffline]: undefined;
+  [Paths.PaymentOffline]: { isTab?: boolean } | undefined;
   [Paths.CartDetail]:
     | {
         address?: unknown;
@@ -122,7 +126,7 @@ export type RootStackParamList = {
       }
     | undefined;
   [Paths.QRCodeViewer]:
-    | { data?: IQRCodeViewerData; durationSeconds?: number }
+    | { data?: IQRCodeViewerData; durationSeconds?: number; isTab?: boolean }
     | undefined;
   [Paths.RegisterCompleted]: { goFrom: 'forgot_pass' } | undefined;
   [Paths.ProductDetail]: { id: number; storeId: number } | undefined;

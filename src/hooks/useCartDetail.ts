@@ -49,6 +49,7 @@ export const useCartDetail = (props: any) => {
   const debounceIdChangeQuanlity = useRef<
     DebouncedFunc<() => void> | undefined
   >(undefined);
+  const cartBeforeUpdate = useRef<any>(undefined);
 
   const [paymentMethod, setPaymentMethod] = useState<string>(
     AppConstants.PaymentTypes.BALANCE,
@@ -142,6 +143,16 @@ export const useCartDetail = (props: any) => {
   };
 
   const onChangeQuantity = (product: any) => {
+    const quantity = product?.quantity ?? 0;
+    cartBeforeUpdate.current ??= data;
+    if (quantity > 0) {
+      setData((current: any) => ({
+        ...current,
+        items: current?.items?.map((it: any) =>
+          it.id === product?.id ? { ...it, quantity } : it,
+        ),
+      }));
+    }
     debounceIdChangeQuanlity.current?.cancel?.();
     debounceIdChangeQuanlity.current = debounce(() => {
       dispatch(
@@ -151,6 +162,7 @@ export const useCartDetail = (props: any) => {
           selectedAttributes: product?.selectedAttributes,
           cartItemId: product?.id,
           onSuccess: (response: any) => {
+            cartBeforeUpdate.current = undefined;
             if (!response?.items?.length) {
               AppNavigator.showSnackBar({
                 message: t('payment_cart.remove_cart_success'),
@@ -161,6 +173,17 @@ export const useCartDetail = (props: any) => {
             } else {
               setData(response);
             }
+          },
+          onFailure: (error_: string) => {
+            const previousCart = cartBeforeUpdate.current;
+            cartBeforeUpdate.current = undefined;
+            if (previousCart) {
+              setData(previousCart);
+            }
+            AppNavigator.showSnackBar({
+              message: error_ || '',
+              type: 'failed',
+            });
           },
         }),
       );

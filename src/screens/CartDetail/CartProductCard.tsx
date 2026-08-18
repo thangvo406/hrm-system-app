@@ -3,7 +3,7 @@ import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { formatCurrency } from '@utils/product';
 import type { IAttributeCart, IProductCart } from '@type';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AppButton, Image } from '@components';
 import AppNavigator from '@navigation/AppNavigator';
 import Information from '@dialogs/Information';
@@ -33,6 +33,7 @@ function CartProductCard({
   const [quantity, setQuantity] = useState(item.quantity);
   const [error, setError] = useState('');
   const isDisableUpdateQuantity = item.isForStudent || isOutsideOpenHour;
+  const isShowConfirmRemove = useRef(false);
 
   useEffect(() => {
     setQuantity(item.quantity);
@@ -44,6 +45,10 @@ function CartProductCard({
       title: t('payment_cart.product_info.remove_dialog_title'),
       cancelTitle: t('payment_cart.product_info.remove_dialog_cancel'),
       confirmTitle: t('payment_cart.product_info.remove_dialog_confirm'),
+      cancelable: false,
+      onDismiss: () => {
+        isShowConfirmRemove.current = false;
+      },
       onConfirm: () => {
         onChangeQuantity({ ...item, quantity: 0 });
       },
@@ -64,7 +69,10 @@ function CartProductCard({
   const onPressMinus = () => {
     const newQuantity = quantity - 1;
     if (newQuantity <= 0) {
-      confirmRemove();
+      if (!isShowConfirmRemove.current) {
+        confirmRemove();
+      }
+      isShowConfirmRemove.current = true;
       return;
     }
     setError('');

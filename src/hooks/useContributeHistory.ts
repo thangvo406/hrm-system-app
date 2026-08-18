@@ -125,7 +125,7 @@ export const useContributeHistory = () => {
           getContributeHistoriesRequest({
             balanceAccountType: 'CONTRIBUTION',
             page,
-            size: 20,
+            size: 10,
             ...paramsFilter,
             onSuccess: (data: ListApiResponse<IContributeHistory[]>) => {
               if (isStale()) {
@@ -153,7 +153,7 @@ export const useContributeHistory = () => {
         dispatch(
           getHistoriesDividendRequest({
             page,
-            size: 20,
+            size: 10,
             ...paramsFilter,
             onSuccess: (data: ListApiResponse<IDividendHistory[]>) => {
               if (isStale()) {

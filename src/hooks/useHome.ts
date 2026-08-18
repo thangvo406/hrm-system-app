@@ -193,6 +193,7 @@ export const useHome = (props: any) => {
         onSuccess: () => {
           dispatch(getProfileRequest());
           dispatch(getCurrentWalletRequest());
+          dispatch(getStoreOrderRecentRequest());
         },
         onFailure: error => {
           AppNavigator.showSnackBar({

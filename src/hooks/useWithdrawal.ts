@@ -50,6 +50,7 @@ export const useWithdrawal = () => {
     return (
       // numericAmount > 0 &&
       // numericAmount <= (currentWallet?.withdrawableBalance || 0) &&
+      (currentWallet?.balance || 0) > 0 &&
       selectedBank !== undefined &&
       accountNumber.trim().length > 0 &&
       accountHolder.trim().length > 0

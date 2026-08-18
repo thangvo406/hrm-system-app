@@ -163,7 +163,7 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
                   >
                     {it.legs.map((le, i) => {
                       const title = LEG_LABELS[le.entryType];
-                      const formatFunc = le.entryType?.startsWith('POINT')
+                      const formatFunc = le.entryType?.includes('POINT')
                         ? formatPoint
                         : formatWon;
                       return (

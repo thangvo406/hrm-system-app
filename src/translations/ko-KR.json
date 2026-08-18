@@ -994,7 +994,7 @@
     "payment_cart": {
       "remove_cart_success": "장바구니가 삭제되었습니다",
       "select_pickup_time": "픽업 시간 선택",
-      "title": "장바구니",
+      "title": "장바구니 상세",
       "badge_delivery": "배달",
       "badge_pickup": "픽업",
       "order_button": "주문하기",

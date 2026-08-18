@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
   container: {
     paddingBottom: ScaleSize(4),
     paddingHorizontal: ScaleSize(4),
+    marginBottom: ScaleSize(10),
   },
   storeName: {
     color: TEXT_DARK,

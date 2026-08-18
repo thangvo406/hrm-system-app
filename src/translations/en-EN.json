@@ -992,7 +992,7 @@
     "payment_cart": {
       "remove_cart_success": "Cart removed successfully",
       "select_pickup_time": "Select Pickup Time",
-      "title": "Cart",
+      "title": "Cart Detail",
       "badge_delivery": "Delivery",
       "badge_pickup": "Pickup",
       "order_button": "Order",

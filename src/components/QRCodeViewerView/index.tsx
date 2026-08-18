@@ -56,6 +56,7 @@ export type QRCodeViewerViewHandle = {
 export type QRCodeViewerViewProps = {
   readonly data?: IQRCodeViewerData;
   readonly durationSeconds?: number;
+  readonly hideBtnBack?: boolean;
   readonly ref?: Ref<QRCodeViewerViewHandle>;
   readonly titleKey?: string;
   readonly contentStyle?: ViewStyle;
@@ -73,6 +74,7 @@ export type QRCodeViewerViewProps = {
 
 function QRCodeViewerView({
   durationSeconds = DEFAULT_DURATION_SECONDS,
+  hideBtnBack,
   onRefresh,
   onRequestClose,
   ref,
@@ -176,6 +178,7 @@ function QRCodeViewerView({
   return (
     <View style={styles.screen}>
       <HeaderDetail
+        hideBtnBack={hideBtnBack}
         hideNotify
         onPressBack={onRequestClose}
         title={t(titleKey)}
