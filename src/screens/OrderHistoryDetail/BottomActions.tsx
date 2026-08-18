@@ -35,12 +35,12 @@ function BottomActions({
         },
       ]}
     >
-      <Button
+      {/* <Button
         onPress={onPressCancelOrder}
         style={styles.cancelOrder}
         testID="order-detail-reorder"
         title={t('cancellation_order.title')}
-      />
+      /> */}
       <Button
         onPress={onPressGoSmartOrder}
         style={styles.action}

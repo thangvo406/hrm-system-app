@@ -19,7 +19,6 @@ import { DeviceEventEmitter } from 'react-native';
 
 export type UseCartDetail = ReturnType<typeof useCartDetail>;
 
-
 interface AddressDelivery {
   address: SearchAddressItem;
   detail: string;
@@ -171,6 +170,7 @@ export const useCartDetail = (props: any) => {
       selectedAttributes: it.selectedAttributes,
     }));
     AppNavigator.navigate(Paths.Payment, {
+      cartId: data?.id,
       payloadRequest: {
         storeId: data?.storeId,
         address: JSON.stringify(

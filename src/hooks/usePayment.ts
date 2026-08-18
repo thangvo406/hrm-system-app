@@ -66,7 +66,7 @@ export const usePayment = (props: any) => {
   const [priceDetail, setPriceDetail] = useState<IPriceDetail>();
   const pointViewRef = useRef<PointUsageCardHandle>(null);
   const [voucherSelected, setVoucherSelected] = useState<IPaymentCoupon>();
-  const { payloadRequest } = AppNavigator.getParams(props);
+  const { cartId, payloadRequest } = AppNavigator.getParams(props);
   const dispatch = useAppDispatch();
   const rawDataBankAccounts = useAppSelector(
     AccountManagementSelector.getAccountCards,
@@ -113,14 +113,19 @@ export const usePayment = (props: any) => {
     ({ couponId, point, usePoint }: CalculatePriceParams) => {
       dispatch(
         calculatePriceRequest({
+          cartId,
           storeId: payloadRequest?.storeId,
           totalMoney: payloadRequest?.totalAmount,
           point: usePoint ? point : 0,
           couponId,
           onSuccess: (response: IPriceDetail) => {
+            const pointApplied = response?.pointApplied;
+            if (response.pointApplied) {
+              delete response.pointApplied;
+            }
             setPriceDetail(response);
-            if (usePoint && response.pointApplied < point) {
-              setPointUsed(response.pointApplied);
+            if (usePoint && pointApplied < point) {
+              setPointUsed(pointApplied);
               pointViewRef.current?.focus();
             }
           },
@@ -134,7 +139,7 @@ export const usePayment = (props: any) => {
         }),
       );
     },
-    [dispatch, payloadRequest?.storeId, payloadRequest?.totalAmount],
+    [dispatch, payloadRequest?.storeId, cartId, payloadRequest?.totalAmount],
   );
 
   const debouncedCalculatePrice = useMemo(

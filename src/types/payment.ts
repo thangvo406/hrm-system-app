@@ -264,6 +264,7 @@ export interface IRequestCalculatePrice extends AppCallback<IPriceDetail> {
   point: number;
   couponId?: number;
   storeId: number;
+  cartId: number;
   totalMoney: number;
 }
 export interface IOrderSummary {
