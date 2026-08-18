@@ -1,8 +1,5 @@
 import type { Ref } from 'react';
 import type { TextInput } from 'react-native';
-
-import CheckBox from '@components/CheckBox';
-import TextField from '@components/TextField';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
@@ -11,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
+import { AppButton, TextField, CheckBox } from '@components';
 
 const ACCENT_COLOR = '#2DB34A';
 
@@ -113,20 +111,26 @@ function PointUsageCard({
           </Text>
         </View>
 
-        <TextField
-          inputWrapperStyle={styles.pointPill}
-          keyboardType="number-pad"
-          onChangeText={onChangePoint}
-          onBlur={onBlurPoint}
-          onFocus={onFocusPoint}
-          placeholder=""
-          ref={inputReference}
-          renderRightComponent={renderPointUnit}
-          returnKeyType="done"
-          style={styles.pointPillText}
-          testID="point-usage-input"
-          value={isFocused ? inputText : formatCurrency(pointUsed)}
-        />
+        <AppButton
+          onPress={() => {
+            inputReference.current?.focus();
+          }}
+        >
+          <TextField
+            inputWrapperStyle={styles.pointPill}
+            keyboardType="number-pad"
+            onChangeText={onChangePoint}
+            onBlur={onBlurPoint}
+            onFocus={onFocusPoint}
+            placeholder=""
+            ref={inputReference}
+            renderRightComponent={renderPointUnit}
+            returnKeyType="done"
+            style={styles.pointPillText}
+            testID="point-usage-input"
+            value={isFocused ? inputText : formatCurrency(pointUsed)}
+          />
+        </AppButton>
       </View>
       {!!errorInputPoint && (
         <Text style={styles.errorMaxQuantity}>{errorInputPoint}</Text>

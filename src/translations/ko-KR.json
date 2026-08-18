@@ -826,6 +826,15 @@
         "refund": "환불",
         "adjustment": "관리자 조정",
         "org_payment": "단체 결제"
+      },
+      "transaction_titles": {
+        "balance_charge": "잔액 충전",
+        "order_checkout": "주문 결제",
+        "pos_payment": "POS 결제",
+        "manual_balance_adjustment": "잔액 조정",
+        "pay_money_withdrawal": "출금",
+        "contribution_increase": "출자금 증자",
+        "contribution_decrease_refund": "출자금 감자 및 환불"
       }
     },
     "request_add_card": {

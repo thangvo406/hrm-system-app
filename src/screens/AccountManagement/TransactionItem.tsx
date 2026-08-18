@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import dayjs from 'dayjs';
 import AppButton from '@components/AppButton';
+import { hasTranslationKey } from '@utils/translation';
 
 const EMPTY_VALUE = '-';
 
@@ -100,12 +101,22 @@ function TransactionItem({ transaction, onPress }: Properties) {
         config.sign == '-' ? AMOUNT_COLORS.DEBIT : AMOUNT_COLORS.CREDIT,
     };
   }, [transaction]);
+
+  const name = useMemo(() => {
+    if (transaction.headlinePurpose == 'ORDER_CHECKOUT') {
+      return transaction?.storeName;
+    }
+    const key = `account_management.transaction_titles.${transaction.headlinePurpose?.toLowerCase()}`;
+    if (hasTranslationKey(key)) {
+      return t(key);
+    }
+    return EMPTY_VALUE;
+  }, [transaction]);
+
   return (
     <AppButton style={styles.row} onPress={() => onPress?.(transaction)}>
       <View style={styles.left}>
-        <Text style={styles.rowTitle}>
-          {transaction.storeName || EMPTY_VALUE}
-        </Text>
+        <Text style={styles.rowTitle}>{name}</Text>
         <Text style={styles.method}>
           {detailLabel ? t(detailLabel as TranslationKeys) : EMPTY_VALUE}
         </Text>

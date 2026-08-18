@@ -826,6 +826,14 @@
         "refund": "Refund",
         "adjustment": "Admin Adjustment",
         "org_payment": "Organization Payment"
+      },
+      "transaction_titles": {
+        "balance_charge": "Balance Top-up",
+        "pos_payment": "POS Payment",
+        "manual_balance_adjustment": "Balance Adjustment",
+        "pay_money_withdrawal": "Withdrawal",
+        "contribution_increase": "Contribution Increase",
+        "contribution_decrease_refund": "Contribution Refund"
       }
     },
     "request_add_card": {

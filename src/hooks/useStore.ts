@@ -149,6 +149,7 @@ export const useStore = () => {
     loading,
     refreshing,
     storeOrderRecent,
+    searchKey,
     onLoadMore,
     onPressProduct,
     onPressOrderHistory,

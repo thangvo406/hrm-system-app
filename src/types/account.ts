@@ -53,6 +53,7 @@ export interface ITransactionMovement {
   chargeBonusTotalRate: any;
   memberGrade: any;
   headlineAction: string;
+  headlinePurpose: string;
   headlineEntryType: string;
   headlineSourceType: string;
   headlinePaymentType: any;

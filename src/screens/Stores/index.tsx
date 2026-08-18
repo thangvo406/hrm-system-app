@@ -36,7 +36,6 @@ function SearchComponent({ onPressFilter, setKeyword }: SearchComponentProps) {
         onPressFilter={onPressFilter}
         placeholder={t('stores.search_placeholder')}
       />
-      <Text style={styles.sectionLabel}>{t('stores.section_label')}</Text>
     </View>
   );
 }
@@ -54,6 +53,7 @@ function Stores() {
     refreshing,
     stores,
     storeOrderRecent,
+    searchKey,
     onBack,
   } = useStore();
 
@@ -68,7 +68,8 @@ function Stores() {
   };
 
   const isShowList =
-    (storeOrderRecent?.products?.length || 0) > 0 || stores?.length > 0;
+    !searchKey?.trim() &&
+    ((storeOrderRecent?.products?.length || 0) > 0 || stores?.length > 0);
 
   return (
     <View style={styles.safeArea}>
@@ -107,11 +108,16 @@ function Stores() {
             data={stores}
             ListHeaderComponent={
               storeOrderRecent ? (
-                <StoreCard
-                  onPressProduct={onPressProduct}
-                  onPressStore={onPressStore}
-                  store={storeOrderRecent}
-                />
+                <>
+                  <Text style={styles.sectionLabel}>
+                    {t('stores.section_label')}
+                  </Text>
+                  <StoreCard
+                    onPressProduct={onPressProduct}
+                    onPressStore={onPressStore}
+                    store={storeOrderRecent}
+                  />
+                </>
               ) : undefined
             }
             keyExtractor={keyExtractor}
@@ -142,7 +148,7 @@ const styles = StyleSheet.create({
   },
   listHeader: {
     paddingHorizontal: ScaleSize(20),
-    paddingTop: ScaleSize(12),
+    paddingVertical: ScaleSize(12),
   },
   listWrapper: {
     flex: 1,
@@ -154,7 +160,7 @@ const styles = StyleSheet.create({
   sectionLabel: {
     color: '#5C5C5C',
     fontSize: ScaleSize(14),
-    marginTop: ScaleSize(30),
+    marginLeft: ScaleSize(20),
   },
   separator: {
     height: ScaleSize(8),

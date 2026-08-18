@@ -120,9 +120,9 @@ export const usePayment = (props: any) => {
           couponId,
           onSuccess: (response: IPriceDetail) => {
             const pointApplied = response?.pointApplied;
-            if (response.pointApplied) {
-              delete response.pointApplied;
-            }
+            delete response.pointApplied;
+            delete response.bonusPointAmount;
+
             setPriceDetail(response);
             if (usePoint && pointApplied < point) {
               setPointUsed(pointApplied);
