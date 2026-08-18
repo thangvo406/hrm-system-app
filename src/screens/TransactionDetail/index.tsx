@@ -26,6 +26,7 @@ import {
   BALANCE_ACCOUNT_TYPE,
   TRANSACTION_DETAIL_DISPLAY,
 } from '@constants/config';
+import AppNavigator from '@navigation/AppNavigator';
 
 const DATE_FORMAT = 'YYYY-MM-DD hh:mmA';
 const EMPTY_VALUE = '-';
@@ -54,6 +55,7 @@ const getAmount = (data: any, fieldName: string) => {
 function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const {title} = AppNavigator.getParams(props);
   const {
     data,
     loading,
@@ -64,7 +66,7 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
     isDebit,
   } = useTransactionDetail(props);
 
-  const headerTitle = data ? formatWon(t, order?.totalAmount) : '';
+  const headerTitle = data ? formatWon(t, order?.settledMoneyAmount) : '';
   const headerDate = data?.occurredAt
     ? dayjs(data?.occurredAt).format(DATE_FORMAT)
     : '';
@@ -92,8 +94,9 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
           >
             <SummaryHeader
               date={headerDate}
-              title={headerTitle}
+              amount={headerTitle}
               isDebit={isDebit}
+              title={title}
               storeName={order?.storeName}
             />
 
@@ -108,11 +111,11 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
                   value={formatWon(t, order?.totalAmount)}
                 />
                 {!!isShowDashDivider && <View style={styles.divider} />}
-                {getAmount(order, 'voucherAmount') > 0 && (
+                {getAmount(order, 'couponDiscountAmount') > 0 && (
                   <AmountRow
                     caption={order?.couponName}
                     label={t('transaction_detail.coupon_discount_label')}
-                    value={formatWon(t, order?.voucherAmount, true)}
+                    value={formatWon(t, order?.couponDiscountAmount, true)}
                     valueColor={Colors.red01}
                   />
                 )}
@@ -126,7 +129,7 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
                 {getAmount(order, 'usedPointAmount') > 0 && (
                   <AmountRow
                     label={t('transaction_detail.point_used_label')}
-                    value={formatPoint(order?.usedPointAmount, true)}
+                    value={formatPoint(t, order?.usedPointAmount, true)}
                     valueColor={Colors.red01}
                   />
                 )}
@@ -141,7 +144,7 @@ function TransactionDetail(props: RootScreenProps<Paths.TransactionDetail>) {
                 <AmountRow
                   label={paymentMethod}
                   value={formatWon(t, order?.settledMoneyAmount, isDebit)}
-                  valueColor={Colors.green02}
+                  valueColor={isDebit ? Colors.red03 : Colors.green02}
                 />
               </SectionCard>
             </View>

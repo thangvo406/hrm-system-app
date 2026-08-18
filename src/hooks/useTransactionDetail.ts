@@ -62,7 +62,7 @@ export function useTransactionDetail(props: any) {
 
   const isDebit = useMemo(() => {
     return DEBIT_TYPES.has(data?.headlineAction ?? '');
-  }, []);
+  }, [data]);
 
   const order = useMemo(() => {
     if (data?.order) {

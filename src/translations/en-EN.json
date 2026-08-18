@@ -286,7 +286,7 @@
     "product_detail": {
       "price_label": "Price",
       "cart_button": "Add to Cart",
-      "min_order_label": "Minimum delivery order",
+      "min_order_label": "Minimum delivery order: {{amount}}KRW",
       "add_cart_success": "Add to cart Successfully",
       "max_quantity": "Max quantity: {{count}}",
       "max_quantity_error": "Maximum quantity is {{count}}",
@@ -960,7 +960,7 @@
     },
     "transaction_detail": {
       "title": "Transaction Detail",
-      "payment_amount_label": "Payment Amount",
+      "payment_amount_label": "Payment Amount (Original)",
       "coupon_discount_label": "Coupon Discount",
       "point_used_label": "Points Used",
       "member_discount": "Membership discount",
