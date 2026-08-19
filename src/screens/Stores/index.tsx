@@ -1,10 +1,11 @@
 import type { ListRenderItem } from 'react-native';
 import type { IStoreItem } from '@type/store';
 
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { ScaleSize } from '@kits/core';
-import { EmptyView, StoresLoading } from '@components';
+import { Colors } from '@constants';
+import { AppButton, EmptyView, StoresLoading } from '@components';
 import { useStore } from '@hooks';
 import { useTranslation } from 'react-i18next';
 
@@ -35,7 +36,6 @@ function SearchComponent({ onPressFilter, setKeyword }: SearchComponentProps) {
         onPressFilter={onPressFilter}
         placeholder={t('stores.search_placeholder')}
       />
-      <Text style={styles.sectionLabel}>{t('stores.section_label')}</Text>
     </View>
   );
 }
@@ -47,9 +47,14 @@ function Stores() {
     onPressFilter,
     onPressProduct,
     onPressStore,
+    onRefresh,
     onSearchChange,
+    onPressOrderHistory,
+    refreshing,
     stores,
     storeOrderRecent,
+    searchKey,
+    isShowList,
     onBack,
   } = useStore();
 
@@ -63,13 +68,26 @@ function Stores() {
     );
   };
 
-  const isShowList =
-    storeOrderRecent?.products?.length > 0 || stores?.length > 0;
-
   return (
     <View style={styles.safeArea}>
       <HeaderDetail title={t('stores.title')} onPressBack={onBack} />
-
+      <AppButton
+        onPress={onPressOrderHistory}
+        style={{
+          alignSelf: 'flex-end',
+          marginTop: ScaleSize(20),
+          marginRight: ScaleSize(20),
+        }}
+      >
+        <Text
+          style={{
+            color: Colors.primary,
+            fontSize: ScaleSize(13),
+          }}
+        >
+          {`${t('stores.view_all_orders')}›`}
+        </Text>
+      </AppButton>
       <SearchComponent
         onPressFilter={onPressFilter}
         setKeyword={onSearchChange}
@@ -86,15 +104,28 @@ function Stores() {
             contentContainerStyle={styles.listContent}
             data={stores}
             ListHeaderComponent={
-              storeOrderRecent ? (
-                <StoreCard
-                  onPressProduct={onPressProduct}
-                  onPressStore={onPressStore}
-                  store={storeOrderRecent}
-                />
+              !searchKey?.trim() && storeOrderRecent ? (
+                <>
+                  <Text style={styles.sectionLabel}>
+                    {t('stores.section_label')}
+                  </Text>
+                  <StoreCard
+                    onPressProduct={onPressProduct}
+                    onPressStore={onPressStore}
+                    store={storeOrderRecent}
+                  />
+                </>
               ) : undefined
             }
             keyExtractor={keyExtractor}
+            refreshControl={
+              <RefreshControl
+                colors={[Colors.primary]}
+                onRefresh={onRefresh}
+                refreshing={refreshing}
+                tintColor={Colors.primary}
+              />
+            }
             renderItem={renderItem}
             showsVerticalScrollIndicator={false}
           />
@@ -114,7 +145,7 @@ const styles = StyleSheet.create({
   },
   listHeader: {
     paddingHorizontal: ScaleSize(20),
-    paddingTop: ScaleSize(12),
+    paddingVertical: ScaleSize(12),
   },
   listWrapper: {
     flex: 1,
@@ -126,7 +157,7 @@ const styles = StyleSheet.create({
   sectionLabel: {
     color: '#5C5C5C',
     fontSize: ScaleSize(14),
-    marginTop: ScaleSize(30),
+    marginLeft: ScaleSize(20),
   },
   separator: {
     height: ScaleSize(8),

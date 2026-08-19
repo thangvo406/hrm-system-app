@@ -1,10 +1,15 @@
 import AppNavigator from '@navigation/AppNavigator';
+import { Paths } from '@navigation/paths';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getOrderHistoryDetailRequest } from '@services/slices/payment/paymentSlice';
 import { IOrderHistoryDetailItem } from '@type';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+const onPressGoSmartOrder = () => {
+  AppNavigator.reset(Paths.Stores);
+};
 
 export function useOrderHistoryDetail(props: any) {
   const { data: orderItem } = AppNavigator.getParams(props);
@@ -14,8 +19,6 @@ export function useOrderHistoryDetail(props: any) {
   const [loading, setLoading] = useState(true);
   const dispatch = useAppDispatch();
   const toggleShowAllProducts = () => setShowAllProducts(prev => !prev);
-
-  const isSuccess = data?.status === 'COMPLETED';
 
   const onPressCopyOrderNumber = () => {
     Clipboard.setString(data?.orderNumber ?? '');
@@ -40,16 +43,23 @@ export function useOrderHistoryDetail(props: any) {
     );
   }, []);
 
+  const onPressCancelOrder = () => {
+    AppNavigator.navigate(Paths.CancellationOrder, {
+      order: data,
+    });
+  };
+
   const visibleProducts = showAllProducts
     ? data?.products
     : data?.products?.slice(0, 3);
 
   return {
     data,
-    isSuccess,
     loading,
     storeName: data?.storeName ?? orderItem?.storeName ?? '',
     onPressCopyOrderNumber,
+    onPressCancelOrder,
+    onPressGoSmartOrder,
     showAllProducts,
     toggleShowAllProducts,
     visibleProducts,

@@ -4,7 +4,7 @@ import AppNavigator from '@navigation/AppNavigator';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { AccountSelector } from '@services/selectors';
 import { generateQRCodeMemberRequest } from '@services/slices/account/accountSlice';
-import type { IResponseCreateQRCodeMember } from '@type/account';
+import type { IGenerateQRCodeResponse } from '@type/account';
 import {
   setBrightnessLevel,
   resetBrightness,
@@ -29,10 +29,11 @@ const onPressVoucher = () => {
 
 export const useQRCodeMember = () => {
   const dispatch = useAppDispatch();
-  const [data, setData] = useState<IResponseCreateQRCodeMember | undefined>();
+  const [data, setData] = useState<IGenerateQRCodeResponse | undefined>();
   const timeOutExpired = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
+  const profile = useAppSelector(AccountSelector.getProfile);
   const [isExpired, setIsExpired] = useState(false);
   const currentWallet = useAppSelector(AccountSelector.getCurrentWallet);
 
@@ -63,7 +64,7 @@ export const useQRCodeMember = () => {
   }, [data]);
 
   const onRefreshQrCode = (
-    onRefreshed?: (data: IResponseCreateQRCodeMember) => void,
+    onRefreshed?: (data: IGenerateQRCodeResponse) => void,
   ) => {
     dispatch(
       generateQRCodeMemberRequest({
@@ -93,6 +94,7 @@ export const useQRCodeMember = () => {
     currentWallet,
     data,
     isExpired,
+    profile,
     onPressBarcode,
     onPressVoucher,
     onPressQR,

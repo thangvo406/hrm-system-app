@@ -7,12 +7,19 @@ import React from 'react';
 type Properties = {
   readonly date: string;
   readonly title: string;
+  readonly storeName?: string;
+  readonly amount?: string;
+  readonly isDebit?: boolean;
 };
 
 const ICON_SIZE = 28;
 const TITLE_MAX_LINES = 2;
+const DEBIT = Colors.red03;
+const CREDIT = Colors.green02;
 
-function SummaryHeader({ date, title }: Properties) {
+function SummaryHeader({ amount, date, title, isDebit, storeName }: Properties) {
+  const colorAmount = isDebit ? DEBIT : CREDIT;
+  const sign = isDebit ? '-' : '+';
   return (
     <View style={styles.card}>
       <View style={styles.iconWrap}>
@@ -25,9 +32,15 @@ function SummaryHeader({ date, title }: Properties) {
         />
       </View>
       <View style={styles.textCol}>
-        <Text numberOfLines={TITLE_MAX_LINES} style={styles.title}>
-          {title}
+        {!!title && <Text style={styles.title}>{title}</Text>}
+        <Text
+          numberOfLines={TITLE_MAX_LINES}
+          style={[styles.amount, { color: colorAmount }]}
+        >
+          {sign}
+          {amount}
         </Text>
+        {!!storeName && <Text style={styles.storeName}>{storeName}</Text>}
         <Text style={styles.date}>{date}</Text>
       </View>
     </View>
@@ -50,6 +63,11 @@ const styles = StyleSheet.create({
     marginHorizontal: ScaleSize(16),
     padding: ScaleSize(16),
   },
+  storeName: {
+    fontSize: ScaleSize(13),
+    color: Colors.black,
+    // fontWeight: 'bold',
+  },
   date: {
     color: Colors.gray14,
     fontSize: ScaleSize(13),
@@ -67,9 +85,14 @@ const styles = StyleSheet.create({
   textCol: {
     flex: 1,
   },
+  amount: {
+    color: Colors.black01,
+    fontSize: ScaleSize(32),
+    fontWeight: '700',
+  },
   title: {
     color: Colors.black01,
-    fontSize: ScaleSize(18),
+    fontSize: ScaleSize(14),
     fontWeight: '700',
   },
 });

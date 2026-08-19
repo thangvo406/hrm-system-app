@@ -14,352 +14,933 @@
 # update_fastlane
 require('dotenv')
 require 'xcodeproj'
+require 'base64'
+require 'digest'
+require 'fileutils'
+require 'plist'
+require 'shellwords'
+require 'tmpdir'
 
 # Dotenv.load './Appfile'
 
 default_platform(:ios)
-def teams_url = "https://dtpeducationvn.webhook.office.com/webhookb2/8d1bdeab-5e7f-4499-bde1-355f512a6e4e@cc1c7f2f-c062-49ab-9800-8b7bdb4f8a93/IncomingWebhook/67eb38906694412aa81bf281ad40f092/05f57c89-2792-4d03-b715-0a7da6e4cc82/V28rCnZ6x-px5hrrR2ZvThJcxUf6qIRW8SBAnxGZ1n5r41"
-def post_teams_card(title:, message:, facts: [])
-  require 'net/http'
-  require 'json'
-  require 'uri'
-  require 'openssl'
 
-  payload = {
-    "@type" => "MessageCard",
-    "@context" => "http://schema.org/extensions",
-    "themeColor" => "0078D7",
-    "title" => title,
-    "summary" => title,
-    "sections" => [{ "text" => message, "facts" => facts }]
-  }
+# Thư mục ios/ và repo root, tính từ vị trí Fastfile (ios/fastlane).
+# Dùng hằng số thay vì đường dẫn tương đối vì cwd của Ruby (ios/) khác cwd của
+# action `sh` (ios/fastlane) — trộn hai loại này là nguồn lỗi kinh điển.
+IOS_DIR = File.expand_path('..', __dir__)
+REPO_ROOT = File.expand_path('../..', __dir__)
 
-  uri = URI.parse(teams_url)
-  headers = { 'Content-Type' => 'application/json' }
-  http = Net::HTTP.new(uri.host, uri.port)
-  http.use_ssl = uri.scheme == "https"
-  # CI hosts fail CRL checks against the Teams webhook, so skip verification unless explicitly enabled.
-  verify_ssl = ENV.fetch("TEAMS_VERIFY_SSL", "false") != "false"
-  http.verify_mode = OpenSSL::SSL::VERIFY_NONE unless verify_ssl
+# Thư mục chứa secret trên máy local (env file, yarn.lock, AuthKey .p8).
+# Trên GitHub Actions runner thư mục này không tồn tại nên mọi thao tác copy đều
+# được bỏ qua: env file đã được commit trong repo, còn AuthKey .p8 do
+# resolve_api_key_path ghi ra từ secret APP_STORE_CONNECT_API_KEY_BASE64.
+LOCAL_SECRETS_DIR = File.expand_path('../../../../../..', __dir__)
 
-  response = http.post(uri.request_uri, payload.to_json, headers)
-  unless response.code.to_i == 200 && response.body.to_i == 1
-    UI.error("Teams notification failed (#{response.code}): #{response.body}")
-  end
-rescue => e
-  UI.error("Teams notification error: #{e.message}")
-end
 platform :ios do
-  desc "Description of what the lane does"
+  desc "Build IPA dev và upload lên TestFlight"
   lane :beta do |options|
-   versionCode = prepare_package(options)
-    sh "cp ../../../../../../CoopUse/.dev ../../env/.dev"
-    # react-native-config reads the env file via /tmp/envfile (highest priority)
-    # then ENVFILE. xcodebuild does not run scheme pre-actions, so set both here
-    # to make the gym build deterministic.
-    sh "echo 'env/.dev' > /tmp/envfile"
-    ENV["ENVFILE"] = "env/.dev"
-    Dotenv.overload '../../env/.dev'
     prefixAppName = "CoopUse_DEV_v"
-    branchName = options[:branchName]
+    # Dotenv.overload '../../env/.dev'
+    branchName = resolve_branch_name(options)
+    # Resolve version/build sớm để thông báo "start" có đủ thông tin, và để
+    # nhánh rescue luôn có biến hợp lệ dù lỗi xảy ra ở bất kỳ đâu.
+    versionCode = resolve_version_number(options)
+    build = nil
 
-    puts "Endpoint => #{ENV["BASE_URL"]}"
+    begin
+      UI.message("--- BẮT ĐẦU BUILD IPA DEV & UPLOAD TESTFLIGHT ---")
+      postNotifyMessage("start", branchName, versionCode, nil)
 
-    appId = ENV["APP_ID"]
-    appName = "#{prefixAppName}#{versionCode}.ipa"
+      # Validate credential App Store Connect TRƯỚC pod install: KEY_ID/ISSUER_ID
+      # và .p8 không phụ thuộc env file hay Pods, nên secret sai sẽ fail trong
+      # vài giây thay vì sau ~10 phút build.
+      api_key_path = resolve_api_key_path
+      puts IOS_DIR
+      copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', '.dev'), "#{REPO_ROOT}/env/.dev")
+      # react-native-config reads the env file via /tmp/envfile (highest priority)
+      # then ENVFILE. xcodebuild does not run scheme pre-actions, so set both here
+      # to make the gym build deterministic. This must happen BEFORE
+      # prepare_package: it runs pod install, and the Podfile generates ios/.env
+      # and injects it into the xcconfig based on this selection.
+      select_env_file("env/.dev")
 
-    # build = options[:build_number]
-    api_key = app_store_connect_api_key(
-      key_id: ENV["KEY_ID"],
-      issuer_id: ENV["ISSUER_ID"],
-      key_filepath: "./AuthKey_ZPCY58L4X5.p8",
-      duration: 1200, # optional (maximum 1200)
-      in_house: false # optional but may be required if using match/sigh
-    )
-
-    build = latest_testflight_build_number(
-      api_key: api_key,
-      app_identifier: appId,
-      version: versionCode,
+      # Toàn bộ phần bắt tay App Store Connect chạy TRƯỚC pod install: nó chỉ
+      # cần env file (vừa select ở trên) và .p8, không đụng gì tới Pods. Đặt ở
+      # đây thì lỗi credential lộ ra sau ~40 giây thay vì sau ~10 phút.
+      appId = resolve_ios_app_id
+      appName = "#{prefixAppName}#{versionCode}.ipa"
+      puts "appId => #{appId}"
+      api_key = app_store_connect_api_key(
+        key_id: ENV["KEY_ID"],
+        issuer_id: ENV["ISSUER_ID"],
+        key_filepath: api_key_path,
+        # Apple từ chối token có exp quá 20 phút (1200s) so với giờ của Apple.
+        # Dùng đúng 1200 là sát mép: runner lệch giờ vài giây là token thành
+        # "quá 20 phút" và bị trả về "Authentication credentials are missing or
+        # invalid". 500 là default của fastlane, thừa sức cho một lần build.
+        duration: 500,
+        in_house: false # optional but may be required if using match/sigh
       )
-    if build.nil?
-      build = options[:build_number]
-    else
-      build = build + 1
-    end
 
-    puts "versionCode => #{versionCode}"
-    puts "build => #{build}"
-    puts " ENV[KEY_ID] => #{ENV["APP_ID"]}"
+      build = latest_testflight_build_number(
+        api_key: api_key,
+        app_identifier: appId,
+        version: versionCode,
+        )
+      if build.nil?
+        build = resolve_build_number(options)
+      else
+        build = build + 1
+      end
 
-    increment_build_number(
-      build_number: build,
-      xcodeproj: "./CoopUse.xcodeproj"
-    )
-     # 1. Ép buộc bật Automatic Signing trong Xcode Project file
-    update_code_signing_settings(
-      use_automatic_signing: true,
-      path: "./CoopUse.xcodeproj" # Đường dẫn tới file xcodeproj của bạn
-    )
+      puts "versionCode => #{versionCode}"
+      puts "build => #{build}"
 
-  # 2. Ép buộc tải Provisioning Profile về máy trước khi build
-    # Bước này sẽ giải quyết lỗi "No profiles found"
-    # get_provisioning_profile(
-    #   app_identifier: "#{ENV['APP_ID']}",
-    #   provisioning_name: "CoopUse test", # Tên bạn đặt trên portal
-    #   development: false, # Chế độ Distribution
-    #   force: false,
-    #   skip_certificate_verification: true,
-    #   api_key: api_key
-    # )
-    #     get_provisioning_profile(
-    #   app_identifier: "#{ENV['APP_ID']}.CoopUseNotificationService",
-    #   provisioning_name: "XC com CoopUse debug iSchoolNotificationService", # Tên bạn đặt trên portal
-    #   development: false, # Chế độ Distribution
-    #   force: true,
-    #   api_key: api_key
-    # )
+      # Từ đây trở xuống mới cần Pods / node_modules.
+      prepare_package(options)
 
-    # 3. Chạy lệnh Build
-    gym(
-      scheme: "CoopUse",
-      clean: true,
-      workspace: "./CoopUse.xcworkspace",
-      export_method: "app-store",
-      output_directory: "./builds",
-      output_name: appName,
-      silent: true,
-      # Thêm tham số này để Xcode được phép cập nhật profile
-      # xcargs: "-allowProvisioningUpdates",
-      # export_options: {
-      #   provisioningProfiles: {
-      #     "#{ENV['APP_ID']}" => "CoopUse test",
-      #     "#{ENV['APP_ID']}.CoopUseNotificationService" => "XC com CoopUse debug CoopUseNotificationService",
-      #   },
-      #   signingStyle: "automatic",
-      #   teamID: ENV['TEAM_ID'] # Điền Team ID của bạn vào đây
-      # },
-      # skip_build_archive: true,
-      # archive_path: "/Users/admin/Library/Developer/Xcode/Archives/2025-12-31/CoopUse_DEV_v1.0.24 2025-12-31 15.06.02.xcarchive"
-    )
-  
+    #  puts "Endpoint => #{ENV["BASE_URL"]}"
+
+      set_project_version(version_number: versionCode, build_number: build)
+
+      # 1. Trên CI: tạo keychain tạm + nạp certificate distribution từ
+      # IOS_DIST_CERT_P12_BASE64.
+      keychain = setup_signing
+
+      # 2. Cài provisioning profile từ secret, resolve tên, rồi ghi manual signing
+      # vào từng target. Phải giữ ở biến chứ không splat thẳng vào gym:
+      # apply_manual_signing BẮT BUỘC chạy trước archive, không được phụ thuộc vào
+      # thứ tự Ruby evaluate argument của gym.
+      signing = manual_export_signing(api_key, keychain)
+      apply_manual_signing(signing)
+
+      # 3. Chạy lệnh Build
+      # xcodebuild bỏ qua scheme pre-actions, nên phải tự sinh
+      # ios/.env + ios/tmp.xcconfig ở đây trước khi gym đọc build settings.
+      sh "#{REPO_ROOT.shellescape}/scripts/generate-ios-env.sh"
+      gym(
+        scheme: "CoopUse",
+        clean: true,
+        workspace: "#{IOS_DIR}/CoopUse.xcworkspace",
+        export_method: "app-store",
+        output_directory: "#{IOS_DIR}/builds",
+        output_name: appName,
+        silent: true,
+        # Archive lẫn export đều ký manual bằng cert + profile đã nạp sẵn, nên
+        # xcodebuild không cần liên lạc với App Store Connect. Xem provisioning_xcargs.
+        xcargs: provisioning_xcargs(api_key_path),
+        **signing
+      )
+
+      export_ipa_output(appName, build)
+
       pilot(
         api_key: api_key,
         app_identifier: appId,
-        changelog: "Dev => #{branchName}",
-        ipa: "./builds/#{appName}")
-  
-    send_message_success(branchName, "#{versionCode}.#{build}", "[CoopUse-DEV] Testflight was built")
+        changelog: build_changelog(branchName, "Dev"),
+        ipa: "#{IOS_DIR}/builds/#{appName}")
+
+      postNotifyMessage("success", branchName, versionCode, build)
+      UI.success("🎉 Đã build & upload thành công bản #{versionCode} (build #{build}) lên TestFlight!")
+    rescue => e
+      postNotifyMessage("error", branchName, versionCode, build)
+      UI.error("❌ Build/upload TestFlight thất bại: #{e.message}")
+      raise
+    end
   end
-  
+
+  desc "Build IPA production và upload lên TestFlight"
   lane :release do |options|
-    versionCode = prepare_package(options)
-    sh "cp ../../../../../../CoopUse/.prod ../../env/.prod"
-    # See beta lane: set env file for xcodebuild deterministically.
-    sh "echo 'env/.prod' > /tmp/envfile"
-    ENV["ENVFILE"] = "env/.prod"
-    Dotenv.overload '../../env/.prod'
     prefixAppName = "CoopUse_PRD_v"
-    branchName = options[:branchName]
-    sh "cp ../../../../../../CoopUse/GoogleService-Pro.plist ../../ios/GoogleService-Info.plist"
+    branchName = resolve_branch_name(options)
+    # Xem lane beta: resolve sớm để "start" có thông tin và rescue luôn an toàn.
+    versionCode = resolve_version_number(options)
+    build = nil
 
-    puts "Endpoint => #{ENV["BASE_URL"]}"
+    begin
+      UI.message("--- BẮT ĐẦU BUILD IPA PROD & UPLOAD TESTFLIGHT ---")
+      postNotifyMessage("start", branchName, versionCode, nil)
 
-    appId = ENV["APP_ID"]
-    appName = "#{prefixAppName}#{versionCode}.ipa"
+      # Xem lane beta: validate credential App Store Connect trước pod install.
+      api_key_path = resolve_api_key_path
 
-    # build = options[:build_number]
-    api_key = app_store_connect_api_key(
-      key_id: ENV["KEY_ID"],
-      issuer_id: ENV["ISSUER_ID"],
-      key_filepath: "./AuthKey_ZPCY58L4X5.p8",
-      duration: 1200, # optional (maximum 1200)
-      in_house: false # optional but may be required if using match/sigh
-    )
+      copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', '.prod'), "#{REPO_ROOT}/env/.prod")
+      # See beta lane: select the env before prepare_package runs pod install,
+      # otherwise the xcconfig gets env/.dev values while JS gets env/.prod ones.
+      select_env_file("env/.prod")
+      copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', 'GoogleService-Pro.plist'), "#{IOS_DIR}/GoogleService-Info.plist")
 
+      puts "Endpoint => #{ENV["BASE_URL"]}"
 
-    build = latest_testflight_build_number(
-      api_key: api_key,
-      app_identifier: appId,
-      version: versionCode,
-    )
+      # Xem lane beta: cụm App Store Connect chạy trước pod install.
+      appId = resolve_ios_app_id
+      appName = "#{prefixAppName}#{versionCode}.ipa"
+      puts "appId => #{appId}"
 
-    if build.nil?
-      build = options[:build_number]
-    else
-      build = build + 1
-    end
+      api_key = app_store_connect_api_key(
+        key_id: ENV["KEY_ID"],
+        issuer_id: ENV["ISSUER_ID"],
+        key_filepath: api_key_path,
+        # Apple từ chối token có exp quá 20 phút (1200s) so với giờ của Apple.
+        # Dùng đúng 1200 là sát mép: runner lệch giờ vài giây là token thành
+        # "quá 20 phút" và bị trả về "Authentication credentials are missing or
+        # invalid". 500 là default của fastlane, thừa sức cho một lần build.
+        duration: 500,
+        in_house: false # optional but may be required if using match/sigh
+      )
 
-    puts "versionCode => #{versionCode}"
-    puts "build => #{build}"
-    puts "options[:version_number] => #{options[:version_number]}"
-    # update_notification_service_id(appId)
+      build = latest_testflight_build_number(
+        api_key: api_key,
+        app_identifier: appId,
+        version: versionCode,
+      )
 
-    # Update main app target
-    update_target_bundle_id(
-      target_name: "CoopUse",
-      plist_path: "./CoopUse/Info.plist",
-      bundle_id: appId
-    )
+      if build.nil?
+        build = resolve_build_number(options)
+      else
+        build = build + 1
+      end
 
-    # Update Notification Service target
-    update_target_bundle_id(
-      target_name: "CoopUseNotificationService",
-      plist_path: "./CoopUseNotificationService/Info.plist",
-      bundle_id: "#{appId}.CoopUseNotificationService"
-    )
+      puts "versionCode => #{versionCode}"
+      puts "build => #{build}"
 
-    # update_app_identifier(
-    #   xcodeproj: "CoopUse.xcodeproj", # Optional path to xcodeproj, will use the first .xcodeproj if not set
-    #   plist_path: "CoopUse/Info.plist", # Path to info plist file, relative to xcodeproj
-    #   target: "CoopUse",   
-    #   app_identifier: appId # The App Identifier
-    # )
-    increment_version_number(
-      version_number: versionCode,      # specify specific version number (optional, omitting it increments patch version number)
-      xcodeproj: "./CoopUse.xcodeproj"  # (optional, you must specify the path to your main Xcode project if it is not in the project root directory)
-    )
-    increment_build_number(
-      build_number: build,
-      xcodeproj: "./CoopUse.xcodeproj"
-    )
-      # 1. Ép buộc bật Automatic Signing trong Xcode Project file
-    update_code_signing_settings(
-      use_automatic_signing: true,
-      path: "./CoopUse.xcodeproj" # Đường dẫn tới file xcodeproj của bạn
-    )
+      # Từ đây trở xuống mới cần Pods / node_modules.
+      prepare_package(options)
 
-  
-  # 2. Ép buộc tải Provisioning Profile về máy trước khi build
-    # Bước này sẽ giải quyết lỗi "No profiles found"
-    # get_certificates(
-    #   generate_apple_certs: true,
-    #   api_key: api_key
-    # )
-    # get_provisioning_profile(
-    #   app_identifier: "#{ENV['APP_ID']}",
-    #   provisioning_name: "CoopUse prod", # Tên bạn đặt trên portal
-    #   development: false, # Chế độ Distribution
-    #   force: false,
-    #   skip_certificate_verification: true,
-    #   api_key: api_key
-    # )
-    #     get_provisioning_profile(
-    #   app_identifier: "#{ENV['APP_ID']}.CoopUseNotificationService",
-    #   provisioning_name: "XC com CoopUse debug CoopUseNotificationService", # Tên bạn đặt trên portal
-    #   development: false, # Chế độ Distribution
-    #   force: true,
-    #   api_key: api_key
-    # )
+      # Bundle id KHÔNG được ghi đè ở đây: cả 2 target đã lấy id từ
+      # $(APP_IOS_ID) trong build settings, còn CoopUse/Info.plist thì dùng thẳng
+      # $(APP_IOS_ID). Env file đã được select_env_file nạp ở trên nên id tự đúng
+      # theo môi trường — ghi đè bằng tay chỉ tạo cơ hội lệch giữa 2 target.
 
-    # 3. Chạy lệnh Build
-    gym(
-      scheme: "CoopUse",
-      clean: true,
-      workspace: "./CoopUse.xcworkspace",
-      export_method: "app-store",
-      output_directory: "./builds",
-      output_name: appName,
-      silent: true,
-      # # Thêm tham số này để Xcode được phép cập nhật profile
-      # xcargs: "-allowProvisioningUpdates",
-      # export_options: {
-      #   provisioningProfiles: {
-      #     "#{ENV['APP_ID']}" => "CoopUse prod",
-      #     "#{ENV['APP_ID']}.CoopUseNotificationService" => "CoopUse NotificationService AppStore",
-      #   },
-      #   signingStyle: "automatic",
-      #   teamID: ENV['TEAM_ID'] # Điền Team ID của bạn vào đây
-      # },
-      # skip_build_archive: true,
-      # archive_path: "/Users/admin/Library/Developer/Xcode/Archives/2025-12-31/CoopUse_DEV_v1.0.24 2025-12-31 15.06.02.xcarchive"
-    )
-  
+      set_project_version(version_number: versionCode, build_number: build)
+
+      # 1. Keychain tạm + certificate cho runner (xem lane beta).
+      keychain = setup_signing
+
+      # 2. Profile + manual signing per-target (xem lane beta).
+      signing = manual_export_signing(api_key, keychain)
+      apply_manual_signing(signing)
+
+      # 3. Chạy lệnh Build
+      # xcodebuild bỏ qua scheme pre-actions, nên phải tự sinh
+      # ios/.env + ios/tmp.xcconfig ở đây trước khi gym đọc build settings.
+      sh "#{REPO_ROOT.shellescape}/scripts/generate-ios-env.sh"
+      gym(
+        scheme: "CoopUse",
+        clean: true,
+        workspace: "#{IOS_DIR}/CoopUse.xcworkspace",
+        export_method: "app-store",
+        output_directory: "#{IOS_DIR}/builds",
+        output_name: appName,
+        silent: true,
+        xcargs: provisioning_xcargs(api_key_path),
+        **signing
+      )
+
+      export_ipa_output(appName, build)
+
       pilot(
         api_key: api_key,
         app_identifier: appId,
-        changelog: "PROD => #{branchName}",
-        ipa: "./builds/#{appName}")
-  
-    send_message_success(branchName, "#{versionCode}.#{build}", "[CoopUse-PROD] Testflight was built")
+        changelog: build_changelog(branchName, "PROD"),
+        ipa: "#{IOS_DIR}/builds/#{appName}")
+
+      postNotifyMessage("success", branchName, versionCode, build)
+      UI.success("🎉 Đã build & upload thành công bản #{versionCode} (build #{build}) lên TestFlight!")
+    rescue => e
+      postNotifyMessage("error", branchName, versionCode, build)
+      UI.error("❌ Build/upload TestFlight thất bại: #{e.message}")
+      raise
+    end
   end
 end
 
-def update_target_bundle_id(target_name:, plist_path:, bundle_id:)
-  require 'xcodeproj'
+# ---------------------------------------------------------------------------
+# Helpers — CI / local
+# ---------------------------------------------------------------------------
 
-  project_path = "../CoopUse.xcodeproj"
-
-  puts "🔧 Updating target '#{target_name}' with bundle ID '#{bundle_id}'"
-
-  # Open Xcode project
-  project = Xcodeproj::Project.open(project_path)
-  target = project.targets.find { |t| t.name == target_name }
-
-  if target.nil?
-    UI.user_error!("❌ Target '#{target_name}' not found in #{project_path}")
+# Copy file secret từ máy local. Trên CI runner file nguồn không tồn tại nên
+# bỏ qua: file đích đã được workflow decode từ GitHub secrets.
+def copy_local_secret(source, destination)
+  unless File.exist?(source)
+    UI.important("Bỏ qua copy #{source} — không tìm thấy (bình thường trên CI).")
+    return false
   end
 
-  # Update build settings
-  target.build_configurations.each do |config|
-    config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = bundle_id
+  FileUtils.mkdir_p(File.dirname(destination))
+  FileUtils.cp(source, destination)
+  UI.message("Đã copy #{source} → #{destination}")
+  true
+end
+
+# Chọn env file cho toàn bộ build (react-native-config + xcconfig + Fastfile).
+# /tmp/envfile ưu tiên cao hơn ENVFILE trong ReadDotEnv.rb nên phải set cả hai.
+def select_env_file(env_file)
+  env_path = File.join(REPO_ROOT, env_file)
+  unless File.exist?(env_path)
+    UI.user_error!("Không tìm thấy #{env_path}. File này được commit trong repo — kiểm tra .gitignore có đang loại nó ra không.")
+  end
+
+  File.write('/tmp/envfile', "#{env_file}\n")
+  ENV["ENVFILE"] = env_file
+  Dotenv.overload(env_path)
+end
+
+# Số commit đưa vào release note TestFlight. Trường "What to Test" của Apple
+# giới hạn 4000 ký tự, 5 commit thì còn xa mức đó.
+RECENT_COMMITS_LIMIT = 5
+
+# Release note cho TestFlight: tên nhánh + N commit gần nhất.
+# Giữ cùng định dạng với android/fastlane/Fastfile#postNotifyMessage/release_notes
+# để note trên TestFlight và Firebase App Distribution đọc giống nhau.
+def build_changelog(branch_name, env_label)
+  "#{env_label} => #{branch_name}\n\n#{recent_git_commits}"
+end
+
+# N commit gần nhất, mỗi dòng "- (author) subject".
+# Đọc từ REPO_ROOT chứ không phải cwd: cwd của Ruby là ios/ còn cwd của action
+# `sh` là ios/fastlane, dùng đường dẫn tương đối ở đây là nguồn lỗi.
+# CI cần `fetch-depth: 0` ở actions/checkout, nếu không git log chỉ thấy 1 commit.
+def recent_git_commits(limit: RECENT_COMMITS_LIMIT)
+  separator = "\x00"
+  raw = Dir.chdir(REPO_ROOT) do
+    # %an = tên author (không phải %ae = email).
+    `git log -n #{limit.to_i} --no-merges --pretty=%s#{'%x00'}%an 2>/dev/null`.to_s
+  end
+  lines = raw.lines.map(&:strip).reject(&:empty?)
+  return "N/A" if lines.empty?
+
+  lines.map do |line|
+    subject, author = line.split(separator, 2)
+    "- (#{author}) #{subject}"
+  end.join("\n")
+rescue => e
+  UI.error("Không đọc được git log: #{e.message}")
+  "N/A"
+end
+
+# Version/build number: ưu tiên tham số lane, sau đó biến môi trường do
+# GitHub Actions set (VERSION_NUMBER / BUILD_NUMBER), cuối cùng là default.
+def resolve_version_number(options)
+  version = options[:version_number] || ENV['VERSION_NUMBER']
+  UI.user_error!("Thiếu version number: truyền version_number: hoặc set VERSION_NUMBER.") if version.nil? || version.to_s.empty?
+  version.to_s
+end
+
+def resolve_build_number(options)
+  build = options[:build_number] || ENV['BUILD_NUMBER'] || 1
+  build.to_i
+end
+
+def resolve_branch_name(options)
+  options[:branchName] || ENV['BRANCH_NAME'] || "dev"
+end
+
+# Bundle id iOS. env file có cả APP_ID (package name Android, vd com.coop_use)
+# và APP_IOS_ID (com.coopuse) — lane iOS phải dùng đúng cái sau, nếu không
+# pilot/latest_testflight_build_number sẽ trỏ vào app không tồn tại trên
+# App Store Connect. Fail ngay ở đây thay vì sau khi pod install xong.
+def resolve_ios_app_id
+  app_id = ENV['APP_IOS_ID']
+  UI.user_error!("Thiếu APP_IOS_ID trong env file — không xác định được bundle id iOS.") if app_id.nil? || app_id.to_s.empty?
+  app_id.to_s
+end
+
+# App Store Connect API key: dùng file .p8 có sẵn trong ios/, nếu không có thì
+# ghi ra từ secret base64 APP_STORE_CONNECT_API_KEY_BASE64. Trả về absolute path
+# vì xcodebuild -authenticationKeyPath không nhận đường dẫn tương đối.
+PEM_PRIVATE_KEY_HEADER = '-----BEGIN PRIVATE KEY-----'
+
+# 12 ký tự đầu của SHA-256. Không đảo ngược được nên GitHub không che, dùng để
+# so giá trị trên runner với máy local mà không in giá trị thật ra log.
+def fingerprint(value)
+  Digest::SHA256.hexdigest(value.to_s)[0, 12]
+end
+
+def resolve_api_key_path
+  # GitHub secret rất dễ mang theo newline/space ở cuối khi paste vào UI. Một
+  # `kid` hay `iss` có ký tự thừa vẫn tạo được JWT nhưng Apple sẽ từ chối với
+  # "Authentication credentials are missing or invalid" — lỗi không chỉ ra được
+  # cái gì sai. Strip trước, ghi lại vào ENV để provisioning_xcargs dùng bản sạch.
+  key_id = ENV['KEY_ID'].to_s.strip
+  issuer_id = ENV['ISSUER_ID'].to_s.strip
+
+  if key_id.empty?
+    # Máy local thường đã có sẵn AuthKey_<KEY_ID>.p8 trong ios/ — suy ra key id
+    # từ tên file thay vì bắt lập trình viên export thêm biến môi trường.
+    existing = Dir.glob("#{IOS_DIR}/AuthKey_*.p8").first
+    UI.user_error!("Thiếu KEY_ID (App Store Connect API key id).") if existing.nil?
+    key_id = File.basename(existing, '.p8').sub('AuthKey_', '')
+    UI.message("Suy ra KEY_ID=#{key_id} từ #{existing}")
+  end
+
+  # Kiểm tra hình dạng: KEY_ID là 10 ký tự chữ-số, ISSUER_ID là UUID.
+  unless key_id.match?(/\A[A-Z0-9]{10}\z/i)
+    UI.user_error!("KEY_ID sai định dạng (#{key_id.length} ký tự) — phải là 10 ký tự chữ/số, lấy ở App Store Connect > Users and Access > Integrations.")
+  end
+  unless issuer_id.match?(/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i)
+    hint = issuer_id.empty? ? "đang rỗng" : "#{issuer_id.length} ký tự"
+    UI.user_error!("ISSUER_ID sai định dạng (#{hint}) — phải là UUID dạng xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx, nằm ngay phía trên danh sách key ở trang Integrations.")
+  end
+
+  ENV['KEY_ID'] = key_id
+  ENV['ISSUER_ID'] = issuer_id
+
+  copy_local_secret(File.join(LOCAL_SECRETS_DIR, "AuthKey_#{key_id}.p8"), "#{IOS_DIR}/AuthKey_#{key_id}.p8")
+
+  preferred = File.join(IOS_DIR, "AuthKey_#{key_id}.p8")
+  unless File.exist?(preferred)
+    key_base64 = ENV['APP_STORE_CONNECT_API_KEY_BASE64'].to_s.strip
+    if key_base64.empty?
+      UI.user_error!("Không tìm thấy AuthKey_#{key_id}.p8 trong ios/ và secret APP_STORE_CONNECT_API_KEY_BASE64 cũng rỗng.")
+    end
+
+    File.binwrite(preferred, decode_api_key(key_base64))
+    File.chmod(0600, preferred)
+    UI.message("Đã ghi App Store Connect API key ra #{preferred}")
+  end
+
+  preferred
+end
+
+# Trả về nội dung .p8. Nhận cả base64 của file lẫn nội dung PEM dán thẳng vào
+# secret (nhầm lẫn phổ biến). Base64.decode64 im lặng bỏ qua ký tự không hợp lệ,
+# nên không kiểm tra thì secret sai sẽ thành file rác và lỗi chỉ lộ ra ở phía
+# Apple dưới dạng "Authentication credentials are missing or invalid".
+def decode_api_key(raw)
+  return raw if raw.start_with?(PEM_PRIVATE_KEY_HEADER)
+
+  decoded = Base64.decode64(raw)
+  unless decoded.start_with?(PEM_PRIVATE_KEY_HEADER)
+    UI.user_error!(
+      "APP_STORE_CONNECT_API_KEY_BASE64 không giải ra private key hợp lệ " \
+      "(thiếu '#{PEM_PRIVATE_KEY_HEADER}'). Tạo lại secret bằng:\n" \
+      "  base64 -i AuthKey_<KEY_ID>.p8 | tr -d '\\n' | pbcopy"
+    )
+  end
+  decoded
+end
+
+# Keychain tạm + certificate distribution cho runner CI.
+#
+# Vì sao bắt buộc phải có keychain: codesign chỉ đọc được identity (cert + private
+# key) từ keychain — không có cách nào đưa thẳng file .p12 cho xcodebuild. Khoá
+# signingCertificate trong exportOptionsPlist chỉ là bộ CHỌN (tên / SHA-1 / loại
+# cert), không phải đường dẫn file. Nên chuỗi bắt buộc là:
+#
+#   IOS_DIST_CERT_P12_BASE64 → security import → keychain → find-identity
+#     → exportOptionsPlist.signingCertificate → codesign lúc exportArchive
+#
+# Trả về đường dẫn keychain vừa nạp cert (nil khi chạy local → dùng login keychain).
+def setup_signing
+  unless is_ci
+    UI.message("Không phải CI — dùng identity distribution trong login keychain.")
+    return nil
+  end
+
+  setup_ci(force: true)
+
+  cert_base64 = ENV['IOS_DIST_CERT_P12_BASE64'].to_s.strip
+  if cert_base64.empty?
+    UI.user_error!(
+      "IOS_DIST_CERT_P12_BASE64 chưa set. Export ký manual nên bắt buộc phải có " \
+      "certificate Apple Distribution trong keychain. Tạo secret bằng:\n" \
+      "  base64 -i dist_certificate.p12 | tr -d '\\n' | pbcopy"
+    )
+  end
+
+  cert_password = ENV['IOS_DIST_CERT_PASSWORD'].to_s
+  if cert_password.empty?
+    UI.important("IOS_DIST_CERT_PASSWORD rỗng — chỉ đúng nếu .p12 được export không đặt mật khẩu.")
+  end
+
+  p12_path = File.join(IOS_DIR, "dist_certificate.p12")
+  File.binwrite(p12_path, decode_p12(cert_base64))
+  File.chmod(0600, p12_path)
+
+  import_certificate(
+    certificate_path: p12_path,
+    certificate_password: cert_password,
+    keychain_name: ci_keychain_name,
+    keychain_password: ci_keychain_password
+  )
+
+  harden_ci_keychain
+  ci_keychain_path
+ensure
+  File.delete(p12_path) if defined?(p12_path) && p12_path && File.exist?(p12_path)
+end
+
+# PKCS#12 là DER nên luôn mở đầu bằng SEQUENCE. Base64.decode64 im lặng bỏ qua ký
+# tự không hợp lệ, nên secret dán hỏng vẫn ra một file — và lỗi chỉ lộ ra ở
+# `security import` dưới dạng "MAC verification failed", rất dễ tưởng nhầm là sai
+# IOS_DIST_CERT_PASSWORD. Chặn ngay tại đây (xem decode_api_key, cùng lý do).
+def decode_p12(raw)
+  decoded = Base64.decode64(raw)
+  if decoded.empty? || decoded.getbyte(0) != DER_SEQUENCE_TAG
+    UI.user_error!(
+      "IOS_DIST_CERT_P12_BASE64 không giải ra file .p12 hợp lệ. Tạo lại bằng:\n" \
+      "  base64 -i dist_certificate.p12 | tr -d '\\n' | pbcopy"
+    )
+  end
+  decoded
+end
+
+# setup_ci đặt tên/mật khẩu keychain qua env — đọc lại từ đó thay vì hardcode để
+# không lệch nếu ai đó set MATCH_KEYCHAIN_NAME.
+def ci_keychain_name
+  ENV['MATCH_KEYCHAIN_NAME'].to_s.empty? ? DEFAULT_KEYCHAIN_NAME : ENV['MATCH_KEYCHAIN_NAME']
+end
+
+def ci_keychain_password
+  ENV['MATCH_KEYCHAIN_PASSWORD'].to_s
+end
+
+# macOS hiện đại tạo file keychain với hậu tố "-db"; giữ cả 2 khả năng.
+def ci_keychain_path
+  base = File.join(Dir.home, 'Library', 'Keychains', ci_keychain_name)
+  ["#{base}-db", base].find { |path| File.exist?(path) }
+end
+
+# Hai thứ phải sửa sau khi import, nếu không export sẽ chết đúng lúc codesign:
+#
+#   1. set-key-partition-list: `security import` gắn ACL lên private key. Thiếu
+#      apple-tool:/apple:/codesign: trong partition list thì codesign bật hộp
+#      thoại xin quyền — trên runner không ai bấm, build treo rồi timeout.
+#      import_certificate của fastlane cũng chạy lệnh này, nhưng chạy lại là
+#      idempotent và giúp hành vi không phụ thuộc phiên bản gem.
+#   2. bỏ timeout khoá keychain: create_keychain của setup_ci đặt 3600s, trong
+#      khi archive + export của repo này mất ~30-60 phút. Keychain khoá lại giữa
+#      chừng thì exportArchive báo "User interaction is not allowed".
+def harden_ci_keychain
+  path = ci_keychain_path
+  if path.nil?
+    UI.important("Không tìm thấy file keychain '#{ci_keychain_name}' — bỏ qua bước gia cố.")
+    return
+  end
+
+  partition = "security set-key-partition-list -S apple-tool:,apple:,codesign: -s " \
+              "-k #{ci_keychain_password.shellescape} #{path.shellescape}"
+  `#{partition} > /dev/null 2>&1`
+  UI.important("set-key-partition-list thất bại — codesign có thể bị hỏi quyền.") unless $?.success?
+
+  # Không truyền -t nghĩa là "không bao giờ tự khoá" (xem man security).
+  `security set-keychain-settings #{path.shellescape} > /dev/null 2>&1`
+  `security unlock-keychain -p #{ci_keychain_password.shellescape} #{path.shellescape} > /dev/null 2>&1`
+end
+
+# ---------------------------------------------------------------------------
+# Manual signing cho bước export
+# ---------------------------------------------------------------------------
+#
+# Vì sao không để xcodebuild tự lo: cloud signing lúc export cần App Store
+# Connect API key có role Admin/App Manager (quyền dùng Cloud Managed
+# Distribution Certificate). Key chỉ có quyền development vẫn archive được —
+# nó tự tạo một cert "Created via API" type Development — rồi chết ở export:
+#
+#   error: exportArchive Cloud signing permission error
+#   error: exportArchive No profiles for 'com.coopuse' were found
+#
+# Ký manual bằng cert + profile đã có sẵn thì export không gọi App Store Connect
+# nữa, nên role của key không còn ảnh hưởng (chỉ pilot upload mới cần key).
+
+DEFAULT_KEYCHAIN_NAME = "fastlane_tmp_keychain".freeze
+# Xcode 16 chuyển chỗ đọc provisioning profile sang ~/Library/Developer/Xcode/UserData,
+# trong khi fastlane (2.227) vẫn chỉ ghi vào đường dẫn legacy. Workflow đang chọn
+# Xcode 26 nên cài vào CẢ HAI: tốn thêm vài KB, đổi lại không phải đánh cược vào
+# việc bản Xcode trên runner còn đọc thư mục cũ hay không.
+PROFILE_INSTALL_DIRS = [
+  File.expand_path('~/Library/MobileDevice/Provisioning Profiles'),
+  File.expand_path('~/Library/Developer/Xcode/UserData/Provisioning Profiles')
+].freeze
+
+# Certificate distribution có thể là "Apple Distribution" (hiện tại) hoặc
+# "iPhone Distribution" (cert đời cũ chưa hết hạn) — hardcode một cái là trượt.
+DISTRIBUTION_IDENTITY_PATTERN = /"((?:Apple|iPhone) Distribution:[^"]+)"/.freeze
+
+# DER của .mobileprovision luôn mở đầu bằng SEQUENCE (0x30). Đủ để phân biệt
+# file thật với secret dán nhầm (base64 của text, file rỗng...).
+DER_SEQUENCE_TAG = 0x30
+
+# Tham số export cho gym. Trả về hash để lane splat thẳng vào gym(...).
+# `keychain` là giá trị setup_signing trả về — nil khi build local.
+def manual_export_signing(api_key, keychain)
+  team_id = resolve_team_id
+  identity = distribution_identity(keychain)
+  bundle_ids = resolve_export_bundle_ids
+  profiles = resolve_export_profiles(api_key, bundle_ids)
+
+  UI.message("Export manual signing — team #{team_id}, cert #{identity}")
+  profiles.each { |bundle_id, name| UI.message("  #{bundle_id} → #{name}") }
+
+  {
+    export_team_id: team_id,
+    export_options: {
+      provisioningProfiles: profiles,
+      signingCertificate: identity,
+      signingStyle: 'manual',
+      teamID: team_id
+    }
+  }
+end
+
+# Ghi cấu hình manual signing vào build settings của từng target, chạy TRƯỚC gym.
+#
+# Vì sao không nhét vào xcargs: xcargs truyền build setting ở command-line level
+# nên áp cho MỌI target trong workspace — app, extension và toàn bộ Pods. Một
+# PROVISIONING_PROFILE_SPECIFIER duy nhất không thể vừa đúng cho com.coopuse vừa
+# đúng cho com.coopuse.NotificationService, archive sẽ chết ở target thứ hai.
+#
+# Không truyền bundle_identifier: option đó ghi vào key PRODUCT_BUNDLE_IDENTIFIER
+# gốc, trong khi bản thân project đã lấy id từ $(APP_IOS_ID) rồi.
+#
+# `signing` là hash do manual_export_signing trả về.
+def apply_manual_signing(signing)
+  profiles = signing[:export_options][:provisioningProfiles]
+
+  # zip an toàn vì resolve_export_bundle_ids map theo đúng thứ tự VERSIONED_TARGETS.
+  VERSIONED_TARGETS.zip(resolve_export_bundle_ids).each do |target_name, bundle_id|
+    profile_name = profiles[bundle_id]
+    UI.user_error!("Không có provisioning profile cho #{bundle_id} (target #{target_name}).") if profile_name.nil?
+
+    update_code_signing_settings(
+      build_configurations: ['Release'],
+      code_sign_identity: signing[:export_options][:signingCertificate],
+      path: "#{IOS_DIR}/CoopUse.xcodeproj",
+      profile_name: profile_name,
+      targets: [target_name],
+      team_id: signing[:export_team_id],
+      use_automatic_signing: false
+    )
+    UI.message("🔏 #{target_name} (#{bundle_id}) → manual signing, profile '#{profile_name}'")
+  end
+end
+
+# Tên identity distribution để điền vào exportOptionsPlist.signingCertificate.
+#
+# Trên CI hỏi thẳng keychain vừa nạp .p12 — bảo đảm cái tên trả về đúng là cert
+# trong IOS_DIST_CERT_P12_BASE64, không phải một identity nào khác lọt vào search
+# list. Local thì không truyền keychain → tìm trong toàn bộ search list.
+#
+# `-v` chỉ liệt kê identity hợp lệ (còn hạn + dựng được chain tin cậy), nên nếu
+# thiếu Apple WWDR intermediate thì cert sẽ không hiện ra ở đây.
+def distribution_identity(keychain = nil)
+  command = "security find-identity -v -p codesigning"
+  command += " #{keychain.shellescape}" if keychain
+  identities = `#{command} 2>/dev/null`.scan(DISTRIBUTION_IDENTITY_PATTERN).flatten.uniq
+
+  if identities.empty?
+    UI.user_error!(
+      "Không tìm thấy identity Apple Distribution nào trong #{keychain || 'keychain search list'}.\n" \
+      "Trên CI: .p12 trong IOS_DIST_CERT_P12_BASE64 không phải cert distribution, " \
+      "IOS_DIST_CERT_PASSWORD sai, hoặc cert đã hết hạn.\n" \
+      "Trên máy local: cần cài certificate distribution vào login keychain."
+    )
+  end
+  UI.important("Có #{identities.size} identity distribution, dùng: #{identities.first}") if identities.size > 1
+
+  identities.first
+end
+
+def resolve_team_id
+  team_id = release_build_settings('CoopUse')['DEVELOPMENT_TEAM'].to_s
+  UI.user_error!("Target CoopUse không có DEVELOPMENT_TEAM trong build settings.") if team_id.empty?
+  team_id
+end
+
+# Bundle id thật của từng target cần profile khi export. Đọc từ project thay vì
+# hardcode: extension khai báo "$(APP_IOS_ID).NotificationService", và lane
+# release còn ghi đè PRODUCT_BUNDLE_IDENTIFIER trước khi build.
+def resolve_export_bundle_ids
+  VERSIONED_TARGETS.map do |target_name|
+    settings = release_build_settings(target_name)
+    # Biến thể [sdk=iphoneos*] thắng khi build cho device — phải ưu tiên nó.
+    raw = settings['PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]'] || settings['PRODUCT_BUNDLE_IDENTIFIER']
+    UI.user_error!("Target '#{target_name}' không có PRODUCT_BUNDLE_IDENTIFIER.") if raw.to_s.empty?
+    # Xcode chỉ nội suy $(APP_IOS_ID) lúc build, ở đây phải tự thay từ env file.
+    raw.to_s.gsub(/\$\((\w+)\)/) { ENV[Regexp.last_match(1)].to_s }
+  end
+end
+
+def release_build_settings(target_name)
+  project = Xcodeproj::Project.open("#{IOS_DIR}/CoopUse.xcodeproj")
+  target = project.targets.find { |t| t.name == target_name }
+  UI.user_error!("❌ Target '#{target_name}' not found in CoopUse.xcodeproj") if target.nil?
+
+  config = target.build_configurations.find { |c| c.name == 'Release' } || target.build_configurations.first
+  config.build_settings
+end
+
+# Map bundle_id => tên profile cho exportOptionsPlist.
+#
+# Nguồn chính là profile nạp từ secret: build khi đó không đụng App Store Connect.
+# Thiếu thì fallback sang sigh ở chế độ readonly — CHỈ TẢI profile đã có sẵn trên
+# portal, không tạo mới. Muốn cho phép tạo thì phải bật ALLOW_PROFILE_CREATION
+# tường minh: tạo profile là thao tác ghi lên tài khoản Apple, không được xảy ra
+# âm thầm chỉ vì ai đó gõ sai tên secret.
+def resolve_export_profiles(api_key, bundle_ids)
+  profiles = install_profiles_from_secret
+  missing = bundle_ids - profiles.keys
+  return profiles.slice(*bundle_ids) if missing.empty?
+
+  readonly = ENV['ALLOW_PROFILE_CREATION'].to_s.empty?
+  if readonly
+    UI.important(
+      "Thiếu profile cho: #{missing.join(', ')} — sẽ thử tải bản có sẵn trên portal.\n" \
+      "Cách sửa đúng là thêm chúng vào secret IOS_PROVISIONING_PROFILES_BASE64."
+    )
+  else
+    UI.important("ALLOW_PROFILE_CREATION đang bật — sigh ĐƯỢC PHÉP tạo profile mới trên portal.")
+  end
+
+  missing.each do |bundle_id|
+    # sigh TRẢ VỀ UUID, không phải đường dẫn (xem return_value của action).
+    # Đường dẫn tuyệt đối tới file .mobileprovision nằm ở lane_context.
+    sigh(
+      api_key: api_key,
+      app_identifier: bundle_id,
+      platform: 'ios',
+      readonly: readonly
+    )
+    path = Fastlane::Actions.lane_context[Fastlane::Actions::SharedValues::SIGH_PROFILE_PATH]
+    UI.user_error!("sigh không trả về đường dẫn profile cho #{bundle_id}.") if path.to_s.empty?
+    info = profile_info(path)
+    # sigh chỉ cài vào thư mục legacy — nhân bản sang chỗ Xcode 16+ đọc.
+    install_profile_file(path, info[:uuid])
+    profiles[bundle_id] = info[:name]
+  end
+
+  profiles.slice(*bundle_ids)
+end
+
+# Nạp .mobileprovision từ secret IOS_PROVISIONING_PROFILES_BASE64 (nhiều profile
+# ngăn cách bằng khoảng trắng hoặc dấu phẩy) vào thư mục Xcode đọc profile.
+def install_profiles_from_secret
+  blobs = ENV['IOS_PROVISIONING_PROFILES_BASE64'].to_s.split(/[\s,]+/).reject(&:empty?)
+  return {} if blobs.empty?
+
+  blobs.each_with_object({}) do |blob, map|
+    decoded = Base64.decode64(blob)
+    unless decoded.getbyte(0) == DER_SEQUENCE_TAG
+      UI.user_error!(
+        "IOS_PROVISIONING_PROFILES_BASE64 chứa entry không phải .mobileprovision hợp lệ. Tạo bằng:\n" \
+        "  base64 -i profile.mobileprovision | tr -d '\\n'"
+      )
+    end
+
+    tmp_path = File.join(Dir.tmpdir, "#{fingerprint(blob)}.mobileprovision")
+    File.binwrite(tmp_path, decoded)
+    info = profile_info(tmp_path)
+    install_profile_file(tmp_path, info[:uuid])
+    File.delete(tmp_path)
+
+    UI.message("Đã cài profile '#{info[:name]}' cho #{info[:bundle_id]}")
+    map[info[:bundle_id]] = info[:name]
+  end
+end
+
+# Chép .mobileprovision vào mọi thư mục Xcode có thể đọc (xem PROFILE_INSTALL_DIRS).
+# Xcode tra profile theo UUID trong tên file, không theo tên gốc.
+def install_profile_file(source_path, uuid)
+  PROFILE_INSTALL_DIRS.each do |dir|
+    FileUtils.mkdir_p(dir)
+    FileUtils.cp(source_path, File.join(dir, "#{uuid}.mobileprovision"))
+  end
+end
+
+# Đọc metadata của .mobileprovision (file là CMS ký, phải bóc bằng `security`).
+def profile_info(path)
+  # Bắt nhầm lẫn kinh điển: truyền UUID (thứ sigh trả về) thay vì đường dẫn.
+  unless File.file?(path.to_s)
+    UI.user_error!("Không tồn tại file provisioning profile: #{path.inspect} — cần đường dẫn tới .mobileprovision, không phải UUID.")
+  end
+
+  xml = `security cms -D -i #{path.to_s.shellescape} 2>/dev/null`
+  UI.user_error!("Không đọc được provisioning profile: #{path}") if xml.strip.empty?
+
+  plist = Plist.parse_xml(xml)
+  team_id = Array(plist['TeamIdentifier']).first.to_s
+  # application-identifier là "<TEAMID>.<bundle id>"; bỏ tiền tố để so với
+  # bundle id lấy từ project.
+  app_identifier = plist.dig('Entitlements', 'application-identifier').to_s
+  bundle_id = app_identifier.sub(/\A#{Regexp.escape(team_id)}\./, '')
+
+  if bundle_id.end_with?('*')
+    UI.important("Profile '#{plist['Name']}' là wildcard (#{bundle_id}) — sẽ không khớp bundle id cụ thể nào.")
+  end
+
+  check_profile_expiry(plist)
+
+  { bundle_id: bundle_id, name: plist['Name'].to_s, uuid: plist['UUID'].to_s }
+end
+
+# Profile App Store hết hạn sau 1 năm. Hết hạn mà không báo thì lỗi chỉ lộ ra ở
+# codesign dưới dạng khó đọc, nên chặn ngay tại đây và cảnh báo sớm trước đó.
+PROFILE_EXPIRY_WARNING_DAYS = 30
+
+def check_profile_expiry(plist)
+  expires_at = plist['ExpirationDate']
+  return if expires_at.nil?
+
+  days_left = ((expires_at.to_time - Time.now) / 86_400).floor
+  if days_left.negative?
+    UI.user_error!(
+      "Profile '#{plist['Name']}' đã hết hạn #{days_left.abs} ngày trước (#{expires_at}). " \
+      "Tạo lại trên portal và cập nhật secret IOS_PROVISIONING_PROFILES_BASE64."
+    )
+  elsif days_left <= PROFILE_EXPIRY_WARNING_DAYS
+    UI.important("⚠️  Profile '#{plist['Name']}' còn #{days_left} ngày là hết hạn (#{expires_at}).")
+  end
+end
+
+# Mặc định KHÔNG truyền -allowProvisioningUpdates.
+#
+# Flag đó cho phép xcodebuild "create and update profiles, app IDs, and
+# certificates" (Apple docs). Runner là máy sạch mỗi lần chạy: keychain chỉ có cert
+# distribution nạp từ .p12, không có identity development nào. Automatic signing
+# lúc archive vì thế sẽ tạo một cert "Created via API" MỚI mỗi lần build, private
+# key chết theo runner, và danh sách cert của team phình ra tới khi chạm giới hạn
+# của Apple. Bỏ flag đi thì xcodebuild không có quyền ghi lên portal, chấm hết.
+#
+# Escape hatch cho tình huống khẩn (profile hết hạn, cần build gấp): set
+# ALLOW_PROVISIONING_UPDATES=1. Nhớ bỏ ra sau khi đã cập nhật secret.
+def provisioning_xcargs(api_key_path)
+  return nil if ENV['ALLOW_PROVISIONING_UPDATES'].to_s.empty?
+
+  UI.important(
+    "ALLOW_PROVISIONING_UPDATES đang bật — xcodebuild ĐƯỢC PHÉP tạo cert/profile mới trên portal. " \
+    "Chỉ dùng tạm, nhớ tắt lại."
+  )
+  args = ["-allowProvisioningUpdates"]
+  if api_key_path && File.exist?(api_key_path) && ENV['KEY_ID'] && ENV['ISSUER_ID']
+    args << "-authenticationKeyPath #{api_key_path.shellescape}"
+    args << "-authenticationKeyID #{ENV['KEY_ID']}"
+    args << "-authenticationKeyIssuerID #{ENV['ISSUER_ID']}"
+  end
+  args.join(" ")
+end
+
+# Ghi output cho GitHub Actions (step upload-artifact đọc từ đây). Gọi ngay sau
+# gym và TRƯỚC pilot: nếu upload TestFlight lỗi thì IPA vẫn còn trên disk và
+# step upload-artifact vẫn lấy được thay vì mất trắng bản build.
+#
+# Tên artifact phải kèm build number: version thường đứng yên nhiều run liền, nên
+# nếu chỉ có version thì các artifact tải về từ những run khác nhau đè lên nhau.
+def export_ipa_output(app_name, build_number)
+  return unless ENV['GITHUB_OUTPUT']
+
+  File.open(ENV['GITHUB_OUTPUT'], 'a') do |f|
+    f.puts "ipa_path=ios/builds/#{app_name}"
+    f.puts "ipa_name=#{File.basename(app_name, '.ipa')}-b#{build_number}"
+  end
+end
+
+# Các target phải mang cùng version/build. Apple bắt CFBundleShortVersionString
+# và CFBundleVersion của app extension trùng với host app, lệch là pilot reject
+# với ITMS-90473 CFBundleVersion Mismatch.
+VERSIONED_TARGETS = %w[CoopUse OneSignalNotificationService].freeze
+
+# Ghi thẳng MARKETING_VERSION + CURRENT_PROJECT_VERSION vào build settings của
+# từng target, thay cho increment_version_number/increment_build_number.
+#
+# Lý do không dùng 2 action kia:
+#   - chúng chạy qua agvtool, vốn theo project chứ không theo target, nên không
+#     nhận tham số `target` (options chỉ có version_number/build_number/xcodeproj)
+#   - agvtool đòi VERSIONING_SYSTEM = apple-generic, mà target
+#     OneSignalNotificationService không có → build number của extension đứng yên
+#     trong khi app nhảy lên, đúng vào lỗi ITMS-90473 nói trên
+#   - `agvtool new-version -all` còn ghi số literal đè lên Info.plist, phá mất
+#     $(CURRENT_PROJECT_VERSION) mà CoopUse/Info.plist đang tham chiếu
+#
+# Info.plist của cả 2 target đều lấy version từ build setting (CoopUse qua
+# $(MARKETING_VERSION)/$(CURRENT_PROJECT_VERSION), extension qua
+# GENERATE_INFOPLIST_FILE), nên set ở đây là đủ cho cả hai.
+def set_project_version(version_number:, build_number:)
+  project_path = "#{IOS_DIR}/CoopUse.xcodeproj"
+  project = Xcodeproj::Project.open(project_path)
+
+  VERSIONED_TARGETS.each do |target_name|
+    target = project.targets.find { |t| t.name == target_name }
+    UI.user_error!("❌ Target '#{target_name}' not found in #{project_path}") if target.nil?
+
+    target.build_configurations.each do |config|
+      config.build_settings['MARKETING_VERSION'] = version_number.to_s
+      config.build_settings['CURRENT_PROJECT_VERSION'] = build_number.to_s
+    end
+    UI.message("🔧 #{target_name}: MARKETING_VERSION=#{version_number}, CURRENT_PROJECT_VERSION=#{build_number}")
   end
 
   project.save
-  UI.success("✅ Updated PRODUCT_BUNDLE_IDENTIFIER for target '#{target_name}'")
-
-  # Optionally update Info.plist too
-  update_info_plist(
-    plist_path: plist_path,
-    app_identifier: bundle_id
-  )
+  UI.success("✅ Đã set version #{version_number} (build #{build_number}) cho: #{VERSIONED_TARGETS.join(', ')}")
 end
 
-
 def prepare_package(options)
-  ENV["PATH"] = "#{ENV["HOME"]}/.nvm/versions/node/v20.9.0/bin:/usr/local/bin:#{ENV["PATH"]}"
-  sh "cp ../../../../../../CoopUse/yarn.lock ../../yarn.lock"
-  versionCode = options[:version_number]
-  increment_version_number(
-    version_number: versionCode,      # specify specific version number (optional, omitting it increments patch version number)
-    xcodeproj: "./CoopUse.xcodeproj"  # (optional, you must specify the path to your main Xcode project if it is not in the project root directory)
-  )
-  sh "yarn install --no-immutable"
+  # nvm chỉ tồn tại trên máy local; trên runner Node đã do actions/setup-node lo.
+  nvm_bin = "#{ENV["HOME"]}/.nvm/versions/node/v20.9.0/bin"
+  ENV["PATH"] = "#{nvm_bin}:/usr/local/bin:#{ENV["PATH"]}" if Dir.exist?(nvm_bin)
+
+  copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', 'yarn.lock'), "#{REPO_ROOT}/yarn.lock")
+  versionCode = resolve_version_number(options)
+  # Version/build được set một lần bằng set_project_version trong lane, sau khi
+  # đã biết build number từ TestFlight. Không set ở đây: pod install không đọc
+  # MARKETING_VERSION nên không có lý do gì phải ghi project file sớm.
+
+  # CI đã chạy `yarn install` ở step riêng (có cache) — không cài lại.
+  sh "cd #{REPO_ROOT.shellescape} && yarn install --no-immutable" unless is_ci
   # cocoapods(
   #   clean_install: true,
   #   podfile: "./Podfile",
   #   silent: true,
   #   try_repo_update_on_error: true,
   # )
-  sh "yarn pod"
+  # `sh` chạy trong ios/fastlane nên phải về repo root cho tường minh.
+  sh "cd #{REPO_ROOT.shellescape} && yarn pod"
 
-  sh "rm -rf ../../ios/.xcode.env.local"
-  sh "cp ../../../../../../AuthKey_ZPCY58L4X5.p8 ../../ios/AuthKey_ZPCY58L4X5.p8"
+  FileUtils.rm_f("#{IOS_DIR}/.xcode.env.local")
   return versionCode
 end
 
 
-def send_message_success(branchName, buildNumber, message = "App successfully released to AppCenter")
-  post_teams_card(
-    title: "App build successfully",
-    message: message,
-    facts:[
-      {
-        "name"=>"App",
-        "value"=>"i-School",
-     },
-      {
-        "name"=>"Branch",
-        "value"=>"#{branchName}",
-     },
-      {
-        "name"=>"Platform",
-        "value"=>"iOS"
-      },
-      {
-          "name"=>"Build number",
-          "value"=>"#{buildNumber}",
-      },
-    ]
-  )
+# Thông báo build lên Slack — giữ nguyên hình dạng của
+# android/fastlane/Fastfile#postNotifyMessage để 2 platform bắn vào cùng một
+# channel với cùng format, chỉ khác giá trị "Platform".
+# Không set SLACK_WEBHOOK_URL thì bỏ qua im lặng (build local không cần bắn).
+def postNotifyMessage(type, branch_name, version_num, build_num = 0)
+  slack_url = ENV['SLACK_WEBHOOK_URL']
+  if slack_url.nil? || slack_url.empty?
+    UI.important("SLACK_WEBHOOK_URL chưa được set — bỏ qua thông báo Slack.")
+    return
+  end
+
+  base_payload = { "Platform" => "iOS" }
+  base_payload["Branch"] = branch_name unless branch_name.nil?
+  base_payload["Version"] = version_num unless version_num.nil?
+  base_payload["Build Number"] = build_num unless build_num.nil?
+
+  case type
+  when "start"
+    slack(
+      message: "🚧 Start building App",
+      slack_url: slack_url,
+      success: true,
+      payload: base_payload
+    )
+  when "success"
+    slack(
+      message: "🎉 Build App Successfully!",
+      slack_url: slack_url,
+      success: true,
+      payload: base_payload
+    )
+  when "error"
+    slack(
+      message: "❌ Build App Failed!",
+      slack_url: slack_url,
+      success: false,
+      payload: base_payload
+    )
+  else
+    UI.error("postNotifyMessage: unknown type '#{type}'")
+  end
 end

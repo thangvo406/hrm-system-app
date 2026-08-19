@@ -19,6 +19,7 @@ function RegisterMembership(props: any) {
     dataInfoVerifyMembership,
     isShowContributeBtn,
     onPressContribute,
+    btnSubmit,
     ...rest
   } = useRegisterMembership(props);
   const { t } = useTranslation();
@@ -43,7 +44,7 @@ function RegisterMembership(props: any) {
       titleBtnSecondary={
         isShowContributeBtn ? 'register_completed.contribution' : ''
       }
-      btnSubmit={t('common.popup.btn_close')}
+      btnSubmit={btnSubmit}
       desc={t('register_completed.desc')}
       dataVerifiedMembership={dataInfoVerifyMembership}
       onPressSecondary={onPressContribute}

@@ -1,4 +1,4 @@
-import { AppButton, Button, TextField, UniversitiesLoading } from '@components';
+import { Button, TextField, UniversitiesLoading } from '@components';
 import Image from '@components/Image';
 import RegisterHeader from '@screens/Authorisation/components/RegisterFlow/Header';
 import { useTranslation } from 'react-i18next';
@@ -122,7 +122,8 @@ function SchoolSelection(props: any) {
   );
 
   return (
-    <AppButton
+    <TouchableOpacity
+      activeOpacity={1}
       style={[
         styles.container,
         { paddingTop: isNumber(topHeader) ? topHeader : insets.top },
@@ -178,7 +179,7 @@ function SchoolSelection(props: any) {
           </View>
         </>
       )}
-    </AppButton>
+    </TouchableOpacity>
   );
 }
 

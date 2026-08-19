@@ -1,6 +1,5 @@
 import { ScaleSize } from '@kits/core';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line } from 'react-native-svg';
 
@@ -14,9 +13,10 @@ const ICON_RADIUS = 6.2;
 // Endpoints of the diagonal stroke where it meets the circle (r / √2).
 const ICON_DIAGONAL = ICON_RADIUS / Math.SQRT2;
 
-function SoldOutBadge() {
-  const { t } = useTranslation();
-
+function SoldOutBadge({ text }: any) {
+  if(!text) {
+    return <></>
+  }
   return (
     <View pointerEvents="none" style={styles.badge}>
       <Svg
@@ -41,7 +41,7 @@ function SoldOutBadge() {
           y2={ICON_CENTER + ICON_DIAGONAL}
         />
       </Svg>
-      <Text style={styles.label}>{t('products.sold_out')}</Text>
+      <Text style={styles.label}>{text}</Text>
     </View>
   );
 }
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: TEXT_COLOR,
-    fontSize: ScaleSize(12),
+    fontSize: ScaleSize(8),
     fontWeight: '700',
   },
 });

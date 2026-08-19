@@ -32,6 +32,7 @@ function Payment(props: any) {
     payloadRequest,
     priceDetail,
     disableBtnSubmit,
+    pointViewRef,
     onSelectCoupon,
     onChangePointUsed,
     onToggleUsePoints,
@@ -53,6 +54,7 @@ function Payment(props: any) {
 
         <View style={styles.pointSection}>
           <PointUsageCard
+            ref={pointViewRef}
             onChangePointUsed={onChangePointUsed}
             onToggleUsePoints={onToggleUsePoints}
             pointHolding={pointHolding}

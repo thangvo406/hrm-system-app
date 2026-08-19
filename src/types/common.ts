@@ -49,6 +49,12 @@ export interface KakaoDocument {
   y: string;
 }
 
+export interface IAppConfig {
+  readonly min_version: string;
+}
+
+export type IRequestGetAppConfig = AppCallback<IAppConfig>;
+
 export interface KakaoAddress {
   address_name: string;
   b_code: string;

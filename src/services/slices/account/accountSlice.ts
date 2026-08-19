@@ -2,6 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AppCallback } from '@type/common';
 import type { Profile } from '@services/request/account';
 import type {
+  IPointExpirySummary,
   IRequestGetPointExpiring,
   IRequestGetTransactionHistories,
   IRequestTopUpWallet,
@@ -11,6 +12,7 @@ import type { ITotalItemCart } from '@type/payment';
 import type {
   IRequestAutoCompleteAddress,
   IResponseOrganizationInfo,
+  IRequestGenerateQRCodeMealTicket,
   IRequestGetTransactionDetail,
   IRequestGetTransactionMovement,
   IRequestGetPayPointHistories,
@@ -26,6 +28,7 @@ import type {
 import type {
   IRequestConfirmMemberShipVerify,
   IRequestDeleteAccount,
+  IResponseCreateLinkVerifyInfoUser,
 } from '@type/auth';
 
 import { createSlice } from '@reduxjs/toolkit';
@@ -54,7 +57,9 @@ const accountSlice = createSlice({
   name: 'account',
   reducers: {
     activeAccountRequest: {
-      prepare: (payload: AppCallback = {}) => ({ payload }),
+      prepare: (payload: AppCallback<IResponseCreateLinkVerifyInfoUser>) => ({
+        payload,
+      }),
       reducer: () => {},
     },
     autoCompleteAddressRequest: {
@@ -69,6 +74,10 @@ const accountSlice = createSlice({
     },
     deleteAccountRequest: {
       prepare: (payload: IRequestDeleteAccount) => ({ payload }),
+      reducer: () => {},
+    },
+    generateQRCodeMealTicketRequest: {
+      prepare: (payload: IRequestGenerateQRCodeMealTicket) => ({ payload }),
       reducer: () => {},
     },
     generateQRCodeMemberRequest: {
@@ -107,6 +116,12 @@ const accountSlice = createSlice({
     },
     getPointExpiringRequest: {
       prepare: (payload: IRequestGetPointExpiring) => ({ payload }),
+      reducer: () => {},
+    },
+    getPointExpiringSummaryRequest: {
+      prepare: (payload: AppCallback<IPointExpirySummary> = {}) => ({
+        payload,
+      }),
       reducer: () => {},
     },
     getProfileRequest: {
@@ -171,6 +186,7 @@ export const {
   clearProfile,
   confirmOTPRequestMembershipRequest,
   deleteAccountRequest,
+  generateQRCodeMealTicketRequest,
   generateQRCodeMemberRequest,
   getCurrentWalletRequest,
   getCurrentWalletSuccess,
@@ -178,6 +194,7 @@ export const {
   getOrganizationInfoRequest,
   getPayPointHistoriesRequest,
   getPointExpiringRequest,
+  getPointExpiringSummaryRequest,
   getProfileRequest,
   getProfileSuccess,
   getTotalItemCartRequest,

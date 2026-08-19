@@ -1,7 +1,7 @@
 import type {
   IStoreCartItem,
   ICheckoutInfo,
-  IGenerateQRCodeResponse,
+  IRequestCancelOrder,
   IRequestCreateOrder,
   IRequestGenerateQRCode,
   IRequestGetCartDetail,
@@ -9,6 +9,7 @@ import type {
   IRequestGetListCart,
   IRequestGetOrderHistories,
   IRequestGetOrderHistoryDetail,
+  IRequestDecreaseContribute,
   IRequestInitCharge,
   IRequestRemoveCartItem,
   IRequestUpdateCartItem,
@@ -21,7 +22,11 @@ import type {
   ICreateLinkPaymentOrderRequest,
   IKcpInitParams,
   IResponseInitPayment,
+  IRequestGenerateQRRefundTransaction,
+  IRequestReOrder,
 } from '@type/payment';
+
+import { IGenerateQRCodeResponse } from '@type/account';
 
 import {
   IResponseIncreaseContribute,
@@ -131,7 +136,7 @@ export const createLinkPaymentOrder = async (
   delete request.orderId;
   const response = await httpRequest.post<
     SingleApiResponse<IResponseInitPayment>
-  >(EndPoints.PAYMENT.createLinkPaymentOrder(orderId), request);
+  >(EndPoints.PAYMENT.createLinkPaymentOrder(orderId || 0), request);
   return response.data;
 };
 
@@ -164,6 +169,15 @@ export const getAddressOrderRecent = async (): Promise<string[]> => {
   return response.data;
 };
 
+export const generateQRRefundTransaction = async (
+  request: WithoutCallbacks<IRequestGenerateQRRefundTransaction>,
+): Promise<IGenerateQRCodeResponse> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<IGenerateQRCodeResponse>
+  >(EndPoints.PAYMENT.generateQRRefundTransaction, request);
+  return response.data;
+};
+
 export const generateQRCodePay = async (
   request: WithoutCallbacks<IRequestGenerateQRCode>,
 ): Promise<IGenerateQRCodeResponse> => {
@@ -183,12 +197,41 @@ export const balanceCharge = async (
   return response.data;
 };
 
+export const reorder = async (
+  request: WithoutCallbacks<IRequestReOrder>,
+): Promise<IStoreCartItem> => {
+  const response = await httpRequest.post<SingleApiResponse<IStoreCartItem>>(
+    EndPoints.PAYMENT.reorder,
+    request,
+  );
+  return response.data;
+};
+
+export const cancelOrder = async (
+  request: WithoutCallbacks<IRequestCancelOrder>,
+): Promise<void> => {
+  // await httpRequest.post(EndPoints.PAYMENT.cancelOrder, request);
+  return new Promise(resolve => {
+    resolve()
+  })
+};
+
 export const increaseContribution = async (
   request: WithoutCallbacks<IRequestIncreaseContribute>,
 ): Promise<IResponseIncreaseContribute> => {
   const response = await httpRequest.post<
     SingleApiResponse<IResponseIncreaseContribute>
   >(EndPoints.CONTRIBUTION.increase, request);
+  return response.data;
+};
+
+export const decreaseContribute = async (
+  request: WithoutCallbacks<IRequestDecreaseContribute>,
+): Promise<IKcpInitParams> => {
+  const response = await httpRequest.post<SingleApiResponse<IKcpInitParams>>(
+    EndPoints.CONTRIBUTION.decrease,
+    request,
+  );
   return response.data;
 };
 

@@ -6,6 +6,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
 
 import { SHARED } from '../theme';
+import { useTranslation } from 'react-i18next';
+import { formatCurrency } from '@utils/product';
 
 type ConfettiSpec = {
   readonly colorIndex: 0 | 1 | 2;
@@ -33,12 +35,14 @@ const CONFETTI_RADIUS = 2;
 
 type HeroProps = {
   readonly paddingTop: number;
+  readonly totalAmount?: number;
   readonly subtitle: string;
   readonly theme: Theme;
   readonly title: string;
 };
 
-function Hero({ paddingTop, subtitle, theme, title }: HeroProps) {
+function Hero({ paddingTop, totalAmount, subtitle, theme, title }: HeroProps) {
+  const { t } = useTranslation();
   return (
     <View style={[styles.hero, { paddingTop }]}>
       {CONFETTI.map(item => (
@@ -63,9 +67,7 @@ function Hero({ paddingTop, subtitle, theme, title }: HeroProps) {
           />
         </View>
       ))}
-      <View
-        style={[styles.circle, { backgroundColor: theme.heroCircleBg }]}
-      >
+      <View style={[styles.circle, { backgroundColor: theme.heroCircleBg }]}>
         <Image
           color={theme.accent}
           height={ScaleSize(HERO_CIRCLE)}
@@ -74,6 +76,11 @@ function Hero({ paddingTop, subtitle, theme, title }: HeroProps) {
           width={ScaleSize(HERO_CIRCLE)}
         />
       </View>
+      <Text style={[styles.title, { color: theme.titleColor }]}>
+        {t('order_completed.display_price', {
+          amount: formatCurrency(totalAmount),
+        })}
+      </Text>
       <Text style={[styles.title, { color: theme.titleColor }]}>{title}</Text>
       <Text style={styles.subtitle}>{subtitle}</Text>
     </View>

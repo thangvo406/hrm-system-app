@@ -4,6 +4,7 @@
       "confirm": "Confirm",
       "cancel": "Cancel",
       "no_data": "No data",
+      "search": "Search",
       "payment": "Payment",
       "display_price": "{{amount}} KRW",
       "display_time": "{{time}}s",
@@ -41,9 +42,13 @@
       "history_title": "History",
       "tab_pay": "Contribution History",
       "tab_point": "Dividend History",
-      "balance_after": "Balance: {{amount}} KRW",
       "empty": "No history to display.",
       "transaction_failed": "Transaction failed",
+      "rows": {
+        "unit": "Unit: {{amount}}",
+        "unit_price": "Unit price: {{amount}} KRW",
+        "balance_after": "Balance: {{amount}} KRW"
+      },
       "transaction_detail": {
         "title": "Transaction history",
         "date_label": "Date",
@@ -53,7 +58,7 @@
     },
     "meal_ticket": {
       "title": "Meal Vouchers",
-      "unused": "Unused",
+      "unused": "Used",
       "view_qr": "View meal ticket QR",
       "purchase_at": "Purchase at {{date}}",
       "expired_at": "Expired at {{date}}",
@@ -66,7 +71,7 @@
       "auto_use_info": "Points closest to expiry are used automatically first",
       "balance": "Balance: {{amount}} KRW",
       "balance_after": "Bal: {{amount}}",
-      "confirm": "OK",
+      "confirm": "Check",
       "empty": "No history to display.",
       "expire_banner": "{{amount}}P expire in {{days}} days",
       "expiry": "Expires {{value}}",
@@ -90,6 +95,7 @@
         "refund": "Refund",
         "manual_adjustment": "Manual Adjustment",
         "point_earn": "Points Earned",
+        "point_grant": "Admin Grant",
         "point_use": "Points Used",
         "contribution_earn": "Capital Contribution",
         "contribution_decrease": "Contribution Withdrawal",
@@ -99,7 +105,9 @@
         "usage_dividend_earn": "Usage Dividend",
         "point_expire": "Points Expired",
         "pay_money_withdrawal": "Pay Money Withdrawal",
-        "pay_money_charge_bonus": "Top-up Bonus"
+        "pay_money_charge_bonus": "Top-up Bonus",
+        "charge_bonus_point": "Top-up Bonus Point",
+        "org_payment": "Organization Payment"
       },
       "tags": {
         "point_expired": "Expired",
@@ -167,7 +175,7 @@
       "point_unit": "P",
       "use_action": "Use points",
       "expire_warning": "{{amount}}P expiring within 30 days",
-      "expire_detail": "View details",
+      "expire_detail": "Check",
       "history_title": "Point history",
       "view_all": "View all",
       "type_accrue": "Earned",
@@ -187,13 +195,15 @@
       "nearest_date": "Earliest expiry: {{date}}",
       "list_title": "Expiry schedule",
       "expire_at": "Expires {{date}}",
-      "info": "Points expire automatically 12 months after they are earned. Points closest to expiry are used first.",
+      "expiry_soonest_info": "Points expire automatically {{time}} days after they are earned. Points closest to expiry are used first.",
+      "earned_oldest_info": "Points expire automatically {{time}} days after they are earned. Points earned earliest are deducted first.",
       "use_action": "Use points"
     },
     "contribute_history": {
       "title": "Contribution History",
       "contribution_status_title": "Contribution Status",
       "add_contribute": "Add Contribution",
+      "capital_withdrawal": "Decrease Request",
       "cumulative_contribution": "Cumulative Contribution : {{amount}} KRW",
       "dividend_info_title": "Dividend Information",
       "btn_dividend_detail": "View Details",
@@ -222,6 +232,12 @@
           "pending": "Pending",
           "failed": "Payment failed"
         }
+      },
+      "increase_detail": {
+        "title": "Increase detail",
+        "date_label": "Increase Date",
+        "amount_label": "Increase amount",
+        "payment_method_label": "Increase Type"
       }
     },
     "welcome": {
@@ -270,7 +286,7 @@
     "product_detail": {
       "price_label": "Price",
       "cart_button": "Add to Cart",
-      "min_order_label": "Minimum delivery order",
+      "min_order_label": "Minimum delivery order: {{amount}}KRW",
       "add_cart_success": "Add to cart Successfully",
       "max_quantity": "Max quantity: {{count}}",
       "max_quantity_error": "Maximum quantity is {{count}}",
@@ -282,8 +298,14 @@
     "products": {
       "cart_button": "Checkout {{amount}} KRW",
       "empty": "No products to display.",
+      "limit_reached": "Limit Reached",
+      "limit_reached_desc": "Purchase Limit Reached",
       "out_of_stock": "Sold Out",
-      "sold_out": "Sold Out"
+      "sold_out": "Sold Out",
+      "search_placeholder": "Product name",
+      "store_closed": "Closed",
+      "store_reopen_at": "Opens at {{time}}",
+      "store_reopen_date_format": "MMM D"
     },
     "authorisation": {
       "tab_login": "Login",
@@ -468,6 +490,14 @@
       "field_email": "Email",
       "field_phone": "Phone",
       "field_member_type": "Member Type",
+      "field_receipt_phone": "Cash Receipt Phone Number",
+      "memberships": {
+        "student": "Student",
+        "teacher": "Teacher",
+        "employee": "University Staff",
+        "coop_employee": "Coop Staff",
+        "other": "Other"
+      },
       "placeholder_name": "Hong Gildong",
       "placeholder_email": "hong@univ.ac.kr",
       "placeholder_phone": "010-0000-0000",
@@ -528,12 +558,14 @@
         "coupon": "Vouchers",
         "meal_ticket": "Meal Ticket",
         "dividend_inquiry": "Dividend Inquiry",
-        "pay_point": "Coop pay money / Point",
-        "pay_topup": "Coop pay moneyTop Up",
+        "pay_point": "Coop Pay / Point",
+        "pay_register": "Coop Pay Registration",
+        "pay_topup": "Coop Pay Money Top Up",
         "academy_verification": "Academy Verification",
-        "pay": "Coop pay Payment",
+        "pay": "Coop Pay Payment",
         "pay_balance": "Coop Pay Balance",
-        "order": "Order",
+        "order": "Place Order",
+        "order_history": "Order History",
         "store_search": "Store Search",
         "notice": "Announcements",
         "community": "Community",
@@ -560,6 +592,11 @@
       },
       "need_contribution_dialog": {
         "title": "A one-time contribution payment is required for membership.\nDo you want to continue?"
+      },
+      "membership_pending_dialog": {
+        "title": "Notice",
+        "desc": "Your membership request is pending approval.\nPlease wait for the admin to approve your request before using this feature.",
+        "confirm": "Close"
       }
     },
     "announcements": {
@@ -585,9 +622,13 @@
       "title": "Smart Order",
       "search_placeholder": "Store name",
       "section_label": "Frequently Ordered Store",
+      "view_all_orders": "View all orders",
+      "min_order": "Min. order : {{amount}}KRW",
+      "open_hours": "Opening hours: {{time}}",
       "delivery_label": {
         "pickup": "Pickup",
-        "delivery": "Delivery"
+        "delivery": "Delivery",
+        "hall": "Dine-in"
       },
       "filter": {
         "title": "Storting",
@@ -685,9 +726,14 @@
       "amount_placeholder": "Enter amount",
       "account_section": "Withdrawal Account",
       "bank_placeholder": "Select bank",
+      "bank_selection_title": "Select bank",
       "account_number_placeholder": "Enter account number",
       "account_holder_placeholder": "Enter account holder",
       "error_amount_exceed": "The withdrawal amount cannot exceed your withdrawable balance",
+      "reason_title": "Reason",
+      "reason_optional": "(Optional)",
+      "reason_desc": "Please let us know the reason for your withdrawal.",
+      "reason_placeholder": "Enter your reason",
       "notice_title": "Notice",
       "notice_1": "Bonus money is excluded from the withdrawal.",
       "notice_2": "Withdrawal processing takes 1-3 business days.",
@@ -742,6 +788,7 @@
       "unlock_account_confirm_desc": "This account will be available for payment again.",
       "unlock_success": "Payment method unlocked",
       "add_payment_method": "Add Payment Method",
+      "coop_pay_label": "Coop Pay",
       "account": "Account",
       "recent_history": "Recent history",
       "view_all": "View all",
@@ -766,6 +813,27 @@
         "credit_limit": "Credit limit",
         "spendable_amount": "Spendable amount",
         "tag": "Organization"
+      },
+      "transaction_detail_texts": {
+        "charge": "Top-up",
+        "charge_bonus_point": "Top-up Bonus Point",
+        "payment": "Payment",
+        "withdrawal": "Withdrawal",
+        "point_earn": "Store Points Accrual",
+        "point_grant": "Admin Grant",
+        "point_use": "Points Spent",
+        "point_expire": "Points Expiry",
+        "refund": "Refund",
+        "adjustment": "Admin Adjustment",
+        "org_payment": "Organization Payment"
+      },
+      "transaction_titles": {
+        "balance_charge": "Balance Top-up",
+        "pos_payment": "POS Payment",
+        "manual_balance_adjustment": "Balance Adjustment",
+        "pay_money_withdrawal": "Withdrawal",
+        "contribution_increase": "Contribution Increase",
+        "contribution_decrease_refund": "Contribution Refund"
       }
     },
     "request_add_card": {
@@ -794,6 +862,7 @@
       "order_code": "Order Code",
       "copy": "Copy",
       "order_date": "Order Date",
+      "display_price": "Order {{amount}}KRW",
       "delivery_address": "Delivery Address",
       "shipping_method": "Shipping Method",
       "payment_method": "Payment Method",
@@ -806,6 +875,12 @@
         "notify_title": "We are processing your order",
         "notify_subtitle": "You will be notified once your order is confirmed."
       },
+      "failed": {
+        "title": "Order Failed",
+        "subtitle": "Your payment could not be completed.\nPlease try again in a moment.",
+        "notify_title": "Payment was not completed",
+        "notify_subtitle": "Any amount charged is refunded automatically. Please contact support if this keeps happening."
+      },
       "success": {
         "title": "Order Placed Successfully!",
         "subtitle": "Thank you for your purchase.\nYour order is being processed.",
@@ -815,7 +890,12 @@
     },
     "order_histories": {
       "title": "Order History",
-      "reorder": "Reorder"
+      "reorder": "Reorder",
+      "tabs": {
+        "all": "All",
+        "pickup": "Pickup",
+        "hall": "Dine-in"
+      }
     },
     "qr_code_member": {
       "title": "Membership QR Code",
@@ -851,7 +931,7 @@
       "show_more": "View all products",
       "show_less": "Show less",
       "reorder": "Reorder",
-      "contact_support": "Contact Support",
+      "go_smart_order": "Smart Order Home",
       "status_pending": "Pending",
       "payment_methods": {
         "pay_money": "COOP pay-money",
@@ -868,24 +948,37 @@
         "payment_completed": "Paid",
         "shipping": "Shipping",
         "completed": "Completed",
+        "payment_integrated_completed": "Completed",
         "cancel_requested": "Cancellation Requested",
         "canceled": "Cancelled"
       },
       "shipping_methods": {
         "pickup": "Pickup",
-        "delivery": "Delivery"
+        "delivery": "Delivery",
+        "hall": "Dine-in"
       }
     },
     "transaction_detail": {
       "title": "Transaction Detail",
-      "payment_amount_label": "Payment Amount",
+      "payment_amount_label": "Payment Amount (Original)",
       "coupon_discount_label": "Coupon Discount",
       "point_used_label": "Points Used",
+      "member_discount": "Membership discount",
       "payment_summary_section_title": "Payment Summary",
       "final_payment_label": "Actual Payment",
       "pay_money_label": "Coop Pay Money",
+      "section_detail": {
+        "pay_money": "COOP pay-money",
+        "point": "Point",
+        "contribution": "Contribution",
+        "dividend": "Dividend"
+      },
       "point_section_title": "Point",
-      "point_earned_label": "Points Earned"
+      "point_earned_label": "Points Earned",
+      "payment_cancel_qr_title": "Payment Cancellation QR",
+      "payment_cancel_request": "Payment Cancellation Request",
+      "back_to_transaction_detail": "‹ Back to Transaction Detail",
+      "create_payment_cancel_qr_button": "Create Payment Cancellation QR"
     },
     "input_address": {
       "search_placeholder": "Search Province/City and Ward/Commune",
@@ -899,7 +992,7 @@
     "payment_cart": {
       "remove_cart_success": "Cart removed successfully",
       "select_pickup_time": "Select Pickup Time",
-      "title": "Cart",
+      "title": "Cart Detail",
       "badge_delivery": "Delivery",
       "badge_pickup": "Pickup",
       "order_button": "Order",
@@ -936,12 +1029,103 @@
       "address_delivery_note": "Please enter your on-campus address.",
       "btn_submit": "Continue"
     },
+    "cancellation_order": {
+      "title": "Cancel Order",
+      "order_label": "Order to cancel",
+      "order_number": "Order #{{number}}",
+      "order_items": "{{amount}} KRW · {{items}}",
+      "reason_heading": "Choose a reason for cancelling",
+      "reason_change_mind": "Changed my mind",
+      "reason_order_mistake": "Ordered by mistake",
+      "reason_delivery_delay": "Delivery is late",
+      "reason_store_issue": "Store issue",
+      "reason_other": "Something else",
+      "other_placeholder": "Tell us why you're cancelling",
+      "notice_title": "Before you cancel",
+      "notice_desc": "Orders already being prepared may incur a cancellation fee.",
+      "back": "Go back",
+      "submit": "Request cancellation"
+    },
     "contribution_input": {
-      "title": "Capital Input",
+      "title": "Contribution Increase",
       "subtitle": "Please enter the amount for additional capital contribution",
       "amount_label": "Amount Input",
       "amount_placeholder": "Please enter an amount",
-      "next": "Next"
+      "next": "Next",
+      "hero_title": "Contribution Increase Request",
+      "hero_subtitle": "Additional contributions increase your dividend benefits.\nRequest an increase today.",
+      "member_type_label": "Member type",
+      "member_status_enrolled": "(Enrolled)",
+      "current_contribution_label": "Contribution",
+      "current_units_value": "{{count}} units",
+      "current_units_amount": "({{amount}} KRW)",
+      "info_banner": "Additional contributions increase your dividend benefits.\nRequest an increase today.",
+      "caution_title": "Caution",
+      "caution_desc": "Once payment is completed, the increase is reflected in your contribution immediately.",
+      "units_input_label": "Units to add",
+      "unit_suffix": "units",
+      "unit_price_label": "1 unit",
+      "expected_amount_label": "Exp. contrib,",
+      "expected_units_label": "Final units",
+      "amount_won": "{{amount}} KRW",
+      "units_count": "{{count}} units",
+      "submit": "Apply",
+      "title_transfer_amount": "Please transfer your contribution to the account below.",
+      "desc_transfer_amount": "Your contribution will be credited after admin confirmation.(Takes 1–3 business days)",
+      "error_amount_required": "Please enter an amount to contribute"
+    },
+    "capital_withdrawal": {
+      "hero_title": "Contribution Decrease Request",
+      "hero_subtitle": "If your membership status changes after completion or graduation,\nyou can request a unit decrease.",
+      "info_banner": "If your membership status changes after completion or graduation, you can request a unit decrease.",
+      "option_academic_title": "Report academic change (completion/graduation)",
+      "option_academic_desc": "When your membership status changes due to completion or graduation",
+      "option_refund_title": "Unit decrease & refund request",
+      "option_refund_desc": "When you decrease contribution units and receive a refund",
+      "error_units_exceed_current": "Units cannot exceed your current units",
+      "caution_title": "Caution",
+      "caution_desc": "Once submitted, your decrease request is processed after review by cooperative staff"
+    },
+    "capital_withdrawal_result": {
+      "detail_title": "Application Details",
+      "application_id": "Application No.",
+      "applicant": "Applicant",
+      "unit_count": "Units requested",
+      "unit_value": "{{count}} unit(s)",
+      "current_unit_count": "Current units",
+      "total_unit_count_after": "Units after increase",
+      "amount": "Increase amount",
+      "currency_suffix": " KRW",
+      "deposit_account": "Deposit account",
+      "verify_code": "Verification code",
+      "requested_at": "Requested at",
+      "expected_completion_at": "Expected completion",
+      "status": "Status",
+      "confirm": "Confirm",
+      "pending": {
+        "title": "Contribution Decrease Requested",
+        "subtitle": "Your contribution units will be decreased after admin review",
+        "info_line1": "Our cooperative staff is reviewing your decrease request",
+        "info_line2": "You'll be notified via the app once the staff has processed the decrease",
+        "info_line3": "This usually takes 1–3 business days",
+        "status_label": "Processing"
+      },
+      "success": {
+        "title": "Contribution Increase Completed",
+        "subtitle": "Your contribution units have been increased",
+        "info_line1": "Your increase request has been approved",
+        "info_line2": "The units are now reflected in your contribution",
+        "info_line3": "",
+        "status_label": "Completed"
+      },
+      "failed": {
+        "title": "Contribution Increase Failed",
+        "subtitle": "Your increase request could not be processed",
+        "info_line1": "An error occurred while processing your request",
+        "info_line2": "Please try again",
+        "info_line3": "",
+        "status_label": "Failed"
+      }
     },
     "transaction_result": {
       "close": "Close",
@@ -1025,7 +1209,8 @@
       "reactivation_desc": "You can immediately reactivate your account through identity verification.",
       "reactivation_note": "Your points and benefits will be retained.",
       "reactivate_button": "Reactivate Account After Identity Verification",
-      "delete_button": "Delete Account"
+      "delete_button": "Delete Account",
+      "active_account_success": "Account activated successfully. Please log in again."
     },
     "deletion_account": {
       "title": "Account Deletion",
@@ -1052,13 +1237,22 @@
       "desc": "Unable to connect to the internet.\nPlease check your network connection and try again.",
       "retry_button": "Try Again"
     },
+    "force_update": {
+      "title": "Update Required",
+      "subtitle": "A new version of the app is available.",
+      "desc": "This version is no longer supported and may not work properly. Please update to continue using all features and improve your experience.",
+      "update_button": "Update Now",
+      "exit_button": "Exit App"
+    },
     "vouchers": {
       "title": "Coupon Box",
       "tab_available": "Available",
       "tab_used": "Used",
       "tab_expired": "Expired",
       "expired": "Expired",
+      "used": "Used",
       "dday": "D-{{days}}",
+      "available_to": "Available to {{date}}",
       "valid_until": "Valid until: {{date}}",
       "min_payment": "Min. payment: {{amount}}",
       "min_payment_none": "None",

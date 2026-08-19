@@ -2,6 +2,7 @@ import type { AddressSuggestion } from '@services/request/account';
 
 import type { AppCallback, IImage, ListApiResponse } from './common';
 import type { ITransactionDetail } from './payment';
+import { IResponseSendOtpVerifyMembership } from './auth';
 
 export interface IRequestAutoCompleteAddress
   extends AppCallback<AddressSuggestion[]> {
@@ -12,7 +13,8 @@ export interface IRequestUpdatePassword extends AppCallback {
   currentPassword: string;
   newPassword: string;
 }
-export interface IRequestUpdateMembership extends AppCallback {
+export interface IRequestUpdateMembership
+  extends AppCallback<IResponseSendOtpVerifyMembership> {
   membershipType: string;
   universityId: number;
   universityEmail: string;
@@ -34,29 +36,34 @@ export interface IRequestGetTransactionDetail
 
 export interface ITransactionMovement {
   transactionKey: string;
-  sourceType: string;
-  sourceId: number;
   occurredAt: string;
-  direction: string;
-  amount: number;
-  balanceAfter: number;
-  balanceAccountType: string;
-  entryType: string;
-  fundingSource: string;
-  paymentType: string;
-  easyPayMethod: string;
-  approvalNo: string;
+  moneyAmount?: number;
+  moneyInAmount?: number;
+  moneyOutAmount?: number;
+  pointAmount: number;
+  pointEarnedAmount?: number;
+  pointUsedAmount?: number;
+  moneyBalanceBefore?: number;
+  moneyBalanceAfter?: number;
+  pointBalanceBefore: number;
+  pointBalanceAfter: number;
+  chargeBonusAmount: any;
+  chargeBonusPayMoneyRate: any;
+  chargeBonusBenefitRate: any;
+  chargeBonusTotalRate: any;
+  memberGrade: any;
+  headlineAction: string;
+  headlinePurpose: string;
+  headlineEntryType: string;
+  headlineSourceType: string;
+  headlinePaymentType: any;
   storeId: number;
   storeName: string;
   orderId: number;
   orderNumber: string;
-  pointExpiresAt: string;
-  pointRemainingAmount: number;
-  memberGrade: string;
-  storeRate: number;
-  payMoneyRate: number;
-  benefitRate: number;
-  totalRate: number;
+  orderTotalAmount: number;
+  description: any;
+  legCount: number;
 }
 export interface IRequestUpdatePushId {
   optedIn: boolean;
@@ -128,12 +135,23 @@ export interface IRequestGetPayPointHistories
   size: number;
 }
 export interface IRequestCreateQRCodeMember
-  extends AppCallback<IResponseCreateQRCodeMember> {
-  cpn: string[];
+  extends AppCallback<IGenerateQRCodeResponse> {
+  cpn?: string[];
+  paymentType?: string;
+  organizationId?: number;
+}
+export interface IRequestGenerateQRCodeMealTicket
+  extends AppCallback<IGenerateQRCodeResponse> {
+  ticketCode: string;
+}
+
+export interface IResponseGenerateQRCodeMealTicket {
+  data: { ticket_code: string };
 }
 export interface IUpdateProfileInfoRequest extends AppCallback {
   name?: string;
   fullName?: string;
+  receiptPhoneNumber?: string;
 }
 export interface IUpdateAvatarRequest extends AppCallback {
   avatarPath?: string;
@@ -152,11 +170,6 @@ export interface IRequestGetVouchers
   storeId?: number;
 }
 
-export interface IResponseCreateQRCodeMember {
-  readonly expiresIn: number;
-  readonly qrImageBase64: string;
-}
-
 export type IStoreVoucher = {
   storeId: number;
   storeName: string;
@@ -172,7 +185,23 @@ export type IVoucher = {
   readonly type: string;
   readonly discountRate: number;
   readonly discountAmount: number;
+  readonly expiredFrom: string;
+  readonly inUsagePeriod: boolean;
 };
+
+export interface IGenerateQRCodeResponse {
+  readonly expiresIn: number;
+  readonly qrImageBase64: string;
+  readonly token: string;
+}
+
+export type IQRCodeViewerData = {
+  readonly amountText?: string;
+  readonly headerBadge?: string;
+  readonly expiresIn?: number;
+  readonly token?: string;
+  readonly qrImageBase64?: string;
+} & Partial<IVoucher>;
 
 export type IMealTicket = {
   id: number;

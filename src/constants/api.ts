@@ -22,6 +22,7 @@ export const EndPoints = {
   },
   CONTRIBUTION: {
     increase: 'contribution/increase-request',
+    decrease: 'contribution/decrease-request',
     summary: 'contribution/summary',
     historiesDividend: (request: string) => `contribution/dividend?${request}`,
     dividendDetail: (dividendId: number) =>
@@ -38,17 +39,19 @@ export const EndPoints = {
     updateMembership: 'user/membership/request',
     updatePushId: 'notification/push-subscription',
     deleteAccount: 'user/delete',
-    activeAccount: 'activeAccount',
+    activeAccount: 'user/hibernation/identity/init',
     changePass: 'user/change-password',
     updateProfile: 'user/profile',
     confirmOTPRequestMembership: 'user/membership/confirm-otp',
     createQRCodeMember: 'api/v1/membership/qr/generate',
     withdrawalBalance: 'balance/withdrawal',
     getMealTickets: (request: string) => `order/ticket${request}`,
-    getTransactionsMovement: (request: string) => `balance/movement${request}`,
+    getTransactionsMovement: (request: string) =>
+      `balance/transaction${request}`,
     payPointHistories: (request: string) => `balance/ledger${request}`,
-    transactionDetail: (id: number) => `transaction/${id}`,
+    transactionDetail: (id: number) => `balance/transaction/${id}`,
     getOrganizationInfo: 'organization',
+    generateQRCodeMealTicket: 'api/v1/ticket/qr/generate',
   },
   ACCOUNT_MANAGEMENT: {
     addAccount: 'balance/kcp/register/init',
@@ -105,12 +108,16 @@ export const EndPoints = {
     balanceCharge: 'balance/charge',
     cartDetail: (cartId: number) => `app/cart/${cartId}`,
     calculatePrice: 'order/total',
+    generateQRRefundTransaction: 'api/v1/pay/qr/cancel',
+    reorder: 'order/reorder',
+    cancelOrder: 'order/cancel',
   },
 
   WALLET: {
     currentWallet: 'balance',
     getTransactionHistories: (request: string) => `balance/ledger?${request}`,
     topUpWallet: 'wallet/charge',
+    getPointExpiringSummary: 'balance/point/expiry-warning/summary',
     getPointExpiring: (request: string) =>
       `balance/point/expiry-warning?${request}`,
   },

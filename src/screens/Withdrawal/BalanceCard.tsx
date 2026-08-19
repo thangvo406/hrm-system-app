@@ -28,14 +28,14 @@ function BalanceCard({ walletBalance }: Properties) {
         </Text>
       </View>
 
-      <View style={styles.row}>
+      {/* <View style={styles.row}>
         <Text style={styles.mutedLabel}>{t('withdrawal.bonus_label')}</Text>
         <Text style={styles.mutedValue} testID="withdrawal-bonus-amount">
           {t('common.display_price', {
             amount: formatCurrency(walletBalance?.bonusBalance),
           })}
         </Text>
-      </View>
+      </View> */}
 
       <View style={styles.divider} />
 
@@ -48,7 +48,7 @@ function BalanceCard({ walletBalance }: Properties) {
           testID="withdrawal-withdrawable-amount"
         >
           {t('common.display_price', {
-            amount: formatCurrency(walletBalance?.withdrawableBalance),
+            amount: formatCurrency(walletBalance?.balance),
           })}
         </Text>
       </View>

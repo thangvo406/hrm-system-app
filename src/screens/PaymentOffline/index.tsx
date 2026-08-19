@@ -6,8 +6,11 @@ import { useTranslation } from 'react-i18next';
 import PayButton from './PayButton';
 import { BankAccountsSelection, PointUsageCard } from '@components';
 import HeaderDetail from '@components/HeaderDetail';
+import AppNavigator from '@navigation/AppNavigator';
+import type { Paths } from '@navigation/paths';
+import type { TabScreenProps } from '@navigation/types';
 
-function PaymentOffline() {
+function PaymentOffline(props: TabScreenProps<Paths.PaymentOffline>) {
   const { t } = useTranslation();
   const {
     onChangePointUsed,
@@ -26,9 +29,11 @@ function PaymentOffline() {
     onAmountChange,
   } = usePaymentOffline();
 
+  const { isTab } = AppNavigator.getParams(props);
+
   return (
     <View style={styles.safeArea}>
-      <HeaderDetail title={t('payment_offline.title')} />
+      <HeaderDetail hideBtnBack={isTab} title={t('payment_offline.title')} />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}

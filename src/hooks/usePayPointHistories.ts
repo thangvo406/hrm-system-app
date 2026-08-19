@@ -40,7 +40,7 @@ const EMPTY_HISTORIES: Record<TPayPointTab, IPointPayHistory[]> = {
 };
 
 const onPressTransaction = (item: any) => {
-  AppNavigator.navigate(Paths.TransactionDetail, { transId: item?.id });
+  // AppNavigator.navigate(Paths.TransactionDetail, { transId: item?.id });
 };
 
 const onViewExpireDetail = () => {
@@ -170,7 +170,7 @@ export const usePayPointHistories = () => {
     onPressTransaction,
     onLoadMore,
     onPressWithdrawal,
-    expiringAmount: currentWallet?.expiringPointBalance,
+    expiringAmount: currentWallet?.expiringIn30Days,
     onViewExpireDetail,
     onRefresh,
     payMoneyHistories: histories.payMoney,

@@ -15,8 +15,8 @@ import isNumber from 'lodash/isNumber';
 const TEXT_DARK = '#1A1A1A';
 const TEXT_MUTED = '#7A7A7A';
 const AMOUNT_CREDIT_COLOR = '#3eb44a';
-const AMOUNT_DEBIT_COLOR = 'rgba(211, 47, 47, 0.5)';
-const AMOUNT_TRAN_FAILED = '#D32F2F';
+const AMOUNT_DEBIT_COLOR = '#EF4444';
+const AMOUNT_TRAN_FAILED = '#9CA3AF';
 const AMOUNT_TRAN_PENDING = '#c9c42e';
 
 function TransactionRow({
@@ -47,22 +47,31 @@ function TransactionRow({
     >
       <View style={styles.topRow}>
         <Text style={[styles.amount, { color: amountColor }]}>
-          {isNumber(item.amount)
-            ? `${isCredit ? '+' : '-'} ${formatCurrency(item.amount)}`
-            : '-'}
+          {t('common.display_price', {
+            amount: isNumber(item.amount)
+              ? `${isCredit ? '+' : '-'} ${formatCurrency(item.amount)}`
+              : '-',
+          })}
         </Text>
         <Text style={styles.date}>
           {dayjs(item.occurredAt).format('YYYY-MM-DD hh:mmA')}
         </Text>
       </View>
       <View style={styles.bottomRow}>
-        <Text style={styles.description}>{item.displayType}</Text>
         <Text style={styles.balance}>
-          {!isNumber(item.balanceAfter)
-            ? '-'
-            : t('pay_card.balance_after', {
-                amount: formatCurrency(item.balanceAfter),
-              })}
+          {t('pay_card.rows.unit', {
+            amount: formatCurrency(item.units),
+          })}
+        </Text>
+        <Text style={styles.balance}>
+          {t('pay_card.rows.unit_price', {
+            amount: formatCurrency(item.unitPrice || 0),
+          })}
+        </Text>
+        <Text style={styles.balance}>
+          {t('pay_card.rows.balance_after', {
+            amount: formatCurrency(item.balanceAfter || 0),
+          })}
         </Text>
       </View>
       {isPending || isSuccess ? undefined : (
@@ -127,13 +136,14 @@ const styles = StyleSheet.create({
   },
   balance: {
     color: TEXT_MUTED,
-    fontSize: ScaleSize(16),
+    fontSize: ScaleSize(14),
+    lineHeight: 22,
   },
   bottomRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: 'flex-end',
+    // flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: ScaleSize(8),
+    // marginTop: ScaleSize(8),
   },
   date: {
     color: TEXT_MUTED,

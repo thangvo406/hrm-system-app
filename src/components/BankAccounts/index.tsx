@@ -1,6 +1,6 @@
 import type { CarouselRenderItem } from 'react-native-reanimated-carousel';
 
-import { AddPlaceholder } from '@components';
+import { AddPlaceholder, BankAccountsLoading } from '@components';
 import { ScaleSize } from '@kits/core';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -177,11 +177,12 @@ function BankAccounts({
   const { t } = useTranslation();
   // The add tile leads the carousel, so hiding it shifts every real card's
   // index back by one.
-  const focusedIndex = (accounts?.length ?? 0) > 0
-    ? hideAddCard
-      ? Math.max(initialIndex - 1, 0)
-      : initialIndex
-    : -1;
+  const focusedIndex =
+    (accounts?.length ?? 0) > 0
+      ? hideAddCard
+        ? Math.max(initialIndex - 1, 0)
+        : initialIndex
+      : -1;
   const progress = useSharedValue(focusedIndex == -1 ? 0 : focusedIndex);
 
   const data = React.useMemo<IAccount[]>(
@@ -218,7 +219,11 @@ function BankAccounts({
       Globals.isScrollingRef.current = false;
     }
   }, []);
-  if (isShowUnRegister || !accounts) {
+  if (!accounts) {
+    return <BankAccountsLoading />;
+  }
+
+  if (isShowUnRegister) {
     return <></>;
   }
 

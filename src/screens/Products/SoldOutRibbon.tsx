@@ -1,7 +1,6 @@
 import { useI18n } from '@hooks';
 import { ScaleSize } from '@kits/core';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 import Svg, { Path, Text as SvgText } from 'react-native-svg';
 
@@ -25,8 +24,7 @@ const RIBBON_PATH = [
   'Z',
 ].join(' ');
 
-function SoldOutRibbon() {
-  const { t } = useTranslation();
+function SoldOutRibbon({ text }: any) {
   const { isEn } = useI18n();
 
   return (
@@ -46,7 +44,7 @@ function SoldOutRibbon() {
         textAnchor="middle"
         transform={`translate(${TEXT_X}, ${TEXT_Y}) rotate(45)`}
       >
-        {t('products.out_of_stock')}
+        {text}
       </SvgText>
     </Svg>
   );

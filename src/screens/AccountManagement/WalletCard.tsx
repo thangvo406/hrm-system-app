@@ -30,6 +30,7 @@ const HALF_TURN_DEGREES = 180;
 const HANDLE_IMAGE_WIDTH = ScaleSize(100);
 const HANDLE_IMAGE_HEIGHT = ScaleSize(50);
 const HANDLE_BAR_HEIGHT = ScaleSize(19);
+const HANDLE_HEIGHT = HANDLE_IMAGE_HEIGHT - HANDLE_BAR_HEIGHT;
 // 60 below the card bottom edge; the visible handle already fills part of it.
 const ORGANIZATION_SECTION_GAP =
   ScaleSize(60) - HANDLE_IMAGE_HEIGHT + HANDLE_BAR_HEIGHT;
@@ -45,7 +46,7 @@ const DOT_GAP = ScaleSize(3);
 
 type Properties = {
   readonly balance?: number;
-  readonly isShowUnRegister: boolean;
+  readonly isShowBottomButton: boolean;
   readonly onCharge: () => void;
   readonly onChargeHistory: () => void;
   readonly onUse: () => void;
@@ -113,7 +114,7 @@ function WalletCard({
   point,
   toggleUnRegister,
   onUseOrganize,
-  isShowUnRegister,
+  isShowBottomButton,
 }: Properties) {
   const { t } = useTranslation();
   const [isExpandedOrganization, setIsExpandedOrganization] = useState(false);
@@ -153,6 +154,7 @@ function WalletCard({
 
   const handleStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${expandProgress.value * HALF_TURN_DEGREES}deg` }],
+    height: opacityBtnExpand.value * HANDLE_HEIGHT,
     opacity: opacityBtnExpand.value,
     marginTop: -1,
   }));
@@ -227,7 +229,7 @@ function WalletCard({
           </Text>
         </View>
 
-        {!isShowUnRegister && (
+        {!!isShowBottomButton && (
           <AppButton
             onPress={onUse}
             style={styles.useButton}
@@ -249,7 +251,7 @@ function WalletCard({
               {t('account_management.charge')}
             </Text>
           </AppButton>
-          {!isShowUnRegister && (
+          {!!isShowBottomButton && (
             <AppButton
               onPress={onChargeHistory}
               style={styles.actionButton}
@@ -404,7 +406,7 @@ const styles = StyleSheet.create({
     top: 0,
   },
   expandHandleClip: {
-    height: HANDLE_IMAGE_HEIGHT - HANDLE_BAR_HEIGHT,
+    height: HANDLE_HEIGHT,
     overflow: 'hidden',
     // marginTop: -1,
   },

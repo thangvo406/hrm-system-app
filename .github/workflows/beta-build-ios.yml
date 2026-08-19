@@ -1,0 +1,185 @@
+name: iOS Beta Build (TestFlight)
+
+on:
+  push:
+    branches:
+      - dev
+  # Cho phép chạy lại riêng iOS từ tab Actions mà không kéo theo Android.
+  workflow_dispatch:
+
+env:
+  # github.run_number: tự tăng mỗi lần workflow chạy. Lưu ý sau khi tách, iOS và
+  # Android có counter RIÊNG — số của hai bên không còn trùng nhau nữa.
+  # Với iOS đây chỉ là fallback: build number thật lấy từ
+  # latest_testflight_build_number + 1.
+  BUILD_NUMBER: ${{ github.run_number }}
+
+  # github.ref_name: tên nhánh đang trigger workflow.
+  BRANCH_NAME: ${{ github.ref_name }}
+
+  # Lấy từ GitHub Variables (Settings > Secrets and variables > Variables) để đổi
+  # version không cần sửa code. Chưa cấu hình thì fallback '1.0.0'.
+  VERSION_NUMBER: ${{ vars.VERSION_NUMBER || '1.0.0' }}
+
+# Build number lấy từ latest_testflight_build_number + 1, tức phụ thuộc trạng thái
+# TestFlight tại thời điểm chạy. Hai run song song sẽ đọc ra cùng một số và bản
+# thứ hai bị Apple từ chối vì trùng build number — nên phải xếp hàng.
+# cancel-in-progress: false chứ không phải true: huỷ giữa chừng có thể vứt bỏ một
+# bản đã archive xong hoặc đã upload dở.
+#
+# Group có hậu tố -ios: nếu dùng chung group với workflow Android thì tách file ra
+# cũng vô nghĩa, hai bên vẫn phải xếp hàng chờ nhau.
+concurrency:
+  group: beta-build-ios-${{ github.ref }}
+
+jobs:
+  build-ios:
+    name: Build iOS Beta (TestFlight)
+    # Xem beta-build-android.yml: ghim số phiên bản, không dùng macos-latest.
+    # Bản Xcode dùng để build KHÔNG phụ thuộc image này — step "Select Xcode"
+    # phía dưới tự dò theo XCODE_MAJOR_PREF.
+    runs-on: macos-26
+    # Build + archive + upload TestFlight thường ~40-60 phút, cho dư biên.
+    timeout-minutes: 90
+    # Job chỉ đọc code rồi upload artifact; không tạo release/commit.
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          # Cần full history: release note TestFlight lấy từ `git log`.
+          fetch-depth: 0
+
+      - name: Select Xcode
+        # Từ Xcode 16, iOS platform là gói tải riêng — runner image có thể có
+        # /Applications/Xcode_X.Y.app mà KHÔNG có iOS platform, và archive sẽ
+        # chết với "Unable to find a destination matching { generic, platform:iOS }".
+        # Nên phải chọn theo tiêu chí "có iphoneos SDK", không phải theo tên thư mục.
+        #
+        # Ưu tiên major 26 để CI khớp với máy dev (đang dùng Xcode 26.x) — chênh
+        # Xcode giữa local và CI là nguồn của cả một lớp lỗi "local pass, CI fail".
+        # Đổi XCODE_MAJOR_PREF về '16' là quay lại SDK iOS 18.x.
+        env:
+          XCODE_MAJOR_PREF: '26'
+        run: |
+          set -uo pipefail
+          echo "Xcode có trên runner:"
+          ls -d /Applications/Xcode*.app 2>/dev/null || true
+
+          # Ưu tiên major đã chọn (mới nhất trong nhóm), rồi tới bản mới nhất
+          # bất kỳ nếu nhóm đó không dùng được; bỏ trùng lặp.
+          candidates=$(
+            { ls -d "/Applications/Xcode_${XCODE_MAJOR_PREF}"*.app 2>/dev/null | sort -Vr
+              ls -d /Applications/Xcode*.app                       2>/dev/null | sort -Vr
+            } | awk '!seen[$0]++'
+          )
+
+          # Hứng output ra biến rồi mới so khớp — KHÔNG dùng `| grep -q`: grep thoát
+          # ngay khi khớp dòng đầu, xcodebuild nhận SIGPIPE và trả non-zero, rồi
+          # `pipefail` biến cả pipeline thành thất bại dù thực ra đã khớp.
+          pick=""
+          for app in $candidates; do
+            sdks=$(DEVELOPER_DIR="$app/Contents/Developer" xcodebuild -showsdks 2>/dev/null || true)
+            case "$sdks" in
+              *iphoneos*)
+                pick="$app"
+                break
+                ;;
+            esac
+            echo "  bỏ qua $app — chưa cài iOS platform"
+          done
+
+          if [ -z "$pick" ]; then
+            echo "::error::Không có Xcode nào trên runner cài sẵn iOS platform"
+            exit 1
+          fi
+
+          sudo xcode-select -s "$pick"
+          echo "Đã chọn: $pick"
+          xcodebuild -version
+          xcodebuild -showsdks | grep -i 'ios' || true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+
+      - name: Enable Corepack (Yarn 3.6)
+        run: |
+          corepack enable
+          corepack prepare yarn@3.6.4 --activate
+          yarn --version
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+
+      - name: Install Dependencies
+        run: yarn install --no-immutable
+
+      - name: Setup Ruby and Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: ios
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            ios/Pods
+            ~/Library/Caches/CocoaPods
+          # Podfile.lock/yarn.lock đều bị gitignore (`*.lock`) nên key phải dựa
+          # trên các file thực sự có trong repo và quyết định native deps.
+          key: pods-${{ runner.os }}-${{ hashFiles('ios/Podfile', 'package.json') }}
+          restore-keys: pods-${{ runner.os }}-
+
+      - name: Run Fastlane iOS Beta
+        id: ipa
+        # Fastlane tự đọc VERSION_NUMBER / BUILD_NUMBER / BRANCH_NAME từ env,
+        # và tự ghi AuthKey .p8 ra ios/ từ APP_STORE_CONNECT_API_KEY_BASE64.
+        run: bundle exec fastlane beta
+        working-directory: ios
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+          IOS_DIST_CERT_P12_BASE64: ${{ secrets.IOS_DIST_CERT_P12_BASE64 }}
+          IOS_DIST_CERT_PASSWORD: ${{ secrets.IOS_DIST_CERT_PASSWORD }}
+          # Bắt buộc: archive và export đều ký manual bằng profile từ secret này.
+          # Thiếu nó thì build không tự tạo profile nữa mà sẽ fail tường minh.
+          # Nhiều profile ngăn cách bằng khoảng trắng.
+          IOS_PROVISIONING_PROFILES_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILES_DEV_BASE64 }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: '120'
+          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: '10'
+
+      - name: Upload IPA artifact
+        id: upload
+        # Fastlane build IPA xong mới upload TestFlight. Nếu bước pilot lỗi,
+        # IPA vẫn nằm sẵn trên disk — giữ lại thay vì bỏ luôn cả bản build.
+        if: always() && steps.ipa.outputs.ipa_path != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.ipa.outputs.ipa_name }}
+          path: ${{ steps.ipa.outputs.ipa_path }}
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Build summary
+        if: always()
+        run: |
+          {
+            echo "## 🍏 iOS Beta (TestFlight)"
+            echo ""
+            echo "- **Version**: ${VERSION_NUMBER} (build ${BUILD_NUMBER})"
+            echo "- **Artifact**: ${{ steps.ipa.outputs.ipa_name }} (id: ${{ steps.upload.outputs.artifact-id }})"
+            echo ""
+            echo "Tải về bằng: \`gh run download ${{ github.run_id }} -n ${{ steps.ipa.outputs.ipa_name }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"

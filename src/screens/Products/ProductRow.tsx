@@ -3,11 +3,10 @@ import type { IProduct } from '@type/products';
 import { AppButton, Image } from '@components';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import imageNames from '@assets/images/names';
 import { ProductUtils } from '@utils';
 import isNumber from 'lodash/isNumber';
-import debounce from 'lodash/debounce';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
 import SoldOutRibbon from './SoldOutRibbon';
@@ -22,6 +21,7 @@ type Properties = {
   readonly item: IProduct;
   readonly isFirst: boolean;
   readonly index: number;
+  readonly isOutsideOpenHour?: boolean;
   readonly onPress: (item: any) => void;
   readonly onChangeQuantity: (item: any, index: number) => void;
 };
@@ -30,16 +30,18 @@ function ProductRow({
   item,
   index,
   isFirst,
+  isOutsideOpenHour,
   onChangeQuantity,
   onPress,
 }: Properties) {
   const thumbUri = item.thumbnail?.fileUrl;
-  const [quantity, setQuantity] = useState(0);
+  const quantity = item?.cartItemInfo?.quantity ?? 0;
   const [errorMaxQuantity, setErrorMaxQuantity] = useState('');
   const { t } = useTranslation();
   const originalPrice = isNumber(item.discountPrice)
     ? item.discountPrice
     : item.sellingPrice || 0;
+  const isDisableUpdateQuantity = item.isForStudent || isOutsideOpenHour;
 
   const isSoldOut = React.useMemo(
     () =>
@@ -49,59 +51,57 @@ function ProductRow({
     [item.isStockManaged, item.stockQuantity],
   );
 
+  const { textSoldOut, descSoldOut } = useMemo(() => {
+    let text = '';
+    let descSoldOut = '';
+    if (isSoldOut) {
+      text = t('products.out_of_stock');
+    } else if (item.isForStudent && item.isSoldToday) {
+      text = t('products.limit_reached');
+      descSoldOut = t('products.limit_reached_desc');
+    }
+    return {
+      textSoldOut: text,
+      descSoldOut,
+    };
+  }, [isSoldOut, item.isForStudent, item.isSoldToday, t]);
+
+  const isDisableItem = !!textSoldOut || isOutsideOpenHour;
+
   const handlePress = () => {
     onPress(item);
   };
-
-  useEffect(() => {
-    if (item?.cartItemInfo) {
-      setQuantity(item?.cartItemInfo?.quantity);
-    } else {
-      setQuantity(0);
-    }
-  }, [item?.cartItemInfo]);
-
-  useEffect(() => {
-    if (!item.cartItemInfo || item.cartItemInfo?.quantity == quantity) {
-      return;
-    }
-    const debounceId = debounce(() => {
-      onChangeQuantity?.(
-        {
-          ...item,
-          cartItemInfo: {
-            ...item.cartItemInfo,
-            quantity,
-          },
-        },
-        index,
-      );
-    }, 350);
-    debounceId();
-    return () => debounceId.cancel();
-  }, [quantity, index]);
 
   const _onChangeQuantity = (type: string) => () => {
     const newQuantity = Math.max(
       0,
       type === 'plus' ? quantity + 1 : quantity - 1,
     );
-
     if (item.isStockManaged && newQuantity > item.stockQuantity) {
       setErrorMaxQuantity(
         t('product_detail.max_quantity_error', { count: item.stockQuantity }),
       );
       return;
     }
-    setQuantity(newQuantity);
+
     setErrorMaxQuantity('');
+    onChangeQuantity?.(
+      {
+        ...item,
+        cartItemInfo: {
+          ...item.cartItemInfo,
+          quantity: newQuantity,
+        },
+      },
+      index,
+    );
   };
 
   return (
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={handlePress}
-      disabled={isSoldOut}
+      disabled={isDisableItem}
       style={[styles.productRow, isFirst && { marginTop: 20 }]}
       testID={`product-${item.id}`}
     >
@@ -111,21 +111,42 @@ function ProductRow({
         <Text style={styles.productPrice}>
           {ProductUtils.formatCurrency(originalPrice)}
         </Text>
+        {descSoldOut ? (
+          <Text style={styles.descSoldOut}>{descSoldOut}</Text>
+        ) : null}
         {quantity > 0 ? (
           <View style={styles.stepper}>
             <AppButton
               style={styles.stepperIcon}
+              disabled={isOutsideOpenHour}
               onPress={_onChangeQuantity('')}
             >
-              <View style={styles.stepperBar} />
+              <View
+                style={[
+                  styles.stepperBar,
+                  isOutsideOpenHour && styles.btnDisable,
+                ]}
+              />
             </AppButton>
             <Text style={styles.stepperValue}>{quantity}</Text>
             <AppButton
+              disabled={isDisableUpdateQuantity}
               style={styles.stepperIcon}
               onPress={_onChangeQuantity('plus')}
             >
-              <View style={styles.stepperBar} />
-              <View style={[styles.stepperBar, styles.stepperBarVertical]} />
+              <View
+                style={[
+                  styles.stepperBar,
+                  isDisableUpdateQuantity && styles.btnDisable,
+                ]}
+              />
+              <View
+                style={[
+                  styles.stepperBar,
+                  styles.stepperBarVertical,
+                  isDisableUpdateQuantity && styles.btnDisable,
+                ]}
+              />
             </AppButton>
           </View>
         ) : undefined}
@@ -151,9 +172,9 @@ function ProductRow({
             width={PRODUCT_THUMB_SIZE}
           />
         )}
-        {isSoldOut ? <SoldOutRibbon /> : undefined}
+        {textSoldOut ? <SoldOutRibbon text={textSoldOut} /> : undefined}
       </View>
-      {isSoldOut ? (
+      {isDisableItem ? (
         <View pointerEvents="none" style={styles.soldOutOverlay} />
       ) : undefined}
     </TouchableOpacity>
@@ -167,6 +188,11 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: ScaleSize(12),
     marginTop: ScaleSize(6),
+  },
+  descSoldOut: {
+    fontSize: ScaleSize(13),
+    color: Colors.red03,
+    marginTop: ScaleSize(4),
   },
   productInfo: {
     flex: 1,
@@ -219,6 +245,9 @@ const styles = StyleSheet.create({
     // paddingHorizontal: ScaleSize(20),
     paddingVertical: ScaleSize(5),
     width: ScaleSize(120),
+  },
+  btnDisable: {
+    backgroundColor: Colors.gray08,
   },
   stepperBar: {
     backgroundColor: PRIMARY_COLOR,

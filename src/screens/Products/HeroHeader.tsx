@@ -254,7 +254,13 @@ function HeroHeader({
         },
       ),
     );
-  }, [focusSearchInput, isSearchOpen, onSearchClose, onSearchOpen, searchExpand]);
+  }, [
+    focusSearchInput,
+    isSearchOpen,
+    onSearchClose,
+    onSearchOpen,
+    searchExpand,
+  ]);
 
   return (
     <>
@@ -335,7 +341,7 @@ function HeroHeader({
         >
           <Animated.View style={[styles.searchInputWrap, searchInputStyle]}>
             <TextInput
-              placeholder={t('stores.search_placeholder')}
+              placeholder={t('products.search_placeholder')}
               placeholderTextColor={PLACEHOLDER_COLOR}
               ref={searchInputRef}
               onChangeText={debounce(onSearchChange, 400)}

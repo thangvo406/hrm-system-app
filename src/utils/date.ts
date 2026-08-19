@@ -1,15 +1,7 @@
 import { DayOfWeek } from '@constants/config';
 import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 import Globals from './Globals';
 import { Colors } from '@constants';
-
-// Extend dayjs with plugins
-dayjs.extend(customParseFormat);
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 const isLeapYear = (year: number): boolean => {
   return (

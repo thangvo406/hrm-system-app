@@ -26,7 +26,7 @@ import {
 import { loginWithKakaoAccount } from '@react-native-seoul/kakao-login';
 import NaverLogin from '@react-native-seoul/naver-login';
 import {
-  // activeAccountRequest,
+  activeAccountRequest,
   deleteAccountRequest,
   getTotalItemCartRequest,
 } from '@services/slices/account/accountSlice';
@@ -148,7 +148,12 @@ const onLoginNaver = async (
   t: (key: string) => string,
 ): Promise<SocialLoginToken | undefined> => {
   try {
-    await NaverLogin.logout();
+    try {
+      await NaverLogin.logout();
+      await NaverLogin.deleteToken();
+    } catch {
+      //empty
+    }
     const { failureResponse, successResponse } = await NaverLogin.login();
     if (successResponse) {
       return {
@@ -225,7 +230,7 @@ export const useAuthorization = () => {
         dormantDate: response.dormantDate,
         expiredInformation: response.expiredInformation,
         lastLoginDate: response.lastLoginDate,
-        onReActiveAccount,
+        onReactivate: onReActiveAccount,
         onDeleteAccount: () => {
           AppNavigator.showDialog({
             screen: DeletionAccount,
@@ -338,16 +343,50 @@ export const useAuthorization = () => {
     }));
   };
 
-  const onReActiveAccount = (data: any) => {
-    // dispatch(
-    //   activeAccountRequest({
-    //     onSuccess: () => {
-    //       /* refresh profile / đóng dialog InActiveAccount */
-    //     },
-    //     onFailure: message =>
-    //       AppNavigator.showSnackBar({ message, type: 'failed' }),
-    //   }),
-    // );
+  const onReActiveAccount = () => {
+    dispatch(
+      activeAccountRequest({
+        onSuccess: data => {
+          AppNavigator.showDialog({
+            screen: WebViewScreen,
+            cookies: {
+              call_url: data?.callUrl,
+              reg_cert_key: data?.regCertKey,
+              ordr_idxx: data?.ordrIdxx,
+            },
+            onNavigationStateChange: (
+              navState: WebViewNavigation,
+              onRequestClose: any,
+            ) => {
+              const { url } = navState || {};
+              // coop://registration/identity/failure?error=cert_failed
+              const isDeeplinkApp = url?.startsWith?.('coop://');
+              if (isDeeplinkApp) {
+                const params = deepLinkGate.getPathFromUrl(navState.url);
+                onRequestClose();
+                if (params?.error) {
+                  // onShowPopupFailed();
+                  AppNavigator.showSnackBar({
+                    message: t('forgot_password.verify_user_failed'),
+                    type: 'failed',
+                  });
+                } else {
+                  AppNavigator.hideAllPopup();
+                  AppNavigator.showSnackBar({
+                    message: t('inactive_account.active_account_success'),
+                    type: 'success',
+                  });
+                }
+              }
+            },
+            url: data?.certWebViewUrl,
+            isFullScreen: true,
+          });
+        },
+        onFailure: message =>
+          AppNavigator.showSnackBar({ message, type: 'failed' }),
+      }),
+    );
   };
 
   const onDeleteAccount = (selectedReason: string) => {

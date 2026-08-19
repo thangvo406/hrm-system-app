@@ -5,7 +5,12 @@ import { useTranslation } from 'react-i18next';
 import React from 'react';
 import dayjs from 'dayjs';
 import type { IPointPayHistory } from '@type';
-import { COLORS_POINT_AMOUNT, EMPTY_VALUE, POINT_TAG_STYLE, TRANSACTION_DETAIL_DISPLAY } from '@constants/config';
+import {
+  COLORS_POINT_AMOUNT,
+  EMPTY_VALUE,
+  POINT_TAG_STYLE,
+  TRANSACTION_DETAIL_DISPLAY,
+} from '@constants/config';
 import type { TranslationKeys } from '@translations/i18next';
 import { getDaysUntil } from '@utils/date';
 import { Colors } from '@constants';
@@ -21,7 +26,6 @@ type Properties = {
 const TEXT_MUTED = '#9AA0A6';
 const DATE_FORMAT = 'YYYY-MM-DD hh:mmA';
 
-
 const DETAIL_LABELS: Record<string, string | undefined> =
   TRANSACTION_DETAIL_DISPLAY;
 
@@ -31,7 +35,7 @@ function HistoryCard({ item, onPressItem }: Properties) {
   const tag = POINT_TAG_STYLE[item?.entryType];
 
   const detailLabel = DETAIL_LABELS[item.entryType];
-  const amountColor = COLORS_POINT_AMOUNT[item.entryType];
+  const amountColor = COLORS_POINT_AMOUNT[item.transactionDirection];
   const isEarn = item.entryType == 'POINT_EARN';
   const dayReaming =
     isEarn && item.pointExpiresAt
@@ -58,11 +62,11 @@ function HistoryCard({ item, onPressItem }: Properties) {
           {dayjs(item.createdDate).format(DATE_FORMAT)}
         </Text>
         <Text style={styles.balance}>
-          {t('pay_point.balance_after', {
-            amount: isNumber(item.pointAfter)
-              ? formatCurrency(item.pointAfter)
+          {`${t('pay_point.balance_after', {
+            amount: isNumber(item.balanceAfter)
+              ? formatCurrency(item.balanceAfter)
               : '-',
-          })}
+          })}P`}
         </Text>
         {!!item.pointExpiresAt && (
           <Text style={styles.expiry}>

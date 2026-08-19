@@ -28,6 +28,15 @@ const ifDeviceSmall = (a: any, b: any) => {
   return b;
 };
 
+const getTimeZone = (): string => {
+  try {
+    // 'Asia/Seoul' — IANA id lấy từ cài đặt hệ điều hành.
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+  } catch {
+    return '';
+  }
+};
+
 function getDeviceName() {
   return DeviceInfo.getDeviceNameSync();
 }
@@ -196,6 +205,7 @@ export const DeviceUtils = {
   ifAndroid,
   getDeviceId,
   ifIphoneX,
+  getTimeZone,
   convertBytes,
   getDeviceName,
   ifIpad,

@@ -10,13 +10,14 @@ import {
 } from 'react-native';
 import { Colors } from '@constants';
 import { DeviceUtils } from '@kits/core/utils';
-import { formatCurrency } from '@utils/product';
+// import { formatCurrency } from '@utils/product';
 import { useWithdrawal } from '@hooks/useWithdrawal';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import BalanceCard from './BalanceCard';
 import BankSelector from './BankSelector';
 import NoticeBox from './NoticeBox';
+import ReasonCard from './ReasonCard';
 import { useEffect, useRef } from 'react';
 import type { KeyboardEvent } from 'react-native';
 
@@ -31,15 +32,13 @@ function Withdrawal() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const {
-    amount,
+    // amount,
     enabledBtnSubmit,
-    onAccountNumberChange,
-    onAmountChange,
+    onChangeForm,
     onSubmit,
     selectedBank,
-    errorAmount,
+    // errorAmount,
     currentWallet,
-    setAccountHolder,
     onPressBank,
   } = useWithdrawal();
 
@@ -92,23 +91,6 @@ function Withdrawal() {
           <Text style={styles.sectionLabel}>
             {t('withdrawal.amount_section')}
           </Text>
-          <TextField
-            inputWrapperStyle={styles.amountWrapper}
-            keyboardType="numeric"
-            onChangeText={onAmountChange}
-            returnKeyType="done"
-            error={errorAmount}
-            placeholder={t('withdrawal.amount_placeholder')}
-            renderRightComponent={() => (
-              <View style={styles.unitGroup}>
-                <View style={styles.unitDivider} />
-                <Text style={styles.unitText}>{t('withdrawal.currency')}</Text>
-              </View>
-            )}
-            style={styles.amountInput}
-            testID="withdrawal-amount"
-            value={formatCurrency(amount)}
-          />
 
           <View style={styles.accountCard}>
             <Text style={styles.accountTitle}>
@@ -120,7 +102,7 @@ function Withdrawal() {
               selectedBank={selectedBank}
             />
             <TextField
-              onChangeText={onAccountNumberChange}
+              onChangeText={onChangeForm('accountNumber')}
               placeholder={t('withdrawal.account_number_placeholder')}
               testID="withdrawal-account-number"
               showClear
@@ -128,13 +110,15 @@ function Withdrawal() {
               keyboardType="number-pad"
             />
             <TextField
-              onChangeText={setAccountHolder}
+              onChangeText={onChangeForm('accountHolder')}
               placeholder={t('withdrawal.account_holder_placeholder')}
               testID="withdrawal-account-holder"
               returnKeyType="done"
               showClear
             />
           </View>
+
+          <ReasonCard onChangeText={onChangeForm('reason')} />
         </Animated.View>
         <NoticeBox />
       </ScrollView>

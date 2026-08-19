@@ -1,3 +1,5 @@
+import { GRADE_MEMBERSHIP_TYPE } from '@constants/config';
+import { ValidateUtils } from '@kits/core/utils';
 import AppNavigator from '@navigation/AppNavigator';
 import { Paths } from '@navigation/paths';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
@@ -7,9 +9,10 @@ import {
   updateProfileInfoRequest,
   uploadAvatarRequest,
 } from '@services/slices/account/accountSlice';
+import { TranslationUtils } from '@utils';
 import { formatPhoneNumber } from '@utils/common';
 import { ImagePicker } from '@utils/imagePicker';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export function useProfile() {
@@ -20,13 +23,52 @@ export function useProfile() {
   const [phone, setPhone] = useState(
     (profile?.phone ?? '').replaceAll(/\D/g, ''),
   );
-  const [errors, setErrors] = useState<{ fullName?: string }>({});
+
+  const [receiptPhone, setReceiptPhone] = useState(
+    (profile?.receiptPhoneNumber ?? '').replaceAll(/\D/g, ''),
+  );
+  const [errors, setErrors] = useState<{
+    fullName?: string;
+    receiptPhone?: string;
+  }>({});
 
   const dispatch = useAppDispatch();
+
+  const onChangeReceiptPhone = useCallback((text: string) => {
+    const phone = text.replaceAll(/\D/g, '');
+    setReceiptPhone(phone);
+    const error = !phone
+      ? ''
+      : phone && ValidateUtils.isPhoneNumber(text)
+        ? ''
+        : t('authorisation.error_phone_invalid');
+    setErrors(prev =>
+      prev.receiptPhone === error ? prev : { receiptPhone: error },
+    );
+  }, []);
 
   const onChangePhone = useCallback((text: string) => {
     setPhone(text.replaceAll(/\D/g, ''));
   }, []);
+
+  const membershipType = useMemo(() => {
+    const key = `profile.memberships.${profile?.membershipType?.toLowerCase()}`;
+    let result = '';
+    if (profile?.coopMemberGrade) {
+      result = t(
+        `home.member_labels.${profile?.coopMemberGrade?.toLowerCase()}`,
+      );
+    }
+    if (
+      !profile?.membershipType?.trim?.() ||
+      profile?.membershipType == GRADE_MEMBERSHIP_TYPE.GENERAL
+    ) {
+      return result;
+    } else if (TranslationUtils.hasTranslationKey(key)) {
+      return `${result}-${t(key)}`;
+    }
+    return `${result}-${t('profile.memberships.other')}`;
+  }, [t, profile?.coopMemberGrade, profile?.membershipType]);
 
   const onChangeFullName = useCallback(
     (text: string) => {
@@ -78,6 +120,7 @@ export function useProfile() {
     dispatch(
       updateProfileInfoRequest({
         fullName,
+        receiptPhoneNumber: receiptPhone,
         onSuccess: () =>
           AppNavigator.showSnackBar({
             message: t('profile.update_success'),
@@ -87,7 +130,7 @@ export function useProfile() {
           AppNavigator.showSnackBar({ message, type: 'failed' }),
       }),
     );
-  }, [dispatch, fullName, t]);
+  }, [dispatch, fullName, receiptPhone, t]);
 
   const onPressChangePass = useCallback(() => {
     AppNavigator.navigate(Paths.UpdatePass);
@@ -95,15 +138,17 @@ export function useProfile() {
 
   return {
     displayPhone: formatPhoneNumber(phone),
+    receiptPhone: formatPhoneNumber(receiptPhone),
     email,
     errors,
     fullName,
     avatar: profile?.avatar,
-    membershipType: profile?.membershipType ?? '',
+    membershipType,
     onChangeAvatar,
     onChangeEmail: setEmail,
     onChangeFullName,
     onChangePhone,
+    onChangeReceiptPhone,
     onPressChangePass,
     onPressSave,
   };

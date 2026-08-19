@@ -12,7 +12,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { usePointExpiring } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -35,17 +35,21 @@ function PointExpiring() {
     expiringWindowDays,
     items,
     loading,
-    nearestExpiryDate,
+    summary,
     onLoadMore,
     onUsePoint,
-    totalAmount,
   } = usePointExpiring();
+
+  const infoDesc = useMemo(() => {
+    const key = `point_expiring.${summary?.deductionOrder?.toLowerCase()}_info`;
+    return t(key, { time: summary?.validityDays });
+  }, [summary]);
 
   const renderEmpty = useCallback(
     () => (
       <EmptyView
         desc={t('common.no_data')}
-        icon={imageNames.ic_mega_phone}
+        icon={imageNames.ic_placeholder_star}
         style={styles.empty}
       />
     ),
@@ -54,7 +58,11 @@ function PointExpiring() {
 
   return (
     <View style={styles.container}>
-      <HeaderDetail hideNotify title={t('point_expiring.title')} usePaddingTop />
+      <HeaderDetail
+        hideNotify
+        title={t('point_expiring.title')}
+        usePaddingTop
+      />
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -64,8 +72,8 @@ function PointExpiring() {
 
         <ExpiringSummaryCard
           expiringWindowDays={expiringWindowDays}
-          nearestExpiryDate={nearestExpiryDate}
-          totalAmount={totalAmount}
+          nearestExpiryDate={summary?.nextExpiryDate}
+          totalAmount={summary?.expiringIn30Days}
         />
 
         <Text style={styles.sectionTitle}>
@@ -88,7 +96,7 @@ function PointExpiring() {
 
         <View style={styles.infoBanner}>
           <Text style={styles.infoIcon}>💡</Text>
-          <Text style={styles.infoText}>{t('point_expiring.info')}</Text>
+          <Text style={styles.infoText}>{infoDesc}</Text>
         </View>
       </ScrollView>
 

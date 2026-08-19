@@ -18,8 +18,13 @@ export interface IProduct {
   images: IImage[];
   selectedAttributes?: IAttributeCart[];
   quantity?: number;
+  discountEligible?: number;
+  discountMemberAmount?: number;
+  price?: number;
   productThumbnail: IImage;
   cartItemInfo: IProductCartItemInfo;
+  isForStudent: boolean;
+  isSoldToday: boolean;
 }
 
 export interface IProductCartItemInfo {
@@ -37,6 +42,7 @@ export interface IResponseProductDetail {
   sellingPrice: number;
   discountPrice: any;
   stockQuantity: number;
+  isForStudent: boolean;
   isStockManaged: boolean;
   status: string;
   sortOrder: number;

@@ -1,3 +1,4 @@
+import { IGenerateQRCodeResponse } from './account';
 import type { AppCallback, IImage, ListApiResponse } from './common';
 import type { IRequestCheckout, IProduct } from './products';
 
@@ -29,6 +30,8 @@ export interface IStoreCartItem {
   userId: number;
   storeId: number;
   storeName: string;
+  storeOpeningTime: string;
+  storeClosedTime: string;
   storeAddress: IStoreAddress;
   subTotal: number;
   totalQuantity: number;
@@ -66,6 +69,7 @@ export interface IProductCart {
   productThumbnailUrl: IImage;
   unitPrice: number;
   quantity: number;
+  isForStudent: boolean;
   totalAmount: number;
   selected: boolean;
   selectedAttributes: IAttributeCart[];
@@ -83,6 +87,13 @@ export interface IAttributeCart {
   price: number;
 }
 
+export interface IRequestGenerateQRRefundTransaction
+  extends AppCallback<IGenerateQRCodeResponse> {
+  orderId: number;
+}
+export interface IRequestCancelOrder extends AppCallback {
+  reason: string;
+}
 export interface IRequestGetCartDetail extends AppCallback<IStoreCartItem> {
   readonly cartId: number;
 }
@@ -203,12 +214,15 @@ export interface IOrderHistoryItem {
   readonly totalAmount: number;
   readonly storeName: string;
   readonly orderNumber: string;
+  readonly hasItems: boolean;
+  readonly isSoldToday: boolean;
   readonly orderedAt: string;
   readonly summary: IOrderSummary;
 }
 
 export interface IRequestGetOrderHistories
   extends AppCallback<ListApiResponse<IOrderHistoryItem[]>> {
+  readonly orderReceiveMethod?: string;
   readonly page: number;
   readonly size: number;
 }
@@ -223,7 +237,7 @@ export interface IOrderHistoryDetailItem {
   userPhone: string;
   storeId: number;
   storeName: string;
-  storeAddress: IStoreAddress;
+  storeAddress: string;
   storeLogo: IImage;
   status: string;
   paymentFundingSource: string;
@@ -240,6 +254,7 @@ export interface IOrderHistoryDetailItem {
 
 export interface IPriceDetail {
   totalMoney: number;
+  pointApplied: number;
   couponMoney: number;
   membershipDiscount: number;
   pointDiscount: number;
@@ -249,8 +264,9 @@ export interface IPriceDetail {
 
 export interface IRequestCalculatePrice extends AppCallback<IPriceDetail> {
   point: number;
-  couponId: number;
+  couponId?: number;
   storeId: number;
+  cartId: number;
   totalMoney: number;
 }
 export interface IOrderSummary {
@@ -270,11 +286,18 @@ export interface IRequestGetOrderHistoryDetail
   readonly orderId: string;
 }
 
-export interface IGenerateQRCodeResponse {
-  readonly expiresIn: number;
-  readonly qrImageBase64: string;
+export interface IRequestDecreaseContribute
+  extends AppCallback<IKcpInitParams> {
+  units: number;
+  requestReason?: string;
+  refundBankName: string;
+  refundMethod: string;
+  refundBankAccountNumber: string;
+  refundBankAccountHolder: string;
 }
-
+export interface IRequestReOrder extends AppCallback<IStoreCartItem> {
+  orderId: number;
+}
 export interface IRequestInitCharge extends AppCallback<IKcpInitParams> {
   amount: number;
   payment: IPaymentRequest;
@@ -287,15 +310,62 @@ export interface IRequestGenerateQRCode
 }
 
 export interface ITransactionDetail {
-  readonly id: string;
-  readonly productName: string;
-  readonly paidAt: string;
-  readonly paymentAmount: number;
-  readonly couponDiscount: number;
-  readonly couponName?: string;
-  readonly pointUsed: number;
-  readonly finalPaymentAmount: number;
-  readonly payMoneyAmount: number;
-  readonly pointEarned: number;
-  readonly paymentMethod: number;
+  transactionKey: string;
+  occurredAt: string;
+  headlineAction: string;
+  headlineFundingSource: string;
+  paymentFundingSource?: string;
+  order: ITransactionOrder;
+  withdrawal: any;
+  legs: ITransactionLeg[];
+}
+
+export interface ITransactionOrder {
+  orderId: number;
+  orderNumber: string;
+  storeName: string;
+  totalAmount: number;
+  totalDiscountAmount: number;
+  voucherAmount: number;
+  couponCode: string;
+  cancelQrAvailable: boolean;
+  couponName: string;
+  couponDiscountAmount: number;
+  memberDiscountAmount: number;
+  storeDiscountRate: any;
+  benefitDiscountRate: any;
+  memberGrade: any;
+  usedPointAmount: number;
+  settledMoneyAmount: number;
+}
+export interface ITransactionLeg {
+  transactionKey: string;
+  sourceType: string;
+  sourceId: number;
+  occurredAt: string;
+  direction: string;
+  amount: number;
+  balanceBefore: number;
+  balanceAfter: number;
+  balanceAccountType: string;
+  entryType: string;
+  fundingSource: string;
+  purpose: string;
+  description: any;
+  paymentType: any;
+  easyPayMethod: any;
+  approvalNo: any;
+  storeId: number;
+  storeName: string;
+  orderId: number;
+  orderNumber: string;
+  organizationId: any;
+  organizationName: any;
+  pointExpiresAt?: string;
+  pointRemainingAmount?: number;
+  memberGrade?: string;
+  storeRate?: number;
+  payMoneyRate: any;
+  benefitRate?: number;
+  totalRate?: number;
 }

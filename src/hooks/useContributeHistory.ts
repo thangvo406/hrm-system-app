@@ -45,6 +45,10 @@ const INITIAL_PAGINATION: TTabPaginationState = {
   page: 0,
 };
 
+const onCapitalWithdrawal = () => {
+  AppNavigator.navigate(Paths.CapitalWithdrawal);
+};
+
 export const useContributeHistory = () => {
   const [historyTab, setHistoryTab] = useState<TPayCardHistoryTab>('pay');
   const dispatch = useAppDispatch();
@@ -121,7 +125,7 @@ export const useContributeHistory = () => {
           getContributeHistoriesRequest({
             balanceAccountType: 'CONTRIBUTION',
             page,
-            size: 20,
+            size: 10,
             ...paramsFilter,
             onSuccess: (data: ListApiResponse<IContributeHistory[]>) => {
               if (isStale()) {
@@ -149,7 +153,7 @@ export const useContributeHistory = () => {
         dispatch(
           getHistoriesDividendRequest({
             page,
-            size: 20,
+            size: 10,
             ...paramsFilter,
             onSuccess: (data: ListApiResponse<IDividendHistory[]>) => {
               if (isStale()) {
@@ -281,6 +285,7 @@ export const useContributeHistory = () => {
           data: detail,
           screen: ContributionDetail,
           popupType: 'bottomSheet',
+          isIncrease: item.type == 'DECREASE',
           isContribute: isTabContribute,
           title: isTabContribute
             ? t('pay_card.tab_pay')
@@ -308,6 +313,7 @@ export const useContributeHistory = () => {
     onPressTranItem,
     onRecharge,
     onPressFilter,
+    onCapitalWithdrawal,
     onRefresh,
     refreshing,
     isEnablePaymentCard,

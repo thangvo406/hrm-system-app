@@ -3,13 +3,14 @@ import type {
   IRequestActiveAccount,
   IRequestDeleteAccount,
   IResponseConfirmMemberShipVerify,
+  IResponseCreateLinkVerifyInfoUser,
   IResponseSendOtpVerifyMembership,
 } from '@type/auth';
 
 import type {
-  IResponseCreateQRCodeMember,
   IResponseOrganizationInfo,
   IRequestAutoCompleteAddress,
+  IRequestGenerateQRCodeMealTicket,
   IRequestGetPayPointHistories,
   IRequestGetVouchers,
   IRequestUpdateMembership,
@@ -25,6 +26,7 @@ import type {
   IVoucher,
   IMealTicket,
   IPointPayHistory,
+  IGenerateQRCodeResponse,
 } from '@type/account';
 import type { ITransactionDetail } from '@type/payment';
 
@@ -43,6 +45,7 @@ import { CommonUtils } from '@utils';
 export interface Profile {
   avatar?: IImage;
   coopMemberGrade?: string;
+  membershipStatus?: string;
   email?: string;
   id?: string | number;
   identityNumber?: string;
@@ -53,6 +56,7 @@ export interface Profile {
   name?: string;
   fullName?: string;
   phone?: string;
+  receiptPhoneNumber?: string;
   roleCode?: string;
   universityExternalId?: string;
   universityName?: string;
@@ -90,8 +94,11 @@ export const deleteAccount = async (
 
 export const activeAccount = async (
   request: IRequestActiveAccount,
-): Promise<void> => {
-  await httpRequest.post(EndPoints.ACCOUNT.activeAccount, request);
+): Promise<IResponseCreateLinkVerifyInfoUser> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<IResponseCreateLinkVerifyInfoUser>
+  >(EndPoints.ACCOUNT.activeAccount, request);
+  return response.data;
 };
 
 export const updatePassword = async (
@@ -200,9 +207,9 @@ export const deletePushId = async (pushId: string): Promise<void> => {
 
 export const createQRCodeMember = async (
   request: IRequestCreateQRCodeMember,
-): Promise<IResponseCreateQRCodeMember> => {
+): Promise<IGenerateQRCodeResponse> => {
   const response = await httpRequest.post<
-    SingleApiResponse<IResponseCreateQRCodeMember>
+    SingleApiResponse<IGenerateQRCodeResponse>
   >(EndPoints.ACCOUNT.createQRCodeMember, request);
   return response.data;
 };
@@ -230,29 +237,15 @@ export const getTransactionsMovement = async (
   });
   return response.data;
 };
-const MOCK_TRANSACTION_DETAIL: ITransactionDetail = {
-  couponDiscount: 3000,
-  couponName: '음료무료쿠폰',
-  finalPaymentAmount: 25_900,
-  id: 'txn-mock-001',
-  paidAt: '2026-04-12T10:00:00',
-  paymentAmount: 29_900,
-  payMoneyAmount: 25_900,
-  pointEarned: 0,
-  pointUsed: 1000,
-  productName: '스마트 오더',
-};
+
 export const getTransactionDetail = async (
   request: Omit<IRequestGetTransactionDetail, 'onFailure' | 'onSuccess'>,
 ): Promise<ITransactionDetail> => {
-  return new Promise(resolve => {
-    resolve(MOCK_TRANSACTION_DETAIL);
-  });
-  // const response = await httpRequest.get<SingleApiResponse<ITransactionDetail>>(
-  //   EndPoints.ACCOUNT.transactionDetail(request.transactionId),
-  //   { loading: false },
-  // );
-  // return response.data;
+  const response = await httpRequest.get<SingleApiResponse<ITransactionDetail>>(
+    EndPoints.ACCOUNT.transactionDetail(request.transactionId),
+    { loading: false },
+  );
+  return response.data;
 };
 
 export const getMealTickets = async (
@@ -265,5 +258,14 @@ export const getMealTickets = async (
   >(EndPoints.ACCOUNT.getMealTickets(params ? `?${params}` : ''), {
     loading: false,
   });
+  return response.data;
+};
+
+export const generateQRCodeMealTicket = async (
+  request: Omit<IRequestGenerateQRCodeMealTicket, 'onFailure' | 'onSuccess'>,
+): Promise<IGenerateQRCodeResponse> => {
+  const response = await httpRequest.post<
+    SingleApiResponse<IGenerateQRCodeResponse>
+  >(EndPoints.ACCOUNT.generateQRCodeMealTicket, request);
   return response.data;
 };

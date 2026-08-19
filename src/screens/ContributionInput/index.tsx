@@ -58,6 +58,8 @@ function ContributionInput() {
           onBack={() => AppNavigator.goBack()}
           onSubmit={() => AppNavigator.goBack()}
           btnSubmit={t('common.popup.btn_close')}
+          title={t('contribution_input.title_transfer_amount')}
+          desc={t('contribution_input.desc_transfer_amount')}
         />
       </View>
     );

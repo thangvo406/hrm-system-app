@@ -1,5 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Animated,
+  Keyboard,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import type { KeyboardEvent } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import {
   AppButton,
@@ -10,15 +18,19 @@ import {
   TextField,
 } from '@components';
 import { ScaleSize } from '@kits/core';
+import { DeviceUtils } from '@kits/core/utils';
 import { Colors } from '@constants';
 import { useProfile } from '@hooks';
 import { NOOP } from '@utils/common';
 
+const { isIOS, isIPadOrTablet } = DeviceUtils;
 const AVATAR_SIZE = ScaleSize(72 + 25);
 const AVATAR_ICON_SIZE = ScaleSize(48);
 const BORDER_RADIUS = ScaleSize(10);
+const KEYBOARD_ANIMATION_DURATION_MS = 250;
 const LABEL_COLOR = '#5C5C5C';
 const TEXT_COLOR = '#1A1A1A';
+const PHONE_MAX_LENGTH = 13;
 
 function Profile() {
   const { t } = useTranslation();
@@ -29,18 +41,56 @@ function Profile() {
     avatar,
     errors,
     membershipType,
+    receiptPhone,
     onChangeAvatar,
     onChangeEmail,
     onChangeFullName,
+    onChangeReceiptPhone,
     onChangePhone,
     onPressChangePass,
     onPressSave,
   } = useProfile();
 
   const [isAvatarError, setAvatarError] = useState(false);
+  const keyboardOffset = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
     setAvatarError(false);
   }, [avatar?.fileUrl]);
+
+  useEffect(() => {
+    if (isIPadOrTablet()) {
+      return;
+    }
+    const showEvent = isIOS() ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = isIOS() ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    // Shift the form up by half the keyboard height so the focused field
+    // (receipt phone sits last) stays visible above the keyboard.
+    const onShow = (event: KeyboardEvent) => {
+      Animated.timing(keyboardOffset, {
+        toValue: -event.endCoordinates.height / 2,
+        duration: event.duration || KEYBOARD_ANIMATION_DURATION_MS,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const onHide = (event: KeyboardEvent) => {
+      Animated.timing(keyboardOffset, {
+        toValue: 0,
+        duration: event.duration || KEYBOARD_ANIMATION_DURATION_MS,
+        useNativeDriver: true,
+      }).start();
+    };
+
+    const showSub = Keyboard.addListener(showEvent, onShow);
+    const hideSub = Keyboard.addListener(hideEvent, onHide);
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -50,91 +100,109 @@ function Profile() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Avatar */}
-        <View style={styles.avatarSection}>
-          <AppButton onPress={onChangeAvatar} style={styles.avatarCircle}>
-            {!isAvatarError && avatar?.fileUrl ? (
-              <ProgressiveImage
-                height={AVATAR_SIZE}
-                onError={() => {
-                  setAvatarError(true);
-                }}
-                resizeMode="cover"
-                imageStyle={styles.avatarImage}
-                containerStyle={styles.avatarImage}
-                url={avatar?.fileUrl}
-                width={AVATAR_SIZE}
-              />
-            ) : (
-              <Image
-                color={Colors.primary}
-                height={AVATAR_ICON_SIZE}
-                name="user"
-                type="svg"
-                width={AVATAR_ICON_SIZE}
-              />
-            )}
-          </AppButton>
-          <Text style={styles.avatarLabel}>{t('profile.change_photo')}</Text>
-        </View>
+        <Animated.View
+          style={[
+            styles.animatedContent,
+            { transform: [{ translateY: keyboardOffset }] },
+          ]}
+        >
+          {/* Avatar */}
+          <View style={styles.avatarSection}>
+            <AppButton onPress={onChangeAvatar} style={styles.avatarCircle}>
+              {!isAvatarError && avatar?.fileUrl ? (
+                <ProgressiveImage
+                  height={AVATAR_SIZE}
+                  onError={() => {
+                    setAvatarError(true);
+                  }}
+                  resizeMode="cover"
+                  imageStyle={styles.avatarImage}
+                  containerStyle={styles.avatarImage}
+                  url={avatar?.fileUrl}
+                  width={AVATAR_SIZE}
+                />
+              ) : (
+                <Image
+                  color={Colors.primary}
+                  height={AVATAR_ICON_SIZE}
+                  name="user"
+                  type="svg"
+                  width={AVATAR_ICON_SIZE}
+                />
+              )}
+            </AppButton>
+            <Text style={styles.avatarLabel}>{t('profile.change_photo')}</Text>
+          </View>
 
-        {/* Basic info section */}
-        <Text style={styles.sectionTitle}>{t('profile.section_basic')}</Text>
+          {/* Basic info section */}
+          <Text style={styles.sectionTitle}>{t('profile.section_basic')}</Text>
 
-        <View style={styles.card}>
-          <TextField
-            iconName="user"
-            label={t('profile.field_name')}
-            error={errors.fullName}
-            editable={false}
-            onChangeText={onChangeFullName}
-            placeholder={t('profile.placeholder_name')}
-            value={fullName}
-          />
-          <TextField
-            iconName="email"
-            editable={false}
-            keyboardType="email-address"
-            label={t('profile.field_email')}
-            onChangeText={onChangeEmail}
-            placeholder={t('profile.placeholder_email')}
-            value={email}
-          />
-          <TextField
-            editable={false}
-            iconName="ic_phone"
-            keyboardType="phone-pad"
-            label={t('profile.field_phone')}
-            onChangeText={onChangePhone}
-            placeholder={t('profile.placeholder_phone')}
-            value={displayPhone}
-          />
-          <TextField
-            editable={false}
-            iconName="ic_id_card"
-            label={t('profile.field_member_type')}
-            onChangeText={NOOP}
-            placeholder=""
-            value={membershipType}
-          />
-        </View>
+          <View style={styles.card}>
+            <TextField
+              iconName="user"
+              label={t('profile.field_name')}
+              error={errors.fullName}
+              editable={false}
+              onChangeText={onChangeFullName}
+              placeholder={t('profile.placeholder_name')}
+              value={fullName}
+            />
+            <TextField
+              iconName="email"
+              editable={false}
+              keyboardType="email-address"
+              label={t('profile.field_email')}
+              onChangeText={onChangeEmail}
+              placeholder={t('profile.placeholder_email')}
+              value={email}
+            />
+            <TextField
+              editable={false}
+              iconName="ic_phone"
+              keyboardType="phone-pad"
+              label={t('profile.field_phone')}
+              onChangeText={onChangePhone}
+              placeholder={t('profile.placeholder_phone')}
+              value={displayPhone}
+            />
+            <TextField
+              editable={false}
+              iconName="ic_id_card"
+              label={t('profile.field_member_type')}
+              onChangeText={NOOP}
+              placeholder=""
+              value={membershipType}
+            />
+            <TextField
+              iconName="ic_phone"
+              keyboardType="phone-pad"
+              label={t('profile.field_receipt_phone')}
+              returnKeyType="done"
+              onChangeText={onChangeReceiptPhone}
+              maxLength={PHONE_MAX_LENGTH}
+              placeholder={t('profile.placeholder_phone')}
+              value={receiptPhone}
+              error={errors?.receiptPhone}
+            />
+          </View>
 
-        {/* Save button */}
-        <View style={styles.footer}>
-          <Button
-            title={t('profile.save')}
-            type="rounded"
-            onPress={onPressSave}
-          />
-          <Button
-            title={t('profile.change_pass')}
-            type="rounded"
-            style={{
-              marginTop: ScaleSize(12),
-            }}
-            onPress={onPressChangePass}
-          />
-        </View>
+          {/* Save button */}
+          <View style={styles.footer}>
+            <Button
+              title={t('profile.save')}
+              type="rounded"
+              onPress={onPressSave}
+            />
+            <Button
+              title={t('profile.change_pass')}
+              type="rounded"
+              style={{
+                marginTop: ScaleSize(12),
+              }}
+              onPress={onPressChangePass}
+            />
+          </View>
+        </Animated.View>
       </ScrollView>
     </View>
   );
@@ -143,6 +211,9 @@ function Profile() {
 export default React.memo(Profile);
 
 const styles = StyleSheet.create({
+  animatedContent: {
+    flex: 1,
+  },
   avatarCircle: {
     alignItems: 'center',
     backgroundColor: '#E8F5E9',

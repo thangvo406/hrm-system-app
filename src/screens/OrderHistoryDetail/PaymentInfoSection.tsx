@@ -61,7 +61,7 @@ function PaymentInfoSection({
           `order_history_detail.payment_methods.${order?.paymentFundingSource.toLowerCase()}`,
         ),
       })
-    : EMPTY_VALUE;
+    : '';
 
   return (
     <SectionCard
@@ -101,13 +101,15 @@ function PaymentInfoSection({
           amount: formatCurrency(summaryPrice?.finalPrice),
         })}
       />
-      <AmountRow
-        label={paymentMethod}
-        value={`-${t('common.display_price', {
-          amount: formatCurrency(summaryPrice?.finalPrice),
-        })}`}
-        valueColor={Colors.green02}
-      />
+      {!!paymentMethod && (
+        <AmountRow
+          label={paymentMethod}
+          value={`-${t('common.display_price', {
+            amount: formatCurrency(summaryPrice?.finalPrice),
+          })}`}
+          valueColor={Colors.green02}
+        />
+      )}
     </SectionCard>
   );
 }

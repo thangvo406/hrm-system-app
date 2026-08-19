@@ -13,6 +13,8 @@ export interface IStoreItem {
   operatingHours: TOperatingHour[];
   status: string;
   estimateTime: string;
+  openingTime: string;
+  closedTime: string;
   minOrder: string;
   sortOrder: number;
   receiveMethod: string[];
@@ -21,14 +23,12 @@ export interface IStoreItem {
   cartId: number;
 }
 
-
 export interface TOperatingHour {
   dayOfWeek: string;
   open: boolean;
   openTime: string;
   closeTime: string;
 }
-
 
 export interface IRequestGetStoreDetail extends AppCallback<IStoreItem> {
   storeId: number | string;

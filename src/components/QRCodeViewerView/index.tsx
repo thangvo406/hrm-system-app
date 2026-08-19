@@ -3,7 +3,14 @@ import HeaderDetail from '@components/HeaderDetail';
 import Image from '@components/Image';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
+import type { Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { ViewStyle } from 'react-native';
@@ -13,7 +20,7 @@ import {
 } from '@reeq/react-native-device-brightness';
 
 import imageNames from '@assets/images/names';
-import type { IVoucher } from '@type';
+import type { IQRCodeViewerData } from '@type';
 import { formatTime } from '@utils/date';
 
 import NoticeBar from './NoticeBar';
@@ -24,7 +31,7 @@ import { DeviceUtils } from '@kits/core/utils';
 const { ifIOS } = DeviceUtils;
 const QR_SIZE = ScaleSize(240);
 const TICK_INTERVAL_MS = 1000;
-const DEFAULT_DURATION_SECONDS = 120;
+const DEFAULT_DURATION_SECONDS = 300;
 
 const BADGE_SIZE = ScaleSize(54);
 const FOOT_NOTCH_SIZE = ScaleSize(26);
@@ -34,24 +41,28 @@ const VOUCHER_ICON_SIZE = ScaleSize(24);
 const WAIST_NOTCH_SIZE = ScaleSize(22);
 
 const BADGE_SHADOW_OFFSET = { height: ScaleSize(4), width: 0 };
-// Whisper-thin rim in the ticket's own green, so the punched notches read as
-// a cut edge catching a hint of shadow rather than a flat painted dot.
+
 const NOTCH_RIM_COLOR = 'rgba(15, 75, 37, 0.06)';
 
-export type IQRCodeViewerData = {
-  readonly amountText?: string;
-  readonly headerBadge?: string;
-  readonly expiresIn?: number;
-  readonly qrImageBase64?: string;
-} & Partial<IVoucher>;
+export type QRCodeViewerViewHandle = {
+  readonly close: () => void;
+  readonly refresh: () => void;
+  readonly checkRefresh: () => void;
+  readonly setMounted: (value: boolean) => void;
+  readonly restartTimer: (seconds?: number) => void;
+  readonly setData: (data?: IQRCodeViewerData) => void;
+};
 
 export type QRCodeViewerViewProps = {
   readonly data?: IQRCodeViewerData;
   readonly durationSeconds?: number;
+  readonly hideBtnBack?: boolean;
+  readonly ref?: Ref<QRCodeViewerViewHandle>;
   readonly titleKey?: string;
   readonly contentStyle?: ViewStyle;
   readonly titleVoucher?: string;
   readonly btnVoucher?: string;
+  readonly subtitle?: string;
   readonly showBtnVoucher?: boolean;
   readonly showIconVoucher?: boolean;
   readonly onPressVoucher?: () => void;
@@ -63,12 +74,15 @@ export type QRCodeViewerViewProps = {
 
 function QRCodeViewerView({
   durationSeconds = DEFAULT_DURATION_SECONDS,
+  hideBtnBack,
   onRefresh,
   onRequestClose,
+  ref,
   showBtnVoucher,
   titleVoucher,
   onPressVoucher,
   btnVoucher,
+  subtitle,
   titleKey = 'qr_voucher.title',
   contentStyle,
   showIconVoucher = true,
@@ -81,10 +95,13 @@ function QRCodeViewerView({
   const remainingId = useRef<ReturnType<typeof setInterval> | undefined>(
     undefined,
   );
+  const isMounted = useRef(true);
 
   useEffect(() => {
+    isMounted.current = true;
     setBrightnessLevel(1);
     return () => {
+      isMounted.current = false;
       resetBrightness();
     };
   }, []);
@@ -92,6 +109,12 @@ function QRCodeViewerView({
   useEffect(() => {
     setData(incomingData);
   }, [incomingData]);
+
+  useEffect(() => {
+    if (isMounted.current && remaining == 0) {
+      onPressRefresh();
+    }
+  }, [remaining]);
 
   const startRunningRemaining = useCallback((seconds: number) => {
     clearInterval(remainingId.current);
@@ -107,12 +130,45 @@ function QRCodeViewerView({
     return () => clearInterval(remainingId.current);
   }, [durationSeconds]);
 
-  const onPressRefresh = () => {
-    onRefresh?.(refreshed => {
+  const applyRefreshedData = useCallback(
+    (refreshed?: IQRCodeViewerData) => {
       setData(previous => ({ ...previous, ...refreshed }));
       startRunningRemaining(refreshed?.expiresIn ?? durationSeconds);
-    });
-  };
+    },
+    [durationSeconds, startRunningRemaining],
+  );
+
+  const onPressRefresh = useCallback(() => {
+    onRefresh?.(applyRefreshedData);
+  }, [applyRefreshedData, onRefresh]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      close: () => {
+        onRequestClose?.();
+      },
+      checkRefresh: () => {
+        if (remaining == 0) {
+          onPressRefresh();
+        }
+      },
+      refresh: onPressRefresh,
+      restartTimer: (seconds?: number) => {
+        startRunningRemaining(seconds ?? durationSeconds);
+      },
+      setData: applyRefreshedData,
+      setMounted: (value: boolean) => (isMounted.current = value),
+    }),
+    [
+      applyRefreshedData,
+      durationSeconds,
+      remaining,
+      onPressRefresh,
+      onRequestClose,
+      startRunningRemaining,
+    ],
+  );
 
   const _onPressVoucher = () => {
     onRequestClose?.();
@@ -122,6 +178,7 @@ function QRCodeViewerView({
   return (
     <View style={styles.screen}>
       <HeaderDetail
+        hideBtnBack={hideBtnBack}
         hideNotify
         onPressBack={onRequestClose}
         title={t(titleKey)}
@@ -149,7 +206,7 @@ function QRCodeViewerView({
             <TicketHead
               amountText={data?.amountText}
               badge={data?.headerBadge}
-              subtitle={t('qr_voucher.show_to_staff')}
+              subtitle={subtitle || t('qr_voucher.show_to_staff')}
               title={titleVoucher}
             />
 

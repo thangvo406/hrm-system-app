@@ -50,6 +50,15 @@ const useRegisterMembership = (props: any) => {
   const stepStack = useRef<RegisterMembershipStep[]>([]);
   const formData = useRef<TFormData>({});
 
+
+  const btnSubmit = useMemo(() => {
+    const texts = {
+      [REGISTER_MEMBER_SHIP_STEP.BANK_INFORMATION]:  t('common.popup.btn_close'),
+      [REGISTER_MEMBER_SHIP_STEP.CHOOSE_SCHOOL]:  t('school_selection.next'),
+    }
+    return texts[step];
+  }, [step]);
+
   const showBtnBack = useMemo(() => {
     const isValid = STEP_SHOW_BTN_BACK.has(step);
     return isValid;
@@ -213,6 +222,7 @@ const useRegisterMembership = (props: any) => {
     membershipOptions,
     showBtnBack,
     timeResendOtpVerifyEmail,
+    btnSubmit,
     emailExpiresIn,
     isVerifiedEmailAcademic,
     ignoreSchoolId,

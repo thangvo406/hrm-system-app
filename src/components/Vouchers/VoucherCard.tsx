@@ -65,6 +65,13 @@ function VoucherCard({
     return '';
   }, [t, voucher]);
 
+  const isAvailable = useMemo(() => {
+    if (!isExpired && !isMealTicket) {
+      return !voucher?.inUsagePeriod;
+    }
+    return false;
+  }, [t, voucher]);
+
   return (
     <View style={styles.card}>
       <View style={styles.accentBar} />
@@ -80,7 +87,7 @@ function VoucherCard({
           <Text numberOfLines={1} style={styles.title}>
             {isMealTicket ? voucher?.productName : name}
           </Text>
-          {!isHideLabelExpired && (
+          {!isHideLabelExpired && !isAvailable && (
             <View
               style={[
                 styles.badge,
@@ -98,23 +105,35 @@ function VoucherCard({
           )}
         </View>
 
-        <Text style={styles.description}>{(isMealTicket ? voucher?.productDescription : voucher?.name) || '-'}</Text>
+        <Text style={styles.description}>
+          {(isMealTicket ? voucher?.productDescription : voucher?.name) || '-'}
+        </Text>
 
         <Text style={styles.metaText}>
-          {isMealTicket ? t('meal_ticket.purchase_at', {
-            date:  !voucher?.purchaseAt ? '-' : dayjs(voucher.purchaseAt).format('YYYY-MM-DD'),
-          }) : t('vouchers.valid_until', {
-            date: !voucher?.expiredTo ? '-' : dayjs(voucher?.expiredTo).format('YYYY-MM-DD'),
-          })}
+          {isMealTicket
+            ? t('meal_ticket.purchase_at', {
+                date: !voucher?.purchaseAt
+                  ? '-'
+                  : dayjs(voucher.purchaseAt).format('YYYY-MM-DD'),
+              })
+            : t('vouchers.valid_until', {
+                date: !voucher?.expiredTo
+                  ? '-'
+                  : dayjs(voucher?.expiredTo).format('YYYY-MM-DD'),
+              })}
         </Text>
 
         <View style={styles.metaRow}>
           <Text style={styles.metaText}>
-            {isMealTicket ? t('meal_ticket.expired_at', {
-              date: !voucher?.expiredTo ? '-' : dayjs(voucher.expireAt).format('YYYY-MM-DD'),
-            }) : t('vouchers.min_payment', {
-              amount: minPaymentText 
-            })}
+            {isMealTicket
+              ? t('meal_ticket.expired_at', {
+                  date: !voucher?.expiredTo
+                    ? '-'
+                    : dayjs(voucher.expireAt).format('YYYY-MM-DD'),
+                })
+              : t('vouchers.min_payment', {
+                  amount: minPaymentText,
+                })}
           </Text>
           {!!storeNames && (
             <Text style={styles.metaText} numberOfLines={2}>
@@ -126,7 +145,13 @@ function VoucherCard({
         </View>
 
         <View style={styles.footerRow}>
-          {!isExpired ? (
+          {isAvailable ? (
+            <Text style={styles.textUnAvailable}>
+              {t('vouchers.available_to', {
+                date: dayjs(voucher.expiredFrom).format('YYYY-MM-DD'),
+              })}
+            </Text>
+          ) : !isExpired ? (
             <AppButton
               onPress={_onUse}
               style={styles.useButton}
@@ -139,6 +164,12 @@ function VoucherCard({
           ) : undefined}
         </View>
       </View>
+      {isAvailable ? (
+        <>
+          <View style={styles.grayscaleOverlay} />
+          <View style={styles.dimOverlay} />
+        </>
+      ) : undefined}
     </View>
   );
 }
@@ -163,11 +194,18 @@ const styles = StyleSheet.create({
     fontSize: ScaleSize(12),
     fontWeight: '700',
   },
+  textUnAvailable: {
+    color: '#c9c42e',
+    fontSize: ScaleSize(12),
+    fontWeight: 'bold',
+  },
   card: {
     backgroundColor: Colors.white,
     borderRadius: ScaleSize(14),
     elevation: 3,
     flexDirection: 'row',
+    // Giới hạn phạm vi của mixBlendMode trong phạm vi card.
+    isolation: 'isolate',
     marginBottom: ScaleSize(16),
     overflow: 'hidden',
     shadowColor: '#000000',
@@ -184,6 +222,15 @@ const styles = StyleSheet.create({
     color: TEXT_DARK,
     fontSize: ScaleSize(14),
     marginTop: ScaleSize(10),
+  },
+  dimOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Colors.gray26,
+  },
+  grayscaleOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Colors.gray25,
+    mixBlendMode: 'saturation',
   },
   footerRow: {
     alignItems: 'flex-end',

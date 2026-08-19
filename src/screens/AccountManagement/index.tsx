@@ -1,22 +1,45 @@
-import {
-  AppButton,
-  HeaderDetail,
-  Cards,
-  BankAccounts,
-  Image,
-} from '@components';
-import {
-  PRIMARY_CARD_INDEX,
-  useAccountManagement,
-} from '@hooks/useAccountManagement';
-import { ScaleSize } from '@kits/core';
-import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import type { ListRenderItem } from 'react-native';
+import type { ITransactionMovement } from '@type';
 
-import TransactionHistories from './TransactionHistories';
-import WalletCard from './WalletCard';
-import imageNames from '@assets/images/names';
+import { HeaderDetail } from '@components';
+import { useAccountManagement } from '@hooks/useAccountManagement';
+import { ScaleSize } from '@kits/core';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+
+import AccountManagementHeader from './Header';
+import TransactionItem from './TransactionItem';
 import { Colors } from '@constants';
+
+const keyExtractor = (item: ITransactionMovement) => item.transactionKey;
+
+type FooterProperties = {
+  readonly loading: boolean;
+};
+
+function Footer({ loading }: FooterProperties) {
+  return loading ? (
+    <ActivityIndicator color={Colors.primary} style={styles.footerLoading} />
+  ) : undefined;
+}
+
+type EmptyProperties = {
+  readonly loading: boolean;
+};
+
+function Empty({ loading }: EmptyProperties) {
+  const { t } = useTranslation();
+  return loading ? undefined : (
+    <Text style={styles.desc}>{t('account_management.no_history')}</Text>
+  );
+}
 
 function AccountManagement() {
   const { t } = useTranslation();
@@ -24,11 +47,14 @@ function AccountManagement() {
     accounts,
     balance,
     cards,
+    loadingMoreTransactions,
+    loadingTransactions,
     onCharge,
     onChargeHistory,
+    onLoadMoreTransactions,
     onManagePaymentMethods,
+    onPressTransaction,
     onRegisterAccount,
-    // onRegisterCard,
     onUse,
     onViewAllTransactions,
     toggleUnRegister,
@@ -36,84 +62,56 @@ function AccountManagement() {
     point,
     organizationInfo,
     isShowUnRegister,
+    isShowBottomButtonWallet,
     isEmptyBankAccount,
     isEnablePaymentCard,
+    transactions,
   } = useAccountManagement();
-  
+
+  const renderItem = useCallback<ListRenderItem<ITransactionMovement>>(
+    ({ item }) => (
+      <View style={styles.rowWrap}>
+        <TransactionItem transaction={item} onPress={onPressTransaction} />
+      </View>
+    ),
+    [onPressTransaction],
+  );
+
   return (
     <View style={styles.safeArea}>
       <HeaderDetail hideNotify title={t('account_management.title')} />
-      <ScrollView
+      <FlatList
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.walletWrap}>
-          <WalletCard
+        data={transactions}
+        keyExtractor={keyExtractor}
+        ListEmptyComponent={<Empty loading={loadingTransactions} />}
+        ListFooterComponent={<Footer loading={loadingMoreTransactions} />}
+        ListHeaderComponent={
+          <AccountManagementHeader
+            accounts={accounts}
             balance={balance}
+            cards={cards}
+            isEmptyBankAccount={isEmptyBankAccount}
+            isEnablePaymentCard={isEnablePaymentCard}
+            isShowBottomButtonWallet={isShowBottomButtonWallet}
+            isShowUnRegister={isShowUnRegister}
             onCharge={onCharge}
-            onUseOrganize={onUseOrganize}
             onChargeHistory={onChargeHistory}
+            onManagePaymentMethods={onManagePaymentMethods}
+            onRegisterAccount={onRegisterAccount}
             onUse={onUse}
+            onUseOrganize={onUseOrganize}
+            onViewAllTransactions={onViewAllTransactions}
             organizationInfo={organizationInfo}
             point={point}
             toggleUnRegister={toggleUnRegister}
-            isShowUnRegister={isShowUnRegister}
           />
-        </View>
-
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>
-            {t('account_management.payment_methods')}
-          </Text>
-          {isEnablePaymentCard ? (
-            <AppButton
-              onPress={onManagePaymentMethods}
-              style={styles.manageButton}
-              testID="account-management-manage"
-            >
-              <Text style={styles.manageText}>
-                {t('account_management.manage')}
-              </Text>
-            </AppButton>
-          ) : undefined}
-        </View>
-
-        {!isEmptyBankAccount ? (
-          <BankAccounts
-            accounts={cards}
-            hideAddCard={!isEnablePaymentCard}
-            initialIndex={PRIMARY_CARD_INDEX}
-            isShowUnRegister={isShowUnRegister}
-            onRegisterCard={onRegisterAccount}
-          />
-        ) : (
-          <>
-            <Text style={styles.coopPayLabel}>
-              {t('account_management.coop_pay_label')}
-            </Text>
-            <Image
-              name={imageNames.ic_empty_illustration}
-              width={ScaleSize(72)}
-              height={ScaleSize(72)}
-              style={{
-                alignSelf: 'center',
-                marginVertical: ScaleSize(20),
-              }}
-            />
-          </>
-        )}
-
-        <Cards
-          accounts={accounts}
-          hideRegisterAccount={!isEnablePaymentCard}
-          isShowUnRegister={isShowUnRegister}
-          onRegisterAccount={onRegisterAccount}
-          initialIndex={PRIMARY_CARD_INDEX}
-          // onRegisterCard={onRegisterCard}
-        />
-
-        <TransactionHistories onViewAllTransactions={onViewAllTransactions} />
-      </ScrollView>
+        }
+        onEndReached={onLoadMoreTransactions}
+        onEndReachedThreshold={0.4}
+        renderItem={renderItem}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 }
@@ -121,24 +119,20 @@ function AccountManagement() {
 export default AccountManagement;
 
 const styles = StyleSheet.create({
-  manageButton: {
-    borderColor: '#DBDBDB',
-    borderRadius: ScaleSize(8),
-    borderWidth: ScaleSize(1),
-    paddingHorizontal: ScaleSize(12),
-    paddingVertical: ScaleSize(6),
-  },
-  coopPayLabel: {
-    color: Colors.green04,
+  desc: {
+    color: '#718096',
     fontSize: ScaleSize(14),
-    fontWeight: 'bold',
-    paddingHorizontal: ScaleSize(17),
-    marginTop: ScaleSize(10),
+    fontWeight: '700',
+    marginBottom: ScaleSize(14),
+    marginTop: ScaleSize(20),
+    paddingHorizontal: ScaleSize(20),
+    textAlign: 'center',
   },
-  manageText: {
-    color: '#717171',
-    fontSize: ScaleSize(12),
-    fontWeight: '600',
+  footerLoading: {
+    paddingVertical: ScaleSize(20),
+  },
+  rowWrap: {
+    paddingHorizontal: ScaleSize(20),
   },
   safeArea: {
     backgroundColor: '#F5F6F7',
@@ -146,21 +140,5 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: ScaleSize(32),
-  },
-  sectionHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: ScaleSize(28),
-    paddingHorizontal: ScaleSize(20),
-  },
-  sectionTitle: {
-    color: '#1A1A1A',
-    fontSize: ScaleSize(17),
-    fontWeight: '800',
-  },
-  walletWrap: {
-    paddingHorizontal: ScaleSize(20),
-    paddingTop: ScaleSize(16),
   },
 });
