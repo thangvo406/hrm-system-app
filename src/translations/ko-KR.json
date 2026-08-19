@@ -634,7 +634,7 @@
     "product_detail": {
       "price_label": "가격",
       "cart_button": "장바구니",
-      "min_order_label": "배달 최소 주문 금액",
+      "min_order_label": "배달 최소 주문 금액: {{amount}}원",
       "add_cart_success": "장바구니에 성공적으로 추가되었습니다.",
       "max_quantity": "최대 수량: {{count}}개",
       "max_quantity_error": "최대 수량은 {{count}}개입니다",
@@ -962,7 +962,7 @@
     },
     "transaction_detail": {
       "title": "상세 내역",
-      "payment_amount_label": "결제 금액",
+      "payment_amount_label": "결제 금액 (정상가)",
       "coupon_discount_label": "쿠폰 할인",
       "point_used_label": "포인트 사용",
       "member_discount": "조합원 할인",

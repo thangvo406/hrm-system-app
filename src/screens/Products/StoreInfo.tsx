@@ -60,7 +60,7 @@ function StoreInfo({
   });
 
   const minOrderText = isNumber(storeInfo?.minOrder)
-    ? `${t('product_detail.min_order_label')}: ${ProductUtils.formatCurrency(storeInfo.minOrder)}`
+    ? t('product_detail.min_order_label', {amount: ProductUtils.formatCurrency(storeInfo.minOrder)})
     : '';
 
   const openTime = useMemo(() => {

@@ -66,9 +66,16 @@ const INITIAL_TRANSACTION_PAGINATION: TTransactionPagination = {
   page: 0,
 };
 
-const onPressTransaction = (item: ITransactionMovement) => {
+const onPressTransaction = (item: ITransactionMovement, name: string, desc: string) => {
+  let title = desc;
+  if(item.orderNumber) {
+    title += ` ${item.orderNumber}`
+  }else {
+    title = name;
+  }
   AppNavigator.navigate(Paths.TransactionDetail, {
     transId: item?.transactionKey,
+    title,
   });
 };
 
