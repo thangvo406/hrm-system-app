@@ -108,6 +108,7 @@ const useNotification = () => {
   const init = () => {
     if (Environment.ONE_SIGNAL_ID) {
       OneSignal.initialize(Environment.ONE_SIGNAL_ID);
+      Globals.isOneSignalInitialized = true;
 
       // Request permission immediately after initialization
       void checkPermission();

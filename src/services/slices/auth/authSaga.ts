@@ -303,7 +303,9 @@ function* logoutWorker() {
   yield delay(130);
   yield call([persistor, 'purge']);
   yield put(logoutSuccess());
-  OneSignal.Notifications.clearAll();
+  if (Globals.isOneSignalInitialized) {
+    OneSignal.Notifications.clearAll();
+  }
 }
 
 export function* authSaga() {

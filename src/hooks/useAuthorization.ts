@@ -148,7 +148,12 @@ const onLoginNaver = async (
   t: (key: string) => string,
 ): Promise<SocialLoginToken | undefined> => {
   try {
-    await NaverLogin.logout();
+    try {
+      await NaverLogin.logout();
+      await NaverLogin.deleteToken();
+    } catch {
+      //empty
+    }
     const { failureResponse, successResponse } = await NaverLogin.login();
     if (successResponse) {
       return {
