@@ -28,12 +28,12 @@ env:
 # cancel-in-progress: false: huỷ giữa chừng có thể vứt bỏ một bản đã build xong.
 concurrency:
   group: release-build-android-${{ github.ref }}
-  cancel-in-progress: false
 
 jobs:
   build-android:
     name: Build Android Release AAB
-    runs-on: macos-14
+    # Xem beta-build-android.yml: ghim số phiên bản, không dùng macos-latest.
+    runs-on: macos-26
     permissions:
       contents: write
 

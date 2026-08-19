@@ -27,12 +27,15 @@ env:
 # Group có hậu tố -android để không xếp hàng chung với workflow iOS.
 concurrency:
   group: beta-build-android-${{ github.ref }}
-  cancel-in-progress: false
 
 jobs:
   build-android:
     name: Build Android Beta
-    runs-on: macos-14
+    # Ghim số phiên bản chứ không dùng macos-latest: GitHub tự đổi con trỏ đó,
+    # build đang xanh có thể đỏ mà không commit nào thay đổi. Đổi lại là phải tự
+    # theo mốc deprecate ở actions/runner-images — image cũ bị rút capacity dần
+    # nên job nằm Queued vô thời hạn, không báo lỗi gì (macos-14 đã bị vậy).
+    runs-on: macos-26
     # QUAN TRỌNG: Cấp quyền để GitHub Actions tạo được Release và lưu file APK
     permissions:
       contents: write

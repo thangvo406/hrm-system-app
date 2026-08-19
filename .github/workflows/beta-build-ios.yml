@@ -31,12 +31,14 @@ env:
 # cũng vô nghĩa, hai bên vẫn phải xếp hàng chờ nhau.
 concurrency:
   group: beta-build-ios-${{ github.ref }}
-  cancel-in-progress: false
 
 jobs:
   build-ios:
     name: Build iOS Beta (TestFlight)
-    runs-on: macos-15
+    # Xem beta-build-android.yml: ghim số phiên bản, không dùng macos-latest.
+    # Bản Xcode dùng để build KHÔNG phụ thuộc image này — step "Select Xcode"
+    # phía dưới tự dò theo XCODE_MAJOR_PREF.
+    runs-on: macos-26
     # Build + archive + upload TestFlight thường ~40-60 phút, cho dư biên.
     timeout-minutes: 90
     # Job chỉ đọc code rồi upload artifact; không tạo release/commit.
