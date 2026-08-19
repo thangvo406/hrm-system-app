@@ -12,6 +12,7 @@ const imageNames = {
   ic_close_gray: 'ic_close_gray',
   ic_coin_stack: 'ic_coin_stack',
   ic_credit_card_green: 'ic_credit_card_green',
+  ic_device_force_update: 'ic_device_force_update',
   ic_doc_edit_green: 'ic_doc_edit_green',
   ic_empty_illustration: 'ic_empty_illustration',
   ic_gallery_gray: 'ic_gallery_gray',

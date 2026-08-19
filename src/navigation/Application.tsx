@@ -38,6 +38,8 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 
 import dayjs from 'dayjs';
+import { useAppDispatch } from '@services/common/storeHooks';
+import { getAppConfigRequest } from '@services/slices/app/appSlice';
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
@@ -73,12 +75,14 @@ function ApplicationNavigator() {
   const navigationReference = useNavigationContainerRef<RootStackParamList>();
   const hasTriggeredSwipeAction = useRef(false);
   const isScrolling = useRef(false);
+  const dispatch = useAppDispatch();
   const pendingSwipeAction = useRef<
     'NONE' | 'GO_BACK' | 'GO_TAB_GENERAL' | 'RESOURCE_DETAIL_SWIPE'
   >('NONE');
 
   const handleAppStateChange = (nextAppState: string) => {
     if (nextAppState === 'active') {
+      dispatch(getAppConfigRequest());
       const url = deepLinkGate.consumePending();
       if (url) {
         const data = deepLinkGate.getPathFromUrl(url);

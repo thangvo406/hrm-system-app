@@ -95,7 +95,7 @@
     },
     "meal_ticket": {
       "title": "식권함",
-      "unused": "미사용",
+      "unused": "사용 완료",
       "view_qr": "식권 QR 보기",
       "purchase_at": "구매일자: {{date}}",
       "expired_at": "유효기간: {{date}}",
@@ -1238,6 +1238,13 @@
       "title": "네트워크 오류",
       "desc": "인터넷에 연결할 수 없습니다.\n네트워크 연결 상태를 확인한 후 다시 시도해 주세요.",
       "retry_button": "다시 시도"
+    },
+    "force_update": {
+      "title": "업데이트 필요",
+      "subtitle": "새로운 버전의 앱이 출시되었습니다.",
+      "desc": "현재 버전은 더 이상 지원되지 않아 정상적으로 작동하지 않을 수 있습니다. 모든 기능을 계속 이용하시려면 업데이트해 주세요.",
+      "update_button": "지금 업데이트",
+      "exit_button": "앱 종료"
     },
     "vouchers": {
       "title": "쿠폰함",

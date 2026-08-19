@@ -58,7 +58,7 @@
     },
     "meal_ticket": {
       "title": "Meal Vouchers",
-      "unused": "Unused",
+      "unused": "Used",
       "view_qr": "View meal ticket QR",
       "purchase_at": "Purchase at {{date}}",
       "expired_at": "Expired at {{date}}",
@@ -1236,6 +1236,13 @@
       "title": "Network Error",
       "desc": "Unable to connect to the internet.\nPlease check your network connection and try again.",
       "retry_button": "Try Again"
+    },
+    "force_update": {
+      "title": "Update Required",
+      "subtitle": "A new version of the app is available.",
+      "desc": "This version is no longer supported and may not work properly. Please update to continue using all features and improve your experience.",
+      "update_button": "Update Now",
+      "exit_button": "Exit App"
     },
     "vouchers": {
       "title": "Coupon Box",

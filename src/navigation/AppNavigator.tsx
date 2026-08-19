@@ -8,6 +8,7 @@ import type { DialogHandle } from '@screens/Dialog/types';
 import NetworkError from '@dialogs/NetworkError';
 import { Keyboard, Linking } from 'react-native';
 import Information from '@dialogs/Information';
+import ForceUpdateApp from '@dialogs/ForceUpdateApp';
 // import analytics from '@react-native-firebase/analytics';
 // import ForceUpdate from '@dialogs/ForceUpdate';
 // import { AppNativeModules } from '@config/AppNativeModules';
@@ -223,12 +224,11 @@ function showDialogErrorOpenCamera() {
 }
 
 function showForceUpdate() {
-  //   showDialog({
-  //     screen: ForceUpdate,
-  //     popupType: 'dialog',
-  //     isFullScreen: true,
-  //     cancelable: false,
-  //   });
+  showDialog({
+    screen: ForceUpdateApp,
+    // isFullScreen: true,
+    cancelable: false,
+  });
 }
 
 function showDialogErrorOpenPhoto() {

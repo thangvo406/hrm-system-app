@@ -10,6 +10,7 @@ const images = {
   ic_close_gray: require('./ic_close_gray.png') as number,
   ic_coin_stack: require('./ic_coin_stack.png') as number,
   ic_credit_card_green: require('./ic_credit_card_green.png') as number,
+  ic_device_force_update: require('./ic_device_force_update.png') as number,
   ic_doc_edit_green: require('./ic_doc_edit_green.png') as number,
   ic_empty_illustration: require('./ic_empty_illustration.png') as number,
   ic_gallery_gray: require('./ic_gallery_gray.png') as number,

@@ -8,6 +8,7 @@ export const initialLoginForm = {
 
 export const PASSWORD_MIN_LENGTH = 6;
 export const URL_TRANSLATION = `${Environment.DOMAIN_CDN}uploads/{{lng}}.json`;
+export const APP_CONFIG_URL = `${Environment.DOMAIN_CDN}uploads/app-config.json`;
 
 export const NEED_INFO_LOGIN_CODE = {
   MEMBERSHIP_INCOMPLETE: 'AUTH_002',
