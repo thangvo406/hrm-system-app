@@ -7,7 +7,6 @@ import { formatCurrency } from './product';
 
 const DAYS_IN_WEEK = 7;
 const OPEN_TIME_FORMAT = 'HH:mm';
-const OPEN_DATE_PARSE_FORMAT = 'YYYY-MM-DD';
 // dayjs().day() → 0..6 bắt đầu từ Chủ nhật.
 const DAY_OF_WEEK_BY_INDEX = [
   AppConstants.DayOfWeek.SUNDAY,
@@ -19,17 +18,36 @@ const DAY_OF_WEEK_BY_INDEX = [
   AppConstants.DayOfWeek.SATURDAY,
 ];
 
-/**
- * Ghép giờ dạng `HH:mm:ss` của cửa hàng vào ngày của `date` để so sánh được
- * với thời điểm hiện tại.
- */
-const withTime = (date: dayjs.Dayjs, time: string) => {
+const toLocalTimeParts = (date: dayjs.Dayjs, time: string) => {
   const [hour, minute, second] = time.split(':').map(Number);
-  return date
+  const local = date
+    .utc()
     .set('hour', hour || 0)
     .set('minute', minute || 0)
     .set('second', second || 0)
+    .set('millisecond', 0)
+    .local();
+  return { hour: local.hour(), minute: local.minute(), second: local.second() };
+};
+
+const withTime = (date: dayjs.Dayjs, time: string) => {
+  const { hour, minute, second } = toLocalTimeParts(date, time);
+  return date
+    .set('hour', hour)
+    .set('minute', minute)
+    .set('second', second)
     .set('millisecond', 0);
+};
+
+/**
+ * Đổi giờ `HH:mm:ss` server trả về (UTC) sang chuỗi `HH:mm` theo giờ local của
+ * thiết bị — dùng cho mọi chỗ hiển thị giờ mở/đóng cửa.
+ */
+export const formatServerTimeToLocal = (time?: string) => {
+  if (!time) {
+    return '';
+  }
+  return withTime(dayjs(), time).format(OPEN_TIME_FORMAT);
 };
 
 /**
@@ -56,11 +74,6 @@ export const isStoreOutsideOpenHour = (storeInfo?: IStoreItem) => {
   return !isOpen;
 };
 
-/**
- * Mốc mở cửa gần nhất của cửa hàng: quét từ hôm nay tới 6 ngày sau trong
- * `operatingHours`, fallback về `openingTime` chung (hôm nay nếu chưa tới giờ
- * mở, còn lại là ngày mai). Trả về `undefined` khi không có dữ liệu giờ mở.
- */
 export const getStoreReopenAt = (storeInfo?: IStoreItem) => {
   const now = dayjs();
   const { openingTime, operatingHours } = storeInfo ?? {};
@@ -77,9 +90,7 @@ export const getStoreReopenAt = (storeInfo?: IStoreItem) => {
       if (!schedule) {
         continue;
       }
-      const opensAt = dayjs(
-        `${day.format(OPEN_DATE_PARSE_FORMAT)} ${schedule.openTime}`,
-      );
+      const opensAt = withTime(day, schedule.openTime);
       if (opensAt.isAfter(now)) {
         return opensAt;
       }
@@ -90,9 +101,7 @@ export const getStoreReopenAt = (storeInfo?: IStoreItem) => {
   if (!openingTime) {
     return undefined;
   }
-  const opensToday = dayjs(
-    `${now.format(OPEN_DATE_PARSE_FORMAT)} ${openingTime}`,
-  );
+  const opensToday = withTime(now, openingTime);
   return opensToday.isAfter(now) ? opensToday : opensToday.add(1, 'day');
 };
 

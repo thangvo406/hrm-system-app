@@ -3,7 +3,7 @@ import type { SharedValue } from 'react-native-reanimated';
 import { Image, ProgressiveImage } from '@components';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import { ProductUtils } from '@utils';
+import { CommonUtils } from '@utils';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, {
   Extrapolation,
@@ -13,8 +13,6 @@ import Animated, {
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { IStoreItem } from '@type/store';
-import isNumber from 'lodash/isNumber';
-import { trimSeconds } from '@utils/date';
 import StoreClosedBanner from './StoreClosedBanner';
 
 const CARD_OVERLAP = ScaleSize(68);
@@ -59,22 +57,23 @@ function StoreInfo({
     };
   });
 
-  const minOrderText = isNumber(storeInfo?.minOrder)
-    ? t('product_detail.min_order_label', {amount: ProductUtils.formatCurrency(storeInfo.minOrder)})
-    : '';
+  const minOrderText = '';
+  // const minOrderText = isNumber(storeInfo?.minOrder)
+  //   ? t('product_detail.min_order_label', {amount: ProductUtils.formatCurrency(storeInfo.minOrder)})
+  //   : '';
 
   const openTime = useMemo(() => {
     let text = '';
     if (storeInfo?.openingTime) {
-      text = trimSeconds(storeInfo.openingTime);
+      text = CommonUtils.formatServerTimeToLocal(storeInfo.openingTime);
     }
     if (storeInfo?.closedTime) {
-      text += `-${trimSeconds(storeInfo.closedTime)}`;
+      text += `-${CommonUtils.formatServerTimeToLocal(storeInfo.closedTime)}`;
     }
     return text;
   }, [storeInfo?.closedTime, storeInfo?.openingTime]);
   const logoUri = storeInfo?.logo?.fileUrl;
-  const hasMeta = storeInfo?.estimateTime || minOrderText || openTime;
+  const hasMeta = storeInfo?.estimateTime || minOrderText;
 
   if (!storeInfo) {
     return <></>;
@@ -136,13 +135,13 @@ function StoreInfo({
                   <Text style={styles.metaText}>{minOrderText}</Text>
                 ) : undefined}
               </View>
-              {!!openTime && (
-                <Text style={styles.metaText}>
-                  {t('stores.open_hours', { time: openTime })}
-                </Text>
-              )}
             </>
           ) : undefined}
+          {!!openTime && (
+            <Text style={styles.metaText}>
+              {t('stores.open_hours', { time: openTime })}
+            </Text>
+          )}
           <View
             style={{
               flexDirection: 'row',

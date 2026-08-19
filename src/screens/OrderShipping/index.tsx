@@ -9,7 +9,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
-import { trimSeconds } from '@utils/date';
+import { CommonUtils } from '@utils';
 
 const SCREEN_BG = '#F2F2F2';
 const TEXT_DARK = '#1A1A1A';
@@ -38,15 +38,15 @@ function OrderShipping(props: any) {
       text = data?.storeAddress;
     }
     if (data?.storeOpeningTime) {
-      const time = trimSeconds(data?.storeOpeningTime);
+      const time = CommonUtils.formatServerTimeToLocal(data?.storeOpeningTime);
       text = text ? text + ' | ' + time : time;
     }
     if (data?.storeClosedTime) {
-      const time = trimSeconds(data?.storeClosedTime);
+      const time = CommonUtils.formatServerTimeToLocal(data?.storeClosedTime);
       text = text ? text + ' - ' + time : time;
     }
     return text;
-  }, []);
+  }, [data?.storeAddress, data?.storeClosedTime, data?.storeOpeningTime]);
 
   return (
     <View style={styles.screen}>

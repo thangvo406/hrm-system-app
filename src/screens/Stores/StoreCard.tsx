@@ -2,14 +2,12 @@ import type { IStoreItem } from '@type/store';
 import type { IProduct } from '@type/products';
 
 import { Image, ProductList } from '@components';
-import { CommonUtils, ProductUtils } from '@utils';
+import { CommonUtils } from '@utils';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@constants';
-import { trimSeconds } from '@utils/date';
-import isNumber from 'lodash/isNumber';
 
 const ICON_SIZE = ScaleSize(18);
 const TEXT_DARK = '#1A1A1A';
@@ -46,19 +44,19 @@ function StoreCard({ onPressProduct, onPressStore, store }: Properties) {
   const openTime = useMemo(() => {
     let text = '';
     if (store?.openingTime) {
-      text = trimSeconds(store.openingTime);
+      text = CommonUtils.formatServerTimeToLocal(store.openingTime);
     }
     if (store?.closedTime) {
-      text += `-${trimSeconds(store.closedTime)}`;
+      text += `-${CommonUtils.formatServerTimeToLocal(store.closedTime)}`;
     }
     return text;
   }, [store?.closedTime, store?.openingTime]);
 
-  const minOrderText = isNumber(store.minOrder)
-    ? t('stores.min_order', {
-        amount: ProductUtils.formatCurrency(store.minOrder),
-      })
-    : '';
+  // const minOrderText = isNumber(store.minOrder)
+  //   ? t('stores.min_order', {
+  //       amount: ProductUtils.formatCurrency(store.minOrder),
+  //     })
+  //   : '';
 
   return (
     <View style={styles.card} testID={`store-${store.id}`}>
@@ -122,9 +120,9 @@ function StoreCard({ onPressProduct, onPressStore, store }: Properties) {
               <Text style={styles.metaText}>--</Text>
             )}
           </View>
-          {minOrderText ? (
+          {/* {minOrderText ? (
             <Text style={styles.metaText}>{minOrderText}</Text>
-          ) : undefined}
+          ) : undefined} */}
         </View>
       </TouchableOpacity>
     </View>
