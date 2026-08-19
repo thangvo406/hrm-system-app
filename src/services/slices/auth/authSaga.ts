@@ -76,6 +76,7 @@ import { Globals } from '@utils';
 import { AccountSelector, AuthSelector } from '@services/selectors';
 import { deletePushId } from '@services/request/account';
 import { getErrorMessageApi } from '@utils/common';
+import { OneSignal } from 'react-native-onesignal';
 
 function* loginWorker(action: PayloadAction<IRequestLogin>) {
   const { onFailure, onSuccess, ...request } = action.payload;
@@ -302,6 +303,7 @@ function* logoutWorker() {
   yield delay(130);
   yield call([persistor, 'purge']);
   yield put(logoutSuccess());
+  OneSignal.Notifications.clearAll();
 }
 
 export function* authSaga() {

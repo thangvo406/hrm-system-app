@@ -8,6 +8,7 @@ type Properties = {
   readonly date: string;
   readonly title: string;
   readonly storeName?: string;
+  readonly amount?: string;
   readonly isDebit?: boolean;
 };
 
@@ -16,7 +17,7 @@ const TITLE_MAX_LINES = 2;
 const DEBIT = Colors.red03;
 const CREDIT = Colors.green02;
 
-function SummaryHeader({ date, title, isDebit, storeName }: Properties) {
+function SummaryHeader({ amount, date, title, isDebit, storeName }: Properties) {
   const colorAmount = isDebit ? DEBIT : CREDIT;
   const sign = isDebit ? '-' : '+';
   return (
@@ -31,14 +32,15 @@ function SummaryHeader({ date, title, isDebit, storeName }: Properties) {
         />
       </View>
       <View style={styles.textCol}>
-        {!!storeName && <Text style={styles.storeName}>{storeName}</Text>}
+        {!!title && <Text style={styles.title}>{title}</Text>}
         <Text
           numberOfLines={TITLE_MAX_LINES}
-          style={[styles.title, { color: colorAmount }]}
+          style={[styles.amount, { color: colorAmount }]}
         >
           {sign}
-          {title}
+          {amount}
         </Text>
+        {!!storeName && <Text style={styles.storeName}>{storeName}</Text>}
         <Text style={styles.date}>{date}</Text>
       </View>
     </View>
@@ -64,7 +66,7 @@ const styles = StyleSheet.create({
   storeName: {
     fontSize: ScaleSize(13),
     color: Colors.black,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
   },
   date: {
     color: Colors.gray14,
@@ -83,9 +85,14 @@ const styles = StyleSheet.create({
   textCol: {
     flex: 1,
   },
+  amount: {
+    color: Colors.black01,
+    fontSize: ScaleSize(32),
+    fontWeight: '700',
+  },
   title: {
     color: Colors.black01,
-    fontSize: ScaleSize(18),
+    fontSize: ScaleSize(14),
     fontWeight: '700',
   },
 });

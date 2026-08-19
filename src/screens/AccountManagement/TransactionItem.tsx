@@ -83,7 +83,7 @@ function TransactionAmount({ amount, amountColor }: AmountProps) {
 
 type Properties = {
   readonly transaction: ITransactionMovement;
-  readonly onPress: (data: any) => void;
+  readonly onPress: (data: ITransactionMovement, name: string, detailDesc: string) => void;
 };
 
 function TransactionItem({ transaction, onPress }: Properties) {
@@ -112,13 +112,14 @@ function TransactionItem({ transaction, onPress }: Properties) {
     }
     return EMPTY_VALUE;
   }, [transaction]);
+  const detailDesc = detailLabel ? t(detailLabel as TranslationKeys) : ''
 
   return (
-    <AppButton style={styles.row} onPress={() => onPress?.(transaction)}>
+    <AppButton style={styles.row} onPress={() => onPress?.(transaction, name, detailDesc)}>
       <View style={styles.left}>
         <Text style={styles.rowTitle}>{name}</Text>
         <Text style={styles.method}>
-          {detailLabel ? t(detailLabel as TranslationKeys) : EMPTY_VALUE}
+          {detailDesc || EMPTY_VALUE}
         </Text>
       </View>
       <View style={styles.right}>
