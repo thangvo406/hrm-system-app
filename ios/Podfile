@@ -14,7 +14,12 @@ def node_require(script)
 end
 node_require('react-native/scripts/react_native_pods.rb')
 node_require('react-native-permissions/scripts/setup.rb')
-platform :ios, min_ios_version_supported
+# SSZipArchive (pulled in by react-native-zip-archive) ships podspecs with an
+# iOS 15.5 deployment target, above RN 0.81's min_ios_version_supported (15.1),
+# so the platform is pinned here instead of inherited. Keep this in sync with
+# IPHONEOS_DEPLOYMENT_TARGET in CoopUse.xcodeproj.
+MIN_IOS_VERSION = '15.5'
+platform :ios, MIN_IOS_VERSION
 prepare_react_native_project!
 
 # ios/.env and ios/tmp.xcconfig are GENERATED, gitignored, and never edited by
@@ -120,5 +125,8 @@ target 'CoopUse' do
   end
 end
 target 'OneSignalNotificationService' do
-  pod 'OneSignalXCFramework', '>= 5.0.0', '< 6.0'
+  # Must match the exact version react-native-onesignal depends on, otherwise
+  # this target resolves to the newest 5.x and CocoaPods fails with
+  # "could not find compatible versions for pod OneSignalXCFramework".
+  pod 'OneSignalXCFramework', '5.2.10'
 end

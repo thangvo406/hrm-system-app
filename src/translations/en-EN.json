@@ -1267,6 +1267,11 @@
       "btn_skip": "Continue Without Coupon",
       "name_rate": "{{rate}}% discount coupon",
       "name_amount": "{{amount}}KRW discount coupon"
+    },
+    "code_push": {
+      "installing_title": "Installing the update",
+      "updating_title": "Updating the app",
+      "updating_description": "Downloading the latest version. The app will restart automatically when it is done."
     }
   }
 }

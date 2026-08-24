@@ -17,7 +17,8 @@ type SocialOption = {
 
 const SOCIAL_OPTIONS: readonly SocialOption[] = [
   {
-    icon: 'kakao',
+    icon: 'google',
+    // icon: 'kakao',
     labelKey: 'authorisation.continue_kakao',
     provider: 'kakao',
     testID: 'auth-kakao-button',
@@ -29,7 +30,7 @@ const SOCIAL_OPTIONS: readonly SocialOption[] = [
     testID: 'auth-naver-button',
   },
   {
-    icon: 'google',
+    icon: 'kakao',
     labelKey: 'authorisation.continue_google',
     provider: 'google',
     testID: 'auth-google-button',

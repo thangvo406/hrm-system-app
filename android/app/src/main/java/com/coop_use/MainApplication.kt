@@ -23,6 +23,19 @@ class MainApplication : Application(), ReactApplication {
 
         override fun getJSMainModuleName(): String = "index"
 
+        // Bundle OTA do react-native-codepush-sdk cài vào
+        // filesDir/CustomCodePush/current.bundle (RNFS.DocumentDirectoryPath trên
+        // Android là getFilesDir()). Chỉ dùng ở release và khi file tồn tại,
+        // không rỗng; ngược lại trả null để RN fallback về bundle đóng trong APK.
+        // Song song với codePushBundleURL() trong ios/AppDelegade.swift.
+        override fun getJSBundleFile(): String? {
+          if (BuildConfig.DEBUG) {
+            return null
+          }
+          val bundle = java.io.File(filesDir, "CustomCodePush/current.bundle")
+          return if (bundle.exists() && bundle.length() > 0) bundle.absolutePath else null
+        }
+
         override fun getUseDeveloperSupport(): Boolean = BuildConfig.DEBUG
 
         override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED

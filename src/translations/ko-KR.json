@@ -73,8 +73,8 @@
       "login": "로그인",
       "register": "회원가입",
       "or": "또는",
-      "continue_kakao": "카카오로 계속하기",
-      "continue_naver": "네이버로 계속하기",
+      "continue_kakao": "continue kakao",
+      "continue_naver": "continue naver",
       "continue_google": "구글로 계속하기",
       "error_name_required": "이름을 입력해 주세요",
       "error_email_required": "이메일을 입력해 주세요",
@@ -1269,6 +1269,11 @@
       "btn_skip": "쿠폰 없이 계속하기",
       "name_rate": "{{rate}}% 할인 쿠폰",
       "name_amount": "{{amount}}원 할인 쿠폰"
+    },
+    "code_push": {
+      "installing_title": "업데이트 설치 중",
+      "updating_title": "앱 업데이트 중",
+      "updating_description": "최신 버전을 다운로드하고 있습니다. 완료되면 앱이 자동으로 다시 시작됩니다."
     }
   }
 }

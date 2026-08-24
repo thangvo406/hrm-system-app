@@ -46,3 +46,4 @@ export { useRequestAddCard } from './useRequestAddCard';
 export { useBankAccount } from './useBankAccount';
 export { useBankInformation } from './useBankInformation';
 export { useMealTickets } from './useMealTickets';
+export { useCodePushGate } from './useCodePushGate';

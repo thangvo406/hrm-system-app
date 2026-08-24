@@ -96,3 +96,4 @@ android/coop-dev-firebase.json
 # sigh, gym) có thể đổi mà không có commit nào liên quan.
 !ios/Gemfile.lock
 !android/Gemfile.lock
+codepush_build/*

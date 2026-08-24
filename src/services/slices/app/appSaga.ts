@@ -130,7 +130,7 @@ function* checkNetworkTranslation() {
 function* startupAppWorker(action: PayloadAction<AppCallback<boolean>>) {
   try {
     // Splash hold while any future bootstrap work runs (config, i18n, …).
-    yield checkNetworkTranslation();
+    // yield checkNetworkTranslation();
     yield delay(STARTUP_DELAY);
     const accessToken: string | undefined = yield select(
       AuthSelector.getAccessToken,
