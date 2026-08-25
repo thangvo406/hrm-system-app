@@ -6,17 +6,26 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { useCodePush } from 'react-native-codepush-sdk';
+import { FileManager } from '@kits/core/utils/FileManager';
 
-// Check phải nhanh vì nó chặn màn hình đầu; download thì cho thoáng hơn vì
-// bundle ~6MB. Hết hạn thì mở cổng luôn, không bao giờ chặn app vì OTA.
+// Check phải nhanh vì nó chặn màn hình đầu. Hết hạn thì mở cổng luôn, không
+// bao giờ chặn app vì OTA.
 const CHECK_TIMEOUT_MS = 8000;
-const DOWNLOAD_TIMEOUT_MS = 60_000;
 const PERCENT_MAX = 100;
+
+// Đây là timeout theo KHOẢNG LẶNG giữa các lần nhận thêm dữ liệu, không phải
+// tổng thời gian tải — nên bundle to hay mạng chậm cỡ nào cũng không sao,
+// miễn dữ liệu vẫn đang chảy đều là còn tiếp tục chờ. Ngược lại nếu server
+// ngừng gửi (đứt kết nối, treo) thì phát hiện lỗi trong tối đa
+// downloadStallTimeoutMs thay vì phải đợi hết một timeout tổng cố định.
+// Truyền từ ngoài vào (qua CodePushGate) để cấu hình cạnh CODEPUSH_CONFIG ở
+// App.tsx, không hardcode sâu trong hook.
+const DEFAULT_DOWNLOAD_STALL_TIMEOUT_MS = 20_000;
 
 // Fail-open cứng. initialize() của SDK không có timeout (await RNFS mkdir + đọc
 // AsyncStorage), nếu nó treo thì phase đứng ở 'checking' và app trắng màn hình
 // vĩnh viễn. Watchdog bảo đảm luôn vào được app. Được clear ngay khi bắt đầu
-// download vì lúc đó DOWNLOAD_TIMEOUT_MS đã lo phần còn lại.
+// download vì lúc đó withStallTimeout đã lo phần còn lại.
 const STARTUP_WATCHDOG_MS = 15_000;
 
 /**
@@ -51,7 +60,7 @@ export type CodePushGatePhase =
   | 'installing'
   | 'ready';
 
-const withTimeout = async <T,>(task: Promise<T>, ms: number): Promise<T> => {
+const withTimeout = async <T>(task: Promise<T>, ms: number): Promise<T> => {
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     return await Promise.race([
@@ -67,6 +76,45 @@ const withTimeout = async <T,>(task: Promise<T>, ms: number): Promise<T> => {
   }
 };
 
+/**
+ * Như withTimeout, nhưng đếm lại từ đầu mỗi khi `run` báo có tiến triển (gọi
+ * `onProgress`) thay vì tính tổng thời gian cố định — nên bundle to hay mạng
+ * chậm cỡ nào cũng chờ được, miễn dữ liệu vẫn đang chảy. Chỉ reject khi thật
+ * sự im lặng quá `idleMs` (server ngừng gửi / đứt kết nối).
+ */
+const withStallTimeout = <T>(
+  run: (onProgress: () => void) => Promise<T>,
+  idleMs: number,
+): Promise<T> =>
+  new Promise<T>((resolve, reject) => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    const resetTimer = () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(
+        () => reject(new Error('CodePush download stalled')),
+        idleMs,
+      );
+    };
+
+    resetTimer();
+    run(resetTimer)
+      .then(result => {
+        if (timer) {
+          clearTimeout(timer);
+        }
+        resolve(result);
+      })
+      .catch((error: unknown) => {
+        if (timer) {
+          clearTimeout(timer);
+        }
+        reject(error instanceof Error ? error : new Error(String(error)));
+      });
+  });
+
 // Server hiện trả về update kể cả khi currentPackageHash đã đúng, và
 // checkForUpdate của SDK không so hash. Nếu không tự chặn ở đây thì mỗi launch
 // sẽ install lại rồi restart -> loop vô hạn.
@@ -76,6 +124,11 @@ const isAlreadyApplied = (update: UpdatePackage, currentHash?: string) =>
     update.packageHash ===
       AppStorage.getString(AppConstants.CODE_PUSH_LAST_RESTART_HASH_KEY));
 
+type UseCodePushGateOptions = {
+  /** Xem giải thích ở DEFAULT_DOWNLOAD_STALL_TIMEOUT_MS phía trên. */
+  readonly downloadStallTimeoutMs?: number;
+};
+
 /**
  * Chặn ApplicationNavigator tới khi check + install update xong, và check lại
  * mỗi lần app quay lại foreground.
@@ -84,7 +137,9 @@ const isAlreadyApplied = (update: UpdatePackage, currentHash?: string) =>
  * đường dẫn bundle một lần lúc launch. Nên luồng đúng là gate -> install ->
  * restart, và code mới có hiệu lực ở launch kế tiếp.
  */
-export function useCodePushGate() {
+export function useCodePushGate({
+  downloadStallTimeoutMs = DEFAULT_DOWNLOAD_STALL_TIMEOUT_MS,
+}: UseCodePushGateOptions = {}) {
   const { codePush } = useCodePush();
   const [phase, setPhase] = useState<CodePushGatePhase>('checking');
   const [progress, setProgress] = useState(0);
@@ -92,6 +147,14 @@ export function useCodePushGate() {
   const isSyncingRef = useRef(false);
   const hasOpenedGateRef = useRef(false);
   const isMountedRef = useRef(true);
+  // STARTUP_WATCHDOG_MS chỉ nên canh phase 'checking' (initialize +
+  // checkForUpdate không có timeout riêng đủ chắc). Một khi đã biết chắc có
+  // update và chuyển sang 'downloading', watchdog phải bị huỷ ngay — nếu
+  // không nó sẽ tự mở cổng sau đúng STARTUP_WATCHDOG_MS bất kể download có
+  // đang tải khoẻ mạnh hay không, trước cả khi withStallTimeout kịp lên
+  // tiếng. syncOnce gọi ref này thay vì cầm thẳng timer vì watchdog được tạo
+  // trong effect startup, còn syncOnce là một callback tách biệt.
+  const clearStartupWatchdogRef = useRef<() => void>(() => {});
 
   useEffect(
     () => () => {
@@ -129,26 +192,44 @@ export function useCodePushGate() {
           CHECK_TIMEOUT_MS,
         );
 
+        FileManager.appendLog(
+          'current?.packageHash',
+          JSON.stringify({
+            packageHash: current?.packageHash,
+            update,
+          }),
+        );
         if (!update || isAlreadyApplied(update, current?.packageHash)) {
           return false;
         }
-
+        FileManager.appendLog(
+          'isMountedRef',
+          JSON.stringify({
+            isMountedRef: isMountedRef.current,
+            isBlocking,
+          }),
+        );
         if (isBlocking && isMountedRef.current) {
+          // Đã có update thật để tải — huỷ watchdog checking-only ngay từ
+          // đây, kẻo nó tự mở cổng giữa chừng download dù mọi thứ đang ổn.
+          clearStartupWatchdogRef.current();
           // Splash native do màn Startup ẩn, mà Startup nằm trong navigator
           // đang bị chặn — phải tự ẩn ở đây, nếu không progress view bị che.
           setPhase('downloading');
           SplashScreen.hide();
         }
 
-        const localPackage = await withTimeout(
-          codePush.downloadUpdate(update, ({ receivedBytes, totalBytes }) => {
-            if (isBlocking && totalBytes > 0 && isMountedRef.current) {
-              setProgress(
-                Math.round((receivedBytes / totalBytes) * PERCENT_MAX),
-              );
-            }
-          }),
-          DOWNLOAD_TIMEOUT_MS,
+        const localPackage = await withStallTimeout(
+          onProgress =>
+            codePush.downloadUpdate(update, ({ receivedBytes, totalBytes }) => {
+              onProgress();
+              if (isBlocking && totalBytes > 0 && isMountedRef.current) {
+                setProgress(
+                  Math.round((receivedBytes / totalBytes) * PERCENT_MAX),
+                );
+              }
+            }),
+          downloadStallTimeoutMs,
         );
 
         // Download qua LAN/loopback có thể xong trong vài chục ms, còn
@@ -171,7 +252,7 @@ export function useCodePushGate() {
         isSyncingRef.current = false;
       }
     },
-    [codePush],
+    [codePush, downloadStallTimeoutMs],
   );
 
   // Startup: chạy đúng một lần, chặn navigator tới khi xong.
@@ -222,6 +303,7 @@ export function useCodePushGate() {
         watchdog = undefined;
       }
     };
+    clearStartupWatchdogRef.current = clearWatchdog;
 
     // Chỉ đánh dấu đã mở cổng khi thật sự mở, vì cờ này quyết định có
     // restartApp() hay không.

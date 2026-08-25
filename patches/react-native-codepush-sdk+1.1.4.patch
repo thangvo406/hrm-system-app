@@ -1,0 +1,43 @@
+diff --git a/node_modules/react-native-codepush-sdk/dist/src/sdk/CustomCodePush.js b/node_modules/react-native-codepush-sdk/dist/src/sdk/CustomCodePush.js
+index b1eee66..54171d9 100755
+--- a/node_modules/react-native-codepush-sdk/dist/src/sdk/CustomCodePush.js
++++ b/node_modules/react-native-codepush-sdk/dist/src/sdk/CustomCodePush.js
+@@ -180,6 +180,10 @@ class CustomCodePush {
+                 const downloadResult = await react_native_fs_1.default.downloadFile({
+                     fromUrl: updatePackage.downloadUrl,
+                     toFile: downloadPath,
++                    // Default RNFS readTimeout (15s) is far shorter than a bundle
++                    // download can legitimately take on a slow/throttled network,
++                    // aborting the request long before it completes.
++                    readTimeout: this.config.downloadReadTimeoutMs ?? 300000,
+                     progress: (res) => {
+                         if (progressCallback) {
+                             progressCallback({
+diff --git a/node_modules/react-native-codepush-sdk/src/sdk/CustomCodePush.ts b/node_modules/react-native-codepush-sdk/src/sdk/CustomCodePush.ts
+index 9bc1a5f..7dfa119 100644
+--- a/node_modules/react-native-codepush-sdk/src/sdk/CustomCodePush.ts
++++ b/node_modules/react-native-codepush-sdk/src/sdk/CustomCodePush.ts
+@@ -20,6 +20,12 @@ export interface CodePushConfiguration {
+   checkFrequency?: 'ON_APP_START' | 'ON_APP_RESUME' | 'MANUAL';
+   installMode?: 'IMMEDIATE' | 'ON_NEXT_RESTART' | 'ON_NEXT_RESUME';
+   minimumBackgroundDuration?: number;
++  /**
++   * Max time (ms) RNFS.downloadFile waits for the bundle download to finish.
++   * Defaults to 300000 (5min); raise it for large bundles or deliberately
++   * throttled/slow connections.
++   */
++  downloadReadTimeoutMs?: number;
+ }
+ 
+ export interface UpdatePackage {
+@@ -269,6 +275,10 @@ class CustomCodePush {
+         const downloadResult = await RNFS.downloadFile({
+           fromUrl: updatePackage.downloadUrl,
+           toFile: downloadPath,
++          // Default RNFS readTimeout (15s) is far shorter than a bundle
++          // download can legitimately take on a slow/throttled network,
++          // aborting the request long before it completes.
++          readTimeout: this.config.downloadReadTimeoutMs ?? 300000,
+           progress: (res) => {
+             if (progressCallback) {
+               progressCallback({
