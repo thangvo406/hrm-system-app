@@ -5,12 +5,10 @@ import { useCodePushGate } from '@hooks/useCodePushGate';
 import { FileManager } from '@kits/core/utils/FileManager';
 
 type Properties = PropsWithChildren<{
-  /**
-   * Timeout theo khoảng lặng giữa các lần nhận thêm dữ liệu khi tải bundle —
-   * xem giải thích ở DEFAULT_DOWNLOAD_STALL_TIMEOUT_MS trong
-   * useCodePushGate.ts.
-   */
-  readonly downloadStallTimeoutMs?: number;
+  /** Xem giải thích ở getDownloadTimeoutMs trong useCodePushGate.ts. */
+  readonly minDownloadKbps?: number;
+  /** Xem giải thích ở getDownloadTimeoutMs trong useCodePushGate.ts. */
+  readonly downloadTimeoutBufferMs?: number;
 }>;
 
 /**
@@ -21,8 +19,15 @@ type Properties = PropsWithChildren<{
  * - `downloading` / `installing`: hook đã ẩn splash, hiện tiến độ.
  * - `ready`: render app bình thường.
  */
-function CodePushGate({ children, downloadStallTimeoutMs }: Properties) {
-  const { phase, progress } = useCodePushGate({ downloadStallTimeoutMs });
+function CodePushGate({
+  children,
+  minDownloadKbps,
+  downloadTimeoutBufferMs,
+}: Properties) {
+  const { phase, progress } = useCodePushGate({
+    minDownloadKbps,
+    downloadTimeoutBufferMs,
+  });
   console.log('phase', phase);
   FileManager.appendLog('phase', phase);
   if (phase === 'checking') {

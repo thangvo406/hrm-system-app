@@ -18,17 +18,18 @@ import { FileManager } from '@kits/core/utils/FileManager';
 
 FileManager.checkExistAndCreateLog();
 
-// Backstop cứng ở tầng RNFS.downloadFile (SDK) — hiếm khi tự nó kích hoạt vì
-// CODEPUSH_GATE_DOWNLOAD_STALL_TIMEOUT_MS bên dưới phát hiện đứt kết nối sớm
-// hơn nhiều, chỉ giữ lại phòng khi cơ chế đó có bug.
+// Backstop cứng ở tầng RNFS.downloadFile (SDK). react-native-fs trên iOS chỉ
+// bắn progress event qua self.bridge, mà app chạy New Architecture
+// (bridgeless) nên self.bridge luôn nil — progress không bao giờ tới JS dù
+// tải vẫn khỏe mạnh (đã xác nhận qua log thực tế). Vì vậy KHÔNG dùng timeout
+// kiểu "im lặng thì fail" ở tầng app nữa — xem CODEPUSH_GATE_MIN_DOWNLOAD_KBPS.
 const CODEPUSH_DOWNLOAD_READ_TIMEOUT_MS = 300_000;
 
-// Ngưỡng "im lặng" ở tầng app (CodePushGate): nếu quá thời gian này mà không
-// nhận thêm byte nào từ server thì coi như tải hỏng, không phải tổng thời
-// gian tải — bundle to hay mạng chậm cỡ nào cũng không sao miễn dữ liệu vẫn
-// đang chảy. Xem giải thích ở DEFAULT_DOWNLOAD_STALL_TIMEOUT_MS trong
-// useCodePushGate.ts.
-const CODEPUSH_GATE_DOWNLOAD_STALL_TIMEOUT_MS = 20_000;
+// Timeout tải bundle ở tầng app (CodePushGate) tính theo packageSize thay vì
+// một tổng thời gian cố định: (packageSize / minKbps) + buffer. Xem
+// getDownloadTimeoutMs trong useCodePushGate.ts.
+const CODEPUSH_GATE_MIN_DOWNLOAD_KBPS = 20;
+const CODEPUSH_GATE_DOWNLOAD_TIMEOUT_BUFFER_MS = 30_000;
 
 const CODEPUSH_CONFIG: ComponentProps<typeof CodePushProvider>['config'] = {
   checkFrequency: 'ON_APP_START',
@@ -38,6 +39,7 @@ const CODEPUSH_CONFIG: ComponentProps<typeof CodePushProvider>['config'] = {
   downloadReadTimeoutMs: CODEPUSH_DOWNLOAD_READ_TIMEOUT_MS,
   installMode: 'ON_NEXT_RESTART',
   serverUrl: 'http://192.168.100.104:3000', // KHÔNG có dấu / cuối
+  // serverUrl: 'http://172.20.10.2:3000', // KHÔNG có dấu / cuối
 };
 
 function App() {
@@ -61,9 +63,10 @@ function App() {
                 translucent
               />
               <CodePushGate
-                downloadStallTimeoutMs={
-                  CODEPUSH_GATE_DOWNLOAD_STALL_TIMEOUT_MS
+                downloadTimeoutBufferMs={
+                  CODEPUSH_GATE_DOWNLOAD_TIMEOUT_BUFFER_MS
                 }
+                minDownloadKbps={CODEPUSH_GATE_MIN_DOWNLOAD_KBPS}
               >
                 <ApplicationNavigator />
                 <Dialog ref={ref => AppNavigator.setRefDialog(ref)} />

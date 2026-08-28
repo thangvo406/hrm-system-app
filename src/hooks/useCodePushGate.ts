@@ -13,19 +13,40 @@ import { FileManager } from '@kits/core/utils/FileManager';
 const CHECK_TIMEOUT_MS = 8000;
 const PERCENT_MAX = 100;
 
-// Đây là timeout theo KHOẢNG LẶNG giữa các lần nhận thêm dữ liệu, không phải
-// tổng thời gian tải — nên bundle to hay mạng chậm cỡ nào cũng không sao,
-// miễn dữ liệu vẫn đang chảy đều là còn tiếp tục chờ. Ngược lại nếu server
-// ngừng gửi (đứt kết nối, treo) thì phát hiện lỗi trong tối đa
-// downloadStallTimeoutMs thay vì phải đợi hết một timeout tổng cố định.
-// Truyền từ ngoài vào (qua CodePushGate) để cấu hình cạnh CODEPUSH_CONFIG ở
-// App.tsx, không hardcode sâu trong hook.
-const DEFAULT_DOWNLOAD_STALL_TIMEOUT_MS = 20_000;
+// KHÔNG dùng timeout kiểu "reset khi có progress": RNFS trên iOS chỉ bắn
+// DownloadProgress qua self.bridge, mà app này chạy New Architecture
+// (bridgeless) nên self.bridge luôn nil — progress event không bao giờ tới JS
+// dù file vẫn đang tải khỏe mạnh ở tầng native (đã xác nhận qua log thực tế:
+// 20s không một tick nào, trong khi curl cùng URL vẫn nhận data đều). RNFS
+// iOS cũng tải vào file tạm của hệ điều hành rồi mới move sang toFile lúc
+// xong hẳn, nên poll dung lượng file đích giữa chừng cũng không dùng được.
+//
+// Vậy phải quay lại timeout theo TỔNG thời gian, nhưng tính động theo
+// packageSize thay vì hằng số cố định — để bundle to vẫn có đủ thời gian, mà
+// bundle nhỏ + mạng chết vẫn phát hiện được sớm thay vì luôn đợi hết mức trần.
+// minDownloadKbps là tốc độ tối thiểu chấp nhận được (giả định mạng rất chậm
+// vẫn phải đạt); downloadTimeoutBufferMs cộng thêm cho phần overhead (mở kết
+// nối, ghi file, cài đặt) ngoài thời gian tải thuần tuý.
+const DEFAULT_MIN_DOWNLOAD_KBPS = 20;
+const DEFAULT_DOWNLOAD_TIMEOUT_BUFFER_MS = 30_000;
+const MIN_DOWNLOAD_TIMEOUT_MS = 30_000;
+
+const getDownloadTimeoutMs = (
+  packageSize: number,
+  minDownloadKbps: number,
+  bufferMs: number,
+): number => {
+  if (packageSize <= 0) {
+    return MIN_DOWNLOAD_TIMEOUT_MS;
+  }
+  const transferMs = (packageSize / (minDownloadKbps * 1024)) * 1000;
+  return Math.max(MIN_DOWNLOAD_TIMEOUT_MS, transferMs + bufferMs);
+};
 
 // Fail-open cứng. initialize() của SDK không có timeout (await RNFS mkdir + đọc
 // AsyncStorage), nếu nó treo thì phase đứng ở 'checking' và app trắng màn hình
 // vĩnh viễn. Watchdog bảo đảm luôn vào được app. Được clear ngay khi bắt đầu
-// download vì lúc đó withStallTimeout đã lo phần còn lại.
+// download vì lúc đó timeout theo packageSize đã lo phần còn lại.
 const STARTUP_WATCHDOG_MS = 15_000;
 
 /**
@@ -76,45 +97,6 @@ const withTimeout = async <T>(task: Promise<T>, ms: number): Promise<T> => {
   }
 };
 
-/**
- * Như withTimeout, nhưng đếm lại từ đầu mỗi khi `run` báo có tiến triển (gọi
- * `onProgress`) thay vì tính tổng thời gian cố định — nên bundle to hay mạng
- * chậm cỡ nào cũng chờ được, miễn dữ liệu vẫn đang chảy. Chỉ reject khi thật
- * sự im lặng quá `idleMs` (server ngừng gửi / đứt kết nối).
- */
-const withStallTimeout = <T>(
-  run: (onProgress: () => void) => Promise<T>,
-  idleMs: number,
-): Promise<T> =>
-  new Promise<T>((resolve, reject) => {
-    let timer: ReturnType<typeof setTimeout> | undefined;
-
-    const resetTimer = () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-      timer = setTimeout(
-        () => reject(new Error('CodePush download stalled')),
-        idleMs,
-      );
-    };
-
-    resetTimer();
-    run(resetTimer)
-      .then(result => {
-        if (timer) {
-          clearTimeout(timer);
-        }
-        resolve(result);
-      })
-      .catch((error: unknown) => {
-        if (timer) {
-          clearTimeout(timer);
-        }
-        reject(error instanceof Error ? error : new Error(String(error)));
-      });
-  });
-
 // Server hiện trả về update kể cả khi currentPackageHash đã đúng, và
 // checkForUpdate của SDK không so hash. Nếu không tự chặn ở đây thì mỗi launch
 // sẽ install lại rồi restart -> loop vô hạn.
@@ -125,8 +107,10 @@ const isAlreadyApplied = (update: UpdatePackage, currentHash?: string) =>
       AppStorage.getString(AppConstants.CODE_PUSH_LAST_RESTART_HASH_KEY));
 
 type UseCodePushGateOptions = {
-  /** Xem giải thích ở DEFAULT_DOWNLOAD_STALL_TIMEOUT_MS phía trên. */
-  readonly downloadStallTimeoutMs?: number;
+  /** Xem giải thích ở getDownloadTimeoutMs phía trên. */
+  readonly minDownloadKbps?: number;
+  /** Xem giải thích ở getDownloadTimeoutMs phía trên. */
+  readonly downloadTimeoutBufferMs?: number;
 };
 
 /**
@@ -138,7 +122,8 @@ type UseCodePushGateOptions = {
  * restart, và code mới có hiệu lực ở launch kế tiếp.
  */
 export function useCodePushGate({
-  downloadStallTimeoutMs = DEFAULT_DOWNLOAD_STALL_TIMEOUT_MS,
+  minDownloadKbps = DEFAULT_MIN_DOWNLOAD_KBPS,
+  downloadTimeoutBufferMs = DEFAULT_DOWNLOAD_TIMEOUT_BUFFER_MS,
 }: UseCodePushGateOptions = {}) {
   const { codePush } = useCodePush();
   const [phase, setPhase] = useState<CodePushGatePhase>('checking');
@@ -172,11 +157,16 @@ export function useCodePushGate({
    */
   const syncOnce = useCallback(
     async (isBlocking: boolean) => {
+      FileManager.appendLog('syncOnce', `first: ${!codePush}`);
       if (!codePush) {
         return false;
       }
       // checkForUpdate của SDK throw 'Already checking for update' nếu bị gọi
       // lồng nhau, nên chặn chồng lấn giữa startup và các lần resume.
+      FileManager.appendLog(
+        'syncOnce',
+        `isSyncingRef: ${isSyncingRef.current}`,
+      );
       if (isSyncingRef.current) {
         return false;
       }
@@ -184,9 +174,14 @@ export function useCodePushGate({
       try {
         // initialize() phải có timeout: nếu nó treo mà không bọc thì finally
         // không chạy, isSyncingRef kẹt true và MỌI lần resume sau đều bị chặn.
+        FileManager.appendLog('syncOnce', `first init`);
         await withTimeout(codePush.initialize(), CHECK_TIMEOUT_MS);
-
+        FileManager.appendLog('syncOnce', `init done`);
         const current = await codePush.getCurrentPackage();
+        FileManager.appendLog(
+          'syncOnce',
+          `getCurrentPackage: ${JSON.stringify(current)}`,
+        );
         const update = await withTimeout(
           codePush.checkForUpdate(),
           CHECK_TIMEOUT_MS,
@@ -219,17 +214,37 @@ export function useCodePushGate({
           SplashScreen.hide();
         }
 
-        const localPackage = await withStallTimeout(
-          onProgress =>
-            codePush.downloadUpdate(update, ({ receivedBytes, totalBytes }) => {
-              onProgress();
-              if (isBlocking && totalBytes > 0 && isMountedRef.current) {
-                setProgress(
-                  Math.round((receivedBytes / totalBytes) * PERCENT_MAX),
-                );
-              }
-            }),
-          downloadStallTimeoutMs,
+        const downloadTimeoutMs = getDownloadTimeoutMs(
+          update.packageSize,
+          minDownloadKbps,
+          downloadTimeoutBufferMs,
+        );
+        // TODO: log tạm để xác nhận downloadTimeoutMs tính đúng và bắt được
+        // raw rejection reason sớm nhất có thể (trước khi withTimeout can
+        // thiệp) — xoá sau khi điều tra xong cú fail nhanh ở update thứ 2.
+        FileManager.appendLog('downloadTimeoutMs', String(downloadTimeoutMs));
+        const downloadPromise = codePush.downloadUpdate(
+          update,
+          ({ receivedBytes, totalBytes }) => {
+            if (isBlocking && totalBytes > 0 && isMountedRef.current) {
+              setProgress(
+                Math.round((receivedBytes / totalBytes) * PERCENT_MAX),
+              );
+            }
+          },
+        );
+        downloadPromise.catch((error: unknown) => {
+          FileManager.appendLog(
+            'downloadUpdate raw rejection',
+            error instanceof Error
+              ? `${error.message}\n${error.stack ?? ''}`
+              : String(error),
+          );
+        });
+
+        const localPackage = await withTimeout(
+          downloadPromise,
+          downloadTimeoutMs,
         );
 
         // Download qua LAN/loopback có thể xong trong vài chục ms, còn
@@ -252,7 +267,7 @@ export function useCodePushGate({
         isSyncingRef.current = false;
       }
     },
-    [codePush, downloadStallTimeoutMs],
+    [codePush, minDownloadKbps, downloadTimeoutBufferMs],
   );
 
   // Startup: chạy đúng một lần, chặn navigator tới khi xong.
@@ -317,6 +332,8 @@ export function useCodePushGate({
 
     const runStartup = async () => {
       try {
+        alert('1');
+        FileManager.appendLog('runStartup', 'syncOnce');
         const hasInstalled = await syncOnce(true);
         if (!isMountedRef.current) {
           return;
@@ -333,17 +350,32 @@ export function useCodePushGate({
           codePush.restartApp();
           return;
         }
+        alert('2');
         openGate();
       } catch (error) {
         // Update lỗi thì vẫn phải vào được app bằng bundle hiện tại.
-        console.warn('CodePush startup gate failed:', error);
+        // console.warn không có tác dụng ở release build (không debugger nào
+        // đang nghe) nên phải ghi ra file mới xem được lỗi thật là gì.
+        // console.log('errr', error.message);
+        alert(
+          JSON.stringify({
+            title: 'error',
+            message: error?.message,
+          }),
+        );
+        FileManager.appendLog(
+          'CodePush startup gate failed',
+          error instanceof Error
+            ? `${error.message}\n${error.stack ?? ''}`
+            : String(error),
+        );
         openGate();
       } finally {
         clearWatchdog();
       }
     };
 
-    watchdog = setTimeout(openGate, STARTUP_WATCHDOG_MS);
+    // watchdog = setTimeout(openGate, STARTUP_WATCHDOG_MS);
     void runStartup();
 
     return clearWatchdog;
@@ -360,7 +392,12 @@ export function useCodePushGate({
     const subscription = AppState.addEventListener('change', nextState => {
       if (nextState === 'active' && hasOpenedGateRef.current) {
         syncOnce(true).catch((error: unknown) => {
-          console.warn('CodePush resume sync failed:', error);
+          FileManager.appendLog(
+            'CodePush resume sync failed',
+            error instanceof Error
+              ? `${error.message}\n${error.stack ?? ''}`
+              : String(error),
+          );
         });
       }
     });
