@@ -82,8 +82,6 @@ export interface IResponseRegisterSendOtp {
 export interface LogoutRequest {
   refreshToken: string;
 }
-// TODO: define response fields when the social-login API spec is available.
-export type IResponseLoginSocial = Record<string, never>;
 export interface IResponseCreateLinkVerifyInfoUser {
   callUrl: string;
   regCertKey: string;
@@ -130,16 +128,6 @@ export interface IResponseSubmitForgotPass {
 export interface IRequestLogin extends AppCallback<IResponseLogin> {
   email: string;
   password: string;
-}
-
-export interface IRequestLoginSocial extends AppCallback<IResponseLogin> {
-  accessToken?: string;
-  authorizationCode?: string;
-  codeVerifier?: string;
-  idToken?: string;
-  provider: 'GOOGLE' | 'KAKAO' | 'NAVER';
-  redirectUri?: string;
-  state?: string;
 }
 
 export interface IRequestRegisterUser

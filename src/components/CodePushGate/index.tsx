@@ -28,12 +28,10 @@ function CodePushGate({
     minDownloadKbps,
     downloadTimeoutBufferMs,
   });
-  console.log('phase', phase);
   FileManager.appendLog('phase', phase);
   if (phase === 'checking') {
     return null;
   }
-  console.log('render UpdateProgressView', phase);
   FileManager.appendLog('render UpdateProgressView', phase);
   if (phase === 'downloading' || phase === 'installing') {
     return (

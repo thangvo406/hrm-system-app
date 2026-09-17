@@ -1,9 +1,9 @@
-import { DeviceUtils } from './DeviceUtils';
-import NumberUtils from './Number';
-import {ValidateUtils} from './ValidateUtils';
 
-export {
-   DeviceUtils,
-   NumberUtils,
-   ValidateUtils,
-};
+
+
+
+
+
+export {DeviceUtils} from './DeviceUtils';
+export {default as NumberUtils} from './Number';
+export {ValidateUtils} from './ValidateUtils';

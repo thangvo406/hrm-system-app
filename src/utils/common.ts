@@ -1,133 +1,5 @@
-import { IPointPayHistory, KakaoDocument, SearchAddressItem } from '@type';
-import { AppConstants } from '@constants';
-import { IStoreItem } from '@type/store';
-import dayjs from 'dayjs';
+import { KakaoDocument, SearchAddressItem } from '@type';
 import isNumber from 'lodash/isNumber';
-import { formatCurrency } from './product';
-
-const DAYS_IN_WEEK = 7;
-const OPEN_TIME_FORMAT = 'HH:mm';
-// dayjs().day() → 0..6 bắt đầu từ Chủ nhật.
-const DAY_OF_WEEK_BY_INDEX = [
-  AppConstants.DayOfWeek.SUNDAY,
-  AppConstants.DayOfWeek.MONDAY,
-  AppConstants.DayOfWeek.TUESDAY,
-  AppConstants.DayOfWeek.WEDNESDAY,
-  AppConstants.DayOfWeek.THURSDAY,
-  AppConstants.DayOfWeek.FRIDAY,
-  AppConstants.DayOfWeek.SATURDAY,
-];
-
-const toLocalTimeParts = (date: dayjs.Dayjs, time: string) => {
-  const [hour, minute, second] = time.split(':').map(Number);
-  const local = date
-    .utc()
-    .set('hour', hour || 0)
-    .set('minute', minute || 0)
-    .set('second', second || 0)
-    .set('millisecond', 0)
-    .local();
-  return { hour: local.hour(), minute: local.minute(), second: local.second() };
-};
-
-const withTime = (date: dayjs.Dayjs, time: string) => {
-  const { hour, minute, second } = toLocalTimeParts(date, time);
-  return date
-    .set('hour', hour)
-    .set('minute', minute)
-    .set('second', second)
-    .set('millisecond', 0);
-};
-
-/**
- * Đổi giờ `HH:mm:ss` server trả về (UTC) sang chuỗi `HH:mm` theo giờ local của
- * thiết bị — dùng cho mọi chỗ hiển thị giờ mở/đóng cửa.
- */
-export const formatServerTimeToLocal = (time?: string) => {
-  if (!time) {
-    return '';
-  }
-  return withTime(dayjs(), time).format(OPEN_TIME_FORMAT);
-};
-
-/**
- * Hiện tại có nằm ngoài giờ mở cửa (`openingTime` - `closedTime`) hay không.
- * Thiếu dữ liệu giờ thì coi như cửa hàng vẫn mở.
- */
-export const isStoreOutsideOpenHour = (storeInfo?: IStoreItem) => {
-  const { closedTime, openingTime } = storeInfo ?? {};
-  if (!openingTime || !closedTime) {
-    return false;
-  }
-
-  const now = dayjs();
-  const opensAt = withTime(now, openingTime);
-  const closesAt = withTime(now, closedTime);
-
-  // Ca qua đêm (vd 22:00:00 - 02:00:00): giờ đóng nằm trước giờ mở nên
-  // khoảng mở cửa bị chia làm 2 đoạn quanh nửa đêm.
-  const isOvernight = closesAt.isBefore(opensAt);
-  const isOpen = isOvernight
-    ? !now.isBefore(opensAt) || now.isBefore(closesAt)
-    : !now.isBefore(opensAt) && now.isBefore(closesAt);
-
-  return !isOpen;
-};
-
-export const getStoreReopenAt = (storeInfo?: IStoreItem) => {
-  const now = dayjs();
-  const { openingTime, operatingHours } = storeInfo ?? {};
-
-  if (operatingHours?.length) {
-    for (let offset = 0; offset < DAYS_IN_WEEK; offset += 1) {
-      const day = now.add(offset, 'day');
-      const schedule = operatingHours.find(
-        item =>
-          item.dayOfWeek === DAY_OF_WEEK_BY_INDEX[day.day()] &&
-          item.open &&
-          !!item.openTime,
-      );
-      if (!schedule) {
-        continue;
-      }
-      const opensAt = withTime(day, schedule.openTime);
-      if (opensAt.isAfter(now)) {
-        return opensAt;
-      }
-    }
-    return undefined;
-  }
-
-  if (!openingTime) {
-    return undefined;
-  }
-  const opensToday = withTime(now, openingTime);
-  return opensToday.isAfter(now) ? opensToday : opensToday.add(1, 'day');
-};
-
-/**
- * Text mở cửa lại: `HH:mm` nếu mở trong ngày, thêm ngày theo `dateFormat`
- * (format dayjs, lấy từ i18n) khi sang ngày khác.
- */
-export const getStoreReopenText = (
-  storeInfo: IStoreItem | undefined,
-  dateFormat: string,
-) => {
-  const reopenAt = getStoreReopenAt(storeInfo);
-  if (!reopenAt?.isValid()) {
-    return '';
-  }
-  const time = reopenAt.format(OPEN_TIME_FORMAT);
-  // Chỉ kèm ngày khi mở lại sang ngày khác — cùng ngày thì giờ là đủ.
-  return reopenAt.isSame(dayjs(), 'day')
-    ? time
-    : `${time}, ${reopenAt.format(dateFormat)}`;
-};
-
-const PHONE_AREA_CODE_LENGTH = 3;
-const PHONE_MIDDLE_LENGTH = 4;
-const PHONE_LAST_LENGTH = 4;
-const PHONE_MAX_DIGITS = 11;
 
 export const computeFormAuthErrors = <
   V extends Record<string, string>,
@@ -152,7 +24,7 @@ export const removeEmptyFieldObject = (
 ): any => {
   return Object.fromEntries(
     Object.entries(obj)
-      .filter(([_, v]) => {
+      .filter(([, v]) => {
         const valid = v != null;
         if (valid && isRemoveEmptyField) {
           return isNumber(v) && v == 0 ? true : v != '';
@@ -184,8 +56,12 @@ export const bytesToSize = (bytes: number) => {
   };
 };
 
-export const formatPhoneNumber = (input: string): string => {
-  input = input || '';
+const PHONE_AREA_CODE_LENGTH = 3;
+const PHONE_MIDDLE_LENGTH = 4;
+const PHONE_LAST_LENGTH = 4;
+const PHONE_MAX_DIGITS = 11;
+
+export const formatPhoneNumber = (input = ''): string => {
   const digits = input.replaceAll?.(/\D/g, '')?.slice(0, PHONE_MAX_DIGITS);
   const area = digits?.slice?.(0, PHONE_AREA_CODE_LENGTH);
   if (digits?.length <= PHONE_AREA_CODE_LENGTH) {
@@ -205,19 +81,17 @@ export const formatPhoneNumber = (input: string): string => {
   return `${area}-${middle}-${last}`;
 };
 
+const serializeArray = (arr: any[]) =>
+  `[${arr
+    .map(it =>
+      it != null && typeof it === 'object' ? JSON.stringify(it) : String(it),
+    )
+    .join(',')}]`;
+
 // Auth?page=0&id=2&filter=desc
 export const objectToQueryParams = (o: Record<string, any> = {}) =>
   Object.entries(o)
     .map(([k, v]) => {
-      const serializeArray = (arr: any[]) =>
-        `[${arr
-          .map(it =>
-            it != null && typeof it === 'object'
-              ? JSON.stringify(it)
-              : String(it),
-          )
-          .join(',')}]`;
-
       let serialized: string;
       if (Array.isArray(v)) {
         serialized = serializeArray(v);
@@ -230,6 +104,9 @@ export const objectToQueryParams = (o: Record<string, any> = {}) =>
         if (isArrayLike) {
           const ordered = keys
             .map(Number)
+            // `.map(Number)` đã tạo mảng mới nên sort tại chỗ không đụng dữ
+            // liệu gốc; `toSorted` chưa có trong lib TS/Hermes của dự án.
+            // eslint-disable-next-line unicorn/no-array-sort
             .sort((a, b) => a - b)
             .map(idx => (v as any)[idx]);
           serialized = serializeArray(ordered);
@@ -314,8 +191,3 @@ export function mapKakaoAddress(doc: KakaoDocument): SearchAddressItem {
     detail: doc,
   };
 }
-
-export const formatTransactionPoint = (item: IPointPayHistory) => {
-  const sign = item?.transactionDirection == 'CREDIT' ? '+' : '-';
-  return `${sign}${formatCurrency(item?.amount)}P`;
-};

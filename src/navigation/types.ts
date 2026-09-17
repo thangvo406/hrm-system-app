@@ -1,11 +1,6 @@
 import type { AppStacks, Paths } from '@navigation/paths';
-import type { BankInformationOrigin } from '@hooks/useBankInformation';
-import type { IBankOption } from '@hooks/useWithdrawal';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { StackScreenProps } from '@react-navigation/stack';
-import { IQRCodeViewerData, TNotificationItem } from '@type';
-import { IStoreItem } from '@type/store';
-import type { IManualTransfer, ITransactionDetail } from '@type/payment';
 
 export type RootScreenProps<
   S extends keyof RootStackParamList = keyof RootStackParamList,
@@ -14,132 +9,23 @@ export type RootScreenProps<
 export type TabScreenProps<S extends keyof TabParamList = keyof TabParamList> =
   BottomTabScreenProps<TabParamList, S>;
 
-export type TransactionResultStatus = 'FAILED' | 'PENDING' | 'SUCCESS';
-
 export type TabParamList = {
-  [Paths.PaymentOffline]: { isTab?: boolean } | undefined;
-  [Paths.Home]: undefined;
-  [Paths.QRCodeViewer]: { isTab?: boolean } | undefined;
   [Paths.Carts]: undefined;
+  [Paths.Home]: undefined;
+  [Paths.PaymentOffline]: { isTab?: boolean } | undefined;
   [Paths.Profile]: undefined;
+  [Paths.QRCodeViewer]: { isTab?: boolean } | undefined;
 };
 
 export type RootStackParamList = {
-  [AppStacks.Auth]: undefined;
   [AppStacks.App]: undefined;
+  [AppStacks.Auth]: undefined;
   [Paths.AppTabs]: undefined;
-  [Paths.AcademicVerificationFinish]:
-    | { type: 'success' | 'failed' }
-    | undefined;
-  [Paths.AnnouncementDetail]:
-    | { id: number; notification?: TNotificationItem; hideBtnNotify?: boolean }
-    | undefined;
-  [Paths.Announcements]: undefined;
-  [Paths.Authorization]: { isLogin: boolean } | undefined;
-  [Paths.BankAccountManage]: undefined;
-  [Paths.BankInformation]:
-    | {
-        bankInfo?: IManualTransfer;
-        goFrom?: BankInformationOrigin;
-      }
-    | undefined;
-  [Paths.SchoolSelection]: undefined;
-  [Paths.CapitalWithdrawal]: undefined;
-  [Paths.CapitalWithdrawalResult]:
-    | {
-        accountHolder?: string;
-        accountNumber?: string;
-        amount: number;
-        applicantName?: string;
-        applicationId?: string;
-        bankInfo?: {
-          accountHolder?: string;
-          accountNumber?: string;
-          bank?: IBankOption;
-        };
-        bankName?: string;
-        currentUnitCount?: number;
-        expectedCompletionAt?: number | string;
-        memberId?: string;
-        requestedAt: number | string;
-        status?: TransactionResultStatus;
-        totalUnitCountAfter?: number;
-        unitCount: number;
-        verifyCode?: string;
-      }
-    | undefined;
-  [Paths.CancellationOrder]:
-    | {
-        itemsSummary?: string;
-        orderId?: number;
-        orderNumber?: string;
-        storeName?: string;
-        totalAmount?: number;
-      }
-    | undefined;
+  [Paths.Authorization]: undefined;
   [Paths.Carts]: undefined;
-  [Paths.Contribution]: undefined;
-  [Paths.ContributionInput]: undefined;
-  [Paths.Example]: undefined;
-  [Paths.ForgotPass]: undefined;
   [Paths.Home]: undefined;
-  [Paths.InputAddress]: undefined;
-  [Paths.Notifications]: undefined;
-  [Paths.OrderCompleted]:
-    | {
-        data?: unknown;
-        dataOrder?: { deliveryMethod?: string; paymentMethod?: string };
-        status?: 'pending' | 'success';
-      }
-    | undefined;
-  [Paths.OrderShipping]:
-    | {
-        addressOrderRecent?: unknown;
-        data?: unknown;
-      }
-    | undefined;
-  [Paths.Orders]: undefined;
-  [Paths.TransactionDetail]: { data?: ITransactionDetail } | undefined;
-  [Paths.TransactionResult]:
-    | {
-        amount: number;
-        errorCode?: string;
-        paymentMethod: string;
-        requestedAt: number | string;
-        status: TransactionResultStatus;
-      }
-    | undefined;
-  [Paths.ContributionHistory]: undefined;
-  [Paths.PayPointHistories]: undefined;
-  [Paths.PointDashboard]: undefined;
-  [Paths.PointExpiring]: undefined;
-  [Paths.Payment]: undefined;
-  [Paths.MealTickets]: undefined;
   [Paths.PaymentOffline]: { isTab?: boolean } | undefined;
-  [Paths.CartDetail]:
-    | {
-        address?: unknown;
-        cartId?: number;
-        data?: unknown;
-        isShowConfirmPayment?: boolean;
-        shipping?: string;
-      }
-    | undefined;
-  [Paths.QRCodeViewer]:
-    | { data?: IQRCodeViewerData; durationSeconds?: number; isTab?: boolean }
-    | undefined;
-  [Paths.RegisterCompleted]: { goFrom: 'forgot_pass' } | undefined;
-  [Paths.ProductDetail]: { id: number; storeId: number } | undefined;
-  [Paths.Products]: { data: IStoreItem } | undefined;
   [Paths.Profile]: undefined;
-  [Paths.Withdrawal]: undefined;
-  [Paths.AccountManagement]: undefined;
+  [Paths.QRCodeViewer]: { isTab?: boolean } | undefined;
   [Paths.Startup]: undefined;
-  [Paths.Stores]: undefined;
-  [Paths.Survey]: undefined;
-  [Paths.SurveyDetail]: { id: number } | undefined;
-  [Paths.TopUp]: undefined;
-  [Paths.UpdatePass]: undefined;
-  [Paths.Vouchers]: undefined;
-  [Paths.Welcome]: undefined;
 };

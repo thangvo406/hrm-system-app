@@ -20,22 +20,6 @@ const AUTH_SCREENS: ScreenDef[] = [
     component: Screens.Authorization as ComponentType<unknown>,
     name: Paths.Authorization,
   },
-  {
-    component: Screens.SchoolSelection as ComponentType<unknown>,
-    name: Paths.SchoolSelection,
-  },
-  {
-    component: Screens.ForgotPass as ComponentType<unknown>,
-    name: Paths.ForgotPass,
-  },
-  {
-    component: Screens.RegisterCompleted as ComponentType<unknown>,
-    name: Paths.RegisterCompleted,
-  },
-  {
-    component: Screens.AcademicVerificationFinish as ComponentType<unknown>,
-    name: Paths.AcademicVerificationFinish,
-  },
 ];
 
 export function AuthStack() {
@@ -60,10 +44,12 @@ export function AuthStack() {
 
 const AppNavigator = createStackNavigator();
 
+// AppTabs không có component cùng tên trong @screens (nó là navigator), nên lọc
+// theo những key thực sự được export ra màn hình.
 const APP_SCREENS: ScreenDef[] = (Object.keys(Paths) as (keyof typeof Paths)[])
-  .filter(key => !AUTH_PATHS.has(Paths[key]))
+  .filter(key => !AUTH_PATHS.has(Paths[key]) && key in Screens)
   .map(key => ({
-    component: Screens[key] as ComponentType<unknown>,
+    component: Screens[key as keyof typeof Screens] as ComponentType<unknown>,
     name: Paths[key],
   }));
 

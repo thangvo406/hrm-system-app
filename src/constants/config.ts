@@ -1,4 +1,4 @@
-import { RegisterMembershipStep, AuthStep, PointTagStyle } from '@type';
+import { RegisterMembershipStep, AuthStep } from '@type';
 import { Environment } from './environment';
 
 export const initialLoginForm = {
@@ -31,39 +31,6 @@ export const EMPTY_VALUE = '-';
 export const COLORS_POINT_AMOUNT: Record<string, string | undefined> = {
   DEBIT: '#E14B4B',
   CREDIT: '#2DB34A',
-};
-
-export const POINT_TAG_STYLE: Record<string, PointTagStyle | undefined> = {
-  POINT_EXPIRE: {
-    background: '#FBE0E0',
-    color: '#D9534F',
-    title: 'pay_point.tags.point_expired',
-  },
-  CHARGE_BONUS_POINT: {
-    background: '#DFF3E1',
-    color: '#2DB34A',
-    title: 'pay_point.tags.point_accrue',
-  },
-  REFUND: {
-    background: '#DFF3E1',
-    color: '#2DB34A',
-    title: 'pay_point.tags.point_accrue',
-  },
-  POINT_USE: {
-    background: '#ECECEC',
-    color: '#6B6B6B',
-    title: 'pay_point.tags.point_use',
-  },
-  POINT_EARN: {
-    background: '#DFF3E1',
-    color: '#2DB34A',
-    title: 'pay_point.tags.point_accrue',
-  },
-  POINT_GRANT: {
-    background: '#DFF3E1',
-    color: '#2DB34A',
-    title: 'pay_point.tags.point_accrue',
-  },
 };
 
 export const SIGN_PREFIX_TRANSACTION = {
@@ -365,6 +332,7 @@ export const NEED_CONTRIBUTION_KEY = 'NEED_CONTRIBUTION_KEY' as const;
 export const INIT_SCREEN_START_UP_KEY = 'INIT_SCREEN_START_UP_KEY' as const;
 export const CODE_PUSH_LAST_RESTART_HASH_KEY =
   'CODE_PUSH_LAST_RESTART_HASH_KEY' as const;
+export const REMEMBERED_EMAIL_KEY = 'REMEMBERED_EMAIL_KEY' as const;
 
 export enum PaymentTypes {
   BALANCE = 'BALANCE',

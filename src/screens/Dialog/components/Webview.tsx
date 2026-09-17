@@ -22,13 +22,16 @@ import {
   Platform,
 } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-// import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 import type {
   ShouldStartLoadRequest,
   WebViewNavigation,
 } from 'react-native-webview/lib/WebViewTypes';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+// Hai handler này còn là stub (chưa nối hành vi), để ở module scope cho khỏi
+// tạo lại mỗi lần render.
+const onReload = () => {};
+const onHandleMessage = () => {};
 
 function WebViewScreen(props: any) {
   //   const {
@@ -59,7 +62,6 @@ function WebViewScreen(props: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [webTitle, setWebTitle] = useState('');
   const { t } = useTranslation();
-  const inssets = useSafeAreaInsets();
   const webViewRef = useRef(null);
   const cookieScript = cookies
     ? `
@@ -79,10 +81,6 @@ function WebViewScreen(props: any) {
   const onError = () => {
     setIsLoading(false);
   };
-  const onReload = event => {};
-  const onHandleMessage = event => {
-    // console.log('onHandleMessage', event);
-  };
 
   // Chặn các URL không phải http(s) trước khi WebView cố load. Đó là các
   // scheme chuyển sang app khác: `intent://...#Intent;...;package=...` (xác thực
@@ -99,8 +97,8 @@ function WebViewScreen(props: any) {
     ) {
       return true;
     }
-    console.log('requestUrl', requestUrl);
-    if (requestUrl.startsWith('coop://')) {
+    console.warn('requestUrl', requestUrl);
+    if (requestUrl.startsWith('hrm://')) {
       return true;
     }
     if (Platform.OS === 'android') {
@@ -133,7 +131,6 @@ function WebViewScreen(props: any) {
         title={title || webTitle}
         usePaddingTop={false}
         onPressBack={onRequestClose}
-        hideNotify
       />
       {!isLoading ? undefined : (
         <Animated.View

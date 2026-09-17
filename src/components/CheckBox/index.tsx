@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
 
 import Image from '@components/Image';
 import { ScaleSize } from '@kits/core';
@@ -15,8 +15,11 @@ const TEXT_COLOR = '#1A1A1A';
 const CHECK_COLOR = '#FFFFFF';
 
 type CheckBoxProps = {
+  /** Fill/border colour when selected. Defaults to the app's primary green. */
+  readonly activeColor?: string;
   readonly disabled?: boolean;
   readonly label?: string;
+  readonly labelStyle?: StyleProp<TextStyle>;
   readonly onPress?: () => void;
   readonly rightComponent?: ReactNode;
   readonly rightLabel?: string;
@@ -26,8 +29,10 @@ type CheckBoxProps = {
 };
 
 function CheckBox({
+  activeColor = PRIMARY_COLOR,
   disabled,
   label,
+  labelStyle,
   onPress,
   rightLabel,
   selected,
@@ -60,8 +65,8 @@ function CheckBox({
           style={[
             styles.box,
             {
-              backgroundColor: selected ? PRIMARY_COLOR : 'transparent',
-              borderColor: selected ? PRIMARY_COLOR : UNSELECTED_COLOR,
+              backgroundColor: selected ? activeColor : 'transparent',
+              borderColor: selected ? activeColor : UNSELECTED_COLOR,
             },
           ]}
         >
@@ -76,7 +81,7 @@ function CheckBox({
           ) : undefined}
         </View>
         {label === undefined ? undefined : (
-          <Text style={styles.label}>{label}</Text>
+          <Text style={[styles.label, labelStyle]}>{label}</Text>
         )}
       </View>
 

@@ -1,12 +1,12 @@
 import { NativeModules, Platform } from 'react-native';
 
-type CoopNativeModuleType = {
+type HrmNativeModuleType = {
   readonly hideBottomNavigationBar: () => Promise<boolean>;
   readonly openIntentUrl: (url: string) => Promise<boolean>;
   readonly showBottomNavigationBar: () => Promise<boolean>;
 };
 
-const NOOP_MODULE: CoopNativeModuleType = {
+const NOOP_MODULE: HrmNativeModuleType = {
   hideBottomNavigationBar: () => Promise.resolve(false),
   openIntentUrl: () => Promise.resolve(false),
   showBottomNavigationBar: () => Promise.resolve(false),
@@ -15,17 +15,17 @@ const NOOP_MODULE: CoopNativeModuleType = {
 // Chỉ Android có native module này; iOS không có system navigation bar.
 const nativeModule =
   Platform.OS === 'android'
-    ? (NativeModules.CoopNativeModule as CoopNativeModuleType | undefined)
+    ? (NativeModules.HrmNativeModule as HrmNativeModuleType | undefined)
     : undefined;
 
-const coopNativeModule = nativeModule ?? NOOP_MODULE;
+const hrmNativeModule = nativeModule ?? NOOP_MODULE;
 
 /**
  * Ẩn thanh navigation bar hệ thống Android (back/home/recent) ở runtime.
  * No-op trên iOS. Trả về `true` nếu thao tác thành công.
  */
 function hideBottomNavigationBar(): Promise<boolean> {
-  return coopNativeModule.hideBottomNavigationBar();
+  return hrmNativeModule.hideBottomNavigationBar();
 }
 
 /**
@@ -37,14 +37,14 @@ function hideBottomNavigationBar(): Promise<boolean> {
  * về `true` nếu đã mở được app đích hoặc màn hình cài đặt (CH Play) tương ứng.
  */
 function openIntentUrl(url: string): Promise<boolean> {
-  return coopNativeModule.openIntentUrl(url);
+  return hrmNativeModule.openIntentUrl(url);
 }
 
 /**
  * Hiện lại thanh navigation bar hệ thống Android. No-op trên iOS.
  */
 function showBottomNavigationBar(): Promise<boolean> {
-  return coopNativeModule.showBottomNavigationBar();
+  return hrmNativeModule.showBottomNavigationBar();
 }
 
 const AppNativeModules = {

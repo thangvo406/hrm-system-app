@@ -4,9 +4,12 @@ import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 const ILLUSTRATION_SIZE = ScaleSize(136);
+
+// Stub: chưa nối hành vi mở store, để ngoài component cho khỏi tạo lại mỗi render.
+const onUpdate = () => {};
 
 type Properties = {
   readonly desc?: string;
@@ -23,8 +26,6 @@ type Properties = {
  */
 function ForceUpdateApp({ desc }: Properties) {
   const { t } = useTranslation();
-
-  const onUpdate = () => {};
 
   return (
     <View style={styles.container} testID="force-update-dialog">

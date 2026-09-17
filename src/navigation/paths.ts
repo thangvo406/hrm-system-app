@@ -1,52 +1,12 @@
 export enum Paths {
-  AnnouncementDetail = 'announcement_detail',
   AppTabs = 'app_tabs',
-  Announcements = 'announcements',
   Authorization = 'authorization',
-  BankAccountManage = 'bank_account_manage',
-  BankInformation = 'bank_information',
-  SchoolSelection = 'school_selection',
-  CapitalWithdrawal = 'capital_withdrawal',
-  CapitalWithdrawalResult = 'capital_withdrawal_result',
-  CancellationOrder = 'cancellation_order',
   Carts = 'carts',
-  Contribution = 'contribution',
-  ContributionInput = 'contribution_input',
-  Example = 'example',
-  ForgotPass = 'forgot_pass',
   Home = 'home',
-  InputAddress = 'input_address',
-  Notifications = 'notifications',
-  OrderCompleted = 'order_completed',
-  OrderShipping = 'order_shipping',
-  AcademicVerificationFinish = 'academic_verify_finish',
-  Orders = 'orders',
-  OrderHistoryDetail = 'order_history_detail',
-  TransactionDetail = 'transaction_detail',
-  TransactionResult = 'transaction_result',
-  ContributionHistory = 'contribution_history',
-  PayPointHistories = 'pay_point_histories',
-  PointDashboard = 'point_dashboard',
-  PointExpiring = 'point_expiring',
-  Payment = 'payment',
   PaymentOffline = 'payment_offline',
-  CartDetail = 'cart_detail',
-  QRCodeViewer = 'qr_code_viewer',
-  RegisterCompleted = 'register_completed',
-  ProductDetail = 'product_detail',
-  Products = 'products',
   Profile = 'profile',
-  Withdrawal = 'withdrawal',
-  AccountManagement = 'account_management',
+  QRCodeViewer = 'qr_code_viewer',
   Startup = 'startup',
-  Stores = 'stores',
-  MealTickets = 'MealTickets',
-  Survey = 'survey',
-  SurveyDetail = 'survey_detail',
-  TopUp = 'top_up',
-  UpdatePass = 'update_pass',
-  Vouchers = 'vouchers',
-  Welcome = 'welcome',
 }
 
 export enum AppStacks {
@@ -54,13 +14,6 @@ export enum AppStacks {
   App = 'App',
 }
 
-export const SCREEN_IGNORE_SWIPE_LEFT = [Paths.OrderCompleted];
+export const SCREEN_IGNORE_SWIPE_LEFT: Paths[] = [];
 
-export const AUTH_PATHS = new Set<string>([
-  Paths.AppTabs,
-  Paths.Welcome,
-  Paths.Authorization,
-  Paths.SchoolSelection,
-  Paths.ForgotPass,
-  Paths.AcademicVerificationFinish,
-]);
+export const AUTH_PATHS = new Set<string>([Paths.AppTabs, Paths.Authorization]);

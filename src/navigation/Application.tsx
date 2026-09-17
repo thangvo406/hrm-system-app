@@ -1,12 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { RootStackParamList } from '@navigation/types';
 
-import {
-  AppStacks,
-  AUTH_PATHS,
-  Paths,
-  SCREEN_IGNORE_SWIPE_LEFT,
-} from '@navigation/paths';
+import { AppStacks, Paths, SCREEN_IGNORE_SWIPE_LEFT } from '@navigation/paths';
 import {
   NavigationContainer,
   useNavigationContainerRef,
@@ -62,7 +57,6 @@ const IS_PAN_RESPONDER_ENABLED = true;
 // ]);
 
 const handleNavigationStateChange = () => {
-  console.log('currentRoute', AppNavigator.getCurrentRoute());
   // const currentName = AppNavigator.getCurrentRoute()?.name ?? '';
   // if (HIDDEN_CART_PATHS.has(currentName)) {
   //   Globals.cartBtnRef?.hide?.();
@@ -83,17 +77,9 @@ function ApplicationNavigator() {
   const handleAppStateChange = (nextAppState: string) => {
     if (nextAppState === 'active') {
       dispatch(getAppConfigRequest());
-      const url = deepLinkGate.consumePending();
-      if (url) {
-        const data = deepLinkGate.getPathFromUrl(url);
-        const { screen, ...params } = data || {};
-        if (screen?.toLowerCase?.() == 'vouchers') {
-          const currentRoute = AppNavigator.getCurrentRoute().name;
-          if (!AUTH_PATHS.has(currentRoute)) {
-            AppNavigator.navigate(Paths.Vouchers);
-          }
-        }
-      }
+      // Deep link đang chờ được nuốt ở đây để không kẹt lại cho lần resume sau;
+      // việc điều hướng theo từng màn sẽ nối lại khi có nghiệp vụ HRM.
+      deepLinkGate.consumePending();
     }
   };
 
@@ -119,9 +105,12 @@ function ApplicationNavigator() {
     };
   }, []);
 
+  // Swipe gesture đang TẮT: `panHandlers` bị comment ở <View> cuối file, nên
+  // biến này chưa được dùng. Giữ nguyên khối để bật lại được.
   // PanResponder callbacks are invoked by the gesture system, not during render.
   // The `react-hooks/refs` rule cannot see across PanResponder.create's boundary,
   // so we disable it for the standard React Native PanResponder-with-useRef pattern.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
@@ -234,9 +223,9 @@ function ApplicationNavigator() {
       },
     }),
   ).current;
-  // coop://Authorization
+  // hrm://Authorization
   const linking = {
-    prefixes: ['coop://', 'https://app.coop.com'],
+    prefixes: ['hrm://', 'https://app.coop.com'],
     config: {
       screens: {
         [AppStacks.Auth]: {
@@ -254,7 +243,7 @@ function ApplicationNavigator() {
       }
       return undefined;
     },
-    subscribe: (_listener: (_url: string) => void) => {
+    subscribe: () => {
       const subscription = Linking.addEventListener('url', ({ url }) => {
         deepLinkGate.setPending(url.toLowerCase());
       });

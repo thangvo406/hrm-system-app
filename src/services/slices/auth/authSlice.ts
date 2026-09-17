@@ -6,7 +6,6 @@ import type {
   IRequestCreateLinkVerifyInfoUser,
   IRequestGetUniversities,
   IRequestLogin,
-  IRequestLoginSocial,
   IRequestRegisterUser,
   IRequestSendOTP,
   IRequestCreateLinkVerifyForgotPass,
@@ -64,12 +63,6 @@ const authSlice = createSlice({
     },
     refreshTokenRequest: {
       prepare: (payload?: any) => ({ payload }),
-      reducer: () => {},
-    },
-    // Triggers the saga; carries the social-login token + provider. Shared
-    // across Google, Kakao, and Naver — the saga dispatches the same API.
-    loginSocialRequest: {
-      prepare: (payload: IRequestLoginSocial) => ({ payload }),
       reducer: () => {},
     },
     // Step 1 of multi-step registration.
@@ -174,7 +167,6 @@ export const {
   createLinkVerifyUserRequest,
   getUniversitiesRequest,
   loginRequest,
-  loginSocialRequest,
   logout,
   logoutSuccess,
   sendOtpVerifyMembershipRequest,

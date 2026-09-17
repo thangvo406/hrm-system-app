@@ -47,6 +47,8 @@ const getDownloadTimeoutMs = (
 // AsyncStorage), nếu nó treo thì phase đứng ở 'checking' và app trắng màn hình
 // vĩnh viễn. Watchdog bảo đảm luôn vào được app. Được clear ngay khi bắt đầu
 // download vì lúc đó timeout theo packageSize đã lo phần còn lại.
+// Chưa nối vào luồng — giữ lại cùng ghi chú thiết kế ở trên để bật khi cần.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const STARTUP_WATCHDOG_MS = 15_000;
 
 /**

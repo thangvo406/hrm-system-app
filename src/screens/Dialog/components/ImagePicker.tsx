@@ -1,5 +1,5 @@
 import { ScaleSize } from '@kits/core';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Image } from '@components';
@@ -108,7 +108,7 @@ function ImagePickerPopup(props: any) {
       >
         <Text style={styles.title}>{t('profile.image_picker.title')}</Text>
       </View>
-      {languages.map(renderItem)}
+      {languages.map((item, index) => renderItem(item, index))}
     </TouchableOpacity>
   );
 }

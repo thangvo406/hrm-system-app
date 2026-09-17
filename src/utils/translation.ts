@@ -3,6 +3,7 @@ import type { Language } from '@hooks/language/schema';
 import { SupportedLanguages } from '@hooks/language/schema';
 import en from '@translations/en-EN.json';
 import ko from '@translations/ko-KR.json';
+import vi from '@translations/vi-VN.json';
 
 const DEFAULT_NAMESPACE = 'myapp';
 const NAMESPACE_SEPARATOR = ':';
@@ -11,6 +12,7 @@ const KEY_SEPARATOR = '.';
 const RESOURCES: Record<Language, unknown> = {
   [SupportedLanguages.EN_EN]: en,
   [SupportedLanguages.KO_KR]: ko,
+  [SupportedLanguages.VI_VN]: vi,
 };
 
 const resolvePath = (source: unknown, path: readonly string[]): unknown => {
@@ -37,17 +39,10 @@ export const hasTranslationKey = (key: string): boolean => {
   const namespace =
     separatorIndex === -1 ? DEFAULT_NAMESPACE : key.slice(0, separatorIndex);
   const path = key.slice(separatorIndex + 1).split(KEY_SEPARATOR);
-  const valid1 =
-    typeof resolvePath(RESOURCES[SupportedLanguages.KO_KR], [
-      namespace,
-      ...path,
-    ]) === 'string';
-  const valid2 =
-    typeof resolvePath(RESOURCES[SupportedLanguages.EN_EN], [
-      namespace,
-      ...path,
-    ]) === 'string';
-  return valid1 && valid2;
+  // A key only counts as present when every supported locale translates it.
+  return Object.values(RESOURCES).every(
+    resource => typeof resolvePath(resource, [namespace, ...path]) === 'string',
+  );
 };
 
 /** Shorthand for the Korean resource (`ko-KR.json`). */

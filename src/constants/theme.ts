@@ -52,6 +52,12 @@ export const Colors = {
   red03: '#D9534F',
   red04: '#8F5757',
   red05: '#BE8686',
+  navy01: '#0A1E45',
+  navy02: '#12295C',
+  navy03: '#1B3E7D',
+  blue01: '#1D4ED8',
+  blue02: '#2563EB',
+  blue03: '#EBF2FD',
 } as const;
 
 export const Fonts = {} as const;

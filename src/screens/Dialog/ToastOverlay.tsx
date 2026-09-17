@@ -56,7 +56,9 @@ function ToastOverlay({ onDismiss, options, zIndex }: ToastOverlayProps) {
   }));
 
   const verticalOffset =
-    position === 'top' ? insets.top + TOAST_BOTTOM_OFFSET : insets.bottom + TOAST_BOTTOM_OFFSET;
+    position === 'top'
+      ? insets.top + TOAST_BOTTOM_OFFSET
+      : insets.bottom + TOAST_BOTTOM_OFFSET;
   const verticalStyle =
     position === 'top' ? { top: verticalOffset } : { bottom: verticalOffset };
   const accentColor = variantAccent[variant];

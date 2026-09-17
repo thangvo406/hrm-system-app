@@ -5,9 +5,9 @@ import fs from 'react-native-fs';
 // const fs = RNFetchBlob.fs;
 // const docPath = fs.dirs.DocumentDir;
 const docPath = fs.DocumentDirectoryPath;
-const rootPath = docPath + '/coop/';
+const rootPath = docPath + '/hrm_system/';
 const getPathFile = (path: string) => {
-  return rootPath + `${path}`;
+  return rootPath + path;
 };
 
 const destination = getPathFile('log_app.txt');
@@ -21,12 +21,12 @@ const checkExistPath = (path: string) => {
 
 const clearFolderCache = () => {
   fs.unlink(rootPath)
-    .then(res => {
-      // alert("clear success: "+ JSON.stringify(res))
+    .then(() => {
       console.warn('clear folder cache success');
     })
-    .catch(error => {
-      console.warn('clear folder cache failed: ' + error?.message);
+    .catch((error: unknown) => {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn('clear folder cache failed: ' + message);
     });
 };
 
@@ -34,7 +34,7 @@ const copyFile = async (sourcePath: string, destinationPath: string) => {
   return new Promise((resolve, reject) => {
     fs.copyFile(sourcePath, destinationPath)
       .then(() => resolve({}))
-      .catch(() => reject({}));
+      .catch(() => reject(new Error(`copyFile failed: ${sourcePath}`)));
   });
 };
 const checkExitsAndCreateFolderApp = () => {
@@ -42,7 +42,7 @@ const checkExitsAndCreateFolderApp = () => {
     fs.exists(rootPath)
       .then(dirExists => {
         if (!dirExists) {
-          fs.mkdir(rootPath).then(resolve);
+          void fs.mkdir(rootPath).then(resolve);
         } else {
           resolve({});
         }
@@ -50,27 +50,32 @@ const checkExitsAndCreateFolderApp = () => {
       .catch(resolve);
   });
 };
-const checkExistAndCreateLog = () => {
-  return new Promise(async resolve => {
-    try {
-      await checkExitsAndCreateFolderApp();
-      const exists = await fs.exists(destination);
-      if (!exists) {
-        await fs.writeFile(destination, 'create file', 'utf8');
-        resolve({});
-      } else {
-        resolve({});
-      }
-    } catch {
-      resolve({});
+// Luôn resolve: không tạo được file log thì app vẫn phải chạy bình thường.
+const checkExistAndCreateLog = async () => {
+  try {
+    await checkExitsAndCreateFolderApp();
+    const exists = await fs.exists(destination);
+    if (!exists) {
+      await fs.writeFile(destination, 'create file', 'utf8');
     }
-  });
+  } catch {
+    // bỏ qua
+  }
+  return {};
 };
+
+// Nhiều appendLog gọi gần như cùng lúc (vd ngay sau nhau trong cùng một hàm
+// async) có thể đua nhau ghi file — mỗi lần gọi độc lập tự đọc/ghi native, nên
+// lần ghi sau có thể đè mất lần ghi trước nếu không serialize. Xếp hàng qua
+// một promise chain để đảm bảo luôn ghi tuần tự, không lần nào bị mất.
+let writeQueue: Promise<unknown> = Promise.resolve();
 
 const appendLog = (type: string, content: string) => {
   const now = dayjs().toString();
   const message = `\n${now}  ${type}  ${content}`;
-  fs.appendFile(destination, message, 'utf8').then(() => null);
+  writeQueue = writeQueue
+    .then(() => fs.appendFile(destination, message, 'utf8'))
+    .catch(() => undefined);
 };
 
 const readFile = (filePath: string) => {

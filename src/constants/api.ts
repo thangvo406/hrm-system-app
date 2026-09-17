@@ -4,7 +4,6 @@ export const EndPoints = {
   },
   AUTH: {
     login: 'auth/login',
-    loginSocial: (provider: string) => `auth/social/${provider}/login`,
     register: 'auth/register',
     sendOTP: 'auth/register/phone/send-otp',
     verifyOTP: 'auth/register/phone/confirm-otp',

@@ -11,8 +11,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { DeviceEventEmitter } from 'react-native';
 import { Globals } from '@utils';
 
-// coop://AcademicVerifySuccess?screen=AcademicVerifySuccess&school=KUPI University&department=Computer Engineering&type=Student
-// npx uri-scheme add coop --ios
+// hrm://AcademicVerifySuccess?screen=AcademicVerifySuccess&school=KUPI University&department=Computer Engineering&type=Student
+// npx uri-scheme add hrm --ios
 
 function navigateToPendingDeepLink(isAuthenticated: boolean) {
   const url = deepLinkGate.consumePending();
@@ -25,14 +25,6 @@ function navigateToPendingDeepLink(isAuthenticated: boolean) {
   const data = deepLinkGate.getPathFromUrl(url);
   if (!data) {
     handleNavigateScreen();
-    return;
-  }
-  const { screen, ...params } = data || {};
-  if (isAuthenticated && screen?.toLowerCase?.() == 'vouchers') {
-    AppNavigator.resetToNestedState(AppStacks.App, {
-      index: 1,
-      routes: [{ name: Paths.AppTabs }, { name: Paths.Vouchers }],
-    });
     return;
   }
   handleNavigateScreen();

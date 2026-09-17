@@ -4,15 +4,21 @@
  */
 
 import { readdirSync, writeFileSync } from 'node:fs';
-import { basename, extname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import { format, resolveConfig } from 'prettier';
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const ICONS_DIR = join(__dirname, '../src/assets/icons');
+// Ghi qua prettier để registry sinh ra luôn đạt `yarn lint:code-format`.
+const writeFormatted = async (filePath, source) => {
+  const options = await resolveConfig(filePath);
+  writeFileSync(filePath, await format(source, { ...options, filepath: filePath }));
+};
+
+const __dirname = import.meta.dirname;
+const ICONS_DIR = path.join(__dirname, '../src/assets/icons');
 
 const svgFiles = readdirSync(ICONS_DIR)
-  .filter(f => extname(f).toLowerCase() === '.svg')
-  .sort();
+  .filter(f => path.extname(f).toLowerCase() === '.svg')
+  .toSorted();
 
 if (svgFiles.length === 0) {
   console.warn('No SVG files found in', ICONS_DIR);
@@ -20,13 +26,13 @@ if (svgFiles.length === 0) {
 }
 
 const entries = svgFiles.map(file => ({
-  name: basename(file, '.svg'),
+  name: path.basename(file, '.svg'),
   file,
 }));
 
 // camelCase the name so it's a valid JS identifier and importable as component
 const toCamelCase = str =>
-  str.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+  str.replaceAll(/-([a-z])/g, (_, c) => c.toUpperCase());
 
 const importLines = entries.map(
   ({ name, file }) =>
@@ -49,6 +55,6 @@ export type IconName = keyof typeof icons;
 export default icons;
 `;
 
-writeFileSync(join(ICONS_DIR, 'index.ts'), content);
+await writeFormatted(path.join(ICONS_DIR, 'index.ts'), content);
 console.log('Updated src/assets/icons/index.ts');
 console.log(`Done — ${entries.length} icon(s): ${entries.map(e => e.name).join(', ')}`);

@@ -6,13 +6,11 @@ import type {
   IRequestSendOTP,
   IRequestSubmitForgotPass,
   IRequestVerifyOTP,
-  IRequestLoginSocial,
   IResponseRegisterVerifyOtp,
   IResponseRegisterSendOtp,
   IResponseUniversity,
   IRequestCreateLinkVerifyForgotPass,
   IResponseSubmitForgotPass,
-  IResponseLoginSocial,
   LogoutRequest,
   IResponseRefreshToken,
   IResponseRegisterUser,
@@ -24,7 +22,6 @@ import type {
   IRequestVerifyUserNewLogin,
   IResponseCreateLinkVerifyInfoUser,
 } from '@type/auth';
-import omit from 'lodash/omit';
 import { httpRequest } from '@services/common/httpRequest';
 import { EndPoints } from '@constants';
 import { ListApiResponse, SingleApiResponse } from '@type/common';
@@ -75,16 +72,6 @@ export const getUniversities = async (
   const response = await httpRequest.get<
     SingleApiResponse<ListApiResponse<IResponseUniversity[]>>
   >(EndPoints.AUTH.getUniversities(params), { loading: false });
-  return response.data;
-};
-
-export const loginSocial = async (
-  request: IRequestLoginSocial,
-): Promise<IResponseLoginSocial> => {
-  const _request = omit(request, ['provider']);
-  const response = await httpRequest.post<
-    SingleApiResponse<IResponseLoginSocial>
-  >(EndPoints.AUTH.loginSocial(request.provider), _request);
   return response.data;
 };
 

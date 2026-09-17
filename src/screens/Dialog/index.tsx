@@ -4,7 +4,6 @@ import BottomSheetOverlay from './BottomSheetOverlay';
 import DialogOverlay from './DialogOverlay';
 import { DIALOG_Z_INDEX } from './constants';
 import Loading from './components/Loading';
-import Menu from '@screens/Home/Menu';
 import { useDialogManager } from './Manager';
 import SnackbarOverlay from './SnackbarOverlay';
 import ToastOverlay from './ToastOverlay';
@@ -108,7 +107,6 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
       },
       closeBottomSheet: manager.closeBottomSheet,
       closeDialog: manager.closeDialog,
-      closeMenu: manager.closeMenu,
       hideLoading,
       // setWillShow: (willShow: boolean) => {
       //   willShowReference.current = willShow;
@@ -116,7 +114,6 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
       showBottomSheet: manager.showBottomSheet,
       showDialog: guardedShowDialog,
       showLoading,
-      showMenu: manager.showMenu,
       showSnackBar: guardedShowSnackBar,
       showToast: guardedShowToast,
     }),
@@ -128,9 +125,7 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
       manager.closeAll,
       manager.closeBottomSheet,
       manager.closeDialog,
-      manager.closeMenu,
       manager.showBottomSheet,
-      manager.showMenu,
       showLoading,
     ],
   );
@@ -145,11 +140,10 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
       () => {
         for (let cursor = manager.items.length - 1; cursor >= 0; cursor--) {
           const item = manager.items[cursor] as DialogItem | undefined;
-          if (item?.type === 'menu') {
-            manager.closeMenu();
-            return true;
-          }
-          if (item?.type === 'bottomSheet' && item.options.cancelable !== false) {
+          if (
+            item?.type === 'bottomSheet' &&
+            item.options.cancelable !== false
+          ) {
             manager.closeBottomSheet(item.id);
             return true;
           }
@@ -164,7 +158,7 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
     return () => {
       subscription.remove();
     };
-  }, [manager.closeBottomSheet, manager.closeDialog, manager.closeMenu, manager.items]);
+  }, [manager.closeBottomSheet, manager.closeDialog, manager.items]);
 
   if (manager.items.length === 0) {
     return undefined;
@@ -213,17 +207,6 @@ const Dialog = forwardRef<DialogHandle>((_props, reference) => {
                 manager.closeDialog(item.id);
               }}
               options={item.options}
-              zIndex={zIndex}
-            />
-          );
-        }
-        if (item.type === 'menu') {
-          return (
-            <Menu
-              key={item.id}
-              onRequestClose={() => {
-                manager.closeMenu();
-              }}
               zIndex={zIndex}
             />
           );

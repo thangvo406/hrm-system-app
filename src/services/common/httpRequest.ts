@@ -117,9 +117,9 @@ const request = async <T>(
         ...config,
         headers: {
           ...getDeviceHeader(),
-          ...((config.headers as
+          ...(config.headers as
             | Record<string, string | number | boolean>
-            | undefined) || {}),
+            | undefined),
         },
       });
       await dismissLoading();

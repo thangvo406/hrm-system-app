@@ -5,7 +5,7 @@
 #   ios/.env         source of truth for react-native-config's Config codegen
 #                    phase, which turns it into GeneratedDotEnv.m (the values
 #                    reachable from JS as Config.*)
-#   ios/tmp.xcconfig included by the Pods-CoopUse xcconfig, so $(APP_NAME),
+#   ios/tmp.xcconfig included by the Pods-HRMSystem xcconfig, so $(APP_NAME),
 #                    $(GOOGLE_IOS_CLIENT_ID), $(KAKAO_APP_KEY),
 #                    $(NAVER_URL_SCHEME), $(APP_IOS_ID)... resolve in
 #                    Info.plist and build settings
@@ -13,7 +13,7 @@
 # Both are generated, gitignored, and must never be edited by hand.
 #
 # Called from three places, all of which must agree:
-#   - the CoopUse scheme's build pre-action (Xcode builds) — runs before Xcode
+#   - the HRMSystem scheme's build pre-action (Xcode builds) — runs before Xcode
 #     resolves build settings, which is what lets Info.plist pick up changes
 #     within the same build
 #   - the "Config codegen" build phase of the react-native-config pod, wired up

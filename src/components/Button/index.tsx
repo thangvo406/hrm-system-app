@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   outlineGreen: {
-    borderWidth:1,
+    borderWidth: 1,
     borderColor: Colors.green02,
     borderRadius: ScaleSize(10),
   },

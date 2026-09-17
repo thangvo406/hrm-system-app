@@ -5,16 +5,22 @@
  */
 
 import { readdirSync, writeFileSync } from 'node:fs';
-import { basename, extname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import { format, resolveConfig } from 'prettier';
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const IMAGES_DIR = join(__dirname, '../src/assets/images');
+// Ghi qua prettier để registry sinh ra luôn đạt `yarn lint:code-format`.
+const writeFormatted = async (filePath, source) => {
+  const options = await resolveConfig(filePath);
+  writeFileSync(filePath, await format(source, { ...options, filepath: filePath }));
+};
+
+const __dirname = import.meta.dirname;
+const IMAGES_DIR = path.join(__dirname, '../src/assets/images');
 const IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);
 
 const imageFiles = readdirSync(IMAGES_DIR)
-  .filter(f => IMAGE_EXTS.has(extname(f).toLowerCase()))
-  .sort();
+  .filter(f => IMAGE_EXTS.has(path.extname(f).toLowerCase()))
+  .toSorted();
 
 if (imageFiles.length === 0) {
   console.warn('No image files found in', IMAGES_DIR);
@@ -22,7 +28,7 @@ if (imageFiles.length === 0) {
 }
 
 const entries = imageFiles.map(file => {
-  const name = basename(file, extname(file));
+  const name = path.basename(file, path.extname(file));
   return { name, file };
 });
 
@@ -40,7 +46,7 @@ export type ImageName = keyof typeof images;
 export default images;
 `;
 
-writeFileSync(join(IMAGES_DIR, 'index.ts'), indexContent);
+await writeFormatted(path.join(IMAGES_DIR, 'index.ts'), indexContent);
 console.log('Updated src/assets/images/index.ts');
 
 // --- generate names.ts ---
@@ -53,7 +59,7 @@ ${entries.map(({ name }) => `  ${name}: '${name}',`).join('\n')}
 export default imageNames;
 `;
 
-writeFileSync(join(IMAGES_DIR, 'names.ts'), namesContent);
+await writeFormatted(path.join(IMAGES_DIR, 'names.ts'), namesContent);
 console.log('Updated src/assets/images/names.ts');
 
 console.log(`Done — ${entries.length} image(s): ${entries.map(e => e.name).join(', ')}`);

@@ -54,17 +54,19 @@ export function findNearestDate(items: any[], fieldName: string) {
   if (items?.length == 1) {
     return items[0];
   }
-  return items?.reduce((nearest, item) => {
+  let nearest: any = {};
+  for (const item of items ?? []) {
     const date = fieldName ? item?.[fieldName] : item;
     const nearestDate = fieldName ? nearest?.[fieldName] : item;
-    // console.log('findNearestDate',date, fieldName);
-    if (!nearest?.[fieldName]) {
-      return item;
+    if (nearest?.[fieldName]) {
+      const currentDiff = Math.abs(dayjs(date).diff(today, 'day'));
+      const nearestDiff = Math.abs(dayjs(nearestDate).diff(today, 'day'));
+      nearest = currentDiff < nearestDiff ? item : nearest;
+    } else {
+      nearest = item;
     }
-    const currentDiff = Math.abs(dayjs(date).diff(today, 'day'));
-    const nearestDiff = Math.abs(dayjs(nearestDate).diff(today, 'day'));
-    return currentDiff < nearestDiff ? item : nearest;
-  }, {});
+  }
+  return nearest;
 }
 export function formatDateTime(d: any) {
   // const date = new Date(date);
@@ -118,15 +120,16 @@ export function getWeekDate(date: any) {
 
 export function getRangeDateByRange(selectedDates: any) {
   const dates = selectedDates;
-  const results: {
-    [key: string]: {
+  const results: Record<
+    string,
+    {
       color: string;
       customTextStyle: any;
       endingDay: boolean;
       startingDay: boolean;
       textColor: string;
-    };
-  } = {};
+    }
+  > = {};
   const today = dayjs(Globals.currentTime).format('YYYY-MM-DD');
   if (dates?.length > 0 && dates.length < 2) {
     const startDate = new Date(dates[0]);
@@ -173,12 +176,13 @@ export function getRangeDateByRange(selectedDates: any) {
   return results;
 }
 export function getSingleDate(_: any, selectedDates: any) {
-  const results = {};
-  results[dayjs(selectedDates).format('YYYY-MM-DD')] = {
-    startingDay: true,
-    endingDay: true,
-    textColor: Colors.primary,
-    color: Colors.green03,
+  const results = {
+    [dayjs(selectedDates).format('YYYY-MM-DD')]: {
+      startingDay: true,
+      endingDay: true,
+      textColor: Colors.primary,
+      color: Colors.green03,
+    },
   };
   return results;
 }

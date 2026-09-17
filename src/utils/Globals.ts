@@ -1,4 +1,3 @@
-import type { FloatingCartButtonRef } from '@navigation/FloatingCartButton';
 import type { RefObject } from 'react';
 
 export default class Globals {
@@ -7,7 +6,6 @@ export default class Globals {
   static hasUpdateDeviceId = false;
   static isAuthenticated = false;
   static isOneSignalInitialized = false;
-  static cartBtnRef: FloatingCartButtonRef | null | undefined;
   static isScrollingRef: RefObject<boolean> | undefined;
   static showingForceUpdate = false;
 }

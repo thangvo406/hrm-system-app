@@ -1,4 +1,9 @@
-import { check, request, RESULTS, type Permission } from 'react-native-permissions';
+import {
+  check,
+  request,
+  RESULTS,
+  type Permission,
+} from 'react-native-permissions';
 
 export {
   check,

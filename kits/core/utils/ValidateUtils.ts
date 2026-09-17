@@ -20,14 +20,20 @@ const getImageSource = (source: any, defaultSource?: any) => {
 };
 
 const mergeStyle = (style: any) => {
-  return isEmpty(style)
-    ? {}
-    : Array.isArray(style)
-      ? style.reduce((obj, item) => (obj = { ...obj, ...item }), {})
-      : style;
+  if (isEmpty(style)) {
+    return {};
+  }
+  if (!Array.isArray(style)) {
+    return style;
+  }
+  const merged = {};
+  for (const item of style) {
+    Object.assign(merged, item);
+  }
+  return merged;
 };
 const isPhoneNumber = (value: string) => {
-  const PHONE_REGEX = /^01[0-9]-?\d{3,4}-?\d{4}$/;
+  const PHONE_REGEX = /^01\d-?\d{3,4}-?\d{4}$/;
   return PHONE_REGEX.test(value);
 };
 const isNumber = (text: string) => {

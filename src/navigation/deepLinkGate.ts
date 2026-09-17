@@ -1,7 +1,7 @@
 import { CommonUtils } from '@utils';
 
 let pendingUrl: string | undefined;
-// const DEEP_LINK_PREFIXES = ['coop://', 'https://app.coop.com'];
+// const DEEP_LINK_PREFIXES = ['hrm://', 'https://app.coop.com'];
 
 export const deepLinkGate = {
   setPending: (url: string) => {

@@ -3,12 +3,13 @@ import 'intl-pluralrules';
 import type { Language } from '@hooks/language/schema';
 import type { Resource } from 'i18next';
 
-import { SupportedLanguages } from '@hooks/language/schema';
+import { languageSchema, SupportedLanguages } from '@hooks/language/schema';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import en from './en-EN.json';
 import ko from './ko-KR.json';
+import vi from './vi-VN.json';
 import { AppStorage } from '@services/common/storage';
 import { AppConstants } from '@constants';
 
@@ -17,17 +18,18 @@ export const defaultNS = 'myapp';
 export const resources = {
   'en-EN': en,
   'ko-KR': ko,
+  'vi-VN': vi,
 } as const satisfies Record<Language, unknown>;
 
 const savedLanguage =
   AppStorage.getString(AppConstants.APP_LANGUAGE_KEY) ||
-  SupportedLanguages.KO_KR;
+  SupportedLanguages.VI_VN;
 
 void i18n
   .use(initReactI18next)
   .init({
     defaultNS,
-    fallbackLng: SupportedLanguages.KO_KR,
+    fallbackLng: SupportedLanguages.VI_VN,
     lng: savedLanguage,
     resources,
   })
@@ -44,10 +46,11 @@ export const executeLanguageFallback = (
   lng: string,
   translations: Resource,
 ) => {
-  if (lng === (SupportedLanguages.EN_EN as string)) {
-    i18n.addResourceBundle(SupportedLanguages.EN_EN, defaultNS, translations);
-  } else if (lng === (SupportedLanguages.KO_KR as string)) {
-    i18n.addResourceBundle(SupportedLanguages.KO_KR, defaultNS, translations);
+  // Parsing through the schema keeps this working for every supported
+  // language without a branch per locale.
+  const parsed = languageSchema.safeParse(lng);
+  if (parsed.success) {
+    i18n.addResourceBundle(parsed.data, defaultNS, translations);
   }
 };
 

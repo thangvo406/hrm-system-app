@@ -88,8 +88,10 @@ function isDeviceLowPerf() {
   const models = model?.split(' ');
   let phoneName = -1;
   try {
-    phoneName = Number.parseInt(models?.[models.length - 1]);
-  } catch {}
+    phoneName = Number.parseInt(models?.at(-1) ?? '');
+  } catch {
+    // giữ phoneName = -1 khi model không parse được
+  }
   //ip 7 stop play animation
   if (phoneName > -1 && isIOS() && phoneName <= 8) {
     return true;
@@ -102,9 +104,11 @@ function isIPhone8() {
   const models = model?.split(' ');
   let phoneName = -1;
   try {
-    phoneName = Number.parseInt(models?.[models.length - 1]);
+    phoneName = Number.parseInt(models?.at(-1) ?? '');
     return phoneName <= 8;
-  } catch {}
+  } catch {
+    // model không parse được -> không phải iPhone 8
+  }
   return false;
 }
 

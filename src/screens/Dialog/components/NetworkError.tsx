@@ -9,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 
 const TITLE_COLOR = '#1A1A1A';
-const RETRY_COLOR = '#3478F6';
 const ILLUSTRATION_WIDTH = ScaleSize(160);
 const ILLUSTRATION_HEIGHT = ScaleSize(144);
 

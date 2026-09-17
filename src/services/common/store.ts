@@ -17,14 +17,8 @@ import { reactotronReduxEnhancer } from '../../reactotron.config';
 import { rootSaga } from './rootSaga';
 import { AppStorage } from './storage';
 import { accountReducer } from '@services/slices/account/accountSlice';
-import { accountManagementReducer } from '@services/slices/accountManagement/accountManagementSlice';
 import { appReducer } from '@services/slices/app/appSlice';
 import { authReducer } from '@services/slices/auth/authSlice';
-import { notificationsReducer } from '@services/slices/notifications/notificationsSlice';
-import { paymentReducer } from '@services/slices/payment/paymentSlice';
-import { productsReducer } from '@services/slices/products/productsSlice';
-import { storesReducer } from '@services/slices/stores/storesSlice';
-import { surveyReducer } from '@services/slices/survey/surveySlice';
 
 const reduxStorage: Storage = {
   getItem: key => Promise.resolve(AppStorage.getString(key) ?? undefined),
@@ -40,14 +34,8 @@ const reduxStorage: Storage = {
 
 const rootReducer = combineReducers({
   account: accountReducer,
-  accountManagement: accountManagementReducer,
   app: appReducer,
   auth: authReducer,
-  notifications: notificationsReducer,
-  payment: paymentReducer,
-  products: productsReducer,
-  stores: storesReducer,
-  survey: surveyReducer,
 });
 
 const persistConfig = {

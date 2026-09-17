@@ -96,7 +96,9 @@ function CarouselInner<T extends ItemWithId>(
     info => (
       <View
         style={
-          info.index < data.length - 1 ? { marginRight: itemSpacing } : undefined
+          info.index < data.length - 1
+            ? { marginRight: itemSpacing }
+            : undefined
         }
       >
         {renderItem(info)}

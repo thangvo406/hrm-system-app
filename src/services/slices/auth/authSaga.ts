@@ -5,7 +5,6 @@ import type {
   IRequestCreateLinkVerifyInfoUser,
   IRequestGetUniversities,
   IRequestLogin,
-  IRequestLoginSocial,
   IRequestSendOtpVerifyMembership,
   IRequestRegisterUser,
   IRequestSendOTP,
@@ -21,7 +20,6 @@ import {
   confirmMemberShipVerify,
   getUniversities,
   login,
-  loginSocial,
   sendOtpVerifyMembership,
   registerUser,
   selectSchool,
@@ -46,7 +44,6 @@ import {
   getUniversitiesRequest,
   getUniversitiesSuccess,
   loginRequest,
-  loginSocialRequest,
   logout,
   logoutSuccess,
   sendOtpVerifyMembershipRequest,
@@ -82,18 +79,6 @@ function* loginWorker(action: PayloadAction<IRequestLogin>) {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
     const response: IResponseLogin = yield call(login, request);
-    yield put(authSuccess(response));
-    onSuccess?.(response);
-  } catch (error: any) {
-    onFailure?.(error?.response?.data);
-    // yield put(authFailure(toErrorMessage(error)));
-  }
-}
-
-function* loginSocialWorker(action: PayloadAction<IRequestLoginSocial>) {
-  const { onFailure, onSuccess, ...request } = action.payload;
-  try {
-    const response: IResponseLogin = yield call(loginSocial, request);
     yield put(authSuccess(response));
     onSuccess?.(response);
   } catch (error: any) {
@@ -310,7 +295,6 @@ function* logoutWorker() {
 
 export function* authSaga() {
   yield takeLatest(loginRequest.type, loginWorker);
-  yield takeLatest(loginSocialRequest.type, loginSocialWorker);
   yield takeLatest(registerUserRequest.type, registerUserWorker);
   yield takeLatest(
     createLinkVerifyUserRequest.type,

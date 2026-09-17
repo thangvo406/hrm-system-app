@@ -2,7 +2,6 @@ import type {
   BottomSheetOptions,
   DialogItem,
   DialogOptions,
-  MenuOptions,
   SnackbarOptions,
   ToastOptions,
 } from './types';
@@ -11,7 +10,7 @@ import { useCallback, useState } from 'react';
 
 let counter = 0;
 const nextId = (
-  prefix: 'bottomSheet' | 'dialog' | 'menu' | 'snackbar' | 'toast',
+  prefix: 'bottomSheet' | 'dialog' | 'snackbar' | 'toast',
 ): string => {
   counter += 1;
   return `${prefix}_${Date.now()}_${counter}`;
@@ -21,11 +20,9 @@ export type DialogManager = {
   readonly closeAll: () => void;
   readonly closeBottomSheet: (id?: string) => void;
   readonly closeDialog: (id?: string) => void;
-  readonly closeMenu: () => void;
   readonly items: readonly DialogItem[];
   readonly showBottomSheet: (options: BottomSheetOptions) => string;
   readonly showDialog: (options: DialogOptions) => string;
-  readonly showMenu: (options?: MenuOptions) => string;
   readonly showSnackBar: (options: SnackbarOptions) => string;
   readonly showToast: (options: ToastOptions) => string;
 };
@@ -56,33 +53,16 @@ export function useDialogManager(): DialogManager {
     return id;
   }, []);
 
-  const showMenu = useCallback((options: MenuOptions = {}): string => {
-    const id = nextId('menu');
+  const showBottomSheet = useCallback((options: BottomSheetOptions): string => {
+    const id = nextId('bottomSheet');
     setItems(previous => [
-      // Only one menu can be open at a time — drop any existing menu first.
-      ...previous.filter(item => item.type !== 'menu'),
-      { id, options, type: 'menu' },
+      // Only one bottom sheet can be open at a time — drop any existing
+      // one first.
+      ...previous.filter(item => item.type !== 'bottomSheet'),
+      { id, options, type: 'bottomSheet' },
     ]);
     return id;
   }, []);
-
-  const closeMenu = useCallback((): void => {
-    setItems(previous => previous.filter(item => item.type !== 'menu'));
-  }, []);
-
-  const showBottomSheet = useCallback(
-    (options: BottomSheetOptions): string => {
-      const id = nextId('bottomSheet');
-      setItems(previous => [
-        // Only one bottom sheet can be open at a time — drop any existing
-        // one first, mirroring the menu behavior.
-        ...previous.filter(item => item.type !== 'bottomSheet'),
-        { id, options, type: 'bottomSheet' },
-      ]);
-      return id;
-    },
-    [],
-  );
 
   const closeBottomSheet = useCallback((id?: string): void => {
     setItems(previous => {
@@ -112,11 +92,9 @@ export function useDialogManager(): DialogManager {
     closeAll,
     closeBottomSheet,
     closeDialog,
-    closeMenu,
     items,
     showBottomSheet,
     showDialog,
-    showMenu,
     showSnackBar,
     showToast,
   };

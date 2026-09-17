@@ -15,7 +15,7 @@ const NOOP = (): void => undefined;
 
 type LoadingProps = {
   readonly onRequestClose?: () => void;
-  readonly style?: ViewStyle
+  readonly style?: ViewStyle;
 };
 
 /**
@@ -31,7 +31,7 @@ function Loading({ style = undefined, onRequestClose = NOOP }: LoadingProps) {
   // ignores it — the host controls the lifecycle via the loadingId reference.
   void onRequestClose;
   return (
-    <View style={[styles.container,style]} testID="loading-screen">
+    <View style={[styles.container, style]} testID="loading-screen">
       <SkypeIndicator
         animationDuration={SPINNER_ANIMATION_DURATION}
         color={SPINNER_COLOR}

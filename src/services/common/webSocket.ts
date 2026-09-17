@@ -28,32 +28,17 @@ class WebSocketService {
       // must pass a factory explicitly so the STOMP handshake completes.
       // webSocketFactory: () =>
       //   new WebSocket('wss://coop-mobile-dev.specominc.com/ws'),
-      debug: str => {
-        // console.log('[STOMP]', str);
-      },
     });
 
     this.client.onConnect = () => {
-      console.log('[STOMP] Connected');
+      console.warn('[STOMP] Connected');
       this.subscribe('/user/queue/notifications', message => {
-        console.log('notification:', JSON.parse(message.body));
+        console.warn('notification:', JSON.parse(message.body));
       });
     };
 
-    this.client.onStompError = frame => {
-      // console.error('[STOMP] Broker error:', frame.headers.message, frame.body);
-    };
-
-    this.client.onWebSocketError = error => {
-      // console.error('[STOMP] WebSocket error', error);
-    };
-
-    this.client.onWebSocketClose = () => {
-      // console.warn('[STOMP] WebSocket closed');
-    };
-
     this.client.onDisconnect = () => {
-      console.log('[STOMP] Disconnected');
+      console.warn('[STOMP] Disconnected');
     };
 
     this.client.activate();
@@ -61,7 +46,7 @@ class WebSocketService {
 
   subscribe(destination: string, callback: (message: IMessage) => void) {
     if (!this.client?.connected) {
-      console.log('Cannot subscribe. STOMP not connected.');
+      console.warn('Cannot subscribe. STOMP not connected.');
       return;
     }
 

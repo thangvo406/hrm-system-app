@@ -14,9 +14,7 @@ import {
   updateEnablePaymentCard,
 } from './appSlice';
 import { getErrorMessageApi } from '@utils/common';
-import { getTotalItemCartRequest } from '../account/accountSlice';
 import { Profile } from '@services/request/account';
-import { MEMBERSHIP_TYPE } from '@constants/config';
 import { logout as logoutRequest } from '../auth/authSlice';
 import axios from 'axios';
 import { AppConstants } from '@constants';
@@ -48,10 +46,7 @@ function checkRequireUpdateApp(versionApp: string) {
   const minVersions = versionApp.split('.').map((x: string) => +x);
   const currentVersions = currentVersion.split('.').map((x: string) => +x);
   if (minVersions?.length > 0) {
-    const length =
-      currentVersions.length > minVersions.length
-        ? currentVersions.length
-        : minVersions.length;
+    const length = Math.max(currentVersions.length, minVersions.length);
     for (let index = 0; index < length; index++) {
       if (minVersions[index] > currentVersions[index]) {
         return true;
@@ -94,6 +89,9 @@ function* incrementAsyncWorker(action: PayloadAction<number>) {
   yield put(incrementAsyncSuccess(action.payload));
 }
 
+// Đang parked: call site `yield checkNetworkTranslation()` trong
+// startupAppWorker vẫn đang comment. Giữ lại để bật khi cần tải i18n từ CDN.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function* checkNetworkTranslation() {
   try {
     const response = yield axios.get(
@@ -135,21 +133,13 @@ function* startupAppWorker(action: PayloadAction<AppCallback<boolean>>) {
     const accessToken: string | undefined = yield select(
       AuthSelector.getAccessToken,
     );
-    const universityId: number | undefined = yield select(
-      AuthSelector.getUniversityId,
-    );
     yield put(updateEnablePaymentCard(false));
     const profile: Profile = yield select(AccountSelector.getProfile);
     let isAuthenticated = Boolean(accessToken);
-    if (
-      !profile ||
-      (profile?.membershipType == MEMBERSHIP_TYPE.NON_MEMBER && !universityId)
-    ) {
+    // Còn token nhưng chưa có profile thì phiên coi như không hợp lệ.
+    if (!profile) {
       yield put(logoutRequest());
       isAuthenticated = false;
-    }
-    if (isAuthenticated) {
-      yield put(getTotalItemCartRequest());
     }
     action.payload.onSuccess?.(isAuthenticated);
     yield put(getAppConfigRequest());

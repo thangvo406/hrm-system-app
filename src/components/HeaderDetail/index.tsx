@@ -2,9 +2,7 @@ import Image from '@components/Image';
 import { ScaleSize } from '@kits/core';
 import { Platform, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import React from 'react';
-import imageNames from '@assets/images/names';
 import AppNavigator from '@navigation/AppNavigator';
-import { Paths } from '@navigation/paths';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppButton from '../AppButton';
 import { DeviceUtils } from '@kits/core/utils';
@@ -19,7 +17,6 @@ type Properties = {
   readonly onPressReadAll?: () => void;
   readonly title: string;
   readonly titleManage?: string;
-  readonly hideNotify?: boolean;
   readonly transparent?: boolean;
   readonly usePaddingTop?: boolean;
   readonly disabledBtnReadAll?: boolean;
@@ -29,17 +26,8 @@ type Properties = {
   readonly style?: ViewStyle;
 };
 
-const onOpenMenu = () => {
-  AppNavigator.showMenu();
-};
-
-const onPressNotification = () => {
-  AppNavigator.navigate(Paths.Notifications);
-};
-
 function HeaderDetail({
   transparent,
-  hideNotify,
   onPressBack,
   onPressReadAll,
   style,
@@ -113,19 +101,6 @@ function HeaderDetail({
           />
         </TouchableOpacity> */}
 
-        {!hideNotify && (
-          <AppButton
-            onPress={onPressNotification}
-            style={styles.iconButton}
-            testID="header-detail-notification"
-          >
-            <Image
-              height={ICON_SIZE}
-              name={imageNames.ic_bell_green}
-              width={ICON_SIZE}
-            />
-          </AppButton>
-        )}
         {!!showIconReadAll && (
           <AppButton
             onPress={onPressReadAll}
@@ -151,19 +126,6 @@ function HeaderDetail({
             <Text style={styles.textManageCart}>{titleManage}</Text>
           </AppButton>
         )}
-        <AppButton
-          onPress={onOpenMenu}
-          style={styles.iconButton}
-          testID="header-detail-menu"
-        >
-          <Image
-            color={ACCENT_COLOR}
-            height={ICON_SIZE}
-            name="ic_menu"
-            type="svg"
-            width={ICON_SIZE}
-          />
-        </AppButton>
       </View>
     </View>
   );

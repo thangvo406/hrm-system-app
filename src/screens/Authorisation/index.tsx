@@ -1,165 +1,88 @@
-import type { RootScreenProps } from '@navigation/types';
-import type { AuthStep } from '@type/auth';
-import type { ComponentType } from 'react';
-import ChooseMemberShipType from './components/RegisterFlow/ChooseMemberShipType';
-import { Paths } from '@navigation/paths';
-import { useAuthorization } from '@hooks';
-import { StyleSheet } from 'react-native';
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import RegisterForm from './components/RegisterFlow/InputInfo';
-import AuthFormStack from './components/AuthFormStack';
-import BankInformationView from '@screens/BankInformation/BankInformationView';
-import InputAcademicEmail from './components/RegisterFlow/InputAcademicEmail';
-import { View } from 'react-native';
+import LoginFooter from './LoginFooter';
+import LoginForm from './LoginForm';
+import LoginHero from './LoginHero';
+import { Colors } from '@constants';
+import { ScaleSize } from '@kits/core';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { useAuthorisation } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import AcademicVerification from './components/RegisterFlow/AcademicVerification';
-import AcademicVerifyCompleted from './components/RegisterFlow/AcademicVerifyCompleted';
-import RegisterCompleted from './components/RegisterFlow/RegisterCompleted';
-import SchoolSelection from '@screens/SchoolSelection';
-import { VerificationFailed } from '@components';
 
-type AuthTab = 'login' | 'registration';
+// How far the white sheet slides up over the artwork.
+const SHEET_OVERLAP = ScaleSize(28);
 
-function Authorization({ route }: RootScreenProps<Paths.Authorization>) {
-  const isLogin = route.params?.isLogin ?? true;
-  const initialTab: AuthTab = isLogin ? 'login' : 'registration';
-  const { t } = useTranslation();
+function Authorisation() {
   const insets = useSafeAreaInsets();
-
   const {
-    clearLoginErrors,
-    isLoginValid,
-    loading,
-    loginErrors,
-    loginWithSocial,
-    onLoginChange,
-    register,
-    resetLoginForm,
-    submitLogin,
-    onForgotPassword,
-  } = useAuthorization();
-
-  const {
-    agreed,
-    carrier,
-    chooseOptions,
-    clearErrors,
-    formData,
-    goBack,
-    handleSubmit,
-    isRegisterValid,
-    isVerifiedEmailAcademic,
-    mailAcademic,
-    needShowBtnBack,
-    onGoRegisterForm,
-    onInfoChange,
-    onPressCarrier,
-    onPressRequestOtp,
-    onPressSelectSchool,
-    onPressVerify,
-    onPressVerifyEmailAcademic,
-    onReEnterEmailAcademic,
-    onRegisterChange,
-    onResendEmailAcademic,
-    dataInfoVerifyMembership,
-    // onSelectMembership,
-    onToggleAgreement,
-    onOTPEmailAcademicExpired,
-    registerErrors,
-    resetRegisterForm,
-    emailExpiresIn,
-    timeResendOtpVerifyEmail,
-    selectedMembershipId,
-    step,
-    titleRegisterCompletedBtnPrimary,
-    titleRegisterCompletedBtnSecondary,
-  } = register;
-
-  // Reset the form of the tab being left so it is empty when coming back.
-  const onTabBlur = (tab: AuthTab) => {
-    if (tab === 'registration') {
-      resetRegisterForm();
-    } else {
-      resetLoginForm();
-    }
-  };
-
-  const DetailComponent = useMemo(() => {
-    const screens: Record<AuthStep, ComponentType<any>> = {
-      choose_membership: ChooseMemberShipType,
-      choose_role: ChooseMemberShipType,
-      form: AuthFormStack,
-      academic_verification_completed: AcademicVerifyCompleted,
-      verify_info_failed: VerificationFailed,
-      input_academic_email: InputAcademicEmail,
-      academic_verification: AcademicVerification,
-      register_input: RegisterForm,
-      bank_information: BankInformationView,
-      verified_info: RegisterCompleted,
-      choose_school: SchoolSelection,
-    };
-    return screens[step];
-  }, [step]);
+    email,
+    errors,
+    onChangeEmail,
+    onChangePassword,
+    onFocusPassword,
+    onSignIn,
+    onToggleRememberMe,
+    password,
+    passwordRef,
+    rememberMe,
+  } = useAuthorisation();
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <DetailComponent
-        agreed={agreed}
-        carrier={carrier}
-        desc={t('register_completed.desc')}
-        initialTab={initialTab}
-        isVerifiedEmailAcademic={isVerifiedEmailAcademic}
-        loading={loading}
-        loginErrors={loginErrors}
-        loginWithSocial={loginWithSocial}
-        mailAcademic={mailAcademic}
-        onBack={goBack}
-        onClearErrors={() => {
-          clearLoginErrors();
-          clearErrors();
-        }}
-        emailExpiresIn={emailExpiresIn}
-        onOTPEmailAcademicExpired={onOTPEmailAcademicExpired}
-        dataVerifiedMembership={dataInfoVerifyMembership}
-        onForgotPassword={onForgotPassword}
-        onGoRegisterForm={onGoRegisterForm}
-        onInfoChange={onInfoChange}
-        onLoginChange={onLoginChange}
-        onPressCarrier={onPressCarrier}
-        onPressRequestOtp={onPressRequestOtp}
-        onPressSecondary={onPressSelectSchool}
-        onPressVerify={onPressVerify}
-        onPressVerifyEmailAcademic={onPressVerifyEmailAcademic}
-        onReEnterEmailAcademic={onReEnterEmailAcademic}
-        onRegisterChange={onRegisterChange}
-        onResendEmailAcademic={onResendEmailAcademic}
-        timeResendOtpVerifyEmail={timeResendOtpVerifyEmail}
-        // onSelectMembership={onSelectMembership}
-        onSubmit={handleSubmit}
-        onTabBlur={onTabBlur}
-        onToggleAgreement={onToggleAgreement}
-        options={chooseOptions}
-        registerErrors={registerErrors}
-        registerValues={formData.current}
-        selectedMembershipId={selectedMembershipId}
-        showBtnBack={needShowBtnBack}
-        submitLogin={submitLogin}
-        titleBtnPrimary={titleRegisterCompletedBtnPrimary}
-        titleBtnSecondary={titleRegisterCompletedBtnSecondary}
-        topHeader={0}
-        validLogin={isLoginValid}
-        validRegister={isRegisterValid}
-      />
+    <View style={styles.container} testID="AuthorisationScreen">
+      <ScrollView
+        automaticallyAdjustKeyboardInsets
+        bounces={false}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <LoginHero />
+        <View style={styles.sheet}>
+          <LoginForm
+            email={email}
+            emailError={errors.email}
+            onChangeEmail={onChangeEmail}
+            onChangePassword={onChangePassword}
+            onFocusPassword={onFocusPassword}
+            onSignIn={onSignIn}
+            onToggleRememberMe={onToggleRememberMe}
+            password={password}
+            passwordError={errors.password}
+            passwordRef={passwordRef}
+            rememberMe={rememberMe}
+          />
+          <View
+            style={[
+              styles.footer,
+              { paddingBottom: insets.bottom + ScaleSize(16) },
+            ]}
+          >
+            <LoginFooter />
+          </View>
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.white,
     flex: 1,
+  },
+  footer: {
+    marginTop: 'auto',
+    paddingTop: ScaleSize(24),
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  sheet: {
+    backgroundColor: Colors.white,
+    borderTopLeftRadius: ScaleSize(32),
+    borderTopRightRadius: ScaleSize(32),
+    flex: 1,
+    marginTop: -SHEET_OVERLAP,
+    paddingTop: ScaleSize(28),
   },
 });
 
-export default Authorization;
+export default Authorisation;

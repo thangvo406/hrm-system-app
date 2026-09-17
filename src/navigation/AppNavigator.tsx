@@ -39,11 +39,7 @@ function setRefDialog(reference: DialogHandle | null) {
   dialogReference = reference ?? undefined;
 }
 
-function navigate(
-  name: string,
-  params = {},
-  key = `${name}_${new Date().getTime()}`,
-) {
+function navigate(name: string, params = {}, key = `${name}_${Date.now()}`) {
   Keyboard.dismiss();
   if (navigator) {
     // if (debounce) {
@@ -102,7 +98,6 @@ function showDialog(params: any) {
   Keyboard.dismiss();
   // dialogReference?.setWillShow(true);
   const _params = { ...(params || {}) };
-  console.log('showDialog', params);
   setTimeout(() => {
     // Branch on the existing `popupType` discriminator — `'bottomSheet'`
     // routes to the bottom-sheet overlay, anything else (including the
@@ -123,15 +118,6 @@ function showToast(params: any) {
 function showSnackBar(params: TSnackBar) {
   Keyboard.dismiss();
   dialogReference?.showSnackBar?.(params);
-}
-
-function showMenu(params?: Parameters<DialogHandle['showMenu']>[0]) {
-  Keyboard.dismiss();
-  dialogReference?.showMenu?.(params);
-}
-
-function closeMenu() {
-  dialogReference?.closeMenu?.();
 }
 
 function hideAllPopup() {
@@ -303,8 +289,6 @@ export default {
   setParams,
   getParams,
   showLoading,
-  showMenu,
-  closeMenu,
   canGoBack,
   hideAllPopup,
   showDialogErrorOpenCamera,
