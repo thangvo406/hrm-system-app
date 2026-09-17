@@ -6,7 +6,7 @@
 	<string>development</string>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.coopuse.test.onesignal</string>
+		<string>group.com.hrm.system.onesignal</string>
 	</array>
 </dict>
 </plist>

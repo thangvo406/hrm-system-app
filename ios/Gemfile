@@ -5,7 +5,7 @@ source "https://rubygems.org"
 gem "cocoapods", ">= 1.13", "!= 1.15.0", "!= 1.15.1"
 gem "activesupport", ">= 6.1.7.5", "!= 7.1.0"
 # KHÔNG pin `xcodeproj < 1.26.0` như Gemfile template của React Native.
-# CoopUse.xcodeproj ở objectVersion 70 và dùng PBXFileSystemSynchronizedRootGroup
+# HRMSystem.xcodeproj ở objectVersion 70 và dùng PBXFileSystemSynchronizedRootGroup
 # (folder đồng bộ của Xcode 16) cho target OneSignalNotificationService — ISA đó
 # chỉ được xcodeproj hiểu từ 1.26.0. Với pin cũ, fastlane crash ngay ở
 # increment_version_number: "unknown ISA PBXFileSystemSynchronizedRootGroup".

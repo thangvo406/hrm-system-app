@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
-    <device id="retina4_7" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24765" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina6_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24743"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -14,31 +13,20 @@
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_logo_banner" translatesAutoresizingMaskIntoConstraints="NO" id="Lgo-11-kpA">
-                                <rect key="frame" x="87.5" y="240" width="200" height="90"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="200" id="Lgo-w1-aaa"/>
-                                    <constraint firstAttribute="height" constant="90" id="Lgo-h1-bbb"/>
-                                </constraints>
-                            </imageView>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ic_logo_welcome" translatesAutoresizingMaskIntoConstraints="NO" id="Msc-22-lpB">
-                                <rect key="frame" x="97.5" y="380" width="180" height="278"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="180" id="Msc-w2-ccc"/>
-                                    <constraint firstAttribute="height" constant="278" id="Msc-h2-ddd"/>
-                                </constraints>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="img_splash_screen" translatesAutoresizingMaskIntoConstraints="NO" id="Spl-sh-img">
+                                <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" red="0.0078431372549019607" green="0.12549019607843137" blue="0.27843137254901962" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="Lgo-11-kpA" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Lgo-cx-eee"/>
-                            <constraint firstItem="Lgo-11-kpA" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" multiplier="0.65" id="Lgo-cy-fff"/>
-                            <constraint firstItem="Msc-22-lpB" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Msc-cx-ggg"/>
-                            <constraint firstItem="Msc-22-lpB" firstAttribute="top" secondItem="Lgo-11-kpA" secondAttribute="bottom" constant="50" id="Msc-tp-hhh"/>
+                            <constraint firstAttribute="bottom" secondItem="Spl-sh-img" secondAttribute="bottom" id="Spl-bt-004"/>
+                            <constraint firstItem="Spl-sh-img" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="Spl-ld-001"/>
+                            <constraint firstItem="Spl-sh-img" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="Spl-tp-003"/>
+                            <constraint firstAttribute="trailing" secondItem="Spl-sh-img" secondAttribute="trailing" id="Spl-tr-002"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -48,7 +36,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="ic_logo_banner" width="417" height="186"/>
-        <image name="ic_logo_welcome" width="450" height="696"/>
+        <image name="img_splash_screen" width="426" height="923"/>
     </resources>
 </document>

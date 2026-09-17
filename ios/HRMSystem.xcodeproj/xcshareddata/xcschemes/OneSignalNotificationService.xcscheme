@@ -19,7 +19,7 @@
                BlueprintIdentifier = "84B932C6300A054E0096F834"
                BuildableName = "OneSignalNotificationService.appex"
                BlueprintName = "OneSignalNotificationService"
-               ReferencedContainer = "container:CoopUse.xcodeproj">
+               ReferencedContainer = "container:HRMSystem.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -31,9 +31,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "CoopUse.app"
-               BlueprintName = "CoopUse"
-               ReferencedContainer = "container:CoopUse.xcodeproj">
+               BuildableName = "HRMSystem.app"
+               BlueprintName = "HRMSystem"
+               ReferencedContainer = "container:HRMSystem.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -63,9 +63,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "CoopUse.app"
-            BlueprintName = "CoopUse"
-            ReferencedContainer = "container:CoopUse.xcodeproj">
+            BuildableName = "HRMSystem.app"
+            BlueprintName = "HRMSystem"
+            ReferencedContainer = "container:HRMSystem.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -82,9 +82,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "CoopUse.app"
-            BlueprintName = "CoopUse"
-            ReferencedContainer = "container:CoopUse.xcodeproj">
+            BuildableName = "HRMSystem.app"
+            BlueprintName = "HRMSystem"
+            ReferencedContainer = "container:HRMSystem.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -15,9 +15,9 @@
                   <BuildableReference
                      BuildableIdentifier = "primary"
                      BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-                     BuildableName = "CoopUse.app"
-                     BlueprintName = "CoopUse"
-                     ReferencedContainer = "container:CoopUse.xcodeproj">
+                     BuildableName = "HRMSystem.app"
+                     BlueprintName = "HRMSystem"
+                     ReferencedContainer = "container:HRMSystem.xcodeproj">
                   </BuildableReference>
                </EnvironmentBuildable>
             </ActionContent>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "CoopUse.app"
-               BlueprintName = "CoopUse"
-               ReferencedContainer = "container:CoopUse.xcodeproj">
+               BuildableName = "HRMSystem.app"
+               BlueprintName = "HRMSystem"
+               ReferencedContainer = "container:HRMSystem.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -51,9 +51,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "CoopUseTests.xctest"
-               BlueprintName = "CoopUseTests"
-               ReferencedContainer = "container:CoopUse.xcodeproj">
+               BuildableName = "HRMSystemTests.xctest"
+               BlueprintName = "HRMSystemTests"
+               ReferencedContainer = "container:HRMSystem.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -73,9 +73,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "CoopUse.app"
-            BlueprintName = "CoopUse"
-            ReferencedContainer = "container:CoopUse.xcodeproj">
+            BuildableName = "HRMSystem.app"
+            BlueprintName = "HRMSystem"
+            ReferencedContainer = "container:HRMSystem.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -90,9 +90,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "CoopUse.app"
-            BlueprintName = "CoopUse"
-            ReferencedContainer = "container:CoopUse.xcodeproj">
+            BuildableName = "HRMSystem.app"
+            BlueprintName = "HRMSystem"
+            ReferencedContainer = "container:HRMSystem.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

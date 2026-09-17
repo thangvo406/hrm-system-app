@@ -40,7 +40,7 @@ LOCAL_SECRETS_DIR = File.expand_path('../../../../../..', __dir__)
 platform :ios do
   desc "Build IPA dev và upload lên TestFlight"
   lane :beta do |options|
-    prefixAppName = "CoopUse_DEV_v"
+    prefixAppName = "HRMSystem_DEV_v"
     # Dotenv.overload '../../env/.dev'
     branchName = resolve_branch_name(options)
     # Resolve version/build sớm để thông báo "start" có đủ thông tin, và để
@@ -57,7 +57,7 @@ platform :ios do
       # vài giây thay vì sau ~10 phút build.
       api_key_path = resolve_api_key_path
       puts IOS_DIR
-      copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', '.dev'), "#{REPO_ROOT}/env/.dev")
+      copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'HRMSystem', '.dev'), "#{REPO_ROOT}/env/.dev")
       # react-native-config reads the env file via /tmp/envfile (highest priority)
       # then ENVFILE. xcodebuild does not run scheme pre-actions, so set both here
       # to make the gym build deterministic. This must happen BEFORE
@@ -120,9 +120,9 @@ platform :ios do
       # ios/.env + ios/tmp.xcconfig ở đây trước khi gym đọc build settings.
       sh "#{REPO_ROOT.shellescape}/scripts/generate-ios-env.sh"
       gym(
-        scheme: "CoopUse",
+        scheme: "HRMSystem",
         clean: true,
-        workspace: "#{IOS_DIR}/CoopUse.xcworkspace",
+        workspace: "#{IOS_DIR}/HRMSystem.xcworkspace",
         export_method: "app-store",
         output_directory: "#{IOS_DIR}/builds",
         output_name: appName,
@@ -152,7 +152,7 @@ platform :ios do
 
   desc "Build IPA production và upload lên TestFlight"
   lane :release do |options|
-    prefixAppName = "CoopUse_PRD_v"
+    prefixAppName = "HRMSystem_PRD_v"
     branchName = resolve_branch_name(options)
     # Xem lane beta: resolve sớm để "start" có thông tin và rescue luôn an toàn.
     versionCode = resolve_version_number(options)
@@ -165,11 +165,10 @@ platform :ios do
       # Xem lane beta: validate credential App Store Connect trước pod install.
       api_key_path = resolve_api_key_path
 
-      copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', '.prod'), "#{REPO_ROOT}/env/.prod")
+      copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'HRMSystem', '.prod'), "#{REPO_ROOT}/env/.prod")
       # See beta lane: select the env before prepare_package runs pod install,
       # otherwise the xcconfig gets env/.dev values while JS gets env/.prod ones.
       select_env_file("env/.prod")
-      copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', 'GoogleService-Pro.plist'), "#{IOS_DIR}/GoogleService-Info.plist")
 
       puts "Endpoint => #{ENV["BASE_URL"]}"
 
@@ -209,7 +208,7 @@ platform :ios do
       prepare_package(options)
 
       # Bundle id KHÔNG được ghi đè ở đây: cả 2 target đã lấy id từ
-      # $(APP_IOS_ID) trong build settings, còn CoopUse/Info.plist thì dùng thẳng
+      # $(APP_IOS_ID) trong build settings, còn HRMSystem/Info.plist thì dùng thẳng
       # $(APP_IOS_ID). Env file đã được select_env_file nạp ở trên nên id tự đúng
       # theo môi trường — ghi đè bằng tay chỉ tạo cơ hội lệch giữa 2 target.
 
@@ -227,9 +226,9 @@ platform :ios do
       # ios/.env + ios/tmp.xcconfig ở đây trước khi gym đọc build settings.
       sh "#{REPO_ROOT.shellescape}/scripts/generate-ios-env.sh"
       gym(
-        scheme: "CoopUse",
+        scheme: "HRMSystem",
         clean: true,
-        workspace: "#{IOS_DIR}/CoopUse.xcworkspace",
+        workspace: "#{IOS_DIR}/HRMSystem.xcworkspace",
         export_method: "app-store",
         output_directory: "#{IOS_DIR}/builds",
         output_name: appName,
@@ -337,8 +336,8 @@ def resolve_branch_name(options)
   options[:branchName] || ENV['BRANCH_NAME'] || "dev"
 end
 
-# Bundle id iOS. env file có cả APP_ID (package name Android, vd com.coop_use)
-# và APP_IOS_ID (com.coopuse) — lane iOS phải dùng đúng cái sau, nếu không
+# Bundle id iOS. env file có cả APP_ID (package name Android) và APP_IOS_ID
+# (bundle id iOS, vd com.hrm.system.dev) — lane iOS phải dùng đúng cái sau, nếu không
 # pilot/latest_testflight_build_number sẽ trỏ vào app không tồn tại trên
 # App Store Connect. Fail ngay ở đây thay vì sau khi pod install xong.
 def resolve_ios_app_id
@@ -540,7 +539,7 @@ end
 # nó tự tạo một cert "Created via API" type Development — rồi chết ở export:
 #
 #   error: exportArchive Cloud signing permission error
-#   error: exportArchive No profiles for 'com.coopuse' were found
+#   error: exportArchive No profiles for 'com.hrm.system.dev' were found
 #
 # Ký manual bằng cert + profile đã có sẵn thì export không gọi App Store Connect
 # nữa, nên role của key không còn ảnh hưởng (chỉ pilot upload mới cần key).
@@ -589,8 +588,8 @@ end
 #
 # Vì sao không nhét vào xcargs: xcargs truyền build setting ở command-line level
 # nên áp cho MỌI target trong workspace — app, extension và toàn bộ Pods. Một
-# PROVISIONING_PROFILE_SPECIFIER duy nhất không thể vừa đúng cho com.coopuse vừa
-# đúng cho com.coopuse.NotificationService, archive sẽ chết ở target thứ hai.
+# PROVISIONING_PROFILE_SPECIFIER duy nhất không thể vừa đúng cho com.hrm.system.dev vừa
+# đúng cho com.hrm.system.dev.NotificationService, archive sẽ chết ở target thứ hai.
 #
 # Không truyền bundle_identifier: option đó ghi vào key PRODUCT_BUNDLE_IDENTIFIER
 # gốc, trong khi bản thân project đã lấy id từ $(APP_IOS_ID) rồi.
@@ -607,7 +606,7 @@ def apply_manual_signing(signing)
     update_code_signing_settings(
       build_configurations: ['Release'],
       code_sign_identity: signing[:export_options][:signingCertificate],
-      path: "#{IOS_DIR}/CoopUse.xcodeproj",
+      path: "#{IOS_DIR}/HRMSystem.xcodeproj",
       profile_name: profile_name,
       targets: [target_name],
       team_id: signing[:export_team_id],
@@ -644,8 +643,8 @@ def distribution_identity(keychain = nil)
 end
 
 def resolve_team_id
-  team_id = release_build_settings('CoopUse')['DEVELOPMENT_TEAM'].to_s
-  UI.user_error!("Target CoopUse không có DEVELOPMENT_TEAM trong build settings.") if team_id.empty?
+  team_id = release_build_settings('HRMSystem')['DEVELOPMENT_TEAM'].to_s
+  UI.user_error!("Target HRMSystem không có DEVELOPMENT_TEAM trong build settings.") if team_id.empty?
   team_id
 end
 
@@ -664,9 +663,9 @@ def resolve_export_bundle_ids
 end
 
 def release_build_settings(target_name)
-  project = Xcodeproj::Project.open("#{IOS_DIR}/CoopUse.xcodeproj")
+  project = Xcodeproj::Project.open("#{IOS_DIR}/HRMSystem.xcodeproj")
   target = project.targets.find { |t| t.name == target_name }
-  UI.user_error!("❌ Target '#{target_name}' not found in CoopUse.xcodeproj") if target.nil?
+  UI.user_error!("❌ Target '#{target_name}' not found in HRMSystem.xcodeproj") if target.nil?
 
   config = target.build_configurations.find { |c| c.name == 'Release' } || target.build_configurations.first
   config.build_settings
@@ -839,7 +838,7 @@ end
 # Các target phải mang cùng version/build. Apple bắt CFBundleShortVersionString
 # và CFBundleVersion của app extension trùng với host app, lệch là pilot reject
 # với ITMS-90473 CFBundleVersion Mismatch.
-VERSIONED_TARGETS = %w[CoopUse OneSignalNotificationService].freeze
+VERSIONED_TARGETS = %w[HRMSystem OneSignalNotificationService].freeze
 
 # Ghi thẳng MARKETING_VERSION + CURRENT_PROJECT_VERSION vào build settings của
 # từng target, thay cho increment_version_number/increment_build_number.
@@ -851,13 +850,13 @@ VERSIONED_TARGETS = %w[CoopUse OneSignalNotificationService].freeze
 #     OneSignalNotificationService không có → build number của extension đứng yên
 #     trong khi app nhảy lên, đúng vào lỗi ITMS-90473 nói trên
 #   - `agvtool new-version -all` còn ghi số literal đè lên Info.plist, phá mất
-#     $(CURRENT_PROJECT_VERSION) mà CoopUse/Info.plist đang tham chiếu
+#     $(CURRENT_PROJECT_VERSION) mà HRMSystem/Info.plist đang tham chiếu
 #
-# Info.plist của cả 2 target đều lấy version từ build setting (CoopUse qua
+# Info.plist của cả 2 target đều lấy version từ build setting (HRMSystem qua
 # $(MARKETING_VERSION)/$(CURRENT_PROJECT_VERSION), extension qua
 # GENERATE_INFOPLIST_FILE), nên set ở đây là đủ cho cả hai.
 def set_project_version(version_number:, build_number:)
-  project_path = "#{IOS_DIR}/CoopUse.xcodeproj"
+  project_path = "#{IOS_DIR}/HRMSystem.xcodeproj"
   project = Xcodeproj::Project.open(project_path)
 
   VERSIONED_TARGETS.each do |target_name|
@@ -880,7 +879,7 @@ def prepare_package(options)
   nvm_bin = "#{ENV["HOME"]}/.nvm/versions/node/v20.9.0/bin"
   ENV["PATH"] = "#{nvm_bin}:/usr/local/bin:#{ENV["PATH"]}" if Dir.exist?(nvm_bin)
 
-  copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'CoopUse', 'yarn.lock'), "#{REPO_ROOT}/yarn.lock")
+  copy_local_secret(File.join(LOCAL_SECRETS_DIR, 'HRMSystem', 'yarn.lock'), "#{REPO_ROOT}/yarn.lock")
   versionCode = resolve_version_number(options)
   # Version/build được set một lần bằng set_project_version trong lane, sau khi
   # đã biết build number từ TestFlight. Không set ở đây: pod install không đọc
