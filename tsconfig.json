@@ -30,6 +30,9 @@
   "include": [
     "src/tests/**/*",
     "./src/**/*",
+    "kits/**/*",
+    "scripts/**/*",
+    "__tests__/**/*",
     "index.d.ts",
     "*.mjs",
     ".*.mjs",

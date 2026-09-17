@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-  # Tiền tố tên file AAB, chỉ Android dùng (lane iOS tự hardcode "CoopUse_PRD_v").
-  PREFIX_APP_NAME: 'COOP_PROD'
+  # Tiền tố tên file AAB, chỉ Android dùng (lane iOS tự hardcode "HRMSystem_PRD_v").
+  PREFIX_APP_NAME: 'HRM_PROD'
 
   # github.ref_name: tên nhánh đang trigger workflow.
   BRANCH_NAME: ${{ github.ref_name }}

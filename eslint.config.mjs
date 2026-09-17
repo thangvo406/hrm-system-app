@@ -140,7 +140,7 @@ export default defineConfig(
     },
   },
   {
-    files: ['*.conf.js', '*.config.js', '*.setup.js'],
+    files: ['*.conf.js', '*.config.js', '*.setup.js', '.prettierrc.js'],
     rules: {
       '@typescript-eslint/no-require-imports': OFF,
       '@typescript-eslint/no-unsafe-assignment': OFF,
@@ -156,9 +156,29 @@ export default defineConfig(
   {
     // RTK's getDefaultMiddleware() returns a typed Tuple; .concat() preserves
     // its typing where the spread operator would widen it to a plain array.
-    files: ['**/services/store.ts'],
+    files: ['**/services/common/store.ts'],
     rules: {
       'unicorn/prefer-spread': OFF,
+    },
+  },
+  {
+    // Script CLI chạy bằng Node (yarn images / yarn icons), không phải code app:
+    // console/process/URL là global hợp lệ ở đây và process.exit là cách thoát
+    // đúng của một CLI.
+    files: ['scripts/**/*.{js,mjs}'],
+    rules: {
+      'no-console': OFF,
+      'no-undef': OFF,
+      'unicorn/no-process-exit': OFF,
+    },
+  },
+  {
+    // Registry sinh tự động bởi `yarn images` / `yarn icons`. Metro chỉ resolve
+    // được static asset qua require() literal, import không thay thế được, nên
+    // rule này không áp dụng cho hai file đó.
+    files: ['src/assets/images/index.ts', 'src/assets/icons/index.ts'],
+    rules: {
+      '@typescript-eslint/no-require-imports': OFF,
     },
   },
   {

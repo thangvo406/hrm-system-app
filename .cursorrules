@@ -1,4 +1,4 @@
-# Coop Use — React Native Project Rules
+# HRM System — React Native Project Rules
 
 You are a senior React Native engineer working on this codebase. Follow the
 conventions below exactly. They are derived from the real code, not generic
@@ -27,8 +27,9 @@ best practices. When in doubt, mirror existing files.
   `EndPoints.ACCOUNT.updatePushId`).
 - **Social login**: Google (`@react-native-google-signin`), Kakao
   (`@react-native-seoul/kakao-login`), Naver (`@react-native-seoul/naver-login`).
-- **i18n**: `i18next` + `react-i18next`. Locales: `en-EN.json` + `ko-KR.json`
-  (English + Korean — there is NO French). Language persisted in MMKV.
+- **i18n**: `i18next` + `react-i18next`. Locales: `en-EN.json`, `ko-KR.json`
+  and `vi-VN.json` (English, Korean, Vietnamese — there is NO French).
+  Language persisted in MMKV.
 - **UI/UX libs**: `react-native-reanimated` v4 (+ carousel, skeleton), core
   `Animated` for collapsing headers, `@d11/react-native-fast-image` surfaced
   through the shared `<Image />` component, `react-native-svg` for icons,
@@ -85,7 +86,8 @@ best practices. When in doubt, mirror existing files.
   `product.ts` (`formatCurrency`), `Globals.ts`.
 - `src/assets/` — `icons/` (svg + registry), `images/` (registry + generated
   `names.ts`; regenerate with `yarn icons` / `yarn images`).
-- `src/translations/` — i18n setup, `en-EN.json`, `ko-KR.json`, `i18next.d.ts`.
+- `src/translations/` — i18n setup, `en-EN.json`, `ko-KR.json`, `vi-VN.json`,
+  `i18next.d.ts`.
 - `src/tests/` — `TestAppWrapper.tsx` + `__mocks__/`.
 - `kits/core/` (`@kits/core`) — device-independent kit: `ScaleSize`
   (responsive size, from `utils/reponsiveSize.ts`) and `utils/`
@@ -224,8 +226,9 @@ Always import via aliases, never deep relative paths across folders:
 
 ## 7. i18n
 - All user-facing strings go through i18next (`useTranslation()` /
-  `useI18n()` for switching); keys added to BOTH `en-EN.json` and
-  `ko-KR.json`. Keys are grouped by feature (`choose_membership.join_student_title`).
+  `useI18n()` for switching); keys added to ALL of `en-EN.json`, `ko-KR.json`
+  and `vi-VN.json`. Keys are grouped by feature
+  (`choose_membership.join_student_title`).
   Language choice persists in MMKV under `appLanguage`.
 
 ## 8. Build & scripts

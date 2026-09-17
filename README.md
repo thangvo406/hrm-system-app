@@ -1,6 +1,6 @@
-# COOP University App
+# HRM System App
 
-![COOP](https://i.ibb.co/tP8F4Pvf/Chat-GPT-Image-Jun-10-2026-at-09-56-45-AM.png)
+![HRM System](https://i.ibb.co/tP8F4Pvf/Chat-GPT-Image-Jun-10-2026-at-09-56-45-AM.png)
 
 ## Technical Stack
 
@@ -10,8 +10,8 @@
 - Mobile development platform: React Native (0.81.5)
 - IDE: **Visual Studio Code**, **Cursor**
 - State management: **Redux**
-- App Id Android: com.coop_use
-- App Id iOS: com.coopuse.dev
+- App Id Android: com.hrm.system.dev (dev) / com.hrm.system (prod)
+- App Id iOS: com.hrm.system.dev (dev) / com.hrm.system (prod)
 - API server...
 
 ## Prettier and ESLint configuration
