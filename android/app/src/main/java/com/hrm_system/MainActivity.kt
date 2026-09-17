@@ -1,4 +1,4 @@
-package com.coop_use
+package com.hrm_system
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -17,7 +17,7 @@ class MainActivity : ReactActivity() {
    * Returns the name of the main component registered from JavaScript. This is used to schedule
    * rendering of the component.
    */
-  override fun getMainComponentName(): String = "coop_use"
+  override fun getMainComponentName(): String = "hrm_system"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     SplashScreen.show(this)

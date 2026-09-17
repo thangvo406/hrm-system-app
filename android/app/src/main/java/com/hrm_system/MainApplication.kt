@@ -1,4 +1,4 @@
-package com.coop_use
+package com.hrm_system
 
 import android.app.Application
 import com.facebook.react.PackageList
@@ -9,7 +9,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
-import com.coop_use.systemui.CoopNativePackage
+import com.hrm_system.systemui.HrmNativePackage
 
 class MainApplication : Application(), ReactApplication {
 
@@ -18,7 +18,7 @@ class MainApplication : Application(), ReactApplication {
         override fun getPackages(): List<ReactPackage> =
             PackageList(this).packages.apply {
               // Packages that cannot be autolinked yet can be added manually here, for example:
-              add(CoopNativePackage())
+              add(HrmNativePackage())
             }
 
         override fun getJSMainModuleName(): String = "index"

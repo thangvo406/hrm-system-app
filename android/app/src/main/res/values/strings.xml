@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">@string/APP_NAME</string>
-    <string name="build_config_package" translatable="false">com.coop_use</string>
+    <string name="build_config_package" translatable="false">com.hrm_system</string>
 </resources>

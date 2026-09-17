@@ -16,6 +16,9 @@
          react-native-splash-screen được gắn vào. -->
     <style name="LaunchTheme" parent="AppTheme">
         <item name="android:windowBackground">@color/splash_background</item>
+        <!-- Splash nền xanh đậm nên icon status bar phải sáng, ngược với
+             AppTheme (nền sáng). MainActivity tự set lại lúc runtime. -->
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
 </resources>

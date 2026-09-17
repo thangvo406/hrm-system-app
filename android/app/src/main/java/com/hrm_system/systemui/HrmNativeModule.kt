@@ -1,4 +1,4 @@
-package com.coop_use.systemui
+package com.hrm_system.systemui
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -18,7 +18,7 @@ import com.facebook.react.bridge.ReactMethod
  * MainActivity đã ẩn navigation bar lúc khởi động qua applyImmersiveSafely();
  * module này cho phép JS bật/tắt lại theo từng màn hình mà không cần rebuild.
  */
-class CoopNativeModule(
+class HrmNativeModule(
   private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
 
@@ -172,7 +172,7 @@ class CoopNativeModule(
   }
 
   companion object {
-    const val NAME = "CoopNativeModule"
+    const val NAME = "HrmNativeModule"
     private const val ERR_NO_ACTIVITY = "E_NO_ACTIVITY"
     private const val ERR_FAILED = "E_FAILED"
     private const val ERR_INVALID_URL = "E_INVALID_URL"

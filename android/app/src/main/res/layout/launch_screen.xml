@@ -1,29 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Splash toàn màn hình: img_splash_screen.png đã có sẵn nền + logo + slogan,
+     nên layout chỉ cần một ImageView phủ kín. centerCrop giữ đúng tỉ lệ ảnh và
+     cắt bớt ở cạnh dài — phần chữ nằm giữa với lề rộng nên không bao giờ bị mất.
+     Ảnh để ở drawable-nodpi: nếu để ở drawable/ thì aapt coi là mdpi và scale
+     lên 3x trên máy xxhdpi (852x1846 -> ~2556x5538 px, hàng chục MB bitmap). -->
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/splash_image"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:fitsSystemWindows="false">
-
-    <ImageView
-        android:id="@+id/splash_logo"
-        android:layout_width="200dp"
-        android:layout_height="100dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="240dp"
-        android:contentDescription="@string/app_name"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_logo_banner" />
-
-    <ImageView
-        android:id="@+id/splash_mascot"
-        android:layout_width="200dp"
-        android:layout_height="280dp"
-        android:layout_below="@id/splash_logo"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"
-        android:contentDescription="@string/app_name"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_logo_welcome" />
-
-</RelativeLayout>
+    android:background="@color/splash_background"
+    android:contentDescription="@string/app_name"
+    android:fitsSystemWindows="false"
+    android:scaleType="centerCrop"
+    android:src="@drawable/img_splash_screen" />

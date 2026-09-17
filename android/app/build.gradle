@@ -1,7 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
-apply plugin: 'com.google.gms.google-services'
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 
 /**
@@ -79,7 +78,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.coop_use"
+    namespace "com.hrm_system"
     defaultConfig {
         applicationId env.get("APP_ID")
         minSdkVersion rootProject.ext.minSdkVersion
@@ -87,7 +86,6 @@ android {
         versionCode 1
         versionName "1.0.0"
         manifestPlaceholders = [KAKAO_APP_KEY: env.get("KAKAO_APP_KEY") ?: ""]
-        resValue "string", "kakao_app_key", env.get("KAKAO_APP_KEY") ?: ""
     }
     signingConfigs {
         debug {

@@ -2,7 +2,9 @@
 <resources>
 
     <!-- Nền của launch_screen.xml — dùng lại cho windowBackground của
-         LaunchTheme để không bị flash màu khác trước khi splash hiện. -->
-    <color name="splash_background">#FFFFFF</color>
+         LaunchTheme để không bị flash màu khác trước khi splash hiện.
+         Lấy từ góc trên bên trái của img_splash_screen.png để nối liền với
+         phần ảnh hiện ngay sau đó. -->
+    <color name="splash_background">#022047</color>
 
 </resources>
