@@ -1,6 +1,6 @@
 # HRM System App
 
-![HRM System](https://i.ibb.co/tP8F4Pvf/Chat-GPT-Image-Jun-10-2026-at-09-56-45-AM.png)
+![HRM System](https://i.ibb.co/PvGKMvCk/Chat-GPT-Image-20-43-03-17-thg-9-2026.png)
 
 ## Technical Stack
 

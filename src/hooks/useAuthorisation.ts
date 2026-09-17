@@ -82,6 +82,7 @@ export function useAuthorisation() {
     dispatch(
       loginRequest({
         email: trimmedEmail,
+        password,
         onFailure: error => {
           AppNavigator.showSnackBar({
             message: error || t('authorisation.error_unknown'),
@@ -96,7 +97,6 @@ export function useAuthorisation() {
           }
           AppNavigator.replace(AppStacks.App);
         },
-        password,
       }),
     );
   }, [dispatch, email, password, rememberMe, t, validate]);

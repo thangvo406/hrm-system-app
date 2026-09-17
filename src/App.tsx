@@ -18,16 +18,8 @@ import { FileManager } from '@kits/core/utils/FileManager';
 
 void FileManager.checkExistAndCreateLog();
 
-// Backstop cứng ở tầng RNFS.downloadFile (SDK). react-native-fs trên iOS chỉ
-// bắn progress event qua self.bridge, mà app chạy New Architecture
-// (bridgeless) nên self.bridge luôn nil — progress không bao giờ tới JS dù
-// tải vẫn khỏe mạnh (đã xác nhận qua log thực tế). Vì vậy KHÔNG dùng timeout
-// kiểu "im lặng thì fail" ở tầng app nữa — xem CODEPUSH_GATE_MIN_DOWNLOAD_KBPS.
 const CODEPUSH_DOWNLOAD_READ_TIMEOUT_MS = 300_000;
 
-// Timeout tải bundle ở tầng app (CodePushGate) tính theo packageSize thay vì
-// một tổng thời gian cố định: (packageSize / minKbps) + buffer. Xem
-// getDownloadTimeoutMs trong useCodePushGate.ts.
 const CODEPUSH_GATE_MIN_DOWNLOAD_KBPS = 20;
 const CODEPUSH_GATE_DOWNLOAD_TIMEOUT_BUFFER_MS = 30_000;
 
@@ -45,10 +37,6 @@ function App() {
   return (
     <GestureHandlerRootView style={styles.root}>
       <Provider store={store}>
-        {/* autoCheck/checkOnResume tắt vì CodePushGate tự điều khiển toàn bộ
-            luồng check -> download -> install. Bật lên sẽ có hai
-            checkForUpdate chạy chồng nhau và SDK throw 'Already checking for
-            update'. */}
         <CodePushProvider
           autoCheck={false}
           checkOnResume={false}

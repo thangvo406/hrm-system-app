@@ -77,8 +77,7 @@ function ApplicationNavigator() {
   const handleAppStateChange = (nextAppState: string) => {
     if (nextAppState === 'active') {
       dispatch(getAppConfigRequest());
-      // Deep link đang chờ được nuốt ở đây để không kẹt lại cho lần resume sau;
-      // việc điều hướng theo từng màn sẽ nối lại khi có nghiệp vụ HRM.
+
       deepLinkGate.consumePending();
     }
   };
@@ -90,8 +89,6 @@ function ApplicationNavigator() {
       handleAppStateChange,
     );
 
-    // Android 9: khi keyboard ẩn, system navigation bar hiện lại và immersive
-    // mode bị mất. Ẩn lại thanh nav hệ thống để giữ layout ổn định.
     const keyboardHideSubscription =
       Platform.OS === 'android'
         ? Keyboard.addListener('keyboardDidHide', () => {
