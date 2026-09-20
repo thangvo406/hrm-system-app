@@ -1,4 +1,6 @@
 {
   "name": "hrm_system",
-  "displayName": "HRM system app"
+  "displayName": "HRM system app",
+  "appVersion": "2",
+  "minPlatformVersion": "1.0.0"
 }

@@ -1,3 +1,4 @@
+import KeyboardAvoidingView from '@components/KeyboardAvoidingView';
 import LoginFooter from './LoginFooter';
 import LoginForm from './LoginForm';
 import LoginHero from './LoginHero';
@@ -8,7 +9,10 @@ import { useAuthorisation } from '@hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // How far the white sheet slides up over the artwork.
-const SHEET_OVERLAP = ScaleSize(28);
+const SHEET_OVERLAP = ScaleSize(32);
+const SHEET_SHADOW_OPACITY = 0.08;
+const SHEET_SHADOW_OFFSET = ScaleSize(6);
+const SHEET_ELEVATION = ScaleSize(10);
 
 function Authorisation() {
   const insets = useSafeAreaInsets();
@@ -28,36 +32,42 @@ function Authorisation() {
   return (
     <View style={styles.container} testID="AuthorisationScreen">
       <ScrollView
-        automaticallyAdjustKeyboardInsets
         bounces={false}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <LoginHero />
-        <View style={styles.sheet}>
-          <LoginForm
-            email={email}
-            emailError={errors.email}
-            onChangeEmail={onChangeEmail}
-            onChangePassword={onChangePassword}
-            onFocusPassword={onFocusPassword}
-            onSignIn={onSignIn}
-            onToggleRememberMe={onToggleRememberMe}
-            password={password}
-            passwordError={errors.password}
-            passwordRef={passwordRef}
-            rememberMe={rememberMe}
-          />
-          <View
-            style={[
-              styles.footer,
-              { paddingBottom: insets.bottom + ScaleSize(16) },
-            ]}
-          >
-            <LoginFooter />
-          </View>
-        </View>
+        <KeyboardAvoidingView>
+          {({ onFocusField }) => (
+            <>
+              <LoginHero />
+              <View style={styles.sheet}>
+                <LoginForm
+                  email={email}
+                  emailError={errors.email}
+                  onChangeEmail={onChangeEmail}
+                  onChangePassword={onChangePassword}
+                  onFocusField={onFocusField}
+                  onFocusPassword={onFocusPassword}
+                  onSignIn={onSignIn}
+                  onToggleRememberMe={onToggleRememberMe}
+                  password={password}
+                  passwordError={errors.password}
+                  passwordRef={passwordRef}
+                  rememberMe={rememberMe}
+                />
+                <View
+                  style={[
+                    styles.footer,
+                    { paddingBottom: insets.bottom + ScaleSize(16) },
+                  ]}
+                >
+                  <LoginFooter />
+                </View>
+              </View>
+            </>
+          )}
+        </KeyboardAvoidingView>
       </ScrollView>
     </View>
   );
@@ -77,11 +87,17 @@ const styles = StyleSheet.create({
   },
   sheet: {
     backgroundColor: Colors.white,
-    borderTopLeftRadius: ScaleSize(32),
-    borderTopRightRadius: ScaleSize(32),
+    borderTopLeftRadius: ScaleSize(28),
+    borderTopRightRadius: ScaleSize(28),
+    elevation: SHEET_ELEVATION,
     flex: 1,
+    marginHorizontal: ScaleSize(14),
     marginTop: -SHEET_OVERLAP,
-    paddingTop: ScaleSize(28),
+    paddingTop: ScaleSize(24),
+    shadowColor: Colors.navy01,
+    shadowOffset: { height: -SHEET_SHADOW_OFFSET, width: 0 },
+    shadowOpacity: SHEET_SHADOW_OPACITY,
+    shadowRadius: ScaleSize(16),
   },
 });
 

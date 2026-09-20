@@ -1,4 +1,3 @@
-import type { IRequestDeleteAccount } from '@type/auth';
 import type { IRequestUpdatePushId } from '@type/account';
 import type { IImage, SingleApiResponse } from '@type/common';
 
@@ -23,12 +22,6 @@ export const getProfile = async (): Promise<Profile> => {
     { loading: false },
   );
   return response.data;
-};
-
-export const deleteAccount = async (
-  request: IRequestDeleteAccount,
-): Promise<void> => {
-  await httpRequest.put(EndPoints.ACCOUNT.deleteAccount, request);
 };
 
 export const updatePushId = async (

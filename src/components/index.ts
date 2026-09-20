@@ -9,6 +9,7 @@ export { default as DatePicker } from './DatePicker';
 export { default as EmptyView } from './EmptyView';
 export { default as HeaderDetail } from './HeaderDetail';
 export { default as Image } from './Image';
+export { default as KeyboardAvoidingView } from './KeyboardAvoidingView';
 export { default as PaginationDots } from './PaginationDots';
 export { default as PlaceholderScreen } from './PlaceholderScreen';
 export { default as ProgressiveImage } from './ProgressiveImage';

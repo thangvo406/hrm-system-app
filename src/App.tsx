@@ -25,11 +25,11 @@ const CODEPUSH_GATE_DOWNLOAD_TIMEOUT_BUFFER_MS = 30_000;
 
 const CODEPUSH_CONFIG: ComponentProps<typeof CodePushProvider>['config'] = {
   checkFrequency: 'ON_APP_START',
-  deploymentKeyAndroid: '743c4280161fd6c1b6f67a8d8ba550cddc452ee615916d78',
-  deploymentKeyIOS: 'f869801073198233ca83dbcf50fe3c0a689537ae3c5ac470',
+  deploymentKeyAndroid: '7def6cbec16e645b66e54c89a93c16c207d8afc718410ea9',
+  deploymentKeyIOS: 'dcef92158de76153296ac18a92ecd2eb290108763ee7ede8',
   downloadReadTimeoutMs: CODEPUSH_DOWNLOAD_READ_TIMEOUT_MS,
   installMode: 'ON_NEXT_RESTART',
-  serverUrl: 'http://192.168.1.74:3000', // KHÔNG có dấu / cuối
+  serverUrl: 'http://192.168.222.11:3000', // KHÔNG có dấu / cuối
   // serverUrl: 'http://172.20.10.2:3000', // KHÔNG có dấu / cuối
 };
 

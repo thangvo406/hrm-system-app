@@ -1,11 +1,14 @@
 export enum Paths {
   AppTabs = 'app_tabs',
+  Attendance = 'attendance',
   Authorization = 'authorization',
   Carts = 'carts',
   Home = 'home',
+  Notifications = 'notifications',
   PaymentOffline = 'payment_offline',
   Profile = 'profile',
   QRCodeViewer = 'qr_code_viewer',
+  Requests = 'requests',
   Startup = 'startup',
 }
 

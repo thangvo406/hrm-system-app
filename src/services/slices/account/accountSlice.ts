@@ -2,7 +2,6 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AppCallback } from '@type/common';
 import type { Profile } from '@services/request/account';
 import type { IRequestUpdatePushIdCallback } from '@type/account';
-import type { IRequestDeleteAccount } from '@type/auth';
 
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -26,10 +25,6 @@ const accountSlice = createSlice({
   name: 'account',
   reducers: {
     clearProfile: () => initialState,
-    deleteAccountRequest: {
-      prepare: (payload: IRequestDeleteAccount) => ({ payload }),
-      reducer: () => {},
-    },
     getProfileRequest: {
       prepare: (payload: AppCallback<Profile> = {}) => ({ payload }),
       reducer: () => {},
@@ -48,7 +43,6 @@ const accountSlice = createSlice({
 
 export const {
   clearProfile,
-  deleteAccountRequest,
   getProfileRequest,
   getProfileSuccess,
   updatePushIdRequest,

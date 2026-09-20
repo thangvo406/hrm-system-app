@@ -52,12 +52,21 @@ export const Colors = {
   red03: '#D9534F',
   red04: '#8F5757',
   red05: '#BE8686',
+  gray27: '#EAEEF3',
+  gray28: '#F6F8FB',
   navy01: '#0A1E45',
   navy02: '#12295C',
   navy03: '#1B3E7D',
+  navy04: '#15243D',
+  navy05: '#13294F',
+  navy06: '#1F3A68',
   blue01: '#1D4ED8',
   blue02: '#2563EB',
   blue03: '#EBF2FD',
+  blue04: '#1B5FB5',
+  blue05: '#93A6C8',
+  purple01: '#7343C4',
+  purple02: '#EFE8FB',
 } as const;
 
 export const Fonts = {} as const;

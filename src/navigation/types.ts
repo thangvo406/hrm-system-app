@@ -10,22 +10,25 @@ export type TabScreenProps<S extends keyof TabParamList = keyof TabParamList> =
   BottomTabScreenProps<TabParamList, S>;
 
 export type TabParamList = {
-  [Paths.Carts]: undefined;
+  [Paths.Attendance]: undefined;
   [Paths.Home]: undefined;
-  [Paths.PaymentOffline]: { isTab?: boolean } | undefined;
+  [Paths.Notifications]: undefined;
   [Paths.Profile]: undefined;
-  [Paths.QRCodeViewer]: { isTab?: boolean } | undefined;
+  [Paths.Requests]: undefined;
 };
 
 export type RootStackParamList = {
   [AppStacks.App]: undefined;
   [AppStacks.Auth]: undefined;
   [Paths.AppTabs]: undefined;
+  [Paths.Attendance]: undefined;
   [Paths.Authorization]: undefined;
   [Paths.Carts]: undefined;
   [Paths.Home]: undefined;
+  [Paths.Notifications]: undefined;
   [Paths.PaymentOffline]: { isTab?: boolean } | undefined;
   [Paths.Profile]: undefined;
   [Paths.QRCodeViewer]: { isTab?: boolean } | undefined;
+  [Paths.Requests]: undefined;
   [Paths.Startup]: undefined;
 };

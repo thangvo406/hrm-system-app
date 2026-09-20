@@ -1,15 +1,4 @@
-import type { AppCallback, IImage, ListApiResponse } from './common';
-
-export interface IResponseUniversity {
-  id: number;
-  name: string;
-  address: string;
-  logo: IImage;
-  code: string;
-}
-export interface IResponseRegisterVerifyOtp {
-  signupToken: string;
-}
+import type { AppCallback } from './common';
 
 export type AuthStep =
   | 'verify_info_failed'
@@ -33,68 +22,20 @@ export type RegisterMembershipStep =
   | 'academic_verification_completed'
   | 'register_completed';
 
-export interface ISelectSchoolRequest extends AppCallback {
-  universityId: number;
-}
-
-export interface ISelectSchoolSuccessPayload {
-  universityId: number;
-}
-
-export interface IRequestVerifyUserNewLogin
-  extends AppCallback<IResponseCreateLinkVerifyInfoUser> {
-  initialPasswordToken: string;
-}
-export interface ISetUniversitiesPayload {
-  content: IResponseUniversity[];
-  last: boolean;
-  page: number;
-}
-
-export interface IUniversityData {
-  content: IResponseUniversity[];
-  isLast: boolean;
-  page: number;
-}
-
 export interface ICredentials {
   accessToken: string;
   refreshToken?: string;
 }
 
-export interface IConfirmMembershipVerification {
-  otp: string;
-  universityEmail: string;
-  emailVerificationToken: string;
-}
 export interface IResponseRefreshToken {
   accessToken: string;
   refreshToken?: string;
 }
 
-export interface IResponseRegisterUser {
-  phoneVerificationToken: string;
-}
-export interface IResponseRegisterSendOtp {
-  phoneVerificationToken: string;
-}
-
 export interface LogoutRequest {
   refreshToken: string;
 }
-export interface IResponseCreateLinkVerifyInfoUser {
-  callUrl: string;
-  regCertKey: string;
-  ordrIdxx: string;
-  certWebViewUrl: string;
-}
-export interface IRequestCreateLinkVerifyInfoUser
-  extends AppCallback<IResponseCreateLinkVerifyInfoUser> {
-  registerToken: string;
-}
-export interface IResponseRegisterUser {
-  registerToken: string;
-}
+
 export interface IResponseLogin {
   accessToken: string;
   membershipType: string;
@@ -107,84 +48,11 @@ export interface IResponseLogin {
   universityId: string;
   accountStatus: string;
 }
-export interface IResponseConfirmMemberShipVerify {
-  registrationStatus: string;
-  membershipType: string;
-  membershipStatus: string;
-  universityId: number;
-  universityName: string;
-  universityEmail: string;
-  emailVerificationRequired: boolean;
-  emailVerificationExpiresIn: number;
-  resendAfterMs: number;
-}
-export interface IResponseSendOtpVerifyMembership {
-  emailVerificationToken: string;
-}
-export interface IResponseSubmitForgotPass {
-  success?: boolean;
-}
 
 export interface IRequestLogin extends AppCallback<IResponseLogin> {
   email: string;
   password: string;
 }
 
-export interface IRequestRegisterUser
-  extends AppCallback<IResponseRegisterUser> {
-  email: string;
-  name: string;
-  password: string;
-}
-
-export interface IRequestSendOTP extends AppCallback<IResponseRegisterSendOtp> {
-  registerToken: string;
-  phone: string;
-}
-
-export interface IRequestVerifyOTP
-  extends AppCallback<IResponseRegisterVerifyOtp> {
-  phoneVerificationToken?: string;
-  phone: string;
-  identityNumber: string;
-  otp: string;
-  termsAgreed: boolean;
-}
-
-export interface IRequestGetUniversities
-  extends AppCallback<ListApiResponse<IResponseUniversity[]>> {
-  keyword?: string;
-  page?: number;
-  size?: number;
-}
-
-export interface IRequestCreateLinkVerifyForgotPass
-  extends AppCallback<IResponseCreateLinkVerifyInfoUser> {
-  email: string;
-}
-
-export interface IRequestSubmitForgotPass
-  extends AppCallback<IResponseSubmitForgotPass> {
-  confirmPassword: string;
-  newPassword: string;
-  resetToken: string;
-}
-
-export interface IRequestSendOtpVerifyMembership
-  extends AppCallback<IResponseSendOtpVerifyMembership> {
-  membershipType?: string;
-  signupToken?: string;
-  universityId?: number;
-  applicationNote?: string;
-  universityEmail?: string;
-}
-
-export interface IRequestConfirmMemberShipVerify
-  extends AppCallback<IResponseConfirmMemberShipVerify>,
-    IConfirmMembershipVerification {}
-
-export interface IRequestDeleteAccount extends AppCallback {
-  deletedReason: string;
-}
 // TODO: define request fields when the reactivation API spec is available.
 export type IRequestActiveAccount = Record<string, never>;

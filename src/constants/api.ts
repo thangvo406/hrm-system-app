@@ -4,20 +4,8 @@ export const EndPoints = {
   },
   AUTH: {
     login: 'auth/login',
-    register: 'auth/register',
-    sendOTP: 'auth/register/phone/send-otp',
-    verifyOTP: 'auth/register/phone/confirm-otp',
-    getUniversities: (request: string) => `university?${request}`,
-    createLinkVerifyForgotPass: 'auth/forgot-password/identity/init',
-    submitForgotPass: 'auth/forgot-password/reset',
     refreshToken: 'auth/refresh',
     logout: 'auth/logout',
-    sendOtpVerifyMembership: 'auth/register/membership-verification',
-    confirmMemberShipVerify:
-      'auth/register/membership-verification/confirm-otp',
-    selectSchool: 'user/session/university',
-    createLinkVerifyInfoUser: 'auth/register/identity/init',
-    verifyUserNewLogin: 'auth/initial-password/identity/init',
   },
   CONTRIBUTION: {
     increase: 'contribution/increase-request',
@@ -37,7 +25,6 @@ export const EndPoints = {
     getProfile: 'user/profile',
     updateMembership: 'user/membership/request',
     updatePushId: 'notification/push-subscription',
-    deleteAccount: 'user/delete',
     activeAccount: 'user/hibernation/identity/init',
     changePass: 'user/change-password',
     updateProfile: 'user/profile',

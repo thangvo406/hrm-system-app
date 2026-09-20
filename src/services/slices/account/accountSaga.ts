@@ -1,12 +1,10 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AppCallback } from '@type/common';
 import type { IRequestUpdatePushIdCallback } from '@type/account';
-import type { IRequestDeleteAccount } from '@type/auth';
 
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
 import {
-  deleteAccount,
   getProfile,
   updatePushId,
   type Profile,
@@ -16,22 +14,10 @@ import { refreshTokenRequest } from '@services/slices/auth/authSlice';
 import { getErrorMessageApi } from '@utils/common';
 
 import {
-  deleteAccountRequest,
   getProfileRequest,
   getProfileSuccess,
   updatePushIdRequest,
 } from './accountSlice';
-
-function* deleteAccountWorker(action: PayloadAction<IRequestDeleteAccount>) {
-  const { onFailure, onSuccess, ...request } = action.payload;
-  try {
-    yield call(deleteAccount, request);
-    onSuccess?.();
-  } catch (error_) {
-    const message = getErrorMessageApi(error_);
-    onFailure?.(message);
-  }
-}
 
 function* getProfileWorker(action: PayloadAction<AppCallback<Profile>>) {
   try {
@@ -64,7 +50,6 @@ function* updatePushIdWorker(
 }
 
 export function* accountSaga() {
-  yield takeLatest(deleteAccountRequest.type, deleteAccountWorker);
   yield takeLatest(getProfileRequest.type, getProfileWorker);
   yield takeLatest(updatePushIdRequest.type, updatePushIdWorker);
 }

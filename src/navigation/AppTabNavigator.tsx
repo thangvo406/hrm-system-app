@@ -20,16 +20,11 @@ export function AppTabNavigator() {
       tabBar={renderTabBar}
     >
       <Tab.Screen component={Screens.Home} name={Paths.Home} />
-      <Tab.Screen component={Screens.Carts} name={Paths.Carts} />
+      <Tab.Screen component={Screens.Attendance} name={Paths.Attendance} />
+      <Tab.Screen component={Screens.Requests} name={Paths.Requests} />
       <Tab.Screen
-        component={Screens.PaymentOffline}
-        initialParams={{ isTab: true }}
-        name={Paths.PaymentOffline}
-      />
-      <Tab.Screen
-        component={Screens.QRCodeViewer}
-        initialParams={{ isTab: true }}
-        name={Paths.QRCodeViewer}
+        component={Screens.Notifications}
+        name={Paths.Notifications}
       />
       <Tab.Screen component={Screens.Profile} name={Paths.Profile} />
     </Tab.Navigator>

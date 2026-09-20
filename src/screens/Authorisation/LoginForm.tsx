@@ -21,6 +21,7 @@ type LoginFormProps = {
   readonly emailError?: string;
   readonly onChangeEmail: (text: string) => void;
   readonly onChangePassword: (text: string) => void;
+  readonly onFocusField?: () => void;
   readonly onFocusPassword: () => void;
   readonly onForgotPassword?: () => void;
   readonly onSignIn: () => void;
@@ -40,6 +41,7 @@ function LoginForm({
   emailError,
   onChangeEmail,
   onChangePassword,
+  onFocusField,
   onFocusPassword,
   onForgotPassword,
   onSignIn,
@@ -61,6 +63,7 @@ function LoginForm({
         inputWrapperStyle={styles.inputWrapper}
         keyboardType="email-address"
         onChangeText={onChangeEmail}
+        onFocus={onFocusField}
         onSubmitEditing={onFocusPassword}
         placeholder={t('authorisation.email_address_placeholder')}
         returnKeyType="next"
@@ -76,6 +79,7 @@ function LoginForm({
         iconName="ic_lock"
         inputWrapperStyle={styles.inputWrapper}
         onChangeText={onChangePassword}
+        onFocus={onFocusField}
         onSubmitEditing={onSignIn}
         placeholder={t('authorisation.password_placeholder')}
         ref={passwordRef}
@@ -109,7 +113,7 @@ function LoginForm({
         testID="AuthorisationSignIn"
       >
         <LinearGradient
-          colors={[Colors.navy03, Colors.navy01]}
+          colors={[Colors.blue01, Colors.navy02]}
           end={GRADIENT_END}
           start={GRADIENT_START}
           style={styles.signInGradient}
@@ -130,17 +134,18 @@ function LoginForm({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: ScaleSize(24),
+    paddingHorizontal: ScaleSize(16),
   },
   input: {
     fontSize: ScaleSize(15),
-    paddingVertical: ScaleSize(15),
+    paddingVertical: ScaleSize(16),
   },
   inputWrapper: {
-    borderColor: Colors.gray19,
-    borderRadius: ScaleSize(14),
-    marginBottom: ScaleSize(14),
-    paddingHorizontal: ScaleSize(16),
+    backgroundColor: Colors.gray28,
+    borderColor: Colors.gray27,
+    borderRadius: ScaleSize(16),
+    marginBottom: ScaleSize(16),
+    paddingHorizontal: ScaleSize(18),
   },
   link: {
     color: Colors.blue02,
@@ -151,7 +156,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: ScaleSize(4),
+    marginTop: ScaleSize(12),
   },
   rememberLabel: {
     color: Colors.gray23,
@@ -160,7 +165,7 @@ const styles = StyleSheet.create({
   },
   signInButton: {
     borderRadius: ScaleSize(28),
-    marginTop: ScaleSize(24),
+    marginTop: ScaleSize(28),
     overflow: 'hidden',
   },
   signInGradient: {
@@ -173,7 +178,7 @@ const styles = StyleSheet.create({
   signInLabel: {
     color: Colors.white,
     fontSize: ScaleSize(17),
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });
 
