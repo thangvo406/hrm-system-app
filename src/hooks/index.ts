@@ -1,3 +1,4 @@
+export { useAttendance } from './useAttendance';
 export { useAuthorisation } from './useAuthorisation';
 export { useCodePushGate } from './useCodePushGate';
 export { useHome } from './useHome';

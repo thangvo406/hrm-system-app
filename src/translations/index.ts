@@ -30,6 +30,13 @@ void i18n
   .init({
     defaultNS,
     fallbackLng: SupportedLanguages.VI_VN,
+    interpolation: {
+      // Mặc định i18next escape giá trị nội suy theo kiểu HTML để chống XSS khi
+      // nhúng vào innerHTML. Ở React Native không có innerHTML, <Text> render
+      // chuỗi thô, nên bật escape chỉ khiến ký tự bình thường hiện ra dạng
+      // entity — ví dụ ngày 20/09/2026 thành "20&#x2F;09&#x2F;2026".
+      escapeValue: false,
+    },
     lng: savedLanguage,
     resources,
   })

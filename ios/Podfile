@@ -34,11 +34,22 @@ if linkage != nil
 end
 setup_permissions([
   'Camera',
+  'LocationWhenInUse',
   'Microphone',
   'PhotoLibrary',
 ])
 target 'HRMSystem' do
   config = use_native_modules!
+
+  # react-native-maps chạy Apple Maps trên iOS: đó là subspec mặc định 'Maps'
+  # mà autolinking đã khai báo, không cần thêm gì và KHÔNG cần API key.
+  #
+  # Muốn iOS dùng Google Maps thì thêm subspec 'Google' (kéo theo GoogleMaps +
+  # Google-Maps-iOS-Utils), và lúc đó bắt buộc phải gọi GMSServices.provideAPIKey
+  # trong AppDelegate trước khi map view đầu tiên được tạo, nếu không app crash.
+  # Lưu ý :path khi đó PHẢI là đường dẫn tương đối y hệt cái autolinking sinh ra,
+  # đưa đường dẫn tuyệt đối vào thì CocoaPods dừng với "multiple dependencies
+  # with different sources for `react-native-maps`".
 
   pod 'RecaptchaInterop', :modular_headers => true
 

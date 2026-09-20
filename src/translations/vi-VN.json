@@ -627,6 +627,26 @@
       "notification_needs_action": "CẦN XÁC NHẬN",
       "notification_meta": "{{source}} · {{timeAgo}}"
     },
+    "attendance": {
+      "title": "Chấm công",
+      "history": "Lịch sử",
+      "mode_gps": "Định vị GPS",
+      "mode_qr": "Quét mã QR",
+      "qr_coming_soon": "Quét mã QR sẽ sớm có mặt",
+      "office_distance": "{{office}} — cách {{distance}} m",
+      "inside_geofence": "Bạn đang ở trong khu vực được phép chấm công",
+      "outside_geofence": "Bạn đang ở ngoài khu vực được phép chấm công",
+      "shift_meta": "{{weekday}}, {{date}} · {{name}} {{startAt}} – {{endAt}}",
+      "check_out_action": "Chấm công ra ca",
+      "check_out_done": "Đã chấm công ra ca",
+      "today_log": "Nhật ký hôm nay",
+      "worked_none": "Tổng: 0 giờ",
+      "worked_total": "Tổng: {{hours}} giờ {{minutes}} phút",
+      "log_check_in": "Vào ca · GPS",
+      "log_check_out": "Ra ca",
+      "log_pending": "Chưa chấm công",
+      "explanation_prompt": "Quên chấm công? Gửi đơn giải trình"
+    },
     "announcements": {
       "title": "Thông báo",
       "tab_all": "Tất cả",

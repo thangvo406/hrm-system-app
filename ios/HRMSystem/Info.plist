@@ -42,6 +42,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Allow Camera to update avatar</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Cho phép truy cập vị trí để chấm công và hiển thị bản đồ</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Photo to update avatar</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

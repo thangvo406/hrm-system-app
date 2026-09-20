@@ -9,5 +9,3 @@ export const Environment = {
   GET_ADDRESS_KEY: Config.GET_ADDRESS_KEY,
   URL_GET_ADDRESS: Config.URL_GET_ADDRESS,
 };
-
-// AIzaSyAc0ybo-kEviDiIiy8z8kOSh_WyoCjAkts

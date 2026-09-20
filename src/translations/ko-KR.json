@@ -391,6 +391,26 @@
       "notification_needs_action": "확인 필요",
       "notification_meta": "{{source}} · {{timeAgo}}"
     },
+    "attendance": {
+      "title": "근태 체크",
+      "history": "이력",
+      "mode_gps": "GPS 위치",
+      "mode_qr": "QR 코드 스캔",
+      "qr_coming_soon": "QR 체크는 곧 제공됩니다",
+      "office_distance": "{{office}} — {{distance}}m 거리",
+      "inside_geofence": "체크 가능 구역 안에 있습니다",
+      "outside_geofence": "체크 가능 구역 밖에 있습니다",
+      "shift_meta": "{{weekday}}, {{date}} · {{name}} {{startAt}} – {{endAt}}",
+      "check_out_action": "퇴근 체크",
+      "check_out_done": "퇴근 체크 완료",
+      "today_log": "오늘 기록",
+      "worked_none": "총 0시간",
+      "worked_total": "총 {{hours}}시간 {{minutes}}분",
+      "log_check_in": "출근 · GPS",
+      "log_check_out": "퇴근",
+      "log_pending": "아직 체크하지 않음",
+      "explanation_prompt": "체크를 놓치셨나요? 사유서를 제출하세요"
+    },
     "notifications": {
       "title": "알림",
       "mark_read_success": "업데이트 되었습니다.",

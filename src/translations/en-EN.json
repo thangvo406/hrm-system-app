@@ -627,6 +627,26 @@
       "notification_needs_action": "NEEDS CONFIRMATION",
       "notification_meta": "{{source}} · {{timeAgo}}"
     },
+    "attendance": {
+      "title": "Attendance",
+      "history": "History",
+      "mode_gps": "GPS location",
+      "mode_qr": "Scan QR code",
+      "qr_coming_soon": "QR check-in is coming soon",
+      "office_distance": "{{office}} — {{distance}} m away",
+      "inside_geofence": "You are inside the allowed check-in area",
+      "outside_geofence": "You are outside the allowed check-in area",
+      "shift_meta": "{{weekday}}, {{date}} · {{name}} {{startAt}} – {{endAt}}",
+      "check_out_action": "Check out",
+      "check_out_done": "Checked out",
+      "today_log": "Today's log",
+      "worked_none": "Total: 0h",
+      "worked_total": "Total: {{hours}}h {{minutes}}m",
+      "log_check_in": "Check in · GPS",
+      "log_check_out": "Check out",
+      "log_pending": "Not checked out yet",
+      "explanation_prompt": "Missed a check-in? Submit an explanation"
+    },
     "announcements": {
       "title": "Notice",
       "tab_all": "All",
