@@ -18,6 +18,7 @@ import { rootSaga } from './rootSaga';
 import { AppStorage } from './storage';
 import { accountReducer } from '@services/slices/account/accountSlice';
 import { appReducer } from '@services/slices/app/appSlice';
+import { attendanceReducer } from '@services/slices/attendance/attendanceSlice';
 import { authReducer } from '@services/slices/auth/authSlice';
 
 const reduxStorage: Storage = {
@@ -35,6 +36,7 @@ const reduxStorage: Storage = {
 const rootReducer = combineReducers({
   account: accountReducer,
   app: appReducer,
+  attendance: attendanceReducer,
   auth: authReducer,
 });
 

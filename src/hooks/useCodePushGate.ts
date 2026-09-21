@@ -334,7 +334,6 @@ export function useCodePushGate({
 
     const runStartup = async () => {
       try {
-        alert('1');
         FileManager.appendLog('runStartup', 'syncOnce');
         const hasInstalled = await syncOnce(true);
         if (!isMountedRef.current) {
@@ -352,19 +351,12 @@ export function useCodePushGate({
           codePush.restartApp();
           return;
         }
-        alert('2');
         openGate();
       } catch (error) {
         // Update lỗi thì vẫn phải vào được app bằng bundle hiện tại.
         // console.warn không có tác dụng ở release build (không debugger nào
         // đang nghe) nên phải ghi ra file mới xem được lỗi thật là gì.
         // console.log('errr', error.message);
-        alert(
-          JSON.stringify({
-            title: 'error',
-            message: error?.message,
-          }),
-        );
         FileManager.appendLog(
           'CodePush startup gate failed',
           error instanceof Error

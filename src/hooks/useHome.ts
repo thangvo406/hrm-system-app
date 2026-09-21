@@ -4,18 +4,24 @@ import type {
   THomeEmployee,
   THomeNotification,
   THomeShift,
+  TShiftPunctuality,
 } from '@type/home';
 
 import AppNavigator from '@navigation/AppNavigator';
 import dayjs from 'dayjs';
+import { AppConstants } from '@constants';
+import { AttendanceSelector } from '@services/selectors';
 import { Paths } from '@navigation/paths';
 import { StatusBar } from 'react-native';
-import { useCallback, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { useCallback, useMemo, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import { getProfileRequest } from '@services/slices/account/accountSlice';
 
 const MORNING_END_HOUR = 12;
 const AFTERNOON_END_HOUR = 18;
-const TIME_FORMAT = 'HH:mm';
+const ISO_DATE_FORMAT = 'YYYY-MM-DD';
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 // Dữ liệu dựng UI, chưa nối API. Khi có endpoint thật thì thay 4 hằng dưới đây
@@ -29,18 +35,9 @@ const MOCK_EMPLOYEE: THomeEmployee = {
   unreadNotifications: 3,
 };
 
-const MOCK_SHIFT: THomeShift = {
-  checkInAt: '08:26',
-  checkOutAt: undefined,
-  endAt: '17:30',
-  name: 'Ca hành chính',
-  punctuality: 'on_time',
-  startAt: '08:30',
-};
-
 const MOCK_BALANCE: THomeBalance = {
   pendingRequests: 2,
-  remainingLeaveDays: 6.5,
+  remainingLeaveDays: 12,
   totalLeaveDays: 12,
 };
 
@@ -67,6 +64,19 @@ const MOCK_NOTIFICATIONS: readonly THomeNotification[] = [
 
 // ──────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Kết luận giờ vào ca so với giờ bắt đầu ca hành chính.
+ *
+ * So sánh thẳng hai chuỗi `HH:mm`: cả hai đều đủ hai chữ số nên thứ tự chữ cái
+ * trùng với thứ tự thời gian, khỏi cần plugin `customParseFormat` của dayjs.
+ */
+const getPunctuality = (checkInAt: string | undefined): TShiftPunctuality => {
+  if (!checkInAt) {
+    return 'not_checked_in';
+  }
+  return checkInAt > AppConstants.OFFICE_SHIFT.START_AT ? 'late' : 'on_time';
+};
+
 /** Khớp giờ hiện tại với lời chào ở header (sáng / chiều / tối). */
 const getGreetingKey = (hour: number) => {
   if (hour < MORNING_END_HOUR) {
@@ -82,8 +92,26 @@ const getGreetingKey = (hour: number) => {
  * và thông báo mới, kèm các hành động điều hướng.
  */
 export function useHome() {
-  const [shift, setShift] = useState<THomeShift>(MOCK_SHIFT);
   const [headerHeight, setHeaderHeight] = useState(0);
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const checkInAt = useAppSelector(AttendanceSelector.getCheckInAt);
+  const checkOutAt = useAppSelector(AttendanceSelector.getCheckOutAt);
+  const workDate = useAppSelector(AttendanceSelector.getWorkDate);
+
+  const shift = useMemo<THomeShift>(() => {
+    const isToday = workDate === dayjs().format(ISO_DATE_FORMAT);
+    const todayCheckInAt = isToday ? checkInAt : undefined;
+
+    return {
+      checkInAt: todayCheckInAt,
+      checkOutAt: isToday ? checkOutAt : undefined,
+      endAt: AppConstants.OFFICE_SHIFT.END_AT,
+      name: t('home.shift_office_name'),
+      punctuality: getPunctuality(todayCheckInAt),
+      startAt: AppConstants.OFFICE_SHIFT.START_AT,
+    };
+  }, [checkInAt, checkOutAt, t, workDate]);
 
   // Ảnh nền navy phải trải liền từ header xuống dải `HeaderOverlap`, mà hai
   // view đó nằm ở hai cây khác nhau (header ghim cố định, dải nằm trong vùng
@@ -98,15 +126,13 @@ export function useHome() {
   useFocusEffect(
     useCallback(() => {
       StatusBar.setBarStyle('light-content');
+      dispatch(getProfileRequest());
       return () => StatusBar.setBarStyle('dark-content');
     }, []),
   );
 
   const onCheckOut = useCallback(() => {
-    setShift(previous => ({
-      ...previous,
-      checkOutAt: dayjs().format(TIME_FORMAT),
-    }));
+    AppNavigator.navigate(Paths.Attendance);
   }, []);
 
   const onPressNotificationCenter = useCallback(() => {

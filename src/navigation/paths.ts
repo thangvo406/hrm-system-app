@@ -1,6 +1,7 @@
 export enum Paths {
   AppTabs = 'app_tabs',
   Attendance = 'attendance',
+  AttendanceHistories = 'attendance_histories',
   Authorization = 'authorization',
   Carts = 'carts',
   Home = 'home',

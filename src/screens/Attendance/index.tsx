@@ -22,6 +22,7 @@ function Attendance() {
     currentCoordinates,
     distanceInMeters,
     geofenceRadius,
+    hasCheckedIn,
     hasCheckedOut,
     initialRegion,
     isInsideGeofence,
@@ -30,11 +31,11 @@ function Attendance() {
     mapRef,
     mode,
     officeName,
-    onCheckOut,
     onGoBack,
     onPressExplanation,
     onPressHistory,
     onPressLocate,
+    onPunch,
     setMode,
     shift,
   } = useAttendance();
@@ -74,9 +75,10 @@ function Attendance() {
         )}
 
         <ClockCard
+          hasCheckedIn={hasCheckedIn}
           hasCheckedOut={hasCheckedOut}
           isInsideGeofence={isInsideGeofence}
-          onCheckOut={onCheckOut}
+          onPunch={onPunch}
           shift={shift}
         />
 

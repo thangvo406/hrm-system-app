@@ -11,8 +11,7 @@ export type THomeEmployee = {
   readonly unreadNotifications: number;
 };
 
-/** Trạng thái giờ vào ca so với giờ ca được phân. */
-export type TShiftPunctuality = 'late' | 'on_time';
+export type TShiftPunctuality = 'late' | 'not_checked_in' | 'on_time';
 
 /** Ca làm việc của hôm nay kèm dấu chấm công đã ghi nhận. */
 export type THomeShift = {

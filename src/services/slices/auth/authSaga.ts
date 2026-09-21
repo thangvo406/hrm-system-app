@@ -23,19 +23,23 @@ import {
   setCredentials,
 } from './authSlice';
 import { Globals } from '@utils';
-import { AccountSelector, AuthSelector } from '@services/selectors';
-import { deletePushId } from '@services/request/account';
+import { AuthSelector } from '@services/selectors';
 import { OneSignal } from 'react-native-onesignal';
+import { AppStorage } from '@services/common/storage';
+import { AppConstants } from '@constants';
 
 const LOGOUT_PURGE_DELAY_MS = 130;
 
 function* loginWorker(action: PayloadAction<IRequestLogin>) {
-  const { onFailure, onSuccess, ...request } = action.payload;
+  const { onFailure, onSuccess, rememberMe, ...request } = action.payload;
   try {
     // const response = {};
-    onSuccess();
-    return;
     const response: IResponseLogin = yield call(login, request);
+    if (rememberMe) {
+      AppStorage.set(AppConstants.REMEMBERED_EMAIL_KEY, request.username);
+    } else {
+      AppStorage.remove(AppConstants.REMEMBERED_EMAIL_KEY);
+    }
     yield put(authSuccess(response));
     onSuccess?.(response);
   } catch (error: any) {
@@ -63,12 +67,8 @@ function* refreshTokenWorker() {
 // profile data do not survive an app restart.
 function* logoutWorker() {
   Globals.hasUpdateDeviceId = false;
-  const pushId: string = yield select(AccountSelector.getPushId);
   const refreshTokenString: string = yield select(AuthSelector.getRefreshToken);
   try {
-    if (pushId) {
-      yield call(deletePushId, pushId);
-    }
     if (refreshTokenString) {
       yield call(logoutRequest, { refreshToken: refreshTokenString });
     }

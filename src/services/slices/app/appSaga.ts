@@ -8,10 +8,7 @@ import { delay, put, select, takeLatest } from 'redux-saga/effects';
 import {
   getAppConfigRequest,
   getAppConfigSuccess,
-  incrementAsync,
-  incrementAsyncSuccess,
   startupApp,
-  updateEnablePaymentCard,
 } from './appSlice';
 import { getErrorMessageApi } from '@utils/common';
 import { Profile } from '@services/request/account';
@@ -27,13 +24,11 @@ import DeviceInfo from 'react-native-device-info';
 import AppNavigator from '@navigation/AppNavigator';
 import { Globals } from '@utils';
 
-const ASYNC_DELAY = 1000;
 const STARTUP_DELAY = 1000;
 const STARTUP_ERROR = 'startup_error';
 
 export function* appSaga() {
   yield takeLatest(getAppConfigRequest.type, getAppConfigWorker);
-  yield takeLatest(incrementAsync.type, incrementAsyncWorker);
   yield takeLatest(startupApp.type, startupAppWorker);
 }
 
@@ -84,11 +79,6 @@ function* getAppConfigWorker(
   }
 }
 
-function* incrementAsyncWorker(action: PayloadAction<number>) {
-  yield delay(ASYNC_DELAY);
-  yield put(incrementAsyncSuccess(action.payload));
-}
-
 // Đang parked: call site `yield checkNetworkTranslation()` trong
 // startupAppWorker vẫn đang comment. Giữ lại để bật khi cần tải i18n từ CDN.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -133,7 +123,6 @@ function* startupAppWorker(action: PayloadAction<AppCallback<boolean>>) {
     const accessToken: string | undefined = yield select(
       AuthSelector.getAccessToken,
     );
-    yield put(updateEnablePaymentCard(false));
     const profile: Profile = yield select(AccountSelector.getProfile);
     let isAuthenticated = Boolean(accessToken);
     // Còn token nhưng chưa có profile thì phiên coi như không hợp lệ.

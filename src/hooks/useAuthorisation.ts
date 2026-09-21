@@ -35,10 +35,32 @@ export function useAuthorisation() {
   const [rememberMe, setRememberMe] = useState(!!rememberedEmail.current);
   const [errors, setErrors] = useState<LoginErrors>({});
 
-  const onChangeEmail = useCallback((text: string) => {
-    setEmail(text);
-    setErrors(previous => ({ ...previous, email: undefined }));
-  }, []);
+  /**
+   * Lỗi định dạng của email, hoặc `undefined` khi hợp lệ.
+   *
+   * Ô rỗng trả `undefined` chứ không trả "bỏ trống": lúc đang gõ mà xoá hết chữ
+   * thì báo thiếu email là làm phiền, thông báo đó để dành cho lúc bấm đăng nhập.
+   */
+  const getEmailError = useCallback(
+    (value: string) => {
+      const trimmed = value.trim();
+      if (!trimmed || ValidateUtils.isEmail(trimmed)) {
+        return undefined;
+      }
+      return t('authorisation.error_email_invalid');
+    },
+    [t],
+  );
+
+  // Soát định dạng ngay khi gõ để người dùng thấy sai từ sớm, thay vì phải bấm
+  // đăng nhập mới biết.
+  const onChangeEmail = useCallback(
+    (text: string) => {
+      setEmail(text);
+      // setErrors(previous => ({ ...previous, email: getEmailError(text) }));
+    },
+    [getEmailError],
+  );
 
   const onChangePassword = useCallback((text: string) => {
     setPassword(text);
@@ -53,57 +75,60 @@ export function useAuthorisation() {
     passwordRef.current?.focus();
   }, []);
 
+  const getPasswordError = useCallback(() => {
+    if (!password) {
+      return t('authorisation.error_password_required');
+    }
+    return password.length < MIN_PASSWORD_LENGTH
+      ? t('authorisation.error_password_min')
+      : undefined;
+  }, [password, t]);
+
+  // Lúc bấm đăng nhập mới soát đủ cả "bỏ trống"; khi gõ chỉ soát định dạng.
   const validate = useCallback(() => {
     const trimmedEmail = email.trim();
-    const nextErrors: LoginErrors = {};
-
-    if (!trimmedEmail) {
-      nextErrors.email = t('authorisation.error_email_required');
-    } else if (!ValidateUtils.isEmail(trimmedEmail)) {
-      nextErrors.email = t('authorisation.error_email_invalid');
-    }
-
-    if (!password) {
-      nextErrors.password = t('authorisation.error_password_required');
-    } else if (password.length < MIN_PASSWORD_LENGTH) {
-      nextErrors.password = t('authorisation.error_password_min');
-    }
+    const nextErrors: LoginErrors = {
+      email: trimmedEmail
+        ? getEmailError(trimmedEmail)
+        : t('authorisation.error_email_required'),
+      password: getPasswordError(),
+    };
 
     setErrors(nextErrors);
     return !nextErrors.email && !nextErrors.password;
-  }, [email, password, t]);
+  }, [email, getEmailError, getPasswordError, t]);
 
   const onSignIn = useCallback(() => {
-    if (!validate()) {
-      return;
-    }
     const trimmedEmail = email.trim();
 
     dispatch(
       loginRequest({
-        email: trimmedEmail,
+        username: trimmedEmail,
         password,
+        rememberMe,
         onFailure: error => {
           AppNavigator.showSnackBar({
-            message: error || t('authorisation.error_unknown'),
+            message: error?.message || t('authorisation.error_unknown'),
             type: 'failed',
           });
         },
         onSuccess: () => {
-          if (rememberMe) {
-            AppStorage.set(AppConstants.REMEMBERED_EMAIL_KEY, trimmedEmail);
-          } else {
-            AppStorage.remove(AppConstants.REMEMBERED_EMAIL_KEY);
-          }
           AppNavigator.replace(AppStacks.App);
         },
       }),
     );
   }, [dispatch, email, password, rememberMe, t, validate]);
 
+  // Khoá nút khi email chưa đúng định dạng (kể cả còn rỗng) hoặc chưa nhập mật
+  // khẩu. Độ dài mật khẩu vẫn để `validate()` soát lúc bấm, tránh khoá nút ngay
+  // từ ký tự đầu tiên.
+  // const isSubmitDisabled = !ValidateUtils.isEmail(email.trim()) || !password;
+  const isSubmitDisabled = !email.trim() || !password;
+
   return {
     email,
     errors,
+    isSubmitDisabled,
     onChangeEmail,
     onChangePassword,
     onFocusPassword,

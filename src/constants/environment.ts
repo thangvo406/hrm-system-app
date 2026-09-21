@@ -1,7 +1,7 @@
 import Config from 'react-native-config';
 export const Environment = {
   IS_DEV: Config.IS_DEV == 'true',
-  BASE_URL: Config.BASE_URL,
+  BASE_URL: 'https://crm-mobile-api.allaindev.site/',
   SOCKET_URL: Config.SOCKET_URL,
   ONE_SIGNAL_ID: Config.ONE_SIGNAL_ID,
   APP_NAME: Config.APP_NAME,

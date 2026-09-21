@@ -22,6 +22,7 @@ export type RootStackParamList = {
   [AppStacks.Auth]: undefined;
   [Paths.AppTabs]: undefined;
   [Paths.Attendance]: undefined;
+  [Paths.AttendanceHistories]: undefined;
   [Paths.Authorization]: undefined;
   [Paths.Carts]: undefined;
   [Paths.Home]: undefined;

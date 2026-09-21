@@ -35,8 +35,6 @@ function Home() {
       />
 
       <ScrollView
-        // Header đã ghim cố định: kéo quá đầu chỉ làm hở nền xám giữa header và
-        // dải navy, nên bỏ bounce.
         bounces={false}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}

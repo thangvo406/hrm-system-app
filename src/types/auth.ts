@@ -50,7 +50,8 @@ export interface IResponseLogin {
 }
 
 export interface IRequestLogin extends AppCallback<IResponseLogin> {
-  email: string;
+  username: string;
+  rememberMe: boolean;
   password: string;
 }
 

@@ -1,4 +1,4 @@
-import type { THomeShift } from '@type/home';
+import type { THomeShift, TShiftPunctuality } from '@type/home';
 
 import AppButton from '@components/AppButton';
 import Image from '@components/Image';
@@ -17,6 +17,31 @@ const EYEBROW_TRACKING = ScaleSize(0.6);
 const PUNCTUALITY_ICON_SIZE = ScaleSize(12);
 const TIME_PLACEHOLDER = '--:--';
 
+const PUNCTUALITY_STYLES: Record<
+  TShiftPunctuality,
+  {
+    readonly background: string;
+    readonly foreground: string;
+    readonly labelKey: string;
+  }
+> = {
+  late: {
+    background: Colors.red02,
+    foreground: Colors.red03,
+    labelKey: 'home.shift_late',
+  },
+  not_checked_in: {
+    background: Colors.gray21,
+    foreground: Colors.gray24,
+    labelKey: 'home.shift_not_checked_in',
+  },
+  on_time: {
+    background: Colors.green06,
+    foreground: Colors.green08,
+    labelKey: 'home.shift_on_time',
+  },
+};
+
 type Properties = {
   readonly onCheckOut: () => void;
   readonly shift: THomeShift;
@@ -24,12 +49,22 @@ type Properties = {
 
 /**
  * Thẻ ca làm việc hôm nay: giờ ca được phân, hai dấu chấm công vào/ra và nút
- * chấm công ra ca.
+ * mở màn Chấm công.
  */
 function ShiftCard({ onCheckOut, shift }: Properties) {
   const { t } = useTranslation();
+  const punctuality = PUNCTUALITY_STYLES[shift.punctuality];
   const isOnTime = shift.punctuality === 'on_time';
   const hasCheckedOut = !!shift.checkOutAt;
+
+  // Nhãn nút bám theo dấu chấm công đã có: chưa vào ca thì mời vào ca chứ không
+  // mời ra ca.
+  const getCtaLabelKey = () => {
+    if (hasCheckedOut) {
+      return 'home.check_out_done';
+    }
+    return shift.checkInAt ? 'home.check_out_action' : 'home.check_in_action';
+  };
 
   return (
     <View style={styles.container}>
@@ -38,12 +73,13 @@ function ShiftCard({ onCheckOut, shift }: Properties) {
         <View
           style={[
             styles.punctuality,
-            isOnTime ? styles.punctualityOnTime : styles.punctualityLate,
+            { backgroundColor: punctuality.background },
           ]}
+          testID="HomeShiftPunctuality"
         >
           {isOnTime ? (
             <Image
-              color={Colors.green08}
+              color={punctuality.foreground}
               height={PUNCTUALITY_ICON_SIZE}
               name="ic_check"
               type="svg"
@@ -51,14 +87,9 @@ function ShiftCard({ onCheckOut, shift }: Properties) {
             />
           ) : undefined}
           <Text
-            style={[
-              styles.punctualityLabel,
-              isOnTime
-                ? styles.punctualityLabelOnTime
-                : styles.punctualityLabelLate,
-            ]}
+            style={[styles.punctualityLabel, { color: punctuality.foreground }]}
           >
-            {t(isOnTime ? 'home.shift_on_time' : 'home.shift_late')}
+            {t(punctuality.labelKey)}
           </Text>
         </View>
       </View>
@@ -109,7 +140,7 @@ function ShiftCard({ onCheckOut, shift }: Properties) {
           width={CTA_ICON_SIZE}
         />
         <Text style={[styles.ctaLabel, hasCheckedOut && styles.ctaLabelDone]}>
-          {t(hasCheckedOut ? 'home.check_out_done' : 'home.check_out_action')}
+          {t(getCtaLabelKey())}
         </Text>
       </AppButton>
     </View>
@@ -201,18 +232,6 @@ const styles = StyleSheet.create({
   punctualityLabel: {
     fontSize: ScaleSize(12),
     fontWeight: '600',
-  },
-  punctualityLabelLate: {
-    color: Colors.red03,
-  },
-  punctualityLabelOnTime: {
-    color: Colors.green08,
-  },
-  punctualityLate: {
-    backgroundColor: Colors.red02,
-  },
-  punctualityOnTime: {
-    backgroundColor: Colors.green06,
   },
   shiftName: {
     color: Colors.navy04,

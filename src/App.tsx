@@ -29,7 +29,7 @@ const CODEPUSH_CONFIG: ComponentProps<typeof CodePushProvider>['config'] = {
   deploymentKeyIOS: 'dcef92158de76153296ac18a92ecd2eb290108763ee7ede8',
   downloadReadTimeoutMs: CODEPUSH_DOWNLOAD_READ_TIMEOUT_MS,
   installMode: 'ON_NEXT_RESTART',
-  serverUrl: 'http://192.168.222.11:3000', // KHÔNG có dấu / cuối
+  serverUrl: 'https://code-push.allaindev.site', // KHÔNG có dấu / cuối
   // serverUrl: 'http://172.20.10.2:3000', // KHÔNG có dấu / cuối
 };
 

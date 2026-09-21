@@ -1,4 +1,5 @@
 export { useAttendance } from './useAttendance';
+export { useAttendanceHistories } from './useAttendanceHistories';
 export { useAuthorisation } from './useAuthorisation';
 export { useCodePushGate } from './useCodePushGate';
 export { useHome } from './useHome';

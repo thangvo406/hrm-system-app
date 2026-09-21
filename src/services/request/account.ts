@@ -1,4 +1,3 @@
-import type { IRequestUpdatePushId } from '@type/account';
 import type { IImage, SingleApiResponse } from '@type/common';
 
 import { httpRequest } from '@services/common/httpRequest';
@@ -22,18 +21,4 @@ export const getProfile = async (): Promise<Profile> => {
     { loading: false },
   );
   return response.data;
-};
-
-export const updatePushId = async (
-  request: IRequestUpdatePushId,
-): Promise<void> => {
-  await httpRequest.post(EndPoints.ACCOUNT.updatePushId, request, {
-    loading: false,
-  });
-};
-
-export const deletePushId = async (pushId: string): Promise<void> => {
-  await httpRequest.delete(EndPoints.ACCOUNT.deletePushId(pushId), {
-    loading: false,
-  });
 };

@@ -15,21 +15,44 @@ const CARD_ELEVATION = 3;
 const CTA_ICON_SIZE = ScaleSize(20);
 
 type Properties = {
+  readonly hasCheckedIn: boolean;
   readonly hasCheckedOut: boolean;
   readonly isInsideGeofence: boolean;
-  readonly onCheckOut: () => void;
+  readonly onPunch: () => void;
   readonly shift: TAttendanceShift;
 };
 
-/** Thẻ giữa màn: đồng hồ hiện tại và nút chấm công ra ca. */
+/**
+ * Thẻ giữa màn: đồng hồ hiện tại và nút chấm công.
+ *
+ * Một nút phục vụ cả ngày công: chưa vào ca thì chấm vào, đã vào ca thì chấm
+ * ra, chấm ra rồi thì khoá lại.
+ */
 function ClockCard({
+  hasCheckedIn,
   hasCheckedOut,
   isInsideGeofence,
-  onCheckOut,
+  onPunch,
   shift,
 }: Properties) {
   const { t } = useTranslation();
   const isDisabled = hasCheckedOut || !isInsideGeofence;
+
+  const getLabelKey = () => {
+    if (hasCheckedOut) {
+      return 'attendance.check_out_done';
+    }
+    return hasCheckedIn
+      ? 'attendance.check_out_action'
+      : 'attendance.check_in_action';
+  };
+
+  const getIconName = () => {
+    if (hasCheckedOut) {
+      return 'ic_check';
+    }
+    return hasCheckedIn ? 'ic_sign_out' : 'ic_sign_in';
+  };
 
   return (
     <View style={styles.container}>
@@ -37,23 +60,19 @@ function ClockCard({
 
       <AppButton
         disabled={isDisabled}
-        onPress={onCheckOut}
+        onPress={onPunch}
         style={[styles.cta, isDisabled && styles.ctaDisabled]}
-        testID="AttendanceCheckOutButton"
+        testID="AttendancePunchButton"
       >
         <Image
           color={isDisabled ? Colors.gray24 : Colors.white}
           height={CTA_ICON_SIZE}
-          name={hasCheckedOut ? 'ic_check' : 'ic_sign_out'}
+          name={getIconName()}
           type="svg"
           width={CTA_ICON_SIZE}
         />
         <Text style={[styles.ctaLabel, isDisabled && styles.ctaLabelDisabled]}>
-          {t(
-            hasCheckedOut
-              ? 'attendance.check_out_done'
-              : 'attendance.check_out_action',
-          )}
+          {t(getLabelKey())}
         </Text>
       </AppButton>
     </View>

@@ -15,10 +15,14 @@ import { useTranslation } from 'react-i18next';
 const ARROW_SIZE = ScaleSize(18);
 const GRADIENT_END = { x: 1, y: 0 };
 const GRADIENT_START = { x: 0, y: 0 };
+const SIGN_IN_COLORS = [Colors.blue01, Colors.navy02];
+// Nút khoá thì phẳng một tông xám, khỏi gợi ý là còn bấm được.
+const SIGN_IN_DISABLED_COLORS = [Colors.gray27, Colors.gray27];
 
 type LoginFormProps = {
   readonly email: string;
   readonly emailError?: string;
+  readonly isSubmitDisabled: boolean;
   readonly onChangeEmail: (text: string) => void;
   readonly onChangePassword: (text: string) => void;
   readonly onFocusField?: () => void;
@@ -39,6 +43,7 @@ type LoginFormProps = {
 function LoginForm({
   email,
   emailError,
+  isSubmitDisabled,
   onChangeEmail,
   onChangePassword,
   onFocusField,
@@ -108,19 +113,27 @@ function LoginForm({
       </View>
 
       <AppButton
+        disabled={isSubmitDisabled}
         onPress={onSignIn}
         style={styles.signInButton}
         testID="AuthorisationSignIn"
       >
         <LinearGradient
-          colors={[Colors.blue01, Colors.navy02]}
+          colors={isSubmitDisabled ? SIGN_IN_DISABLED_COLORS : SIGN_IN_COLORS}
           end={GRADIENT_END}
           start={GRADIENT_START}
           style={styles.signInGradient}
         >
-          <Text style={styles.signInLabel}>{t('authorisation.sign_in')}</Text>
+          <Text
+            style={[
+              styles.signInLabel,
+              isSubmitDisabled && styles.signInLabelDisabled,
+            ]}
+          >
+            {t('authorisation.sign_in')}
+          </Text>
           <Image
-            color={Colors.white}
+            color={isSubmitDisabled ? Colors.gray24 : Colors.white}
             height={ARROW_SIZE}
             name="ic_arrow_right"
             type="svg"
@@ -179,6 +192,9 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: ScaleSize(17),
     fontWeight: '700',
+  },
+  signInLabelDisabled: {
+    color: Colors.gray24,
   },
 });
 

@@ -5,13 +5,21 @@ import type { TAttendanceLogEntry, TAttendanceMode } from '@type/attendance';
 import AppNavigator from '@navigation/AppNavigator';
 import dayjs from 'dayjs';
 import Geolocation from '@react-native-community/geolocation';
+import { AppConstants } from '@constants';
+import { AttendanceSelector } from '@services/selectors';
+import {
+  checkedIn,
+  checkedOut,
+} from '@services/slices/attendance/attendanceSlice';
 import { DeviceUtils } from '@kits/core/utils';
 import { LocationUtils, PermissionUtils } from '@utils';
 import { Paths } from '@navigation/paths';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const TIME_FORMAT = 'HH:mm';
+const ISO_DATE_FORMAT = 'YYYY-MM-DD';
 
 const POSITION_TIMEOUT_MS = 15_000;
 const POSITION_MAX_AGE_MS = 10_000;
@@ -22,12 +30,6 @@ const POSITION_MAX_AGE_MS = 10_000;
 
 const OFFICE_NAME = 'Trụ sở Specom';
 const OFFICE_FLOOR = 'Tầng 8';
-const SHIFT_NAME = 'Ca hành chính';
-const SHIFT_START_AT = '09:00';
-const SHIFT_END_AT = '18:00';
-// `undefined` là trạng thái chưa chấm công vào ca; đổi sang `undefined` để xem
-// màn hình lúc chưa có dấu chấm công nào.
-const CHECK_IN_AT: string | undefined = '08:26';
 
 // Bán kính được phép chấm công quanh văn phòng, tính bằng mét. Dưới ngưỡng này
 // thì banner báo "trong khu vực" và nút chấm công mở.
@@ -62,11 +64,21 @@ export function useAttendance() {
   const mapRef = useRef<MapView>(null);
   const isMountedRef = useRef(true);
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+
+  const storedCheckInAt = useAppSelector(AttendanceSelector.getCheckInAt);
+  const storedCheckOutAt = useAppSelector(AttendanceSelector.getCheckOutAt);
+  const workDate = useAppSelector(AttendanceSelector.getWorkDate);
+
+  // Dấu chấm công được persist nên phải chốt theo ngày: mở app sáng hôm sau là
+  // ngày công mới, chưa có dấu nào.
+  const isToday = workDate === dayjs().format(ISO_DATE_FORMAT);
+  const checkedInAt = isToday ? storedCheckInAt : undefined;
+  const checkedOutAt = isToday ? storedCheckOutAt : undefined;
 
   const [mode, setMode] = useState<TAttendanceMode>('gps');
   const [hasLocationPermission, setHasLocationPermission] = useState(false);
   const [distanceInMeters, setDistanceInMeters] = useState<number>();
-  const [checkedOutAt, setCheckedOutAt] = useState<string>();
   const [isLocating, setIsLocating] = useState(false);
   const [currentCoordinates, setCurrentCoordinates] =
     useState<LocationUtils.TCoordinates>();
@@ -152,11 +164,18 @@ export function useAttendance() {
   const logEntries = useMemo<readonly TAttendanceLogEntry[]>(
     () => [
       {
-        at: CHECK_IN_AT,
+        at: checkedInAt,
         icon: 'ic_sign_in',
         id: 'check-in',
-        place: `${OFFICE_NAME} · ${OFFICE_FLOOR}`,
-        title: t('attendance.log_check_in'),
+        place: checkedInAt
+          ? `${OFFICE_NAME} · ${OFFICE_FLOOR}`
+          : t('attendance.log_pending'),
+        // Cách chấm chỉ có nghĩa khi đã chấm thật; chưa chấm thì chỉ nêu tên dấu.
+        title: t(
+          checkedInAt
+            ? 'attendance.log_check_in_method'
+            : 'attendance.log_check_in',
+        ),
       },
       {
         at: checkedOutAt,
@@ -168,15 +187,24 @@ export function useAttendance() {
         title: t('attendance.log_check_out'),
       },
     ],
-    [checkedOutAt, t],
+    [checkedInAt, checkedOutAt, t],
   );
 
-  const onCheckOut = useCallback(() => {
-    setCheckedOutAt(dayjs().format(TIME_FORMAT));
-  }, []);
+  /**
+   * Một nút cho cả hai dấu: chưa vào ca thì chấm vào, đã vào ca thì chấm ra.
+   * Giờ chấm đi thẳng vào redux nên màn Trang chủ đọc lại được ngay.
+   */
+  const onPunch = useCallback(() => {
+    const now = dayjs();
+    const punch = {
+      at: now.format(TIME_FORMAT),
+      workDate: now.format(ISO_DATE_FORMAT),
+    };
+    dispatch(checkedInAt ? checkedOut(punch) : checkedIn(punch));
+  }, [checkedInAt, dispatch]);
 
   const onPressHistory = useCallback(() => {
-    AppNavigator.navigate(Paths.Requests);
+    AppNavigator.navigate(Paths.AttendanceHistories);
   }, []);
 
   const onPressExplanation = useCallback(() => {
@@ -194,11 +222,12 @@ export function useAttendance() {
   }, [refreshLocation]);
 
   return {
-    checkedInAt: CHECK_IN_AT,
+    checkedInAt,
     checkedOutAt,
     currentCoordinates,
     distanceInMeters,
     geofenceRadius: GEOFENCE_RADIUS_M,
+    hasCheckedIn: !!checkedInAt,
     hasCheckedOut: !!checkedOutAt,
     hasLocationPermission,
     initialRegion: OFFICE_REGION,
@@ -209,16 +238,16 @@ export function useAttendance() {
     mapRef,
     mode,
     officeName: OFFICE_NAME,
-    onCheckOut,
     onGoBack,
     onPressExplanation,
     onPressHistory,
     onPressLocate,
+    onPunch,
     setMode,
     shift: {
-      endAt: SHIFT_END_AT,
-      name: SHIFT_NAME,
-      startAt: SHIFT_START_AT,
+      endAt: AppConstants.OFFICE_SHIFT.END_AT,
+      name: t('attendance.shift_office_name'),
+      startAt: AppConstants.OFFICE_SHIFT.START_AT,
     },
   };
 }

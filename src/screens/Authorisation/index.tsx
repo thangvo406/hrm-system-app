@@ -19,6 +19,7 @@ function Authorisation() {
   const {
     email,
     errors,
+    isSubmitDisabled,
     onChangeEmail,
     onChangePassword,
     onFocusPassword,
@@ -45,6 +46,7 @@ function Authorisation() {
                 <LoginForm
                   email={email}
                   emailError={errors.email}
+                  isSubmitDisabled={isSubmitDisabled}
                   onChangeEmail={onChangeEmail}
                   onChangePassword={onChangePassword}
                   onFocusField={onFocusField}
