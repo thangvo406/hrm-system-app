@@ -1,3 +1,4 @@
+import type { SelectionItem } from '@dialogs/Selection';
 import type {
   TAttendanceHistoryEntry,
   TAttendanceHistoryFilter,
@@ -5,12 +6,17 @@ import type {
 
 import AppNavigator from '@navigation/AppNavigator';
 import dayjs from 'dayjs';
+import Selection from '@dialogs/Selection';
 import { getCurrentTime } from '@utils/date';
 import { useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const ISO_DATE_FORMAT = 'YYYY-MM-DD';
+const MONTH_ID_FORMAT = 'YYYY-MM';
 const MONTH_OFFSET = 1;
 const MONTH_STEP = 1;
+/** Số tháng liệt kê trong bộ chọn tháng, tính ngược từ tháng hiện tại. */
+const MONTH_OPTIONS_COUNT = 12;
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 // Dữ liệu dựng UI, chưa nối API. Khi có endpoint thật thì thay khối này bằng
@@ -125,6 +131,7 @@ const matchesFilter = (
  * chấm công, và danh sách ngày công của tháng đó.
  */
 export function useAttendanceHistories() {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<TAttendanceHistoryFilter>('all');
   // Neo ở ngày 1 chứ không phải ngày hôm nay: `add(1, 'month')` từ ngày 31 sẽ bị
   // kẹp về 28/30, lùi lại không ra ngày cũ nữa nên bấm tới/lui vài nhịp là trôi
@@ -160,12 +167,45 @@ export function useAttendanceHistories() {
   }, []);
 
   /**
-   * Mở bộ chọn tháng. Chưa có dialog chọn tháng trong dự án nên tạm để trống,
-   * đúng tinh thần màn này vẫn đang chạy trên MOCK_ENTRIES.
+   * Mở bộ chọn tháng bằng bottom sheet `Selection` dùng chung.
+   *
+   * Danh sách dựng ngay lúc bấm chứ không memo: nó bám theo tháng hiện tại, mà
+   * phiên làm việc có thể vắt qua nửa đêm cuối tháng.
    */
   const onPickMonth = useCallback(() => {
-    // TODO: mở dialog chọn tháng khi có component picker dùng chung.
-  }, []);
+    // Màn lịch sử nên không liệt kê tháng tương lai; mới nhất xếp trước.
+    const latestMonth = getCurrentTime().startOf('month');
+    const items: readonly SelectionItem[] = Array.from(
+      { length: MONTH_OPTIONS_COUNT },
+      (_, index) => {
+        const month = latestMonth.subtract(index, 'month');
+        return {
+          id: month.format(MONTH_ID_FORMAT),
+          label: t('attendance_histories.month_label', {
+            month: month.month() + MONTH_OFFSET,
+            year: month.year(),
+          }),
+        };
+      },
+    );
+    const selectedId = dayjs(monthAnchor).format(MONTH_ID_FORMAT);
+
+    AppNavigator.showDialog({
+      screen: Selection,
+      popupType: 'bottomSheet',
+      items,
+      // Truyền nguyên item chứ không phải id: bấm "Xác nhận" mà không chọn lại
+      // thì `Selection` trả về đúng giá trị khởi tạo này.
+      itemSelected: items.find(item => item.id === selectedId),
+      onSelect: (item: SelectionItem) => {
+        setMonthAnchor(dayjs(item.id).format(ISO_DATE_FORMAT));
+      },
+      pathDisplay: 'label',
+      pathSelected: 'id',
+      showSearchBar: false,
+      title: t('attendance_histories.pick_month'),
+    });
+  }, [monthAnchor, t]);
 
   const onGoBack = useCallback(() => {
     AppNavigator.goBack();

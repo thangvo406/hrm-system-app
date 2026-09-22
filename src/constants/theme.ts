@@ -34,6 +34,7 @@ export const Colors = {
   yellow03: '#F59E0B',
   yellow04: '#FFF8E1',
   yellow05: '#FDEBD3',
+  yellow06: '#FFF7ED',
   orange01: '#F6DCC2',
   orange02: '#C2410C',
   green01: '#1A6633',
@@ -47,6 +48,8 @@ export const Colors = {
   green09: '#E8F5E8',
   green10: '#0F4B25',
   green11: '#F2F8F3',
+  green12: '#16A34A',
+  green13: '#DCFCE7',
   red01: '#E05353',
   red02: '#FCE8E8',
   red03: '#D9534F',
@@ -65,8 +68,11 @@ export const Colors = {
   blue03: '#EBF2FD',
   blue04: '#1B5FB5',
   blue05: '#93A6C8',
+  blue06: '#DBEAFE',
   purple01: '#7343C4',
   purple02: '#EFE8FB',
+  purple03: '#9333EA',
+  purple04: '#F3E8FF',
 } as const;
 
 export const Fonts = {} as const;
