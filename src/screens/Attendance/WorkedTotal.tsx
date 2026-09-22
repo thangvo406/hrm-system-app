@@ -1,5 +1,5 @@
-import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
+import { getCurrentTime } from '@utils/date';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text } from 'react-native';
@@ -16,7 +16,7 @@ const TIME_SEPARATOR = ':';
 /** "HH:mm" của hôm nay -> dayjs. Tách tay để khỏi cần plugin customParseFormat. */
 const parseTimeToday = (time: string) => {
   const [hours, minutes] = time.split(TIME_SEPARATOR).map(Number);
-  return dayjs()
+  return getCurrentTime()
     .hour(hours ?? 0)
     .minute(minutes ?? 0)
     .second(0);
@@ -39,14 +39,14 @@ type Properties = {
  */
 function WorkedTotal({ checkedInAt, checkedOutAt }: Properties) {
   const { t } = useTranslation();
-  const [now, setNow] = useState(() => dayjs());
+  const [now, setNow] = useState(getCurrentTime);
 
   useEffect(() => {
     // Đã ra ca thì tổng đứng yên, không cần timer nữa.
     if (checkedOutAt) {
       return;
     }
-    const timer = setInterval(() => setNow(dayjs()), TICK_MS);
+    const timer = setInterval(() => setNow(getCurrentTime()), TICK_MS);
     return () => clearInterval(timer);
   }, [checkedOutAt]);
 

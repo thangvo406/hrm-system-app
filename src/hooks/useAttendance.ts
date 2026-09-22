@@ -3,10 +3,10 @@ import type { Region } from 'react-native-maps';
 import type { TAttendanceLogEntry, TAttendanceMode } from '@type/attendance';
 
 import AppNavigator from '@navigation/AppNavigator';
-import dayjs from 'dayjs';
 import Geolocation from '@react-native-community/geolocation';
 import { AppConstants } from '@constants';
 import { AttendanceSelector } from '@services/selectors';
+import { getCurrentTime } from '@utils/date';
 import {
   checkedIn,
   checkedOut,
@@ -72,7 +72,7 @@ export function useAttendance() {
 
   // Dấu chấm công được persist nên phải chốt theo ngày: mở app sáng hôm sau là
   // ngày công mới, chưa có dấu nào.
-  const isToday = workDate === dayjs().format(ISO_DATE_FORMAT);
+  const isToday = workDate === getCurrentTime().format(ISO_DATE_FORMAT);
   const checkedInAt = isToday ? storedCheckInAt : undefined;
   const checkedOutAt = isToday ? storedCheckOutAt : undefined;
 
@@ -195,7 +195,7 @@ export function useAttendance() {
    * Giờ chấm đi thẳng vào redux nên màn Trang chủ đọc lại được ngay.
    */
   const onPunch = useCallback(() => {
-    const now = dayjs();
+    const now = getCurrentTime();
     const punch = {
       at: now.format(TIME_FORMAT),
       workDate: now.format(ISO_DATE_FORMAT),

@@ -8,9 +8,9 @@ import type {
 } from '@type/home';
 
 import AppNavigator from '@navigation/AppNavigator';
-import dayjs from 'dayjs';
 import { AppConstants } from '@constants';
 import { AttendanceSelector } from '@services/selectors';
+import { getCurrentTime } from '@utils/date';
 import { Paths } from '@navigation/paths';
 import { StatusBar } from 'react-native';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
@@ -100,7 +100,7 @@ export function useHome() {
   const workDate = useAppSelector(AttendanceSelector.getWorkDate);
 
   const shift = useMemo<THomeShift>(() => {
-    const isToday = workDate === dayjs().format(ISO_DATE_FORMAT);
+    const isToday = workDate === getCurrentTime().format(ISO_DATE_FORMAT);
     const todayCheckInAt = isToday ? checkInAt : undefined;
 
     return {
@@ -150,7 +150,7 @@ export function useHome() {
   return {
     balance: MOCK_BALANCE,
     employee: MOCK_EMPLOYEE,
-    greetingKey: getGreetingKey(dayjs().hour()),
+    greetingKey: getGreetingKey(getCurrentTime().hour()),
     headerHeight,
     notifications: MOCK_NOTIFICATIONS,
     onCheckOut,

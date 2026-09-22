@@ -3,6 +3,17 @@ import dayjs from 'dayjs';
 import Globals from './Globals';
 import { Colors } from '@constants';
 
+export const getCurrentTime = (): dayjs.Dayjs => {
+  const syncedTime = dayjs(Globals.currentTime);
+  if (!Globals.currentTimeSyncedAt || !syncedTime.isValid()) {
+    return dayjs();
+  }
+  return syncedTime.add(
+    Date.now() - Globals.currentTimeSyncedAt,
+    'millisecond',
+  );
+};
+
 const isLeapYear = (year: number): boolean => {
   return (
     (year % 4 === 0 && year % 100 !== 0 && year % 400 !== 0) ||
@@ -49,7 +60,7 @@ export const calculateThisWeek = ({ dateVisible, currentDate }: any) => {
 };
 
 export function findNearestDate(items: any[], fieldName: string) {
-  const today = dayjs(Globals.currentTime);
+  const today = getCurrentTime();
 
   if (items?.length == 1) {
     return items[0];
@@ -130,7 +141,7 @@ export function getRangeDateByRange(selectedDates: any) {
       textColor: string;
     }
   > = {};
-  const today = dayjs(Globals.currentTime).format('YYYY-MM-DD');
+  const today = getCurrentTime().format('YYYY-MM-DD');
   if (dates?.length > 0 && dates.length < 2) {
     const startDate = new Date(dates[0]);
     const formatTime = formatDateTime(startDate);
@@ -189,7 +200,7 @@ export function getSingleDate(_: any, selectedDates: any) {
 export function getRangeDateByWeek(_, selectedDate: any) {
   const { monday, sunday: lastWeek } = getWeekDate(new Date(selectedDate));
   const results = {};
-  const today = dayjs(Globals.currentTime).format('YYYY-MM-DD');
+  const today = getCurrentTime().format('YYYY-MM-DD');
   results[dayjs(monday.getTime()).format('YYYY-MM-DD')] = {
     startingDay: true,
     textColor: Colors.primary,
@@ -364,7 +375,7 @@ export const formatTime = (total: number) => {
 };
 
 export const isToday = (date: any) => {
-  const now = dayjs(Globals.currentTime);
+  const now = getCurrentTime();
   return (
     now.isSame(date, 'day') &&
     now.isSame(date, 'month') &&
@@ -374,7 +385,7 @@ export const isToday = (date: any) => {
 
 export function isTomorrow(date: string | Date | dayjs.Dayjs): boolean {
   const input = dayjs(date);
-  const tomorrow = dayjs(Globals.currentTime).add(1, 'day');
+  const tomorrow = getCurrentTime().add(1, 'day');
   return (
     input.isSame(tomorrow, 'day') &&
     input.isSame(tomorrow, 'month') &&

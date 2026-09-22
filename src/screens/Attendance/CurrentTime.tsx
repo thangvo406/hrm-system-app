@@ -1,7 +1,7 @@
 import type { TAttendanceShift } from '@type/attendance';
 
-import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useState } from 'react';
+import { getCurrentTime } from '@utils/date';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
@@ -30,10 +30,10 @@ type Properties = {
  */
 function CurrentTime({ shift }: Properties) {
   const { t } = useTranslation();
-  const [now, setNow] = useState(() => dayjs());
+  const [now, setNow] = useState(getCurrentTime);
 
   useEffect(() => {
-    const timer = setInterval(() => setNow(dayjs()), CLOCK_TICK_MS);
+    const timer = setInterval(() => setNow(getCurrentTime()), CLOCK_TICK_MS);
     return () => clearInterval(timer);
   }, []);
 

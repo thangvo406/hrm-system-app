@@ -35,6 +35,7 @@ import timezone from 'dayjs/plugin/timezone';
 import dayjs from 'dayjs';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getAppConfigRequest } from '@services/slices/app/appSlice';
+import useTime from '@hooks/useTime';
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
@@ -70,6 +71,7 @@ function ApplicationNavigator() {
   const hasTriggeredSwipeAction = useRef(false);
   const isScrolling = useRef(false);
   const dispatch = useAppDispatch();
+  useTime();
   const pendingSwipeAction = useRef<
     'NONE' | 'GO_BACK' | 'GO_TAB_GENERAL' | 'RESOURCE_DETAIL_SWIPE'
   >('NONE');

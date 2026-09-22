@@ -1,36 +1,22 @@
 import type {
   TAttendanceHistoryEntry,
   TAttendanceHistoryFilter,
-  TAttendanceWeekDay,
 } from '@type/attendance';
 
 import AppNavigator from '@navigation/AppNavigator';
 import dayjs from 'dayjs';
+import { getCurrentTime } from '@utils/date';
 import { useCallback, useMemo, useState } from 'react';
 
 const ISO_DATE_FORMAT = 'YYYY-MM-DD';
 const MONTH_OFFSET = 1;
-const DAYS_PER_WEEK = 7;
-const WEEK_STEP = 1;
 const MONTH_STEP = 1;
-
-/** Thứ Hai đầu tuần, khớp thứ tự T2 → CN của dải tuần trong thiết kế. */
-const WEEKDAY_KEYS: readonly string[] = [
-  'date.date_range.mon',
-  'date.date_range.tue',
-  'date.date_range.wed',
-  'date.date_range.thu',
-  'date.date_range.fri',
-  'date.date_range.sat',
-  'date.date_range.sun',
-];
 
 // ─── Mock data ────────────────────────────────────────────────────────────────
 // Dữ liệu dựng UI, chưa nối API. Khi có endpoint thật thì thay khối này bằng
 // saga callback (xem flow ở .cursorrules §5).
 
 const DEVICE = 'iPhone 16 Pro';
-const TODAY = '2026-09-16';
 
 const MOCK_ENTRIES: readonly TAttendanceHistoryEntry[] = [
   {
@@ -135,66 +121,40 @@ const matchesFilter = (
 };
 
 /**
- * Toàn bộ logic màn Lịch sử chấm công: dải tuần ở đầu màn, bộ lọc theo loại dấu
- * chấm công, và danh sách ngày công.
- *
- * Dải tuần là bộ điều hướng ngày, KHÔNG lọc danh sách bên dưới — đúng như thiết
- * kế, nơi tuần đang xem là 14–20 nhưng danh sách vẫn liệt kê cả ngày 12 và 13.
+ * Toàn bộ logic màn Lịch sử chấm công: tháng đang xem, bộ lọc theo loại dấu
+ * chấm công, và danh sách ngày công của tháng đó.
  */
 export function useAttendanceHistories() {
   const [filter, setFilter] = useState<TAttendanceHistoryFilter>('all');
-  const [selectedDate, setSelectedDate] = useState(TODAY);
-
-  const entries = useMemo(
-    () => MOCK_ENTRIES.filter(entry => matchesFilter(entry, filter)),
-    [filter],
+  // Neo ở ngày 1 chứ không phải ngày hôm nay: `add(1, 'month')` từ ngày 31 sẽ bị
+  // kẹp về 28/30, lùi lại không ra ngày cũ nữa nên bấm tới/lui vài nhịp là trôi
+  // mất tháng.
+  const [monthAnchor, setMonthAnchor] = useState(() =>
+    getCurrentTime().startOf('month').format(ISO_DATE_FORMAT),
   );
 
-  const weekDays = useMemo<readonly TAttendanceWeekDay[]>(() => {
-    // `day()` trả 0 cho Chủ Nhật, mà dải tuần bắt đầu từ Thứ Hai, nên Chủ Nhật
-    // phải lùi về tuần trước chứ không mở đầu tuần mới.
-    const selected = dayjs(selectedDate);
-    const weekdayIndex = (selected.day() + DAYS_PER_WEEK - 1) % DAYS_PER_WEEK;
-    const monday = selected.subtract(weekdayIndex, 'day');
-
-    return Array.from({ length: DAYS_PER_WEEK }, (_, index) => {
-      const date = monday.add(index, 'day');
-      const iso = date.format(ISO_DATE_FORMAT);
-      return {
-        date: iso,
-        dayNumber: date.date(),
-        id: iso,
-        status: MOCK_ENTRIES.find(entry => entry.date === iso)?.status,
-        weekdayKey: WEEKDAY_KEYS[index] ?? '',
-      };
-    });
-  }, [selectedDate]);
-
   const visibleMonth = useMemo(() => {
-    const selected = dayjs(selectedDate);
-    return { month: selected.month() + MONTH_OFFSET, year: selected.year() };
-  }, [selectedDate]);
+    const anchor = dayjs(monthAnchor);
+    return { month: anchor.month() + MONTH_OFFSET, year: anchor.year() };
+  }, [monthAnchor]);
 
-  const onPressPreviousWeek = useCallback(() => {
-    setSelectedDate(previous =>
-      dayjs(previous).subtract(WEEK_STEP, 'week').format(ISO_DATE_FORMAT),
+  const entries = useMemo(() => {
+    const anchor = dayjs(monthAnchor);
+    return MOCK_ENTRIES.filter(
+      entry =>
+        dayjs(entry.date).isSame(anchor, 'month') &&
+        matchesFilter(entry, filter),
     );
-  }, []);
-
-  const onPressNextWeek = useCallback(() => {
-    setSelectedDate(previous =>
-      dayjs(previous).add(WEEK_STEP, 'week').format(ISO_DATE_FORMAT),
-    );
-  }, []);
+  }, [filter, monthAnchor]);
 
   const onPressPreviousMonth = useCallback(() => {
-    setSelectedDate(previous =>
+    setMonthAnchor(previous =>
       dayjs(previous).subtract(MONTH_STEP, 'month').format(ISO_DATE_FORMAT),
     );
   }, []);
 
   const onPressNextMonth = useCallback(() => {
-    setSelectedDate(previous =>
+    setMonthAnchor(previous =>
       dayjs(previous).add(MONTH_STEP, 'month').format(ISO_DATE_FORMAT),
     );
   }, []);
@@ -217,13 +177,8 @@ export function useAttendanceHistories() {
     onGoBack,
     onPickMonth,
     onPressNextMonth,
-    onPressNextWeek,
     onPressPreviousMonth,
-    onPressPreviousWeek,
-    selectedDate,
     setFilter,
-    setSelectedDate,
     visibleMonth,
-    weekDays,
   };
 }
