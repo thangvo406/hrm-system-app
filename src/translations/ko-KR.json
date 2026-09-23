@@ -247,7 +247,8 @@
       "go_home": "홈으로 이동"
     },
     "profile": {
-      "title": "내 정보 수정",
+      "title": "내 정보",
+      "tagline": "함께 더 나은 일터를 만들어 갑니다",
       "change_photo": "사진 변경",
       "section_basic": "기본 정보",
       "field_name": "이름",
@@ -273,7 +274,25 @@
         "title": "프로필 사진 선택",
         "take_photo": "사진 촬영",
         "open_gallery": "앨범에서 선택"
-      }
+      },
+      "contact_email": "회사 이메일",
+      "contact_phone": "전화번호",
+      "contact_office": "근무지",
+      "section_personal": "내 정보",
+      "section_support": "지원",
+      "item_personal_info": "개인 정보",
+      "item_personal_info_subtitle": "이름, 생년월일, 성별…",
+      "item_work_info": "근무 정보",
+      "item_work_info_subtitle": "부서, 직위, 사번…",
+      "item_account_info": "계정 정보",
+      "item_account_info_subtitle": "이메일, 전화번호, 비밀번호 변경…",
+      "item_help_center": "고객센터",
+      "item_help_center_subtitle": "자주 묻는 질문, 사용 안내",
+      "item_feedback": "의견 보내기",
+      "item_feedback_subtitle": "의견을 들려주세요",
+      "item_about": "앱 정보",
+      "item_about_subtitle": "버전 {{version}}",
+      "logout": "로그아웃"
     },
     "home": {
       "tab_home": "홈",

@@ -3,6 +3,7 @@ import type { ImageName } from './index';
 const imageNames = {
   bg_home_header: 'bg_home_header',
   bg_login: 'bg_login',
+  bg_profile: 'bg_profile',
   ic_arrow_left_gray: 'ic_arrow_left_gray',
   ic_camera_gray: 'ic_camera_gray',
   ic_close_gray: 'ic_close_gray',

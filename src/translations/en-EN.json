@@ -494,7 +494,8 @@
       "go_home": "Go to Home"
     },
     "profile": {
-      "title": "My Page",
+      "title": "Profile",
+      "tagline": "Building a better place to work, together",
       "change_photo": "Change photo",
       "section_basic": "Basic Information",
       "field_name": "Name",
@@ -520,7 +521,25 @@
         "title": "Select avatar",
         "take_photo": "Take a photo",
         "open_gallery": "Open photo"
-      }
+      },
+      "contact_email": "Work email",
+      "contact_phone": "Phone",
+      "contact_office": "Office",
+      "section_personal": "Your details",
+      "section_support": "Support",
+      "item_personal_info": "Personal details",
+      "item_personal_info_subtitle": "Name, date of birth, gender…",
+      "item_work_info": "Job details",
+      "item_work_info_subtitle": "Department, role, employee ID…",
+      "item_account_info": "Account",
+      "item_account_info_subtitle": "Email, phone, change password…",
+      "item_help_center": "Help centre",
+      "item_help_center_subtitle": "Common questions and guides",
+      "item_feedback": "Send feedback",
+      "item_feedback_subtitle": "Tell us what you think",
+      "item_about": "About this app",
+      "item_about_subtitle": "Version {{version}}",
+      "logout": "Sign out"
     },
     "home": {
       "tab_home": "Home",

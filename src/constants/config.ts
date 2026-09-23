@@ -361,3 +361,7 @@ export const AttributeType = {
   MULTIPLE_ONCE: 'MULTIPLE',
   MULTIPLE_CHOICE: 'QUANTITY',
 };
+
+// Phiên bản hiện ở mục "Giới thiệu ứng dụng". Đang khai báo tay vì dự án chưa
+// có `react-native-device-info`; nhớ sửa cùng lúc với `package.json`.
+export const APP_VERSION = '1.2.0';

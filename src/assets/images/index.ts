@@ -1,6 +1,7 @@
 const images = {
   bg_home_header: require('./bg_home_header.png') as number,
   bg_login: require('./bg_login.png') as number,
+  bg_profile: require('./bg_profile.png') as number,
   ic_arrow_left_gray: require('./ic_arrow_left_gray.png') as number,
   ic_camera_gray: require('./ic_camera_gray.png') as number,
   ic_close_gray: require('./ic_close_gray.png') as number,

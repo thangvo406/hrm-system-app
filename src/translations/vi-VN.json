@@ -494,7 +494,8 @@
       "go_home": "Về trang chủ"
     },
     "profile": {
-      "title": "Trang cá nhân",
+      "title": "Cá nhân",
+      "tagline": "Cùng nhau xây dựng môi trường làm việc tốt hơn",
       "change_photo": "Đổi ảnh",
       "section_basic": "Thông tin cơ bản",
       "field_name": "Họ tên",
@@ -520,7 +521,25 @@
         "title": "Chọn ảnh đại diện",
         "take_photo": "Chụp ảnh",
         "open_gallery": "Mở thư viện ảnh"
-      }
+      },
+      "contact_email": "Email công ty",
+      "contact_phone": "Số điện thoại",
+      "contact_office": "Địa điểm làm việc",
+      "section_personal": "Thông tin cá nhân",
+      "section_support": "Hỗ trợ",
+      "item_personal_info": "Thông tin cá nhân",
+      "item_personal_info_subtitle": "Họ tên, ngày sinh, giới tính…",
+      "item_work_info": "Thông tin công việc",
+      "item_work_info_subtitle": "Phòng ban, chức vụ, mã nhân viên…",
+      "item_account_info": "Thông tin tài khoản",
+      "item_account_info_subtitle": "Email, số điện thoại, đổi mật khẩu…",
+      "item_help_center": "Trung tâm trợ giúp",
+      "item_help_center_subtitle": "Câu hỏi thường gặp, hướng dẫn sử dụng",
+      "item_feedback": "Gửi phản hồi",
+      "item_feedback_subtitle": "Chia sẻ ý kiến của bạn với chúng tôi",
+      "item_about": "Giới thiệu ứng dụng",
+      "item_about_subtitle": "Phiên bản {{version}}",
+      "logout": "Đăng xuất"
     },
     "home": {
       "tab_home": "Trang chủ",
