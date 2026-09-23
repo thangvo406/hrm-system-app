@@ -272,7 +272,7 @@ export function useRequests() {
   const onOpenDetail = useCallback((item: TRequestItem) => {
     AppNavigator.navigate(Paths.RequestDetail, {
       id: item.id,
-      status: item.status,
+      type: item.type,
     });
   }, []);
 

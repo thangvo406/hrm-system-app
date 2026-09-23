@@ -13,11 +13,10 @@ const ICON_SIZE = ScaleSize(20);
 
 type Properties = {
   readonly onGoBack: () => void;
-  readonly onPressMore: () => void;
 };
 
-/** Dải navy đầu màn chi tiết: quay lại, tiêu đề và nút tác vụ khác. */
-function RequestDetailHeader({ onGoBack, onPressMore }: Properties) {
+/** Dải navy đầu màn chi tiết: nút quay lại và tiêu đề. */
+function RequestDetailHeader({ onGoBack }: Properties) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
 

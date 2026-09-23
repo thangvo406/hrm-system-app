@@ -1,3 +1,5 @@
+import type { IconName } from '@assets/icons';
+
 /** Loại đơn nhân viên có thể gửi. Nghỉ ốm đã bị bỏ khỏi luồng này. */
 export type TRequestType =
   | 'attendance_explanation'
@@ -113,7 +115,9 @@ export type TRequestSection = {
 };
 
 /** Trạng thái của một bước trong luồng duyệt. */
-export type TApprovalStepStatus = 'current' | 'done' | 'rejected' | 'waiting';
+export type TApprovalStepStatus =
+  /** Mốc gửi đơn — không phải một cấp duyệt nên không kèm kết luận. */
+  'created' | 'current' | 'done' | 'rejected' | 'waiting';
 
 /** Một mốc trong luồng phê duyệt của đơn, kể cả mốc tạo đơn. */
 export type TRequestApprovalStep = {
@@ -135,12 +139,30 @@ export type TRequestActivity = {
   readonly title: string;
 };
 
+/** Loại tệp đính kèm — quyết định icon và màu ô tệp. */
+export type TAttachmentKind = 'image' | 'pdf';
+
 /** Một tệp người dùng đính kèm vào đơn. */
 export type TRequestAttachment = {
   readonly id: string;
+  readonly kind: TAttachmentKind;
   readonly name: string;
   /** Dung lượng đã định dạng sẵn, ví dụ `1.2 MB`. */
   readonly sizeLabel: string;
+};
+
+/**
+ * Một dòng trong khối "Thông tin chung".
+ *
+ * Mỗi loại đơn có bộ trường riêng — đơn OT hỏi giờ làm thêm và loại OT, đơn
+ * giải trình hỏi loại sự kiện — nên các trường là DỮ LIỆU chứ không phải bố
+ * cục cứng trong component.
+ */
+export type TRequestDetailField = {
+  readonly icon: IconName;
+  readonly id: string;
+  readonly labelKey: string;
+  readonly value: string;
 };
 
 /** Toàn bộ nội dung màn Chi tiết đơn từ. */
@@ -152,15 +174,9 @@ export type TRequestDetail = {
   readonly code: string;
   readonly createdAt: string;
   readonly createdBy: string;
-  readonly dayCount: number;
-  readonly duration: TLeaveDuration;
-  /** `undefined` khi đơn chỉ áp dụng cho đúng một ngày. */
-  readonly endDate?: string;
+  /** Các dòng của khối "Thông tin chung", khác nhau theo loại đơn. */
+  readonly fields: readonly TRequestDetailField[];
   readonly id: string;
-  readonly reason: string;
-  /** Số ngày phép còn lại sau khi trừ đơn này. */
-  readonly remainingDays: number;
-  readonly startDate: string;
   readonly status: TRequestStatus;
   readonly type: TRequestType;
 };

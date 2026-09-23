@@ -8,6 +8,7 @@ export { useI18n } from './language/useI18n';
 export { useKeyboardOffset } from './useKeyboardOffset';
 export { useNotifications } from './useNotifications';
 export { useProfile } from './useProfile';
+export { useProfileInformation } from './useProfileInformation';
 export { useRequestDetail } from './useRequestDetail';
 export { useRequests } from './useRequests';
 export { useReturnParams } from './useReturnParams';

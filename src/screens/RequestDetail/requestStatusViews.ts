@@ -63,9 +63,16 @@ export const APPROVAL_STEP_VIEWS: Record<
     readonly foreground: string;
     /** `undefined` là nút rỗng — bước chưa tới lượt. */
     readonly icon?: IconName;
+    /** `undefined` với mốc gửi đơn — nó không phải một cấp duyệt. */
     readonly noteKey?: string;
   }
 > = {
+  created: {
+    background: Colors.green12,
+    continues: true,
+    foreground: Colors.white,
+    icon: 'ic_check',
+  },
   current: {
     background: Colors.yellow03,
     continues: false,

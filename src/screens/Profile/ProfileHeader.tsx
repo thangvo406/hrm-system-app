@@ -46,12 +46,18 @@ function ProfileHeader({ employee }: Properties) {
       <Text numberOfLines={1} style={styles.name}>
         {employee.fullName}
       </Text>
-      <Text numberOfLines={1} style={styles.jobTitle}>
-        {employee.jobTitle}
-      </Text>
-      <Text numberOfLines={2} style={styles.department}>
-        {employee.department}
-      </Text>
+      {/* Hồ sơ từ API chưa có chức danh/phòng ban; bỏ hẳn dòng thay vì để
+          một khoảng trống giữa tên và câu khẩu hiệu. */}
+      {employee.jobTitle ? (
+        <Text numberOfLines={1} style={styles.jobTitle}>
+          {employee.jobTitle}
+        </Text>
+      ) : undefined}
+      {employee.department ? (
+        <Text numberOfLines={2} style={styles.department}>
+          {employee.department}
+        </Text>
+      ) : undefined}
 
       <View style={styles.tagline}>
         <Image

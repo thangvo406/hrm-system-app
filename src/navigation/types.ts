@@ -1,7 +1,7 @@
 import type { AppStacks, Paths } from '@navigation/paths';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { StackScreenProps } from '@react-navigation/stack';
-import type { TRequestStatus } from '@type/requests';
+import type { TRequestType } from '@type/requests';
 
 export type RootScreenProps<
   S extends keyof RootStackParamList = keyof RootStackParamList,
@@ -31,8 +31,9 @@ export type RootStackParamList = {
   [Paths.Notifications]: undefined;
   [Paths.PaymentOffline]: { isTab?: boolean } | undefined;
   [Paths.Profile]: undefined;
+  [Paths.ProfileInformation]: undefined;
   [Paths.QRCodeViewer]: { isTab?: boolean } | undefined;
-  [Paths.RequestDetail]: { id?: string; status?: TRequestStatus } | undefined;
+  [Paths.RequestDetail]: { id?: string; type?: TRequestType } | undefined;
   [Paths.Requests]: undefined;
   [Paths.Startup]: undefined;
 };

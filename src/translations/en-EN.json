@@ -541,6 +541,20 @@
       "item_about_subtitle": "Version {{version}}",
       "logout": "Sign out"
     },
+    "profile_information": {
+      "title": "Personal details",
+      "section_basic": "Basics",
+      "section_other": "Other details",
+      "field_full_name": "Full name",
+      "field_birthday": "Date of birth",
+      "field_gender": "Gender",
+      "field_phone": "Phone",
+      "field_email": "Personal email",
+      "field_address": "Address",
+      "field_nationality": "Nationality",
+      "field_marital_status": "Marital status",
+      "not_updated": "Not set yet"
+    },
     "home": {
       "tab_home": "Home",
       "tab_order": "Order",
@@ -804,7 +818,20 @@
       "step_rejected": "Rejected",
       "step_waiting": "Not reached yet",
       "activity_title": "Activity",
-      "cancel": "Withdraw request"
+      "cancel": "Withdraw request",
+      "field_note": "Note",
+      "field_time": "Hours",
+      "field_place": "Work location",
+      "field_overtime_date": "Overtime date",
+      "field_overtime_kind": "Overtime type",
+      "field_explanation_date": "Date to explain",
+      "field_event_type": "Event type",
+      "field_late_arrival_date": "Late arrival date",
+      "field_early_leave_date": "Early leave date",
+      "attachments_count": "{{total}} files",
+      "file_pdf": "PDF",
+      "file_image": "JPG",
+      "file_meta": "{{kind}} · {{size}}"
     },
     "announcements": {
       "title": "Notice",

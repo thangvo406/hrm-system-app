@@ -58,6 +58,8 @@ const IS_PAN_RESPONDER_ENABLED = true;
 // ]);
 
 const handleNavigationStateChange = () => {
+  const currentName = AppNavigator.getCurrentRoute() ?? '';
+  console.log('currentName', currentName);
   // const currentName = AppNavigator.getCurrentRoute()?.name ?? '';
   // if (HIDDEN_CART_PATHS.has(currentName)) {
   //   Globals.cartBtnRef?.hide?.();

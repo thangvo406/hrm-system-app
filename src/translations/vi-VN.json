@@ -541,6 +541,20 @@
       "item_about_subtitle": "Phiên bản {{version}}",
       "logout": "Đăng xuất"
     },
+    "profile_information": {
+      "title": "Thông tin cá nhân",
+      "section_basic": "Thông tin cơ bản",
+      "section_other": "Thông tin khác",
+      "field_full_name": "Họ và tên",
+      "field_birthday": "Ngày sinh",
+      "field_gender": "Giới tính",
+      "field_phone": "Số điện thoại",
+      "field_email": "Email cá nhân",
+      "field_address": "Địa chỉ",
+      "field_nationality": "Quốc tịch",
+      "field_marital_status": "Tình trạng hôn nhân",
+      "not_updated": "Chưa cập nhật"
+    },
     "home": {
       "tab_home": "Trang chủ",
       "tab_order": "Đặt hàng",
@@ -789,7 +803,7 @@
       "field_days": "Số ngày nghỉ",
       "field_remaining": "Số ngày còn lại",
       "field_duration": "Hình thức",
-      "field_reason": "Lý do nghỉ",
+      "field_reason": "Lý do",
       "period_range": "{{start}} – {{end}}",
       "days_value": "{{days}} ngày",
       "remaining_value": "{{days}} ngày (sau khi trừ)",
@@ -803,7 +817,20 @@
       "step_rejected": "Đã từ chối",
       "step_waiting": "Chưa xử lý",
       "activity_title": "Lịch sử hoạt động",
-      "cancel": "Hủy đơn"
+      "cancel": "Hủy đơn",
+      "field_note": "Ghi chú",
+      "field_time": "Thời gian",
+      "field_place": "Địa điểm làm việc",
+      "field_overtime_date": "Ngày làm thêm",
+      "field_overtime_kind": "Loại OT",
+      "field_explanation_date": "Ngày cần giải trình",
+      "field_event_type": "Loại sự kiện",
+      "field_late_arrival_date": "Ngày đi muộn",
+      "field_early_leave_date": "Ngày về sớm",
+      "attachments_count": "{{total}} tệp tin",
+      "file_pdf": "PDF",
+      "file_image": "JPG",
+      "file_meta": "{{kind}} · {{size}}"
     },
     "announcements": {
       "title": "Thông báo",

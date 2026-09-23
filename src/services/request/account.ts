@@ -1,18 +1,17 @@
-import type { IImage, SingleApiResponse } from '@type/common';
+import type { SingleApiResponse } from '@type/common';
 
 import { httpRequest } from '@services/common/httpRequest';
 import { EndPoints } from '@constants';
 
 export interface Profile {
-  avatar?: IImage;
-  email?: string;
-  fullName?: string;
-  id?: string | number;
-  identityNumber?: string;
-  name?: string;
-  permissionCodes?: string[];
-  phone?: string;
-  roleCode?: string;
+  id: string;
+  username: string;
+  email: string;
+  phone: string;
+  accountStatus: string;
+  fullName: string;
+  avatar: any;
+  createdAt: string;
 }
 
 export const getProfile = async (): Promise<Profile> => {

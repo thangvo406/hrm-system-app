@@ -5,6 +5,7 @@ import Ic_arrow_rightIcon from './ic_arrow_right.svg';
 import Ic_bellIcon from './ic_bell.svg';
 import Ic_buildingIcon from './ic_building.svg';
 import Ic_calendarIcon from './ic_calendar.svg';
+import Ic_cameraIcon from './ic_camera.svg';
 import Ic_cartIcon from './ic_cart.svg';
 import Ic_checkIcon from './ic_check.svg';
 import Ic_check_circleIcon from './ic_check_circle.svg';
@@ -18,7 +19,10 @@ import Ic_dotsIcon from './ic_dots.svg';
 import Ic_downloadIcon from './ic_download.svg';
 import Ic_filterIcon from './ic_filter.svg';
 import Ic_funnelIcon from './ic_funnel.svg';
+import Ic_genderIcon from './ic_gender.svg';
+import Ic_globeIcon from './ic_globe.svg';
 import Ic_gridIcon from './ic_grid.svg';
+import Ic_heartIcon from './ic_heart.svg';
 import Ic_helpIcon from './ic_help.svg';
 import Ic_homeIcon from './ic_home.svg';
 import Ic_imageIcon from './ic_image.svg';
@@ -48,9 +52,11 @@ import Ic_starIcon from './ic_star.svg';
 import Ic_sunIcon from './ic_sun.svg';
 import Ic_sunriseIcon from './ic_sunrise.svg';
 import Ic_sunsetIcon from './ic_sunset.svg';
+import Ic_tagIcon from './ic_tag.svg';
 import Ic_trashIcon from './ic_trash.svg';
 import Ic_usersIcon from './ic_users.svg';
 import Ic_walletIcon from './ic_wallet.svg';
+import Ic_warningIcon from './ic_warning.svg';
 import UserIcon from './user.svg';
 import XCircleIcon from './x-circle.svg';
 
@@ -62,6 +68,7 @@ const icons = {
   ic_bell: Ic_bellIcon,
   ic_building: Ic_buildingIcon,
   ic_calendar: Ic_calendarIcon,
+  ic_camera: Ic_cameraIcon,
   ic_cart: Ic_cartIcon,
   ic_check: Ic_checkIcon,
   ic_check_circle: Ic_check_circleIcon,
@@ -75,7 +82,10 @@ const icons = {
   ic_download: Ic_downloadIcon,
   ic_filter: Ic_filterIcon,
   ic_funnel: Ic_funnelIcon,
+  ic_gender: Ic_genderIcon,
+  ic_globe: Ic_globeIcon,
   ic_grid: Ic_gridIcon,
+  ic_heart: Ic_heartIcon,
   ic_help: Ic_helpIcon,
   ic_home: Ic_homeIcon,
   ic_image: Ic_imageIcon,
@@ -105,9 +115,11 @@ const icons = {
   ic_sun: Ic_sunIcon,
   ic_sunrise: Ic_sunriseIcon,
   ic_sunset: Ic_sunsetIcon,
+  ic_tag: Ic_tagIcon,
   ic_trash: Ic_trashIcon,
   ic_users: Ic_usersIcon,
   ic_wallet: Ic_walletIcon,
+  ic_warning: Ic_warningIcon,
   user: UserIcon,
   'x-circle': XCircleIcon,
 } as const;

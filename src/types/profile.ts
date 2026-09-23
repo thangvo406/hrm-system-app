@@ -1,14 +1,5 @@
 import type { IconName } from '@assets/icons';
 
-/** Một ô trong dải liên hệ của thẻ danh tính. */
-export type TProfileContact = {
-  readonly icon: IconName;
-  readonly id: string;
-  /** Khoá i18n của dòng nhãn bên dưới giá trị. */
-  readonly labelKey: string;
-  readonly value: string;
-};
-
 /** Một dòng điều hướng trong nhóm menu. */
 export type TProfileMenuItem = {
   readonly icon: IconName;
@@ -26,10 +17,27 @@ export type TProfileMenuSection = {
 
 /** Người đang đăng nhập, hiển thị ở đầu màn Cá nhân. */
 export type TProfileEmployee = {
-  readonly contacts: readonly TProfileContact[];
+  /** Rỗng khi hồ sơ chưa có dữ liệu này; lúc đó màn không dựng dòng đó. */
   readonly department: string;
   readonly fullName: string;
   /** Chữ viết tắt dựng sẵn cho ô avatar, ví dụ `NA`. */
   readonly initials: string;
+  /** Rỗng khi hồ sơ chưa có dữ liệu này; lúc đó màn không dựng dòng đó. */
   readonly jobTitle: string;
+};
+
+/** Một trường thông tin chỉ đọc trên màn Thông tin cá nhân. */
+export type TProfileInfoField = {
+  readonly icon: IconName;
+  readonly id: string;
+  /** Khoá i18n của nhãn đứng trên giá trị. */
+  readonly labelKey: string;
+  readonly value: string;
+};
+
+/** Một nhóm trường thông tin có tiêu đề riêng. */
+export type TProfileInfoSection = {
+  readonly fields: readonly TProfileInfoField[];
+  readonly id: string;
+  readonly titleKey: string;
 };

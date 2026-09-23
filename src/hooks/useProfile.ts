@@ -1,40 +1,16 @@
 import type { TProfileEmployee, TProfileMenuSection } from '@type/profile';
 
+import AppNavigator from '@navigation/AppNavigator';
+import { AccountSelector } from '@services/selectors';
 import { AppConstants } from '@constants';
+import { getInitials } from '@utils/profile';
+import { AppStacks, Paths } from '@navigation/paths';
 import { logout } from '@services/slices/auth/authSlice';
-import { useAppDispatch } from '@services/common/storeHooks';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { useCallback, useMemo } from 'react';
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
-// Phần hồ sơ dựng UI, chưa nối API. Khi có endpoint thật thì đọc từ
-// `AccountSelector.getProfile` thay cho khối này.
-
-const MOCK_EMPLOYEE: TProfileEmployee = {
-  contacts: [
-    {
-      icon: 'ic_mail',
-      id: 'email',
-      labelKey: 'profile.contact_email',
-      value: 'nguyenvana@company.com',
-    },
-    {
-      icon: 'ic_phone',
-      id: 'phone',
-      labelKey: 'profile.contact_phone',
-      value: '0123 456 789',
-    },
-    {
-      icon: 'ic_building',
-      id: 'office',
-      labelKey: 'profile.contact_office',
-      value: 'TP. Hồ Chí Minh',
-    },
-  ],
-  department: 'Phòng Công nghệ thông tin',
-  fullName: 'Nguyễn Văn A',
-  initials: 'NA',
-  jobTitle: 'Mobile Developer',
-};
+/** Trống nghĩa là hồ sơ chưa có dữ liệu — header sẽ không dựng dòng đó. */
+const EMPTY_VALUE = '';
 
 // ──────────────────────────────────────────────────────────────────────────────
 
@@ -89,24 +65,45 @@ const MENU_SECTIONS: readonly TProfileMenuSection[] = [
   },
 ];
 
-/** Toàn bộ logic màn Cá nhân: hồ sơ, các nhóm menu và đăng xuất. */
+const MENU_PATHS: Readonly<Record<string, Paths | undefined>> = {
+  personal_info: Paths.ProfileInformation,
+};
+
 export function useProfile() {
   const dispatch = useAppDispatch();
+  const profile = useAppSelector(AccountSelector.getProfile);
 
-  // Chỉ mục "Giới thiệu ứng dụng" cần giá trị chèn; gom sẵn một lần cho cả hai
-  // nhóm thay vì mỗi dòng tự tra.
+  /**
+   * Hồ sơ lấy thẳng từ redux (`account.profile`, do saga `getProfileRequest`
+   * nạp ở màn Trang chủ). Chức danh và phòng ban chưa có trong kiểu `Profile`
+   * của API nên để rỗng — header tự bỏ hai dòng đó thay vì hiện chỗ trống.
+   */
+  const employee: TProfileEmployee = useMemo(
+    () => ({
+      department: EMPTY_VALUE,
+      fullName: profile?.fullName ?? EMPTY_VALUE,
+      initials: getInitials(profile?.fullName),
+      jobTitle: EMPTY_VALUE,
+    }),
+    [profile],
+  );
+
   const menuValues = useMemo(() => ({ version: AppConstants.APP_VERSION }), []);
 
-  // Saga `logout` lo phần dọn dẹp rồi reset về stack Auth.
   const onLogout = useCallback(() => {
     dispatch(logout());
+    AppNavigator.reset(AppStacks.Auth);
   }, [dispatch]);
 
-  // Chưa có màn đích cho từng mục: chỗ nối sẵn cho sau.
-  const onPressItem = useCallback(() => {}, []);
+  const onPressItem = useCallback((id: string) => {
+    const path = MENU_PATHS[id];
+    if (path) {
+      AppNavigator.navigate(path);
+    }
+  }, []);
 
   return {
-    employee: MOCK_EMPLOYEE,
+    employee,
     menuValues,
     onLogout,
     onPressItem,

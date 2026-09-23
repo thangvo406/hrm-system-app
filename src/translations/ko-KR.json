@@ -294,6 +294,20 @@
       "item_about_subtitle": "버전 {{version}}",
       "logout": "로그아웃"
     },
+    "profile_information": {
+      "title": "개인 정보",
+      "section_basic": "기본 정보",
+      "section_other": "기타 정보",
+      "field_full_name": "이름",
+      "field_birthday": "생년월일",
+      "field_gender": "성별",
+      "field_phone": "전화번호",
+      "field_email": "개인 이메일",
+      "field_address": "주소",
+      "field_nationality": "국적",
+      "field_marital_status": "결혼 여부",
+      "not_updated": "미등록"
+    },
     "home": {
       "tab_home": "홈",
       "tab_order": "오더",
@@ -557,7 +571,20 @@
       "step_rejected": "반려됨",
       "step_waiting": "미처리",
       "activity_title": "활동 기록",
-      "cancel": "신청 취소"
+      "cancel": "신청 취소",
+      "field_note": "비고",
+      "field_time": "시간",
+      "field_place": "근무 장소",
+      "field_overtime_date": "초과 근무일",
+      "field_overtime_kind": "초과 근무 유형",
+      "field_explanation_date": "소명 대상일",
+      "field_event_type": "사유 구분",
+      "field_late_arrival_date": "지각일",
+      "field_early_leave_date": "조퇴일",
+      "attachments_count": "파일 {{total}}개",
+      "file_pdf": "PDF",
+      "file_image": "JPG",
+      "file_meta": "{{kind}} · {{size}}"
     },
     "notifications": {
       "title": "알림",

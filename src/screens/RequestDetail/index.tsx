@@ -14,6 +14,7 @@ import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useRequestDetail } from '@hooks';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Màn Chi tiết đơn từ.
@@ -23,12 +24,13 @@ import { useRequestDetail } from '@hooks';
  * biến mất khi đơn không có tệp nào, thay vì dựng một thẻ rỗng.
  */
 function RequestDetail(props: RootScreenProps<Paths.RequestDetail>) {
-  const { detail, onCancel, onDownload, onGoBack, onPressMore, showCancel } =
+  const { detail, onCancel, onDownload, onGoBack, showCancel } =
     useRequestDetail(props);
+  const { t } = useTranslation();
 
   return (
     <View style={styles.container} testID="RequestDetailScreen">
-      <RequestDetailHeader onGoBack={onGoBack} onPressMore={onPressMore} />
+      <RequestDetailHeader onGoBack={onGoBack} />
 
       <View style={styles.sheet}>
         <ScrollView
@@ -40,12 +42,15 @@ function RequestDetail(props: RootScreenProps<Paths.RequestDetail>) {
           <StatusBanner status={detail.status} />
 
           <SectionCard icon="ic_document" titleKey="request_detail.info_title">
-            <InfoRows detail={detail} />
+            <InfoRows fields={detail.fields} />
           </SectionCard>
 
           {detail.attachments.length > 0 ? (
             <SectionCard
               icon="ic_paperclip"
+              sideLabel={t('request_detail.attachments_count', {
+                total: detail.attachments.length,
+              })}
               titleKey="request_detail.attachments_title"
             >
               <View style={styles.attachments}>

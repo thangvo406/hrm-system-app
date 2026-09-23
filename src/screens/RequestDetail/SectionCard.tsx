@@ -17,11 +17,13 @@ const CARD_ELEVATION = 2;
 type Properties = {
   readonly children: ReactNode;
   readonly icon: IconName;
+  /** Chữ nhỏ nép mép phải tiêu đề, ví dụ số tệp đính kèm. */
+  readonly sideLabel?: string;
   readonly titleKey: string;
 };
 
 /** Vỏ chung của bốn khối trên màn chi tiết: icon + tiêu đề, gạch ngang, nội dung. */
-function SectionCard({ children, icon, titleKey }: Properties) {
+function SectionCard({ children, icon, sideLabel, titleKey }: Properties) {
   const { t } = useTranslation();
 
   return (
@@ -35,6 +37,9 @@ function SectionCard({ children, icon, titleKey }: Properties) {
           width={ICON_SIZE}
         />
         <Text style={styles.title}>{t(titleKey)}</Text>
+        {sideLabel ? (
+          <Text style={styles.sideLabel}>{sideLabel}</Text>
+        ) : undefined}
       </View>
 
       <View style={styles.divider} />
@@ -67,6 +72,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: ScaleSize(8),
+  },
+  sideLabel: {
+    color: Colors.gray18,
+    flex: 1,
+    fontSize: ScaleSize(12),
+    textAlign: 'right',
   },
   title: {
     color: Colors.navy04,
