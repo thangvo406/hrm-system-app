@@ -36,4 +36,5 @@ export type RootStackParamList = {
   [Paths.RequestDetail]: { id?: string; type?: TRequestType } | undefined;
   [Paths.Requests]: undefined;
   [Paths.Startup]: undefined;
+  [Paths.WorkspaceInformation]: undefined;
 };

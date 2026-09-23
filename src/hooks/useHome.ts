@@ -8,9 +8,10 @@ import type {
 } from '@type/home';
 
 import AppNavigator from '@navigation/AppNavigator';
+import { AccountSelector, AttendanceSelector } from '@services/selectors';
 import { AppConstants } from '@constants';
-import { AttendanceSelector } from '@services/selectors';
 import { getCurrentTime } from '@utils/date';
+import { getInitials } from '@utils/profile';
 import { Paths } from '@navigation/paths';
 import { StatusBar } from 'react-native';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
@@ -23,15 +24,22 @@ const MORNING_END_HOUR = 12;
 const AFTERNOON_END_HOUR = 18;
 const ISO_DATE_FORMAT = 'YYYY-MM-DD';
 
+/** Trống nghĩa là hồ sơ chưa nạp xong — thà để trắng còn hơn hiện tên người khác. */
+const EMPTY_VALUE = '';
+
 // ─── Mock data ────────────────────────────────────────────────────────────────
 // Dữ liệu dựng UI, chưa nối API. Khi có endpoint thật thì thay 4 hằng dưới đây
 // bằng saga callback (xem flow ở .cursorrules §5) và bỏ luôn khối này.
 
+/**
+ * Mã nhân viên và phòng ban vẫn là dữ liệu dựng: kiểu `Profile` của API chưa có
+ * hai trường này. Tên và chữ viết tắt thì đọc từ redux, xem `employee` bên dưới.
+ */
 const MOCK_EMPLOYEE: THomeEmployee = {
   code: 'NV0142',
   department: 'Phòng Kỹ thuật',
-  fullName: 'Nguyễn Minh Thư',
-  initials: 'MT',
+  fullName: EMPTY_VALUE,
+  initials: EMPTY_VALUE,
   unreadNotifications: 3,
 };
 
@@ -98,6 +106,20 @@ export function useHome() {
   const checkInAt = useAppSelector(AttendanceSelector.getCheckInAt);
   const checkOutAt = useAppSelector(AttendanceSelector.getCheckOutAt);
   const workDate = useAppSelector(AttendanceSelector.getWorkDate);
+  const profile = useAppSelector(AccountSelector.getProfile);
+
+  /**
+   * Tên và chữ viết tắt lấy thẳng từ redux (`account.profile`, do
+   * `getProfileRequest` nạp mỗi lần tab này được focus), giống màn Cá nhân.
+   */
+  const employee = useMemo<THomeEmployee>(
+    () => ({
+      ...MOCK_EMPLOYEE,
+      fullName: profile?.fullName ?? EMPTY_VALUE,
+      initials: getInitials(profile?.fullName),
+    }),
+    [profile],
+  );
 
   const shift = useMemo<THomeShift>(() => {
     const isToday = workDate === getCurrentTime().format(ISO_DATE_FORMAT);
@@ -149,7 +171,7 @@ export function useHome() {
 
   return {
     balance: MOCK_BALANCE,
-    employee: MOCK_EMPLOYEE,
+    employee,
     greetingKey: getGreetingKey(getCurrentTime().hour()),
     headerHeight,
     notifications: MOCK_NOTIFICATIONS,

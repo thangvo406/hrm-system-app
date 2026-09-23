@@ -1,3 +1,5 @@
+import type { IconName } from '@assets/icons';
+
 import { Keyboard, StyleSheet, Text, View } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ScaleSize } from '@kits/core';
@@ -12,12 +14,15 @@ import { DeviceUtils } from '@kits/core/utils';
 import { Colors } from '@constants';
 
 const CHECK_ICON_SIZE = ScaleSize(22);
+const LEADING_ICON_SIZE = ScaleSize(24);
 const CHECK_COLOR = '#5BB85C';
 const TEXT_COLOR = '#1A1A1A';
 const { ifIOS } = DeviceUtils;
 const NOOP = (): void => undefined;
 
 export type SelectionItem = {
+  /** Biểu tượng đứng trước nhãn; bỏ trống thì dòng chỉ có chữ như cũ. */
+  readonly icon?: IconName;
   readonly id: string;
   readonly label: string;
 };
@@ -180,7 +185,17 @@ function Selection({
               style={[styles.option, { borderBottomWidth: isLast ? 0 : 1 }]}
               testID={`selection-option-${item.id}`}
             >
-              <Text style={styles.optionLabel}>{get(item, pathDisplay)}</Text>
+              <View style={styles.optionContent}>
+                {item.icon === undefined ? undefined : (
+                  <Image
+                    height={LEADING_ICON_SIZE}
+                    name={item.icon}
+                    type="svg"
+                    width={LEADING_ICON_SIZE}
+                  />
+                )}
+                <Text style={styles.optionLabel}>{get(item, pathDisplay)}</Text>
+              </View>
               <View style={styles.checkSlot}>
                 {isSelected ? (
                   <Image
@@ -238,6 +253,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: ScaleSize(12),
     borderColor: Colors.gray2,
+  },
+  optionContent: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexShrink: 1,
+    gap: ScaleSize(12),
   },
   optionLabel: {
     color: TEXT_COLOR,

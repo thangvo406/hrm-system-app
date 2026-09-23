@@ -26,13 +26,28 @@ export type TProfileEmployee = {
   readonly jobTitle: string;
 };
 
-/** Một trường thông tin chỉ đọc trên màn Thông tin cá nhân. */
+/** Tô giá trị thành viên nhãn màu thay vì chữ thường. */
+export type TInfoFieldBadge = 'danger' | 'neutral' | 'success' | 'warning';
+
+/** Một trường thông tin chỉ đọc. */
 export type TProfileInfoField = {
+  /** `undefined` là giá trị hiện dạng chữ thường. */
+  readonly badge?: TInfoFieldBadge;
   readonly icon: IconName;
   readonly id: string;
   /** Khoá i18n của nhãn đứng trên giá trị. */
   readonly labelKey: string;
   readonly value: string;
+};
+
+/** Một thẻ trên màn Thông tin công việc. */
+export type TWorkspaceInfoCard = {
+  readonly fields: readonly TProfileInfoField[];
+  /** Biểu tượng trong ô vuông canh giữa ở đầu thẻ. */
+  readonly icon: IconName;
+  readonly id: string;
+  /** `undefined` là thẻ không có tiêu đề riêng. */
+  readonly titleKey?: string;
 };
 
 /** Một nhóm trường thông tin có tiêu đề riêng. */

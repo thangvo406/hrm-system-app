@@ -14,6 +14,7 @@ export enum Paths {
   RequestDetail = 'request_detail',
   Requests = 'requests',
   Startup = 'startup',
+  WorkspaceInformation = 'workspace_information',
 }
 
 export enum AppStacks {

@@ -12,3 +12,4 @@ export { default as QRCodeViewer } from './QRCodeViewer';
 export { default as RequestDetail } from './RequestDetail';
 export { default as Requests } from './Requests';
 export { default as Startup } from './Startup/Startup';
+export { default as WorkspaceInformation } from './WorkspaceInformation';

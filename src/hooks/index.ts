@@ -12,3 +12,4 @@ export { useProfileInformation } from './useProfileInformation';
 export { useRequestDetail } from './useRequestDetail';
 export { useRequests } from './useRequests';
 export { useReturnParams } from './useReturnParams';
+export { useWorkspaceInformation } from './useWorkspaceInformation';

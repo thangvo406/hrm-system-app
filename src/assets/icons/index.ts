@@ -2,7 +2,9 @@ import EyeOffIcon from './eye-off.svg';
 import EyeIcon from './eye.svg';
 import Ic_arrow_left_grayIcon from './ic_arrow_left_gray.svg';
 import Ic_arrow_rightIcon from './ic_arrow_right.svg';
+import Ic_badgeIcon from './ic_badge.svg';
 import Ic_bellIcon from './ic_bell.svg';
+import Ic_briefcaseIcon from './ic_briefcase.svg';
 import Ic_buildingIcon from './ic_building.svg';
 import Ic_calendarIcon from './ic_calendar.svg';
 import Ic_cameraIcon from './ic_camera.svg';
@@ -18,6 +20,9 @@ import Ic_documentIcon from './ic_document.svg';
 import Ic_dotsIcon from './ic_dots.svg';
 import Ic_downloadIcon from './ic_download.svg';
 import Ic_filterIcon from './ic_filter.svg';
+import Ic_flag_gbIcon from './ic_flag_gb.svg';
+import Ic_flag_krIcon from './ic_flag_kr.svg';
+import Ic_flag_vnIcon from './ic_flag_vn.svg';
 import Ic_funnelIcon from './ic_funnel.svg';
 import Ic_genderIcon from './ic_gender.svg';
 import Ic_globeIcon from './ic_globe.svg';
@@ -47,6 +52,7 @@ import Ic_sendIcon from './ic_send.svg';
 import Ic_shieldIcon from './ic_shield.svg';
 import Ic_sign_inIcon from './ic_sign_in.svg';
 import Ic_sign_outIcon from './ic_sign_out.svg';
+import Ic_sitemapIcon from './ic_sitemap.svg';
 import Ic_stackIcon from './ic_stack.svg';
 import Ic_starIcon from './ic_star.svg';
 import Ic_sunIcon from './ic_sun.svg';
@@ -65,7 +71,9 @@ const icons = {
   eye: EyeIcon,
   ic_arrow_left_gray: Ic_arrow_left_grayIcon,
   ic_arrow_right: Ic_arrow_rightIcon,
+  ic_badge: Ic_badgeIcon,
   ic_bell: Ic_bellIcon,
+  ic_briefcase: Ic_briefcaseIcon,
   ic_building: Ic_buildingIcon,
   ic_calendar: Ic_calendarIcon,
   ic_camera: Ic_cameraIcon,
@@ -81,6 +89,9 @@ const icons = {
   ic_dots: Ic_dotsIcon,
   ic_download: Ic_downloadIcon,
   ic_filter: Ic_filterIcon,
+  ic_flag_gb: Ic_flag_gbIcon,
+  ic_flag_kr: Ic_flag_krIcon,
+  ic_flag_vn: Ic_flag_vnIcon,
   ic_funnel: Ic_funnelIcon,
   ic_gender: Ic_genderIcon,
   ic_globe: Ic_globeIcon,
@@ -110,6 +121,7 @@ const icons = {
   ic_shield: Ic_shieldIcon,
   ic_sign_in: Ic_sign_inIcon,
   ic_sign_out: Ic_sign_outIcon,
+  ic_sitemap: Ic_sitemapIcon,
   ic_stack: Ic_stackIcon,
   ic_star: Ic_starIcon,
   ic_sun: Ic_sunIcon,
