@@ -29,9 +29,6 @@ function RequestsHeader({ onPressCreate }: Properties) {
         <Text numberOfLines={1} style={styles.title}>
           {t('requests.title')}
         </Text>
-        <Text numberOfLines={2} style={styles.subtitle}>
-          {t('requests.subtitle')}
-        </Text>
       </View>
 
       <AppButton
@@ -91,11 +88,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: FILTER_BUTTON_SIZE,
   },
-  subtitle: {
-    color: Colors.blue05,
-    fontSize: ScaleSize(13),
-    marginTop: ScaleSize(4),
-  },
+
   title: {
     color: Colors.white,
     fontSize: ScaleSize(24),

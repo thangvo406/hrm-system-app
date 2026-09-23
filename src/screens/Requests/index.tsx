@@ -10,20 +10,13 @@ import TypeFilters from './TypeFilters';
 import { Colors } from '@constants';
 import { SectionList, StyleSheet, Text, View } from 'react-native';
 import { ScaleSize } from '@kits/core';
+import { useCallback } from 'react';
 import { useRequests } from '@hooks';
 import { useTranslation } from 'react-i18next';
 
 const SCROLL_EVENT_THROTTLE = 16;
 
 const keyExtractor = (item: TRequestItem) => item.id;
-
-// Khai báo ngoài component: hàm dựng dòng mà đổi tham chiếu mỗi lần render thì
-// `SectionList` phải dựng lại toàn bộ dòng đang hiện.
-const renderItem = ({
-  item,
-}: SectionListRenderItemInfo<TRequestItem, TRequestSection>) => (
-  <RequestRow item={item} />
-);
 
 const renderSectionHeader = ({ section }: { section: TRequestSection }) => (
   <MonthHeader month={section.month} year={section.year} />
@@ -36,6 +29,7 @@ function Requests() {
     listContentStyle,
     onChangeTab,
     onCreateRequest,
+    onOpenDetail,
     onOpenFilter,
     onScroll,
     onTabsLayout,
@@ -46,6 +40,15 @@ function Requests() {
     typeFilter,
   } = useRequests();
   const { t } = useTranslation();
+
+  // Bọc trong `useCallback`: hàm dựng dòng mà đổi tham chiếu mỗi lần render
+  // thì `SectionList` phải dựng lại toàn bộ dòng đang hiện.
+  const renderItem = useCallback(
+    ({ item }: SectionListRenderItemInfo<TRequestItem, TRequestSection>) => (
+      <RequestRow item={item} onPress={onOpenDetail} />
+    ),
+    [onOpenDetail],
+  );
 
   return (
     <View style={styles.container} testID="RequestsScreen">

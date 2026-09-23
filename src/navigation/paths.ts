@@ -10,6 +10,7 @@ export enum Paths {
   PaymentOffline = 'payment_offline',
   Profile = 'profile',
   QRCodeViewer = 'qr_code_viewer',
+  RequestDetail = 'request_detail',
   Requests = 'requests',
   Startup = 'startup',
 }

@@ -8,5 +8,6 @@ export { default as Notifications } from './Notifications';
 export { default as PaymentOffline } from './PaymentOffline';
 export { default as Profile } from './Profile';
 export { default as QRCodeViewer } from './QRCodeViewer';
+export { default as RequestDetail } from './RequestDetail';
 export { default as Requests } from './Requests';
 export { default as Startup } from './Startup/Startup';

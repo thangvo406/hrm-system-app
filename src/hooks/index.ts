@@ -6,5 +6,6 @@ export { useCreateRequest } from './useCreateRequest';
 export { useHome } from './useHome';
 export { useI18n } from './language/useI18n';
 export { useKeyboardOffset } from './useKeyboardOffset';
+export { useRequestDetail } from './useRequestDetail';
 export { useRequests } from './useRequests';
 export { useReturnParams } from './useReturnParams';

@@ -1,5 +1,6 @@
 import type { TRequestItem } from '@type/requests';
 
+import AppButton from '@components/AppButton';
 import dayjs from 'dayjs';
 import Image from '@components/Image';
 import React from 'react';
@@ -21,10 +22,11 @@ const DATE_FORMAT = 'DD/MM/YYYY';
 
 type Properties = {
   readonly item: TRequestItem;
+  readonly onPress: (item: TRequestItem) => void;
 };
 
 /** Một đơn từ trong danh sách: loại đơn, thời gian áp dụng, lý do và trạng thái. */
-function RequestRow({ item }: Properties) {
+function RequestRow({ item, onPress }: Properties) {
   const { t } = useTranslation();
   const tone = REQUEST_TYPE_STYLES[item.type];
   const startLabel = dayjs(item.startDate).format(DATE_FORMAT);
@@ -44,7 +46,13 @@ function RequestRow({ item }: Properties) {
   }
 
   return (
-    <View style={styles.container} testID={`RequestRow_${item.id}`}>
+    <AppButton
+      onPress={() => {
+        onPress(item);
+      }}
+      style={styles.container}
+      testID={`RequestRow_${item.id}`}
+    >
       <View style={[styles.circle, { backgroundColor: tone.tint }]}>
         <Image
           color={tone.ink}
@@ -93,7 +101,7 @@ function RequestRow({ item }: Properties) {
         type="svg"
         width={CHEVRON_SIZE}
       />
-    </View>
+    </AppButton>
   );
 }
 

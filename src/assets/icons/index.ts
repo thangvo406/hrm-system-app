@@ -10,8 +10,11 @@ import Ic_check_circleIcon from './ic_check_circle.svg';
 import Ic_chevron_downIcon from './ic_chevron_down.svg';
 import Ic_chevron_rightIcon from './ic_chevron_right.svg';
 import Ic_clockIcon from './ic_clock.svg';
+import Ic_closeIcon from './ic_close.svg';
 import Ic_credit_cardIcon from './ic_credit_card.svg';
 import Ic_documentIcon from './ic_document.svg';
+import Ic_dotsIcon from './ic_dots.svg';
+import Ic_downloadIcon from './ic_download.svg';
 import Ic_filterIcon from './ic_filter.svg';
 import Ic_funnelIcon from './ic_funnel.svg';
 import Ic_gridIcon from './ic_grid.svg';
@@ -39,6 +42,7 @@ import Ic_starIcon from './ic_star.svg';
 import Ic_sunIcon from './ic_sun.svg';
 import Ic_sunriseIcon from './ic_sunrise.svg';
 import Ic_sunsetIcon from './ic_sunset.svg';
+import Ic_trashIcon from './ic_trash.svg';
 import Ic_walletIcon from './ic_wallet.svg';
 import UserIcon from './user.svg';
 import XCircleIcon from './x-circle.svg';
@@ -56,8 +60,11 @@ const icons = {
   ic_chevron_down: Ic_chevron_downIcon,
   ic_chevron_right: Ic_chevron_rightIcon,
   ic_clock: Ic_clockIcon,
+  ic_close: Ic_closeIcon,
   ic_credit_card: Ic_credit_cardIcon,
   ic_document: Ic_documentIcon,
+  ic_dots: Ic_dotsIcon,
+  ic_download: Ic_downloadIcon,
   ic_filter: Ic_filterIcon,
   ic_funnel: Ic_funnelIcon,
   ic_grid: Ic_gridIcon,
@@ -85,6 +92,7 @@ const icons = {
   ic_sun: Ic_sunIcon,
   ic_sunrise: Ic_sunriseIcon,
   ic_sunset: Ic_sunsetIcon,
+  ic_trash: Ic_trashIcon,
   ic_wallet: Ic_walletIcon,
   user: UserIcon,
   'x-circle': XCircleIcon,

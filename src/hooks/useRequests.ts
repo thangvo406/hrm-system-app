@@ -269,6 +269,13 @@ export function useRequests() {
     }));
   }, []);
 
+  const onOpenDetail = useCallback((item: TRequestItem) => {
+    AppNavigator.navigate(Paths.RequestDetail, {
+      id: item.id,
+      status: item.status,
+    });
+  }, []);
+
   const onCreateRequest = useCallback(() => {
     AppNavigator.navigate(Paths.CreateRequest);
   }, []);
@@ -387,6 +394,7 @@ export function useRequests() {
     listContentStyle,
     onChangeTab,
     onCreateRequest,
+    onOpenDetail,
     onOpenFilter,
     onScroll,
     onTabsLayout,

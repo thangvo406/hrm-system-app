@@ -111,3 +111,56 @@ export type TRequestSection = {
   readonly month: number;
   readonly year: number;
 };
+
+/** Trạng thái của một bước trong luồng duyệt. */
+export type TApprovalStepStatus = 'current' | 'done' | 'rejected' | 'waiting';
+
+/** Một mốc trong luồng phê duyệt của đơn, kể cả mốc tạo đơn. */
+export type TRequestApprovalStep = {
+  /** Thời điểm bước này xảy ra; `undefined` khi chưa tới lượt. */
+  readonly at?: string;
+  readonly id: string;
+  readonly name: string;
+  /** Khoá i18n của vai trò, ví dụ "Quản lý trực tiếp". */
+  readonly roleKey: string;
+  readonly status: TApprovalStepStatus;
+};
+
+/** Một dòng trong nhật ký hoạt động của đơn. */
+export type TRequestActivity = {
+  readonly at: string;
+  readonly id: string;
+  /** Câu mô tả phụ bên dưới, thường là trạng thái đơn sau hành động đó. */
+  readonly note: string;
+  readonly title: string;
+};
+
+/** Một tệp người dùng đính kèm vào đơn. */
+export type TRequestAttachment = {
+  readonly id: string;
+  readonly name: string;
+  /** Dung lượng đã định dạng sẵn, ví dụ `1.2 MB`. */
+  readonly sizeLabel: string;
+};
+
+/** Toàn bộ nội dung màn Chi tiết đơn từ. */
+export type TRequestDetail = {
+  readonly activities: readonly TRequestActivity[];
+  readonly approvals: readonly TRequestApprovalStep[];
+  readonly attachments: readonly TRequestAttachment[];
+  /** Mã đơn hiện dưới tiêu đề, ví dụ `LV20260916001`. */
+  readonly code: string;
+  readonly createdAt: string;
+  readonly createdBy: string;
+  readonly dayCount: number;
+  readonly duration: TLeaveDuration;
+  /** `undefined` khi đơn chỉ áp dụng cho đúng một ngày. */
+  readonly endDate?: string;
+  readonly id: string;
+  readonly reason: string;
+  /** Số ngày phép còn lại sau khi trừ đơn này. */
+  readonly remainingDays: number;
+  readonly startDate: string;
+  readonly status: TRequestStatus;
+  readonly type: TRequestType;
+};
