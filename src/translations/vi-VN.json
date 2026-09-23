@@ -30,7 +30,18 @@
     "notifications": {
       "title": "Thông báo",
       "mark_read_success": "Cập nhật thành công",
-      "mark_read_failed": "Cập nhật thất bại. Vui lòng thử lại."
+      "mark_read_failed": "Cập nhật thất bại. Vui lòng thử lại.",
+      "read_all": "Đọc tất cả",
+      "filter_all": "Tất cả",
+      "filter_unread": "Chưa đọc",
+      "filter_needs_action": "Cần xác nhận",
+      "filter_with_count": "{{label}} · {{total}}",
+      "badge_acknowledge": "CẦN XÁC NHẬN",
+      "action_acknowledge": "Xác nhận đã đọc",
+      "action_detail": "Chi tiết",
+      "action_participate": "Tham gia",
+      "meta": "{{source}} · {{at}}",
+      "empty": "Không có thông báo nào ở mục này"
     },
     "pay_card": {
       "title": "Coop Pay",

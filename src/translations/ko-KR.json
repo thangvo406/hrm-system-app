@@ -543,7 +543,18 @@
     "notifications": {
       "title": "알림",
       "mark_read_success": "업데이트 되었습니다.",
-      "mark_read_failed": "업데이트에 실패했습니다. 다시 시도해 주세요."
+      "mark_read_failed": "업데이트에 실패했습니다. 다시 시도해 주세요.",
+      "read_all": "모두 읽음",
+      "filter_all": "전체",
+      "filter_unread": "안 읽음",
+      "filter_needs_action": "확인 필요",
+      "filter_with_count": "{{label}} · {{total}}",
+      "badge_acknowledge": "확인 필요",
+      "action_acknowledge": "읽음 확인",
+      "action_detail": "자세히",
+      "action_participate": "참여",
+      "meta": "{{source}} · {{at}}",
+      "empty": "표시할 알림이 없습니다"
     },
     "pay_card": {
       "title": "생협페이",

@@ -19,6 +19,7 @@ import Ic_filterIcon from './ic_filter.svg';
 import Ic_funnelIcon from './ic_funnel.svg';
 import Ic_gridIcon from './ic_grid.svg';
 import Ic_homeIcon from './ic_home.svg';
+import Ic_imageIcon from './ic_image.svg';
 import Ic_infoIcon from './ic_info.svg';
 import Ic_locationIcon from './ic_location.svg';
 import Ic_lockIcon from './ic_lock.svg';
@@ -69,6 +70,7 @@ const icons = {
   ic_funnel: Ic_funnelIcon,
   ic_grid: Ic_gridIcon,
   ic_home: Ic_homeIcon,
+  ic_image: Ic_imageIcon,
   ic_info: Ic_infoIcon,
   ic_location: Ic_locationIcon,
   ic_lock: Ic_lockIcon,

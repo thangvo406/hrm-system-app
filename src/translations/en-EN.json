@@ -30,7 +30,18 @@
     "notifications": {
       "title": "Notifications",
       "mark_read_success": "Updated successfully",
-      "mark_read_failed": "Update failed. Please try again."
+      "mark_read_failed": "Update failed. Please try again.",
+      "read_all": "Mark all read",
+      "filter_all": "All",
+      "filter_unread": "Unread",
+      "filter_needs_action": "Needs action",
+      "filter_with_count": "{{label}} · {{total}}",
+      "badge_acknowledge": "NEEDS ACTION",
+      "action_acknowledge": "Mark as read",
+      "action_detail": "Details",
+      "action_participate": "Take part",
+      "meta": "{{source}} · {{at}}",
+      "empty": "Nothing here right now"
     },
     "pay_card": {
       "title": "Coop Pay",
