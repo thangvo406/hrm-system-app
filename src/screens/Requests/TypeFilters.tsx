@@ -1,4 +1,4 @@
-import type { TRequestType } from '@type/requests';
+import type { TRequestType, TRequestTypeFilter } from '@type/requests';
 
 import AppButton from '@components/AppButton';
 import Image from '@components/Image';
@@ -6,27 +6,29 @@ import React from 'react';
 import { Colors } from '@constants';
 import { REQUEST_TYPE_ORDER, REQUEST_TYPE_STYLES } from './requestTypes';
 import { ScaleSize } from '@kits/core';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 const CIRCLE_SIZE = ScaleSize(36);
 const ICON_SIZE = ScaleSize(20);
 
+const CARD_WIDTH = ScaleSize(104);
+
 type Properties = {
   readonly onToggle: (type: TRequestType) => void;
-  /** `undefined` khi đang xem tất cả các loại đơn. */
-  readonly value: TRequestType | undefined;
+  readonly value: TRequestTypeFilter;
 };
 
-/**
- * Hàng thẻ lọc danh sách theo loại đơn. Thẻ đang chọn tô theo màu nhận diện
- * của loại đó và đảo ô icon thành nền đậm; bấm lại chính nó thì bỏ lọc.
- */
 function TypeFilters({ onToggle, value }: Properties) {
   const { t } = useTranslation();
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={styles.container}
+    >
       {REQUEST_TYPE_ORDER.map(type => {
         const tone = REQUEST_TYPE_STYLES[type];
         const isActive = type === value;
@@ -59,7 +61,7 @@ function TypeFilters({ onToggle, value }: Properties) {
             </View>
 
             <Text
-              numberOfLines={1}
+              numberOfLines={2}
               style={[styles.label, isActive && { color: tone.ink }]}
             >
               {t(tone.labelKey)}
@@ -67,7 +69,7 @@ function TypeFilters({ onToggle, value }: Properties) {
           </AppButton>
         );
       })}
-    </View>
+    </ScrollView>
   );
 }
 
@@ -75,16 +77,15 @@ export default React.memo(TypeFilters);
 
 const styles = StyleSheet.create({
   card: {
+    alignItems: 'center',
     backgroundColor: Colors.white,
-    // Viền trong suốt ngay từ trạng thái thường: thêm viền lúc chọn mà không
-    // có sẵn chỗ thì cả thẻ bị đội lên 2pt, hàng thẻ giật mỗi lần bấm.
     borderColor: 'transparent',
     borderRadius: ScaleSize(14),
     borderWidth: 1,
-    flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    minHeight: ScaleSize(104),
     padding: ScaleSize(10),
+    width: CARD_WIDTH,
   },
   circle: {
     alignItems: 'center',
@@ -95,19 +96,17 @@ const styles = StyleSheet.create({
     width: CIRCLE_SIZE,
   },
   container: {
-    flexDirection: 'row',
-    gap: ScaleSize(8),
-    paddingHorizontal: ScaleSize(16),
+    flexGrow: 0,
     paddingTop: ScaleSize(16),
   },
-  hint: {
-    color: Colors.gray17,
-    fontSize: ScaleSize(10),
-    marginTop: ScaleSize(2),
+  content: {
+    gap: ScaleSize(8),
+    paddingHorizontal: ScaleSize(16),
   },
   label: {
     color: Colors.navy04,
     fontSize: ScaleSize(13),
     fontWeight: '700',
+    textAlign: 'center',
   },
 });

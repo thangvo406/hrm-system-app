@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 const CREATE_ICON_SIZE = ScaleSize(20);
+const FILTER_BUTTON_SIZE = ScaleSize(44);
 
 type Properties = {
   readonly onPressCreate: () => void;
@@ -78,6 +79,17 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: ScaleSize(15),
     fontWeight: '700',
+  },
+  // Nút phụ: chỉ viền, để nút "Tạo đơn" giữ nguyên trọng lượng của hành động
+  // chính trên dải header.
+  filterButton: {
+    alignItems: 'center',
+    borderColor: Colors.blue05,
+    borderRadius: ScaleSize(14),
+    borderWidth: 1,
+    height: FILTER_BUTTON_SIZE,
+    justifyContent: 'center',
+    width: FILTER_BUTTON_SIZE,
   },
   subtitle: {
     color: Colors.blue05,

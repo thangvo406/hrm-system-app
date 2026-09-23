@@ -25,6 +25,7 @@ export type RootStackParamList = {
   [Paths.AttendanceHistories]: undefined;
   [Paths.Authorization]: undefined;
   [Paths.Carts]: undefined;
+  [Paths.CreateRequest]: undefined;
   [Paths.Home]: undefined;
   [Paths.Notifications]: undefined;
   [Paths.PaymentOffline]: { isTab?: boolean } | undefined;

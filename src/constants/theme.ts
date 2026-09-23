@@ -1,5 +1,5 @@
 export const Colors = {
-  primary: '#5BB85C',
+  primary: '#12295C',
   white: 'white',
   black: 'black',
   gray1: '#717171',
@@ -50,6 +50,7 @@ export const Colors = {
   green11: '#F2F8F3',
   green12: '#16A34A',
   green13: '#DCFCE7',
+  green14: '#F0FDF4',
   red01: '#E05353',
   red02: '#FCE8E8',
   red03: '#D9534F',
@@ -69,10 +70,14 @@ export const Colors = {
   blue04: '#1B5FB5',
   blue05: '#93A6C8',
   blue06: '#DBEAFE',
+  blue07: '#EFF6FF',
   purple01: '#7343C4',
   purple02: '#EFE8FB',
   purple03: '#9333EA',
   purple04: '#F3E8FF',
+  purple05: '#FAF5FF',
+  teal01: '#0D9488',
+  teal02: '#CCFBF1',
 } as const;
 
 export const Fonts = {} as const;

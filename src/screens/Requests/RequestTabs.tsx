@@ -22,11 +22,12 @@ const TABS: readonly {
 type Properties = {
   readonly counts: Record<TRequestTab, number>;
   readonly onChange: (tab: TRequestTab) => void;
+  readonly onOpenFilter: () => void;
   readonly value: TRequestTab;
 };
 
 /** Hàng tab lọc theo trạng thái duyệt, kèm nút bộ lọc nâng cao bên phải. */
-function RequestTabs({ counts, onChange, value }: Properties) {
+function RequestTabs({ counts, onChange, onOpenFilter, value }: Properties) {
   const { t } = useTranslation();
 
   return (
@@ -59,7 +60,11 @@ function RequestTabs({ counts, onChange, value }: Properties) {
         })}
       </View>
 
-      <View style={styles.filterButton} testID="RequestsFilter">
+      <AppButton
+        onPress={onOpenFilter}
+        style={styles.filterButton}
+        testID="RequestsFilter"
+      >
         <Image
           color={Colors.gray17}
           height={FILTER_ICON_SIZE}
@@ -67,7 +72,7 @@ function RequestTabs({ counts, onChange, value }: Properties) {
           type="svg"
           width={FILTER_ICON_SIZE}
         />
-      </View>
+      </AppButton>
     </View>
   );
 }

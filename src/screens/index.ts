@@ -2,6 +2,7 @@ export { default as Attendance } from './Attendance';
 export { default as AttendanceHistories } from './AttendanceHistories';
 export { default as Authorization } from './Authorisation';
 export { default as Carts } from './Carts';
+export { default as CreateRequest } from './CreateRequest';
 export { default as Home } from './Home';
 export { default as Notifications } from './Notifications';
 export { default as PaymentOffline } from './PaymentOffline';

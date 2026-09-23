@@ -4,13 +4,22 @@ import type {
   NativeSyntheticEvent,
 } from 'react-native';
 import type {
+  TRequestFilters,
   TRequestItem,
   TRequestSection,
   TRequestTab,
   TRequestType,
 } from '@type/requests';
 
+import AppNavigator from '@navigation/AppNavigator';
 import dayjs from 'dayjs';
+import { Paths } from '@navigation/paths';
+import FilterSheet from '@dialogs/FilterSheet';
+import {
+  DEFAULT_REQUEST_FILTERS,
+  matchesRequestFilters,
+  matchesRequestFiltersExceptStatus,
+} from '@utils/requests';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   useAnimatedStyle,
@@ -57,6 +66,22 @@ const MOCK_REQUESTS: readonly TRequestItem[] = [
     startDate: '2026-09-16',
     status: 'pending',
     type: 'leave',
+  },
+  {
+    createdAt: '2026-09-15',
+    id: 'req-2026-09-19',
+    reason: 'Chạy kịp bản phát hành cuối quý',
+    startDate: '2026-09-19',
+    status: 'pending',
+    type: 'overtime',
+  },
+  {
+    createdAt: '2026-09-14',
+    id: 'req-2026-09-13',
+    reason: 'Quên quẹt thẻ lúc ra về',
+    startDate: '2026-09-13',
+    status: 'approved',
+    type: 'attendance_explanation',
   },
   {
     createdAt: '2026-09-12',
@@ -147,20 +172,6 @@ const MOCK_REQUESTS: readonly TRequestItem[] = [
 
 // ──────────────────────────────────────────────────────────────────────────────
 
-const matchesTab = (item: TRequestItem, tab: TRequestTab) => {
-  switch (tab) {
-    case 'pending': {
-      return item.status === 'pending';
-    }
-    case 'processed': {
-      return item.status !== 'pending';
-    }
-    default: {
-      return true;
-    }
-  }
-};
-
 /** Gom các đơn đã lọc thành từng nhóm tháng, mới nhất xếp trước. */
 const groupByMonth = (items: readonly TRequestItem[]): TRequestSection[] => {
   // `Map` giữ nguyên thứ tự chèn nên các tháng ra đúng thứ tự của danh sách đã
@@ -194,9 +205,9 @@ const groupByMonth = (items: readonly TRequestItem[]): TRequestSection[] => {
  * nhóm và danh sách đơn đã gom theo tháng.
  */
 export function useRequests() {
-  const [tab, setTab] = useState<TRequestTab>('all');
-  /** `undefined` là không lọc theo loại đơn nào cả. */
-  const [typeFilter, setTypeFilter] = useState<TRequestType | undefined>();
+  const [filters, setFilters] = useState<TRequestFilters>(
+    DEFAULT_REQUEST_FILTERS,
+  );
 
   // Sắp một lần cho cả màn: ngày áp dụng mới nhất lên trước, cùng ngày thì đơn
   // gửi sau đứng trên.
@@ -214,38 +225,62 @@ export function useRequests() {
     [],
   );
 
-  const typedRequests = useMemo(
-    () =>
-      typeFilter === undefined
-        ? sortedRequests
-        : sortedRequests.filter(item => item.type === typeFilter),
-    [sortedRequests, typeFilter],
-  );
+  /**
+   * Hàng tab là cách nhìn hẹp hơn của cùng MỘT trường `status`: bộ lọc tách
+   * riêng "Đã duyệt" và "Đã từ chối", còn tab gộp cả hai thành "Đã xử lý".
+   */
+  const tab: TRequestTab = useMemo(() => {
+    if (filters.status === 'all') {
+      return 'all';
+    }
+    return filters.status === 'pending' ? 'pending' : 'processed';
+  }, [filters.status]);
 
-  // Số đếm trên tab bám theo loại đơn đang lọc, để con số luôn khớp với danh
-  // sách đang hiện chứ không phải tổng của cả màn.
-  const counts = useMemo(
-    () => ({
-      all: typedRequests.length,
-      pending: typedRequests.filter(item => item.status === 'pending').length,
-      processed: typedRequests.filter(item => item.status !== 'pending').length,
-    }),
-    [typedRequests],
-  );
+  // Số đếm trên tab bỏ qua chính trường trạng thái, vì con số phải trả lời
+  // "bấm tab này thì còn bao nhiêu đơn", chứ không phải đếm lại thứ đang xem.
+  const counts = useMemo(() => {
+    const scoped = sortedRequests.filter(item =>
+      matchesRequestFiltersExceptStatus(item, filters),
+    );
+    return {
+      all: scoped.length,
+      pending: scoped.filter(item => item.status === 'pending').length,
+      processed: scoped.filter(item => item.status !== 'pending').length,
+    };
+  }, [filters, sortedRequests]);
 
   const sections = useMemo(
-    () => groupByMonth(typedRequests.filter(item => matchesTab(item, tab))),
-    [tab, typedRequests],
+    () =>
+      groupByMonth(
+        sortedRequests.filter(item => matchesRequestFilters(item, filters)),
+      ),
+    [filters, sortedRequests],
   );
 
   const onChangeTab = useCallback((next: TRequestTab) => {
-    setTab(next);
+    setFilters(current => ({ ...current, status: next }));
   }, []);
 
   /** Bấm lại đúng loại đang chọn thì bỏ lọc, quay về xem tất cả. */
   const onToggleType = useCallback((next: TRequestType) => {
-    setTypeFilter(current => (current === next ? undefined : next));
+    setFilters(current => ({
+      ...current,
+      type: current.type === next ? 'all' : next,
+    }));
   }, []);
+
+  const onCreateRequest = useCallback(() => {
+    AppNavigator.navigate(Paths.CreateRequest);
+  }, []);
+
+  const onOpenFilter = useCallback(() => {
+    AppNavigator.showDialog({
+      screen: FilterSheet,
+      popupType: 'bottomSheet',
+      onApply: setFilters,
+      value: filters,
+    });
+  }, [filters]);
 
   // ─── Thu gọn hàng tab theo hướng cuộn ───────────────────────────────────────
 
@@ -263,14 +298,14 @@ export function useRequests() {
     setTabsHeight(current => (current === height ? current : height));
   }, []);
 
-  // Đổi loại đơn khi hàng tab đang ẩn có thể để lại danh sách quá ngắn, không
+  // Đổi bộ lọc khi hàng tab đang ẩn có thể để lại danh sách quá ngắn, không
   // còn cuộn được để vuốt cho nó hiện lại — nên trả về trạng thái hiện luôn.
   useEffect(() => {
     dragDistance.current = NO_DRAG;
     isTabsHidden.current = false;
     lastOffsetY.current = 0;
     tabsProgress.set(withTiming(FULLY_SHOWN, { duration: TABS_DURATION }));
-  }, [tabsProgress, typeFilter]);
+  }, [filters, tabsProgress]);
 
   /**
    * Handler chạy ở luồng JS chứ không phải `useAnimatedScrollHandler`:
@@ -351,12 +386,14 @@ export function useRequests() {
     counts,
     listContentStyle,
     onChangeTab,
+    onCreateRequest,
+    onOpenFilter,
     onScroll,
     onTabsLayout,
     onToggleType,
     sections,
     tab,
     tabsStyle,
-    typeFilter,
+    typeFilter: filters.type,
   };
 }

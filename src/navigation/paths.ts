@@ -4,6 +4,7 @@ export enum Paths {
   AttendanceHistories = 'attendance_histories',
   Authorization = 'authorization',
   Carts = 'carts',
+  CreateRequest = 'create_request',
   Home = 'home',
   Notifications = 'notifications',
   PaymentOffline = 'payment_offline',

@@ -13,9 +13,6 @@ import { ScaleSize } from '@kits/core';
 import { useRequests } from '@hooks';
 import { useTranslation } from 'react-i18next';
 
-// Màn này chưa có luồng tạo đơn nên nút "Tạo đơn" mới chỉ là chỗ nối sẵn.
-const noop = () => {};
-
 const SCROLL_EVENT_THROTTLE = 16;
 
 const keyExtractor = (item: TRequestItem) => item.id;
@@ -38,6 +35,8 @@ function Requests() {
     counts,
     listContentStyle,
     onChangeTab,
+    onCreateRequest,
+    onOpenFilter,
     onScroll,
     onTabsLayout,
     onToggleType,
@@ -50,7 +49,7 @@ function Requests() {
 
   return (
     <View style={styles.container} testID="RequestsScreen">
-      <RequestsHeader onPressCreate={noop} />
+      <RequestsHeader onPressCreate={onCreateRequest} />
 
       <View style={styles.sheet}>
         <TypeFilters onToggle={onToggleType} value={typeFilter} />
@@ -76,7 +75,12 @@ function Requests() {
             onLayout={onTabsLayout}
             style={[styles.tabsOverlay, tabsStyle]}
           >
-            <RequestTabs counts={counts} onChange={onChangeTab} value={tab} />
+            <RequestTabs
+              counts={counts}
+              onChange={onChangeTab}
+              onOpenFilter={onOpenFilter}
+              value={tab}
+            />
           </Animated.View>
         </View>
       </View>

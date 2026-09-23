@@ -2,6 +2,7 @@ export { useAttendance } from './useAttendance';
 export { useAttendanceHistories } from './useAttendanceHistories';
 export { useAuthorisation } from './useAuthorisation';
 export { useCodePushGate } from './useCodePushGate';
+export { useCreateRequest } from './useCreateRequest';
 export { useHome } from './useHome';
 export { useI18n } from './language/useI18n';
 export { useKeyboardOffset } from './useKeyboardOffset';

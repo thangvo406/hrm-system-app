@@ -1,11 +1,91 @@
 /** Loại đơn nhân viên có thể gửi. Nghỉ ốm đã bị bỏ khỏi luồng này. */
-export type TRequestType = 'early_leave' | 'late_arrival' | 'leave';
+export type TRequestType =
+  | 'attendance_explanation'
+  | 'early_leave'
+  | 'late_arrival'
+  | 'leave'
+  | 'overtime';
 
 /** Kết luận duyệt của một đơn. */
 export type TRequestStatus = 'approved' | 'pending' | 'rejected';
 
 /** Nhóm đơn hiển thị trên hàng tab ở đầu danh sách. */
 export type TRequestTab = 'all' | 'pending' | 'processed';
+
+/**
+ * Trạng thái đang lọc. Hàng tab và nhóm "Trạng thái" trong bộ lọc cùng ghi vào
+ * MỘT trường này, nên nó gộp cả `processed` (nhóm rộng của tab) lẫn từng kết
+ * luận cụ thể (lựa chọn hẹp hơn trong bộ lọc).
+ */
+export type TRequestStatusFilter = 'all' | 'processed' | TRequestStatus;
+
+/** Loại đơn đang lọc; `all` là không lọc theo loại. */
+export type TRequestTypeFilter = 'all' | TRequestType;
+
+/** Khoảng thời gian đang lọc. `custom` là tự chọn ngày trên lịch. */
+export type TRequestPeriod =
+  | 'all'
+  | 'custom'
+  | 'last_3_months'
+  | 'this_month'
+  | 'this_week';
+
+/** Khoảng ngày tự chọn, hai đầu đều dạng `YYYY-MM-DD`. */
+export type TRequestDateRange = {
+  readonly from: string;
+  readonly to: string;
+};
+
+/** Nguồn ngày nghỉ mà đơn sẽ trừ vào. */
+export type TLeaveBalanceKind = 'annual' | 'performance' | 'unpaid';
+
+/** Một thẻ số dư ở đầu màn tạo đơn. */
+export type TLeaveBalance = {
+  /** `undefined` nghĩa là không có hạn mức cố định, hiển thị dấu gạch. */
+  readonly days?: number;
+  readonly kind: TLeaveBalanceKind;
+};
+
+/** Nghỉ cả ngày hay nửa ngày. */
+export type TLeaveDuration = 'afternoon' | 'full_day' | 'morning';
+
+/** Loại nghỉ phép chọn trong ô thả xuống. */
+export type TLeaveKind =
+  | 'annual'
+  | 'compensatory'
+  | 'performance'
+  | 'unpaid'
+  | 'wedding';
+
+/** Một cấp duyệt trong luồng phê duyệt của đơn. */
+export type TApprovalStep = {
+  readonly id: string;
+  /** Chữ viết tắt hiện trong vòng tròn đại diện. */
+  readonly initials: string;
+  readonly name: string;
+  /** Khoá i18n mô tả vai trò của cấp duyệt này. */
+  readonly roleKey: string;
+};
+
+/** Nội dung đơn đang soạn ở màn tạo đơn. */
+export type TCreateRequestDraft = {
+  readonly duration: TLeaveDuration;
+  /** Dạng `YYYY-MM-DD`. */
+  readonly endDate: string;
+  readonly kind: TLeaveKind;
+  readonly reason: string;
+  /** Dạng `YYYY-MM-DD`. */
+  readonly startDate: string;
+};
+
+/** Toàn bộ bộ lọc đang áp cho danh sách đơn. */
+export type TRequestFilters = {
+  readonly period: TRequestPeriod;
+  /** Chỉ dùng khi `period` là `custom`. */
+  readonly range?: TRequestDateRange;
+  readonly status: TRequestStatusFilter;
+  readonly type: TRequestTypeFilter;
+};
 
 /** Một đơn từ trong danh sách. */
 export type TRequestItem = {
