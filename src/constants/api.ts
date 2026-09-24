@@ -12,5 +12,6 @@ export const EndPoints = {
     checkIn: 'v1/attendance/checkin',
     checkOut: 'v1/attendance/checkout',
     attendanceInfo: 'v1/attendance/today',
+    histories: (request: string) => `v1/attendance/history${request}`,
   },
 };

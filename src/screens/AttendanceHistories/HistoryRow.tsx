@@ -65,7 +65,7 @@ function HistoryRow({ entry }: Properties) {
         <View style={styles.timeline}>
           <PunchLine
             at={entry.checkInAt}
-            device={entry.device}
+            device={entry.checkInDevice}
             icon={tones.checkIn === 'warning' ? 'ic_clock' : 'ic_sign_in'}
             label={t('attendance_histories.check_in')}
             method={entry.checkInMethod}
@@ -76,7 +76,7 @@ function HistoryRow({ entry }: Properties) {
           </View>
           <PunchLine
             at={entry.checkOutAt}
-            device={entry.device}
+            device={entry.checkOutDevice}
             icon={tones.checkOut === 'warning' ? 'ic_clock' : 'ic_sign_out'}
             label={t('attendance_histories.check_out')}
             method={entry.checkOutMethod}

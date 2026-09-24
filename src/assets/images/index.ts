@@ -3,6 +3,8 @@ const images = {
   bg_login: require('./bg_login.png') as number,
   bg_profile: require('./bg_profile.png') as number,
   ic_arrow_left_gray: require('./ic_arrow_left_gray.png') as number,
+  ic_attendance_histories_empty:
+    require('./ic_attendance_histories_empty.png') as number,
   ic_camera_gray: require('./ic_camera_gray.png') as number,
   ic_close_gray: require('./ic_close_gray.png') as number,
   ic_device_force_update: require('./ic_device_force_update.png') as number,

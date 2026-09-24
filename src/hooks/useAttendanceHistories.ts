@@ -8,8 +8,12 @@ import AppNavigator from '@navigation/AppNavigator';
 import dayjs from 'dayjs';
 import Selection from '@dialogs/Selection';
 import { getCurrentTime } from '@utils/date';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { AttendanceUtils } from '@utils';
+import { useAppDispatch } from '@services/common/storeHooks';
+import { getAttendanceHistoriesRequest } from '@services/slices/attendance/attendanceSlice';
 
 const ISO_DATE_FORMAT = 'YYYY-MM-DD';
 const MONTH_ID_FORMAT = 'YYYY-MM';
@@ -18,126 +22,41 @@ const MONTH_STEP = 1;
 /** Số tháng liệt kê trong bộ chọn tháng, tính ngược từ tháng hiện tại. */
 const MONTH_OPTIONS_COUNT = 12;
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
-// Dữ liệu dựng UI, chưa nối API. Khi có endpoint thật thì thay khối này bằng
-// saga callback (xem flow ở .cursorrules §5).
+const PAGE_SIZE = 20;
+const FIRST_PAGE = 0;
+const PAGE_STEP = 1;
 
-const DEVICE = 'iPhone 16 Pro';
+const ALL_FILTER = 'all';
 
-const MOCK_ENTRIES: readonly TAttendanceHistoryEntry[] = [
-  {
-    checkInAt: '08:26',
-    checkInMethod: 'gps',
-    checkOutAt: '17:34',
-    checkOutMethod: 'gps',
-    date: '2026-09-16',
-    device: DEVICE,
-    id: 'day-2026-09-16',
-    status: 'on_time',
-    workedHours: 9,
-    workedMinutes: 8,
-  },
-  {
-    checkInAt: '08:45',
-    checkInMethod: 'qr',
-    checkOutAt: '17:30',
-    checkOutMethod: 'gps',
-    date: '2026-09-15',
-    device: DEVICE,
-    id: 'day-2026-09-15',
-    status: 'late',
-    workedHours: 8,
-    workedMinutes: 45,
-  },
-  {
-    checkInAt: '08:20',
-    checkInMethod: 'gps',
-    checkOutAt: '17:35',
-    checkOutMethod: 'gps',
-    date: '2026-09-14',
-    device: DEVICE,
-    id: 'day-2026-09-14',
-    status: 'on_time',
-    workedHours: 9,
-    workedMinutes: 15,
-  },
-  {
-    checkInAt: '08:10',
-    checkInMethod: 'qr',
-    checkOutAt: '16:50',
-    checkOutMethod: 'gps',
-    date: '2026-09-13',
-    device: DEVICE,
-    id: 'day-2026-09-13',
-    status: 'early_leave',
-    workedHours: 8,
-    workedMinutes: 40,
-  },
-  {
-    date: '2026-09-12',
-    id: 'day-2026-09-12',
-    status: 'missing',
-  },
-  {
-    checkInAt: '08:28',
-    checkInMethod: 'gps',
-    checkOutAt: '17:32',
-    checkOutMethod: 'gps',
-    date: '2026-09-17',
-    device: DEVICE,
-    id: 'day-2026-09-17',
-    status: 'on_time',
-    workedHours: 9,
-    workedMinutes: 4,
-  },
-  {
-    checkInAt: '08:22',
-    checkInMethod: 'gps',
-    checkOutAt: '17:40',
-    checkOutMethod: 'gps',
-    date: '2026-09-18',
-    device: DEVICE,
-    id: 'day-2026-09-18',
-    status: 'on_time',
-    workedHours: 9,
-    workedMinutes: 18,
-  },
-];
-
-// ──────────────────────────────────────────────────────────────────────────────
-
-const matchesFilter = (
-  entry: TAttendanceHistoryEntry,
-  filter: TAttendanceHistoryFilter,
-) => {
-  switch (filter) {
-    case 'all': {
-      return true;
-    }
-    case 'check_in': {
-      return !!entry.checkInAt;
-    }
-    case 'check_out': {
-      return !!entry.checkOutAt;
-    }
-    default: {
-      return entry.status === filter;
-    }
-  }
-};
-
-/**
- * Toàn bộ logic màn Lịch sử chấm công: tháng đang xem, bộ lọc theo loại dấu
- * chấm công, và danh sách ngày công của tháng đó.
- */
 export function useAttendanceHistories() {
   const { t } = useTranslation();
   const [filter, setFilter] = useState<TAttendanceHistoryFilter>('all');
-  // Neo ở ngày 1 chứ không phải ngày hôm nay: `add(1, 'month')` từ ngày 31 sẽ bị
-  // kẹp về 28/30, lùi lại không ra ngày cũ nữa nên bấm tới/lui vài nhịp là trôi
-  // mất tháng.
+  const dispatch = useAppDispatch();
+
   const [monthAnchor, setMonthAnchor] = useState(() =>
     getCurrentTime().startOf('month').format(ISO_DATE_FORMAT),
+  );
+
+  const [histories, setHistories] = useState<
+    readonly TAttendanceHistoryEntry[]
+  >([]);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const pageRef = useRef(FIRST_PAGE);
+
+  const isLastRef = useRef(false);
+
+  const isLoadingRef = useRef(false);
+  const isMountedRef = useRef(true);
+
+  useEffect(
+    () => () => {
+      isMountedRef.current = false;
+    },
+    [],
   );
 
   const visibleMonth = useMemo(() => {
@@ -145,14 +64,71 @@ export function useAttendanceHistories() {
     return { month: anchor.month() + MONTH_OFFSET, year: anchor.year() };
   }, [monthAnchor]);
 
-  const entries = useMemo(() => {
-    const anchor = dayjs(monthAnchor);
-    return MOCK_ENTRIES.filter(
-      entry =>
-        dayjs(entry.date).isSame(anchor, 'month') &&
-        matchesFilter(entry, filter),
-    );
-  }, [filter, monthAnchor]);
+  const loadHistories = useCallback(
+    (page: number) => {
+      const isFirstPage = page === FIRST_PAGE;
+      isLoadingRef.current = true;
+
+      if (isFirstPage) {
+        pageRef.current = FIRST_PAGE;
+        isLastRef.current = false;
+        setIsLoading(true);
+      } else {
+        setIsLoadingMore(true);
+      }
+
+      const stopLoading = () => {
+        // Hạ cờ ref kể cả khi đã unmount, còn state thì chỉ đụng khi còn sống.
+        isLoadingRef.current = false;
+        if (isMountedRef.current) {
+          setIsLoading(false);
+          setIsLoadingMore(false);
+        }
+      };
+
+      dispatch(
+        getAttendanceHistoriesRequest({
+          page,
+          size: PAGE_SIZE,
+
+          status: filter === ALL_FILTER ? '' : filter,
+          month: dayjs(monthAnchor).format(MONTH_ID_FORMAT),
+          onFailure: stopLoading,
+          onSuccess: response => {
+            stopLoading();
+            if (!isMountedRef.current) {
+              return;
+            }
+            pageRef.current = response.page;
+            isLastRef.current = response.last;
+            // Offset theo trang để `id` không trùng giữa các trang nối vào nhau.
+            const mapped = response.content.map((element, index) =>
+              AttendanceUtils.toHistoryEntry(element, page * PAGE_SIZE + index),
+            );
+            setHistories(previous =>
+              isFirstPage ? mapped : [...previous, ...mapped],
+            );
+          },
+        }),
+      );
+    },
+    [dispatch, monthAnchor, filter],
+  );
+
+  // Tải lại khi mở màn và mỗi lần đổi bộ lọc hoặc đổi tháng — `loadHistories`
+  // đổi theo cả `filter` lẫn `monthAnchor`.
+  useFocusEffect(
+    useCallback(() => {
+      loadHistories(FIRST_PAGE);
+    }, [loadHistories]),
+  );
+
+  const onEndReached = useCallback(() => {
+    if (isLoadingRef.current || isLastRef.current || histories.length === 0) {
+      return;
+    }
+    loadHistories(pageRef.current + PAGE_STEP);
+  }, [histories.length, loadHistories]);
 
   const onPressPreviousMonth = useCallback(() => {
     setMonthAnchor(previous =>
@@ -166,14 +142,7 @@ export function useAttendanceHistories() {
     );
   }, []);
 
-  /**
-   * Mở bộ chọn tháng bằng bottom sheet `Selection` dùng chung.
-   *
-   * Danh sách dựng ngay lúc bấm chứ không memo: nó bám theo tháng hiện tại, mà
-   * phiên làm việc có thể vắt qua nửa đêm cuối tháng.
-   */
   const onPickMonth = useCallback(() => {
-    // Màn lịch sử nên không liệt kê tháng tương lai; mới nhất xếp trước.
     const latestMonth = getCurrentTime().startOf('month');
     const items: readonly TSelectionItem[] = Array.from(
       { length: MONTH_OPTIONS_COUNT },
@@ -212,8 +181,11 @@ export function useAttendanceHistories() {
   }, []);
 
   return {
-    entries,
+    entries: histories,
     filter,
+    isLoading,
+    isLoadingMore,
+    onEndReached,
     onGoBack,
     onPickMonth,
     onPressNextMonth,

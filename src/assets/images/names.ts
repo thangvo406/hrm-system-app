@@ -5,6 +5,7 @@ const imageNames = {
   bg_login: 'bg_login',
   bg_profile: 'bg_profile',
   ic_arrow_left_gray: 'ic_arrow_left_gray',
+  ic_attendance_histories_empty: 'ic_attendance_histories_empty',
   ic_camera_gray: 'ic_camera_gray',
   ic_close_gray: 'ic_close_gray',
   ic_device_force_update: 'ic_device_force_update',

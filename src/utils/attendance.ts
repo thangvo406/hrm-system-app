@@ -1,15 +1,92 @@
+import type { IconName } from '@assets/icons';
 import type {
   IOffice,
+  IResponseAttendanceInfo,
+  TAttendanceHistoryEntry,
+  TAttendanceHistoryFilter,
+  TAttendanceMethod,
   TAttendancePunch,
+  TAttendanceStatus,
   TNearestOffice,
 } from '@type/attendance';
+import dayjs from 'dayjs';
 import * as LocationUtils from './location';
-import { getOnlyDate, getOnlyTime } from './date';
+import { EAttendanceMode, EAttendanceStatus } from '@constants/config';
+import { getOnlyDate, getOnlyTime, MINUTES_PER_HOUR } from './date';
 
 export const toPunch = (isoTimestamp: string): TAttendancePunch => ({
   at: getOnlyTime(isoTimestamp),
   workDate: getOnlyDate(isoTimestamp),
 });
+
+/** Đối chiếu `status` server trả về (chuỗi tự do) với kết luận app hiểu được. */
+const STATUS_BY_API_VALUE: Record<string, TAttendanceStatus> = {
+  [EAttendanceStatus.ABSENT]: 'missing',
+  [EAttendanceStatus.EARLY_LEAVE]: 'early_leave',
+  [EAttendanceStatus.FULL_TIME]: 'on_time',
+  [EAttendanceStatus.LATE]: 'late',
+};
+
+const ATTENDANCE_METHODS = new Set<string>(Object.values(EAttendanceMode));
+
+export const METHOD_ICONS: Record<TAttendanceMethod, IconName> = {
+  [EAttendanceMode.GPS]: 'ic_location',
+  [EAttendanceMode.QR_CODE]: 'ic_qr_scan',
+};
+
+export const METHOD_LABEL_KEYS: Record<TAttendanceMethod, string> = {
+  [EAttendanceMode.GPS]: 'attendance.methods.gps',
+  [EAttendanceMode.QR_CODE]: 'attendance.methods.qr',
+};
+
+export const FILTER_LABEL_KEYS = {
+  all: 'attendance_histories.filters.all',
+  [EAttendanceStatus.EARLY_LEAVE]: 'attendance_histories.filters.early',
+  [EAttendanceStatus.FULL_TIME]: 'attendance_histories.filters.on_time',
+  [EAttendanceStatus.LATE]: 'attendance_histories.filters.late',
+  // `satisfies` chứ không phải annotation: nhờ vậy tra bằng khoá tĩnh (hàng
+  // chip) ra thẳng `string`, còn tra bằng biến thì chỗ gọi tự nới kiểu và xử lý
+  // `undefined`.
+} satisfies Partial<Record<TAttendanceHistoryFilter, string>>;
+
+export const toMethod = (
+  value: string | undefined,
+): TAttendanceMethod | undefined =>
+  value && ATTENDANCE_METHODS.has(value)
+    ? (value as TAttendanceMethod)
+    : undefined;
+
+export const toHistoryEntry = (
+  item: IResponseAttendanceInfo,
+  index: number,
+): TAttendanceHistoryEntry => {
+  const date = getOnlyDate(item.checkInTime) || getOnlyDate(item.checkOutTime);
+  // Chỉ tính giờ làm khi có ĐỦ hai dấu — thiếu một dấu thì con số nào cũng sai.
+  const workedMinutesTotal =
+    item.checkInTime && item.checkOutTime
+      ? dayjs(item.checkOutTime).diff(dayjs(item.checkInTime), 'minute')
+      : undefined;
+
+  return {
+    checkInAt: getOnlyTime(item.checkInTime) || undefined,
+    checkInMethod: toMethod(item.checkInMethod),
+    checkOutAt: getOnlyTime(item.checkOutTime) || undefined,
+    checkOutMethod: toMethod(item.checkOutMethod),
+    date,
+    checkInDevice: item.checkInDeviceName || undefined,
+    checkOutDevice: item.checkOutDeviceName || undefined,
+    id: `day-${date}-${index}`,
+    status: STATUS_BY_API_VALUE[item.status] ?? 'missing',
+    workedHours:
+      workedMinutesTotal === undefined
+        ? undefined
+        : Math.floor(workedMinutesTotal / MINUTES_PER_HOUR),
+    workedMinutes:
+      workedMinutesTotal === undefined
+        ? undefined
+        : workedMinutesTotal % MINUTES_PER_HOUR,
+  };
+};
 
 export const getOfficeCoordinates = (
   office: IOffice,
@@ -18,19 +95,6 @@ export const getOfficeCoordinates = (
   longitude: Number(office.longitude),
 });
 
-/**
- * Văn phòng gần `from` nhất trong danh sách, kèm khoảng cách.
- *
- * Luôn lấy văn phòng gần nhất, không có ngưỡng khoảng cách nào cả: ở cách 50 m
- * hay 50 km thì vẫn là văn phòng đó. Việc đứng đủ gần để được chấm công là
- * chuyện riêng của geofence (`IOffice.radiusInMeters`), xét ở chỗ khác.
- *
- * Trả `undefined` khi danh sách rỗng: không có văn phòng nào khác hẳn với "có
- * văn phòng nhưng ở xa", gộp lại là chỗ gọi hết đường phân biệt.
- *
- * Bỏ qua văn phòng có toạ độ không parse được (chuỗi rỗng, dữ liệu hỏng) —
- * `Number('')` ra 0, để lọt thì hoá ra một điểm ngoài khơi vịnh Guinea.
- */
 export const findNearestOffice = (
   offices: readonly IOffice[],
   from: LocationUtils.TCoordinates,

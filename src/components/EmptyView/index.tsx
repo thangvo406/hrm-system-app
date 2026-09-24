@@ -7,11 +7,10 @@ import { View, StyleSheet, Text } from 'react-native';
 
 const { ifAndroid, ifIPadOrTablet } = DeviceUtils;
 function EmptyView(props: any) {
-  const { icon, type, desc2, iconColor, style, renderDesc, desc } = props || {};
+  const { icon, type, desc2, iconColor, style, renderDesc, desc, size } =
+    props || {};
 
-  const sizeImage = useMemo(() => {
-    return ScaleSize(96);
-  }, [type]);
+  const sizeImage = useMemo(() => size ?? ScaleSize(96), [size]);
 
   return (
     <View style={[styles.container, style]}>

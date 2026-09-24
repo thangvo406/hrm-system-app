@@ -19,12 +19,12 @@ const TABS: readonly {
 }[] = [
   {
     icon: 'ic_location',
-    labelKey: 'attendance.mode_gps',
+    labelKey: 'attendance.modes.gps',
     mode: EAttendanceMode.GPS,
   },
   {
     icon: 'ic_qr_scan',
-    labelKey: 'attendance.mode_qr',
+    labelKey: 'attendance.modes.qr',
     mode: EAttendanceMode.QR_CODE,
   },
 ];

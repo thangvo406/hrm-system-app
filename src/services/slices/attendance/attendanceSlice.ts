@@ -1,6 +1,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   IRequestAttendance,
+  IRequestGetAttendanceHistories,
   IResponseAttendanceInfo,
   TAttendancePunch,
 } from '@type/attendance';
@@ -15,12 +16,14 @@ export type AttendanceState = {
   checkOutAt: string | undefined;
 
   workDate: string | undefined;
+  attendanceInfo: IResponseAttendanceInfo | undefined;
 };
 
 const initialState: AttendanceState = {
   checkInAt: undefined,
   checkOutAt: undefined,
   workDate: undefined,
+  attendanceInfo: undefined,
 };
 
 const attendanceSlice = createSlice({
@@ -48,14 +51,24 @@ const attendanceSlice = createSlice({
       state,
       action: PayloadAction<IResponseAttendanceInfo>,
     ) => {
-      const checkIn = AttendanceUtils.toPunch(action.payload.checkInTime);
-      const checkOut = AttendanceUtils.toPunch(action.payload.checkOutTime);
-      state.checkOutAt = checkOut.at || state.checkOutAt;
-      state.workDate = checkIn.workDate || state.workDate;
-      state.checkInAt = checkIn.at || state.checkInAt;
+      try {
+        const checkIn = AttendanceUtils.toPunch(action.payload?.checkInTime);
+        const checkOut = AttendanceUtils.toPunch(action.payload?.checkOutTime);
+        state.checkOutAt = checkOut.at;
+        state.workDate = checkIn.workDate;
+        state.checkInAt = checkIn.at;
+
+        state.attendanceInfo = action.payload;
+      } catch (error) {
+        console.log('errr', error?.message);
+      }
     },
     getAttendanceInfoRequest: {
-      prepare: () => ({}),
+      prepare: () => ({ payload: undefined }),
+      reducer: () => {},
+    },
+    getAttendanceHistoriesRequest: {
+      prepare: (payload: IRequestGetAttendanceHistories) => ({ payload }),
       reducer: () => {},
     },
     checkOutRequest: {
@@ -74,6 +87,7 @@ export const {
   resetAttendance,
   getAttendanceInfoRequest,
   getAttendanceInfoSuccess,
+  getAttendanceHistoriesRequest,
 } = attendanceSlice.actions;
 
 export const attendanceReducer = attendanceSlice.reducer;

@@ -1,18 +1,24 @@
 import FilterChips from './FilterChips';
+import HistoriesEmpty from './HistoriesEmpty';
 import HistoriesHeader from './HistoriesHeader';
 import HistoryRow from './HistoryRow';
 import MonthSelector from './MonthSelector';
 import { Colors } from '@constants';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { ScaleSize } from '@kits/core';
 import { useAttendanceHistories } from '@hooks';
-import { useTranslation } from 'react-i18next';
+
+// Nạp thêm khi còn cách đáy nửa màn hình, để người dùng không thấy khoảng chờ.
+const END_REACHED_THRESHOLD = 0.5;
 
 /** Màn Lịch sử chấm công: dải tuần, bộ lọc và danh sách ngày công. */
 function AttendanceHistories() {
   const {
     entries,
     filter,
+    isLoading,
+    isLoadingMore,
+    onEndReached,
     onGoBack,
     onPickMonth,
     onPressNextMonth,
@@ -20,7 +26,6 @@ function AttendanceHistories() {
     setFilter,
     visibleMonth,
   } = useAttendanceHistories();
-  const { t } = useTranslation();
 
   return (
     <View style={styles.container} testID="AttendanceHistoriesScreen">
@@ -31,7 +36,16 @@ function AttendanceHistories() {
 
         <FlatList
           ListEmptyComponent={
-            <Text style={styles.empty}>{t('attendance_histories.empty')}</Text>
+            isLoading ? (
+              <ActivityIndicator color={Colors.blue04} style={styles.loading} />
+            ) : (
+              <HistoriesEmpty filter={filter} />
+            )
+          }
+          ListFooterComponent={
+            isLoadingMore ? (
+              <ActivityIndicator color={Colors.blue04} style={styles.loading} />
+            ) : undefined
           }
           ListHeaderComponent={
             <MonthSelector
@@ -45,6 +59,8 @@ function AttendanceHistories() {
           contentContainerStyle={styles.content}
           data={entries}
           keyExtractor={entry => entry.id}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={END_REACHED_THRESHOLD}
           renderItem={({ item }) => <HistoryRow entry={item} />}
           showsVerticalScrollIndicator={false}
         />
@@ -61,6 +77,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    // Cho content container nở hết chiều cao còn lại để `ListEmptyComponent`
+    // (đang `flex: 1`) căn giữa được. Khi có dữ liệu thì nội dung cao hơn khung
+    // nên `flexGrow` không ảnh hưởng gì.
+    flexGrow: 1,
     paddingBottom: ScaleSize(24),
   },
   empty: {
@@ -68,6 +88,9 @@ const styles = StyleSheet.create({
     fontSize: ScaleSize(14),
     paddingTop: ScaleSize(32),
     textAlign: 'center',
+  },
+  loading: {
+    paddingVertical: ScaleSize(16),
   },
   // Tấm nền xám bo hai góc trên, trùm lên mép dưới dải navy đúng như thiết kế.
   sheet: {

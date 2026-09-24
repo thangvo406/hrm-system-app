@@ -1,9 +1,10 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   IRequestAttendance,
-  IResponseAttendance,
+  IRequestGetAttendanceHistories,
   IResponseAttendanceInfo,
 } from '@type/attendance';
+import type { ListApiResponse } from '@type/common';
 
 import { call, put, takeLatest } from 'redux-saga/effects';
 
@@ -11,25 +12,23 @@ import {
   attendanceInfo,
   checkIn,
   checkOut,
+  getAttendanceHistories,
 } from '@services/request/attendance';
 import {
   checkInRequest,
-  checkinSuccess,
   checkOutRequest,
-  checkoutSuccess,
+  getAttendanceHistoriesRequest,
   getAttendanceInfoRequest,
   getAttendanceInfoSuccess,
 } from './attendanceSlice';
 import { getErrorMessageApi } from '@utils/common';
 
 function* checkInWorker(action: PayloadAction<IRequestAttendance>) {
-  // Bóc callback ra khỏi payload TRƯỚC khi gọi API: chúng là chuyện của redux,
-  // đẩy nguyên payload xuống là gửi cả hai hàm đó lên server.
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: IResponseAttendance = yield call(checkIn, request);
+    const response: IResponseAttendanceInfo = yield call(checkIn, request);
     onSuccess?.(response);
-    yield put(checkinSuccess(request));
+    yield put(getAttendanceInfoSuccess(response));
   } catch (error) {
     onFailure?.(getErrorMessageApi(error));
   }
@@ -38,9 +37,9 @@ function* checkInWorker(action: PayloadAction<IRequestAttendance>) {
 function* checkOutWorker(action: PayloadAction<IRequestAttendance>) {
   const { onFailure, onSuccess, ...request } = action.payload;
   try {
-    const response: IResponseAttendance = yield call(checkOut, request);
+    const response: IResponseAttendanceInfo = yield call(checkOut, request);
     onSuccess?.(response);
-    yield put(checkoutSuccess(request));
+    yield put(getAttendanceInfoSuccess(response));
   } catch (error) {
     onFailure?.(getErrorMessageApi(error));
   }
@@ -55,8 +54,27 @@ function* attendanceInfoWorker() {
   }
 }
 
+function* getAttendanceHistoriesWorker(
+  action: PayloadAction<IRequestGetAttendanceHistories>,
+) {
+  const { onFailure, onSuccess, ...request } = action.payload;
+  try {
+    const response: ListApiResponse<IResponseAttendanceInfo[]> = yield call(
+      getAttendanceHistories,
+      request,
+    );
+    onSuccess?.(response);
+  } catch (error) {
+    onFailure?.(getErrorMessageApi(error));
+  }
+}
+
 export function* attendanceSaga() {
   yield takeLatest(checkInRequest.type, checkInWorker);
   yield takeLatest(checkOutRequest.type, checkOutWorker);
   yield takeLatest(getAttendanceInfoRequest.type, attendanceInfoWorker);
+  yield takeLatest(
+    getAttendanceHistoriesRequest.type,
+    getAttendanceHistoriesWorker,
+  );
 }

@@ -698,9 +698,16 @@
     "attendance": {
       "title": "Attendance",
       "history": "History",
-      "mode_gps": "GPS location",
-      "mode_qr": "Scan QR code",
       "qr_coming_soon": "QR check-in is coming soon",
+      "modes": {
+        "gps": "GPS location",
+        "qr": "Scan QR code"
+      },
+      "methods": {
+        "gps": "GPS",
+        "qr": "QR",
+        "with_device": "{{method}} • {{device}}"
+      },
       "office_distance": "{{office}} — {{distance}} m away",
       "inside_geofence": "You are inside the allowed check-in area",
       "outside_geofence": "You are outside the allowed check-in area",
@@ -712,36 +719,47 @@
       "check_in_action": "Check in",
       "check_out_action": "Check out",
       "check_out_done": "Checked out",
-      "today_log": "Today's log",
-      "worked_none": "Total: 0h",
-      "worked_total": "Total: {{hours}}h {{minutes}}m",
-      "log_check_in": "Check in",
-      "log_check_in_method": "Check in · GPS",
-      "log_check_out": "Check out",
-      "log_pending": "Not checked out yet",
+      "log": {
+        "title": "Today's log",
+        "check_in": "Check in",
+        "check_out": "Check out",
+        "pending": "Not checked out yet",
+        "with_method": "{{label}} · {{method}}",
+        "worked": {
+          "none": "Total: 0h",
+          "total": "Total: {{hours}}h {{minutes}}m"
+        }
+      },
       "explanation_prompt": "Missed a check-in? Submit an explanation"
     },
     "attendance_histories": {
       "title": "Attendance history",
-      "filter_all": "All",
-      "filter_check_in": "Check in",
-      "filter_check_out": "Check out",
-      "filter_late": "Late",
-      "filter_early": "Left early",
+      "filters": {
+        "all": "All",
+        "on_time": "On time",
+        "late": "Late",
+        "early": "Left early"
+      },
       "month_label": "{{month}}/{{year}}",
       "pick_month": "Pick month",
       "check_in": "Check in",
       "check_out": "Check out",
-      "method_gps": "GPS",
-      "method_qr": "QR",
-      "method_device": "{{method}} • {{device}}",
       "worked_label": "Hours worked",
       "worked_value": "{{hours}}h {{minutes}}m",
       "status_on_time": "On time",
       "status_late": "Late",
       "status_early": "Left early",
       "status_missing": "Not checked",
-      "empty": "No days match this filter"
+      "empty": {
+        "all": {
+          "title": "No work days yet this month",
+          "description": "Pick another month to see attendance history."
+        },
+        "filtered": {
+          "title": "No matching work days",
+          "description": "No work days this month match the “{{filter}}” filter."
+        }
+      }
     },
     "requests": {
       "title": "Requests",

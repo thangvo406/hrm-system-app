@@ -451,9 +451,16 @@
     "attendance": {
       "title": "근태 체크",
       "history": "이력",
-      "mode_gps": "GPS 위치",
-      "mode_qr": "QR 코드 스캔",
       "qr_coming_soon": "QR 체크는 곧 제공됩니다",
+      "modes": {
+        "gps": "GPS 위치",
+        "qr": "QR 코드 스캔"
+      },
+      "methods": {
+        "gps": "GPS",
+        "qr": "QR",
+        "with_device": "{{method}} • {{device}}"
+      },
       "office_distance": "{{office}} — {{distance}}m 거리",
       "inside_geofence": "체크 가능 구역 안에 있습니다",
       "outside_geofence": "체크 가능 구역 밖에 있습니다",
@@ -465,36 +472,47 @@
       "check_in_action": "출근 체크",
       "check_out_action": "퇴근 체크",
       "check_out_done": "퇴근 체크 완료",
-      "today_log": "오늘 기록",
-      "worked_none": "총 0시간",
-      "worked_total": "총 {{hours}}시간 {{minutes}}분",
-      "log_check_in": "출근",
-      "log_check_in_method": "출근 · GPS",
-      "log_check_out": "퇴근",
-      "log_pending": "아직 체크하지 않음",
+      "log": {
+        "title": "오늘 기록",
+        "check_in": "출근",
+        "check_out": "퇴근",
+        "pending": "아직 체크하지 않음",
+        "with_method": "{{label}} · {{method}}",
+        "worked": {
+          "none": "총 0시간",
+          "total": "총 {{hours}}시간 {{minutes}}분"
+        }
+      },
       "explanation_prompt": "체크를 놓치셨나요? 사유서를 제출하세요"
     },
     "attendance_histories": {
       "title": "근태 이력",
-      "filter_all": "전체",
-      "filter_check_in": "출근",
-      "filter_check_out": "퇴근",
-      "filter_late": "지각",
-      "filter_early": "조퇴",
+      "filters": {
+        "all": "전체",
+        "on_time": "정시",
+        "late": "지각",
+        "early": "조퇴"
+      },
       "month_label": "{{year}}년 {{month}}월",
       "pick_month": "월 선택",
       "check_in": "출근",
       "check_out": "퇴근",
-      "method_gps": "GPS",
-      "method_qr": "QR",
-      "method_device": "{{method}} • {{device}}",
       "worked_label": "총 근무시간",
       "worked_value": "{{hours}}시간 {{minutes}}분",
       "status_on_time": "정시",
       "status_late": "지각",
       "status_early": "조퇴",
       "status_missing": "미체크",
-      "empty": "조건에 맞는 근무일이 없습니다"
+      "empty": {
+        "all": {
+          "title": "이번 달 근무 기록이 없습니다",
+          "description": "다른 달을 선택해 근무 기록을 확인하세요."
+        },
+        "filtered": {
+          "title": "조건에 맞는 근무일이 없습니다",
+          "description": "이번 달에 “{{filter}}” 필터와 일치하는 근무일이 없습니다."
+        }
+      }
     },
     "requests": {
       "title": "신청서",

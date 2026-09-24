@@ -1,5 +1,5 @@
-import type { AppCallback } from '@type/common';
-import type { EAttendanceMode } from '@constants/config';
+import type { AppCallback, ListApiResponse } from '@type/common';
+import type { EAttendanceMode, EAttendanceStatus } from '@constants/config';
 import type { IconName } from '@assets/icons';
 import type { TCoordinates } from '@utils/location';
 
@@ -35,12 +35,7 @@ export type TAttendanceShift = {
 /** Kết luận chấm công của một ngày. */
 export type TAttendanceStatus = 'early_leave' | 'late' | 'missing' | 'on_time';
 
-export type TAttendanceHistoryFilter =
-  | 'all'
-  | 'check_in'
-  | 'check_out'
-  | 'early_leave'
-  | 'late';
+export type TAttendanceHistoryFilter = 'all' | EAttendanceStatus;
 
 /** Cách chấm công của một dấu: định vị hay quét mã. */
 export type TAttendanceMethod = EAttendanceMode;
@@ -55,8 +50,10 @@ export type TAttendanceHistoryEntry = {
   readonly checkOutMethod?: TAttendanceMethod;
   /** Dạng `YYYY-MM-DD`. */
   readonly date: string;
-  /** Thiết bị đã chấm công, hiện cạnh cách chấm. */
-  readonly device?: string;
+  /** Thiết bị đã chấm vào ca, hiện cạnh cách chấm. */
+  readonly checkInDevice?: string;
+  /** Thiết bị đã chấm ra ca — có thể khác máy chấm vào ca. */
+  readonly checkOutDevice?: string;
   readonly id: string;
   readonly status: TAttendanceStatus;
   /** `undefined` khi chưa đủ hai dấu để tính giờ làm. */
@@ -94,29 +91,16 @@ export interface IOffice {
    * Có field này rồi thì bỏ được hằng `GEOFENCE_RADIUS_M` đang hardcode trong
    * `useAttendance` — mỗi chi nhánh một bán kính khác nhau là chuyện bình thường.
    */
-  radiusInMeters: number;
+  radiusCheckInCircle: number;
   /** Giờ vào ca hành chính của văn phòng này, `HH:mm` 24 giờ. */
   startWorkingTime: string;
 }
 
-/**
- * Văn phòng gần chỗ đang đứng nhất, kèm khoảng cách đã tính sẵn.
- *
- * Gói chung ba giá trị thay vì trả mỗi `IOffice`: chỗ gọi nào cũng cần khoảng
- * cách ngay sau đó, tính lại là quét Haversine lần hai trên cùng bộ dữ liệu.
- */
 export type TNearestOffice = {
   readonly distanceInMeters: number;
   readonly office: IOffice;
 };
 
-/**
- * Phần thông tin văn phòng mà màn Chấm công thực sự vẽ ra.
- *
- * Gói lại thay vì rải `officeName` / `officeCoordinates` rời: hai giá trị này
- * luôn cùng có hoặc cùng không (đều lấy từ một `IOffice`), tách rời thì chỗ gọi
- * phải tự nhớ kiểm cả hai.
- */
 export type TOfficeInfo = {
   readonly coordinates: TCoordinates;
   readonly name: string;
@@ -124,12 +108,6 @@ export type TOfficeInfo = {
   readonly shift: TAttendanceShift;
 };
 
-/**
- * Trạng thái định vị hiện tại: toạ độ, đang đo hay không, có bị giả lập không.
- *
- * `coordinates` là `undefined` khi chưa định vị được lần nào — khác hẳn với
- * "đang đo" (`isLocating`), nên giữ hai thứ riêng chứ không suy ra từ nhau.
- */
 export type TCurrentLocation = {
   readonly coordinates?: TCoordinates;
   /** `false` cho tới khi người dùng đồng ý cấp quyền vị trí. */
@@ -139,11 +117,8 @@ export type TCurrentLocation = {
   readonly isMocked: boolean;
 };
 
-/** Hai dấu chấm công của ngày công hôm nay. */
 export type TAttendanceInfo = {
-  /** Giờ vào ca `HH:mm`; `undefined` khi chưa chấm. */
   readonly checkedInAt?: string;
-  /** Giờ ra ca `HH:mm`; `undefined` khi chưa chấm. */
   readonly checkedOutAt?: string;
 };
 
@@ -154,8 +129,10 @@ export interface IResponseAttendanceInfo {
   checkInLongitude: number;
   checkOutLatitude: number;
   checkOutLongitude: number;
-  checkInMethod: string;
-  checkOutMethod: string;
+  checkInMethod?: TAttendanceMethod;
+  checkOutMethod?: TAttendanceMethod;
+  checkInDeviceName: string;
+  checkOutDeviceName: string;
   type: string;
   status: string;
   note: string;
@@ -166,19 +143,22 @@ export interface IAttendanceUser {
   username: string;
   email: string;
 }
-export interface IResponseAttendance {
-  checkInAt: string;
-  id: number;
-  officeId: number;
-}
 
-export interface IRequestAttendance extends AppCallback<IResponseAttendance> {
+export interface IRequestAttendance
+  extends AppCallback<IResponseAttendanceInfo> {
   latitude: string;
   longitude: string;
   type: 'CHECK_OUT' | 'CHECK_IN';
   method: 'GPS' | 'QR_CODE';
 }
 
+export interface IRequestGetAttendanceHistories
+  extends AppCallback<ListApiResponse<IResponseAttendanceInfo[]>> {
+  page: number;
+  size: number;
+  status: string;
+  month: string;
+}
 export interface IRequestGetListOffice {
   companyId?: number;
 }

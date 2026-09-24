@@ -3,6 +3,7 @@ import type { TAttendanceMethod } from '@type/attendance';
 
 import Image from '@components/Image';
 import React from 'react';
+import { AttendanceUtils } from '@utils';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
@@ -27,11 +28,6 @@ const TONE_STYLES: Record<
   warning: { background: Colors.yellow04, foreground: Colors.yellow03 },
 };
 
-const METHOD_ICONS: Record<TAttendanceMethod, IconName> = {
-  gps: 'ic_location',
-  qr: 'ic_qr_scan',
-};
-
 type Properties = {
   /** `undefined` khi chưa chấm; dòng hiển thị mờ với `--:--`. */
   readonly at?: string;
@@ -47,6 +43,23 @@ function PunchLine({ at, device, icon, label, method, tone }: Properties) {
   const { t } = useTranslation();
   const toneStyle = TONE_STYLES[tone];
   const isMissing = tone === 'missing';
+
+  /**
+   * Dòng dưới ô dấu: cách chấm, kèm tên thiết bị nếu có.
+   *
+   * Cách chấm hiện ngay cả khi thiếu `device` — trước đây điều kiện là
+   * `method && device` nên chỉ cần API không trả tên thiết bị là cả dòng rơi về
+   * `--`, mất luôn thông tin GPS/QR vốn đã có.
+   */
+  const methodLabel = (() => {
+    if (!method) {
+      return TEXT_PLACEHOLDER;
+    }
+    const label = t(AttendanceUtils.METHOD_LABEL_KEYS[method]);
+    return device
+      ? t('attendance.methods.with_device', { device, method: label })
+      : label;
+  })();
 
   return (
     <View style={styles.container}>
@@ -74,17 +87,12 @@ function PunchLine({ at, device, icon, label, method, tone }: Properties) {
           <Image
             color={Colors.gray24}
             height={METHOD_ICON_SIZE}
-            name={method ? METHOD_ICONS[method] : 'ic_location'}
+            name={method ? AttendanceUtils.METHOD_ICONS[method] : 'ic_location'}
             type="svg"
             width={METHOD_ICON_SIZE}
           />
           <Text numberOfLines={1} style={styles.method}>
-            {method && device
-              ? t('attendance_histories.method_device', {
-                  device,
-                  method: t(`attendance_histories.method_${method}`),
-                })
-              : TEXT_PLACEHOLDER}
+            {methodLabel}
           </Text>
         </View>
       </View>

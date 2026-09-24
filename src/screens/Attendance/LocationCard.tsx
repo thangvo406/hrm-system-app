@@ -65,6 +65,7 @@ function LocationCard({
           style={styles.map}
           testID="AttendanceMap"
           toolbarEnabled={false}
+          userInterfaceStyle="light"
         >
           {officeInfo ? (
             <>

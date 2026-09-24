@@ -150,7 +150,7 @@ export function useHome() {
     useCallback(() => {
       StatusBar.setBarStyle('light-content');
       dispatch(getProfileRequest());
-      dispatch(getAttendanceInfoRequest(null));
+      dispatch(getAttendanceInfoRequest());
       return () => StatusBar.setBarStyle('dark-content');
     }, []),
   );

@@ -2,6 +2,7 @@ import type MapView from 'react-native-maps';
 import type {
   TAttendanceInfo,
   TAttendanceLogEntry,
+  TAttendanceMethod,
   TAttendanceMode,
   TCurrentLocation,
   TOfficeInfo,
@@ -31,9 +32,6 @@ import dayjs from 'dayjs';
 import { getListOfficeRequest } from '@services/slices/account/accountSlice';
 import { EAttendanceMode, EAttendanceType } from '@constants/config';
 
-const POSITION_TIMEOUT_MS = 15_000;
-const POSITION_MAX_AGE_MS = 10_000;
-
 const getLocationPermission = () =>
   DeviceUtils.isIOS()
     ? PermissionUtils.PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
@@ -47,6 +45,9 @@ export function useAttendance() {
 
   const storedCheckInAt = useAppSelector(AttendanceSelector.getCheckInAt);
   const storedCheckOutAt = useAppSelector(AttendanceSelector.getCheckOutAt);
+  // Bản ghi chấm công hôm nay do server trả về: chỗ duy nhất biết mỗi dấu được
+  // chấm bằng GPS hay QR, app không tự suy ra từ tab đang chọn được.
+  const attendanceInfo = useAppSelector(AttendanceSelector.getAttendanceInfo);
   const offices = useAppSelector(AccountSelector.getOffices) || [];
   const workDate = useAppSelector(AttendanceSelector.getWorkDate);
   const companyId = useAppSelector(AccountSelector.getProfile)?.companyId;
@@ -56,6 +57,13 @@ export function useAttendance() {
   const isToday = workDate === getCurrentTime().format(ISO_DATE_FORMAT);
   const checkedInAt = isToday ? storedCheckInAt : undefined;
   const checkedOutAt = isToday ? storedCheckOutAt : undefined;
+
+  const checkedInMethod = checkedInAt
+    ? AttendanceUtils.toMethod(attendanceInfo?.checkInMethod)
+    : undefined;
+  const checkedOutMethod = checkedOutAt
+    ? AttendanceUtils.toMethod(attendanceInfo?.checkOutMethod)
+    : undefined;
 
   const [mode, setMode] = useState<TAttendanceMode>(EAttendanceMode.GPS);
 
@@ -91,42 +99,38 @@ export function useAttendance() {
       hasPermission: true,
       isLocating: true,
     }));
-    Geolocation.getCurrentPosition(
-      position => {
-        if (!isMountedRef.current) {
-          return;
-        }
-        const { latitude, longitude } = position.coords;
-        setCurrentLocation(previous => ({
-          ...previous,
-          coordinates: { latitude, longitude },
-          isLocating: false,
-          isMocked: LocationUtils.isMockedPosition(position),
-        }));
-        mapRef.current?.animateToRegion({
-          latitude,
-          latitudeDelta: AppConstants.MAP_REGION_DELTA,
-          longitude,
-          longitudeDelta: AppConstants.MAP_REGION_DELTA,
-        });
-      },
-      () => {
-        if (isMountedRef.current) {
-          setCurrentLocation(previous => ({ ...previous, isLocating: false }));
-        }
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: POSITION_MAX_AGE_MS,
-        timeout: POSITION_TIMEOUT_MS,
-      },
-    );
+
+    try {
+      const position = await LocationUtils.getCurrentPosition();
+      if (!isMountedRef.current) {
+        return;
+      }
+      const { latitude, longitude } = position.coords;
+      setCurrentLocation(previous => ({
+        ...previous,
+        coordinates: { latitude, longitude },
+        isLocating: false,
+        isMocked: LocationUtils.isMockedPosition(position),
+      }));
+      mapRef.current?.animateToRegion({
+        latitude,
+        latitudeDelta: AppConstants.MAP_REGION_DELTA,
+        longitude,
+        longitudeDelta: AppConstants.MAP_REGION_DELTA,
+      });
+    } catch {
+      // Gồm cả `PositionTimeoutError`: không có hạn chót đó thì nhánh fused
+      // của Play Services có thể không gọi callback nào, và spinner sẽ quay mãi.
+      if (isMountedRef.current) {
+        setCurrentLocation(previous => ({ ...previous, isLocating: false }));
+      }
+    }
   }, []);
 
   useEffect(() => {
     Geolocation.setRNConfiguration({
       authorizationLevel: 'whenInUse',
-      locationProvider: 'auto',
+      locationProvider: 'playServices',
       skipPermissionRequests: true,
     });
   }, []);
@@ -163,9 +167,19 @@ export function useAttendance() {
 
     // Bán kính geofence do server quy định riêng cho từng văn phòng, không còn
     // là hằng số chung của app.
-    const geofenceRadius = office?.radiusInMeters ?? 0;
+    const geofenceRadius = office?.radiusCheckInCircle ?? 0;
     const isInsideLocation =
       distanceInMeters !== undefined && distanceInMeters <= geofenceRadius;
+    const toLogTitle = (
+      labelKey: string,
+      method: TAttendanceMethod | undefined,
+    ) =>
+      method
+        ? t('attendance.log.with_method', {
+            label: t(labelKey),
+            method: t(AttendanceUtils.METHOD_LABEL_KEYS[method]),
+          })
+        : t(labelKey);
 
     return {
       attendanceInfo: { checkedInAt, checkedOutAt } satisfies TAttendanceInfo,
@@ -178,21 +192,15 @@ export function useAttendance() {
           at: checkedInAt,
           icon: 'ic_sign_in',
           id: 'check-in',
-          place: checkedInAt ? officePlace : t('attendance.log_pending'),
-          // Cách chấm chỉ có nghĩa khi đã chấm thật; chưa chấm thì chỉ nêu tên
-          // dấu.
-          title: t(
-            checkedInAt
-              ? 'attendance.log_check_in_method'
-              : 'attendance.log_check_in',
-          ),
+          place: checkedInAt ? officePlace : t('attendance.log.pending'),
+          title: toLogTitle('attendance.log.check_in', checkedInMethod),
         },
         {
           at: checkedOutAt,
           icon: 'ic_sign_out',
           id: 'check-out',
-          place: checkedOutAt ? officePlace : t('attendance.log_pending'),
-          title: t('attendance.log_check_out'),
+          place: checkedOutAt ? officePlace : t('attendance.log.pending'),
+          title: toLogTitle('attendance.log.check_out', checkedOutMethod),
         },
       ] satisfies readonly TAttendanceLogEntry[],
       officeInfo: office
@@ -215,7 +223,15 @@ export function useAttendance() {
           } satisfies TOfficeInfo)
         : undefined,
     };
-  }, [checkedInAt, checkedOutAt, currentLocation, offices, t]);
+  }, [
+    checkedInAt,
+    checkedInMethod,
+    checkedOutAt,
+    checkedOutMethod,
+    currentLocation,
+    offices,
+    t,
+  ]);
 
   const onPressAttendance = useCallback(() => {
     if (!attendanceData.enableBtnCheckin) {
@@ -249,7 +265,13 @@ export function useAttendance() {
         },
       }),
     );
-  }, [attendanceData.enableBtnCheckin, checkedInAt, currentLocation, dispatch]);
+  }, [
+    attendanceData.enableBtnCheckin,
+    checkedInAt,
+    currentLocation,
+    dispatch,
+    mode,
+  ]);
 
   const onPressHistory = useCallback(() => {
     AppNavigator.navigate(Paths.AttendanceHistories);

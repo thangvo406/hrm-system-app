@@ -4,7 +4,9 @@ import type { TAttendanceHistoryFilter } from '@type/attendance';
 import AppButton from '@components/AppButton';
 import Image from '@components/Image';
 import React from 'react';
+import { AttendanceUtils } from '@utils';
 import { Colors } from '@constants';
+import { EAttendanceStatus } from '@constants/config';
 import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -21,32 +23,26 @@ const FILTERS: readonly {
   {
     icon: 'ic_grid',
     iconColor: Colors.gray17,
-    labelKey: 'attendance_histories.filter_all',
+    labelKey: AttendanceUtils.FILTER_LABEL_KEYS.all,
     value: 'all',
   },
   {
-    icon: 'ic_sign_in',
+    icon: 'ic_check',
     iconColor: Colors.green08,
-    labelKey: 'attendance_histories.filter_check_in',
-    value: 'check_in',
-  },
-  {
-    icon: 'ic_sign_out',
-    iconColor: Colors.red03,
-    labelKey: 'attendance_histories.filter_check_out',
-    value: 'check_out',
+    labelKey: AttendanceUtils.FILTER_LABEL_KEYS[EAttendanceStatus.FULL_TIME],
+    value: EAttendanceStatus.FULL_TIME,
   },
   {
     icon: 'ic_clock',
     iconColor: Colors.yellow03,
-    labelKey: 'attendance_histories.filter_late',
-    value: 'late',
+    labelKey: AttendanceUtils.FILTER_LABEL_KEYS[EAttendanceStatus.LATE],
+    value: EAttendanceStatus.LATE,
   },
   {
     icon: 'ic_minus_circle',
     iconColor: Colors.gray24,
-    labelKey: 'attendance_histories.filter_early',
-    value: 'early_leave',
+    labelKey: AttendanceUtils.FILTER_LABEL_KEYS[EAttendanceStatus.EARLY_LEAVE],
+    value: EAttendanceStatus.EARLY_LEAVE,
   },
 ];
 

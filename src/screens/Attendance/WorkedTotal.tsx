@@ -51,7 +51,7 @@ function WorkedTotal({ checkedInAt, checkedOutAt }: Properties) {
   }, [checkedOutAt]);
 
   if (!checkedInAt) {
-    return <Text style={styles.total}>{t('attendance.worked_none')}</Text>;
+    return <Text style={styles.total}>{t('attendance.log.worked.none')}</Text>;
   }
 
   const startedAt = parseTimeToday(checkedInAt);
@@ -61,7 +61,7 @@ function WorkedTotal({ checkedInAt, checkedOutAt }: Properties) {
 
   return (
     <Text style={styles.total}>
-      {t('attendance.worked_total', {
+      {t('attendance.log.worked.total', {
         hours: Math.floor(totalMinutes / MINUTES_IN_HOUR),
         minutes: String(totalMinutes % MINUTES_IN_HOUR).padStart(
           MINUTE_PAD_LENGTH,

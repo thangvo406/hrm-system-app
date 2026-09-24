@@ -17,8 +17,12 @@ const EARTH_RADIUS_M = 6_371_000;
 const DEGREES_IN_HALF_TURN = 180;
 const HALF = 2;
 
-const POSITION_TIMEOUT_MS = 15_000;
-const POSITION_MAX_AGE_MS = 10_000;
+const POSITION_TIMEOUT_MS = 30_000;
+const POSITION_MAX_AGE_MS = 30_000;
+
+const POSITION_HARD_TIMEOUT_MS = 35_000;
+
+const TIMED_OUT = Symbol('position-timed-out');
 
 const toRadians = (degrees: number) =>
   (degrees * Math.PI) / DEGREES_IN_HALF_TURN;
@@ -47,6 +51,56 @@ export const isWithinRadius = (
 export const isMockedPosition = (position: GeolocationResponse): boolean =>
   (position as TGeolocationPosition).mocked === true;
 
+/** Ném ra khi hết `POSITION_HARD_TIMEOUT_MS` mà vẫn chưa có toạ độ. */
+export class PositionTimeoutError extends Error {
+  constructor() {
+    super('Timed out while getting the current position');
+    this.name = 'PositionTimeoutError';
+  }
+}
+
+/**
+ * `Geolocation.getCurrentPosition` ở dạng promise, kèm hạn chót tự đặt để
+ * không bao giờ treo mãi — xem `POSITION_HARD_TIMEOUT_MS`. Mọi chỗ cần toạ độ
+ * nên đi qua đây thay vì gọi thẳng `Geolocation`.
+ */
+export const getCurrentPosition = async (
+  hardTimeoutMs: number = POSITION_HARD_TIMEOUT_MS,
+): Promise<GeolocationResponse> => {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  const position = new Promise<GeolocationResponse>((resolve, reject) => {
+    Geolocation.getCurrentPosition(
+      resolve,
+      error => {
+        reject(new Error(error.message));
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: POSITION_MAX_AGE_MS,
+        timeout: POSITION_TIMEOUT_MS,
+      },
+    );
+  });
+
+  const expiry = new Promise<typeof TIMED_OUT>(resolve => {
+    timeoutId = setTimeout(() => {
+      resolve(TIMED_OUT);
+    }, hardTimeoutMs);
+  });
+
+  try {
+    const winner = await Promise.race([position, expiry]);
+    if (winner === TIMED_OUT) {
+      throw new PositionTimeoutError();
+    }
+    return winner;
+  } finally {
+    // Nhánh thua vẫn còn treo; ít nhất đừng giữ timer sống thêm.
+    clearTimeout(timeoutId);
+  }
+};
+
 export const getCurrentCoordinates = async (): Promise<TDevicePosition> => {
   const permission = DeviceUtils.isIOS()
     ? PermissionUtils.PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
@@ -57,22 +111,12 @@ export const getCurrentCoordinates = async (): Promise<TDevicePosition> => {
     throw new Error(`Location permission not granted: ${result}`);
   }
 
-  return new Promise<TDevicePosition>((resolve, reject) => {
-    Geolocation.getCurrentPosition(
-      position =>
-        resolve({
-          isMocked: isMockedPosition(position),
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        }),
-      error => reject(new Error(error.message)),
-      {
-        enableHighAccuracy: true,
-        maximumAge: POSITION_MAX_AGE_MS,
-        timeout: POSITION_TIMEOUT_MS,
-      },
-    );
-  });
+  const position = await getCurrentPosition();
+  return {
+    isMocked: isMockedPosition(position),
+    latitude: position.coords.latitude,
+    longitude: position.coords.longitude,
+  };
 };
 
 export const getDistanceToCurrentPosition = async (

@@ -675,13 +675,13 @@
       "shift_window": "{{name}} · {{startAt}} – {{endAt}}",
       "shift_on_time": "Đúng giờ",
       "shift_late": "Vào muộn",
-      "shift_not_checked_in": "Chưa vào ca",
+      "shift_not_checked_in": "Chưa Check-in",
       "shift_office_name": "Ca hành chính",
-      "check_in_label": "Vào ca",
-      "check_out_label": "Ra ca",
-      "check_in_action": "Chấm công vào ca",
-      "check_out_action": "Chấm công ra ca",
-      "check_out_done": "Đã chấm công ra ca",
+      "check_in_label": "Check-in",
+      "check_out_label": "Check-out",
+      "check_in_action": "Check-in",
+      "check_out_action": "Check-out",
+      "check_out_done": "Đã Check-out",
       "action_leave": "Xin nghỉ phép",
       "action_overtime": "Đăng ký OT",
       "action_payslip": "Phiếu lương",
@@ -698,9 +698,16 @@
     "attendance": {
       "title": "Chấm công",
       "history": "Lịch sử",
-      "mode_gps": "Định vị GPS",
-      "mode_qr": "Quét mã QR",
       "qr_coming_soon": "Quét mã QR sẽ sớm có mặt",
+      "modes": {
+        "gps": "Định vị GPS",
+        "qr": "Quét mã QR"
+      },
+      "methods": {
+        "gps": "GPS",
+        "qr": "QR",
+        "with_device": "{{method}} • {{device}}"
+      },
       "office_distance": "cách {{distance}} m",
       "inside_geofence": "Bạn đang ở trong khu vực được phép chấm công",
       "outside_geofence": "Bạn đang ở ngoài khu vực được phép chấm công",
@@ -709,39 +716,50 @@
       "location_unavailable": "Chưa lấy được vị trí. Bấm nút định vị để thử lại.",
       "shift_meta": "{{weekday}}, {{date}} · {{name}} {{startAt}} – {{endAt}}",
       "shift_office_name": "Ca hành chính",
-      "check_in_action": "Chấm công vào ca",
-      "check_out_action": "Chấm công ra ca",
-      "check_out_done": "Đã chấm công ra ca",
-      "today_log": "Nhật ký hôm nay",
-      "worked_none": "Tổng: 0 giờ",
-      "worked_total": "Tổng: {{hours}} giờ {{minutes}} phút",
-      "log_check_in": "Vào ca",
-      "log_check_in_method": "Vào ca · GPS",
-      "log_check_out": "Ra ca",
-      "log_pending": "Chưa chấm công",
+      "check_in_action": "Chấm công Check-in",
+      "check_out_action": "Chấm công Check-out",
+      "check_out_done": "Đã Check-out",
+      "log": {
+        "title": "Nhật ký hôm nay",
+        "check_in": "Check-in",
+        "check_out": "Check-out",
+        "pending": "Chưa chấm công",
+        "with_method": "{{label}} · {{method}}",
+        "worked": {
+          "none": "Tổng: 0 giờ",
+          "total": "Tổng: {{hours}} giờ {{minutes}} phút"
+        }
+      },
       "explanation_prompt": "Quên chấm công? Gửi đơn giải trình"
     },
     "attendance_histories": {
       "title": "Lịch sử chấm công",
-      "filter_all": "Tất cả",
-      "filter_check_in": "Vào ca",
-      "filter_check_out": "Ra ca",
-      "filter_late": "Đi muộn",
-      "filter_early": "Về sớm",
+      "filters": {
+        "all": "Tất cả",
+        "on_time": "Đúng giờ",
+        "late": "Đi muộn",
+        "early": "Về sớm"
+      },
       "month_label": "Tháng {{month}}, {{year}}",
       "pick_month": "Chọn tháng",
-      "check_in": "Vào ca",
-      "check_out": "Ra ca",
-      "method_gps": "GPS",
-      "method_qr": "QR",
-      "method_device": "{{method}} • {{device}}",
+      "check_in": "Check-in",
+      "check_out": "Check-out",
       "worked_label": "Tổng giờ làm",
       "worked_value": "{{hours}} giờ {{minutes}} phút",
       "status_on_time": "Đúng giờ",
       "status_late": "Đi muộn",
       "status_early": "Về sớm",
       "status_missing": "Chưa chấm",
-      "empty": "Không có ngày công nào khớp bộ lọc"
+      "empty": {
+        "all": {
+          "title": "Tháng này chưa có ngày công nào",
+          "description": "Chọn tháng khác để xem lịch sử chấm công."
+        },
+        "filtered": {
+          "title": "Không có ngày công nào phù hợp",
+          "description": "Không có ngày công nào trong tháng này khớp với bộ lọc “{{filter}}”."
+        }
+      }
     },
     "requests": {
       "title": "Đơn từ",

@@ -24,7 +24,7 @@ function TodayLog({ attendanceInfo, entries }: Properties) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{t('attendance.today_log')}</Text>
+        <Text style={styles.title}>{t('attendance.log.title')}</Text>
         <WorkedTotal
           checkedInAt={attendanceInfo.checkedInAt}
           checkedOutAt={attendanceInfo.checkedOutAt}

@@ -34,6 +34,13 @@ export const OFFICE_SHIFT = {
 };
 
 export const MAP_REGION_DELTA = 0.0012;
+export enum EAttendanceStatus {
+  LATE = 'LATE',
+  EARLY_LEAVE = 'EARLY_LEAVE',
+  ABSENT = 'ABSENT',
+  IN_PROGRESS = 'IN_PROGRESS',
+  FULL_TIME = 'FULL_TIME',
+}
 export enum EAttendanceType {
   CHECK_OUT = 'CHECK_OUT',
   CHECK_IN = 'CHECK_IN',
