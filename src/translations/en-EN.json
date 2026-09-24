@@ -704,6 +704,7 @@
       "office_distance": "{{office}} — {{distance}} m away",
       "inside_geofence": "You are inside the allowed check-in area",
       "outside_geofence": "You are outside the allowed check-in area",
+      "mocked_location": "Mock location detected. Turn off any fake GPS app, then locate again to check in.",
       "shift_meta": "{{weekday}}, {{date}} · {{name}} {{startAt}} – {{endAt}}",
       "shift_office_name": "Office shift",
       "check_in_action": "Check in",

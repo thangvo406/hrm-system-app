@@ -1,10 +1,10 @@
+import type { TDevicePosition, TGeolocationPosition } from '@type/location';
+import type { GeolocationResponse } from '@react-native-community/geolocation';
+
 import Geolocation from '@react-native-community/geolocation';
-// Import thẳng file sibling chứ không qua '@utils': index.ts re-export chính
-// file này, đi vòng qua đó là tạo circular import.
 import * as PermissionUtils from './permissions';
 import { DeviceUtils } from '@kits/core/utils';
 
-/** Một điểm trên bản đồ, khớp luôn với `Region` của react-native-maps. */
 export type TCoordinates = {
   readonly latitude: number;
   readonly longitude: number;
@@ -23,13 +23,6 @@ const POSITION_MAX_AGE_MS = 10_000;
 const toRadians = (degrees: number) =>
   (degrees * Math.PI) / DEGREES_IN_HALF_TURN;
 
-/**
- * Khoảng cách đường chim bay giữa hai toạ độ, tính bằng mét.
- *
- * Dùng Haversine (coi Trái Đất là hình cầu). Sai số so với mô hình ellipsoid
- * dưới 0.5%, tức vài centimet ở khoảng cách vài trăm mét — thừa chính xác cho
- * việc khoanh vùng chấm công.
- */
 export const getDistanceInMeters = (
   from: TCoordinates,
   to: TCoordinates,
@@ -51,17 +44,10 @@ export const isWithinRadius = (
   radiusInMeters: number = DEFAULT_NEARBY_RADIUS_M,
 ): boolean => getDistanceInMeters(from, to) <= radiusInMeters;
 
-/**
- * Toạ độ hiện tại của thiết bị.
- *
- * Tự xin quyền vị trí trước (giống cách `utils/imagePicker.ts` tự xin quyền
- * camera), nên chỗ gọi không phải lo phần đó.
- *
- * NÉM LỖI thay vì trả `undefined` khi người dùng từ chối quyền hoặc máy không
- * định vị được: hai chuyện đó khác hẳn "đang đứng xa", gộp chung vào một giá
- * trị rỗng là mời gọi chỗ gọi hiểu nhầm thành ngoài vùng.
- */
-export const getCurrentCoordinates = async (): Promise<TCoordinates> => {
+export const isMockedPosition = (position: GeolocationResponse): boolean =>
+  (position as TGeolocationPosition).mocked === true;
+
+export const getCurrentCoordinates = async (): Promise<TDevicePosition> => {
   const permission = DeviceUtils.isIOS()
     ? PermissionUtils.PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
     : PermissionUtils.PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
@@ -71,10 +57,11 @@ export const getCurrentCoordinates = async (): Promise<TCoordinates> => {
     throw new Error(`Location permission not granted: ${result}`);
   }
 
-  return new Promise<TCoordinates>((resolve, reject) => {
+  return new Promise<TDevicePosition>((resolve, reject) => {
     Geolocation.getCurrentPosition(
       position =>
         resolve({
+          isMocked: isMockedPosition(position),
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         }),
@@ -88,23 +75,11 @@ export const getCurrentCoordinates = async (): Promise<TCoordinates> => {
   });
 };
 
-/**
- * Khoảng cách từ chỗ đang đứng tới `target`, tính bằng mét.
- *
- * Ném lỗi theo đúng `getCurrentCoordinates` khi không lấy được vị trí.
- */
 export const getDistanceToCurrentPosition = async (
   target: TCoordinates,
 ): Promise<number> =>
   getDistanceInMeters(await getCurrentCoordinates(), target);
 
-/**
- * `true` khi thiết bị đang ở cách `target` không quá `radiusInMeters`
- * (mặc định 50 m).
- *
- * Ném lỗi khi thiếu quyền vị trí hoặc không định vị được — bọc try/catch ở chỗ
- * gọi và xử lý riêng trường hợp đó, đừng coi như ở xa.
- */
 export const isCurrentPositionNear = async (
   target: TCoordinates,
   radiusInMeters: number = DEFAULT_NEARBY_RADIUS_M,

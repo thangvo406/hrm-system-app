@@ -80,6 +80,7 @@ export function useAttendance() {
   const [hasLocationPermission, setHasLocationPermission] = useState(false);
   const [distanceInMeters, setDistanceInMeters] = useState<number>();
   const [isLocating, setIsLocating] = useState(false);
+  const [isMockedLocation, setIsMockedLocation] = useState(false);
   const [currentCoordinates, setCurrentCoordinates] =
     useState<LocationUtils.TCoordinates>();
 
@@ -90,12 +91,6 @@ export function useAttendance() {
     [],
   );
 
-  /**
-   * Đọc lại vị trí hiện tại, đưa bản đồ về đó và tính lại khoảng cách tới văn
-   * phòng. Dùng chung cho lần định vị lúc mở màn và cho nút lấy lại vị trí.
-   *
-   * Nút bị disable trong lúc đang chạy nên không cần thêm cờ chống gọi chồng.
-   */
   const refreshLocation = useCallback(async () => {
     const result = await PermissionUtils.requestPermission(
       getLocationPermission(),
@@ -117,6 +112,7 @@ export function useAttendance() {
           return;
         }
         setIsLocating(false);
+        setIsMockedLocation(LocationUtils.isMockedPosition(position));
         const { latitude, longitude } = position.coords;
         setCurrentCoordinates({ latitude, longitude });
         setDistanceInMeters(
@@ -190,18 +186,32 @@ export function useAttendance() {
     [checkedInAt, checkedOutAt, t],
   );
 
+  const isInsideGeofence =
+    distanceInMeters !== undefined && distanceInMeters <= GEOFENCE_RADIUS_M;
+
+  // Ba điều kiện tách riêng vì mỗi cái ứng với một câu thông báo khác nhau ở
+  // banner; gộp sớm thành một cờ là mất luôn lý do bị chặn.
+  const enableBtnCheckin =
+    isInsideGeofence && !isMockedLocation && !checkedOutAt;
+
   /**
    * Một nút cho cả hai dấu: chưa vào ca thì chấm vào, đã vào ca thì chấm ra.
    * Giờ chấm đi thẳng vào redux nên màn Trang chủ đọc lại được ngay.
    */
   const onPunch = useCallback(() => {
+    // Chặn lần hai ở đây chứ không chỉ trông vào nút bị disable: nút là UI, còn
+    // đây là chỗ duy nhất thực sự ghi dấu chấm công.
+    if (!enableBtnCheckin) {
+      return;
+    }
+
     const now = getCurrentTime();
     const punch = {
       at: now.format(TIME_FORMAT),
       workDate: now.format(ISO_DATE_FORMAT),
     };
     dispatch(checkedInAt ? checkedOut(punch) : checkedIn(punch));
-  }, [checkedInAt, dispatch]);
+  }, [checkedInAt, dispatch, enableBtnCheckin]);
 
   const onPressHistory = useCallback(() => {
     AppNavigator.navigate(Paths.AttendanceHistories);
@@ -226,14 +236,15 @@ export function useAttendance() {
     checkedOutAt,
     currentCoordinates,
     distanceInMeters,
+    enableBtnCheckin,
     geofenceRadius: GEOFENCE_RADIUS_M,
     hasCheckedIn: !!checkedInAt,
     hasCheckedOut: !!checkedOutAt,
     hasLocationPermission,
     initialRegion: OFFICE_REGION,
-    isInsideGeofence:
-      distanceInMeters !== undefined && distanceInMeters <= GEOFENCE_RADIUS_M,
+    isInsideGeofence,
     isLocating,
+    isMockedLocation,
     logEntries,
     mapRef,
     mode,

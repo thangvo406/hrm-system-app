@@ -3,6 +3,7 @@ export * from './auth';
 export * from './common';
 export * from './dialog';
 export * from './home';
+export * from './location';
 export * from './notifications';
 export * from './profile';
 export * from './requests';

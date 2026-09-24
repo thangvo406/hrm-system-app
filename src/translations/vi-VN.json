@@ -704,6 +704,7 @@
       "office_distance": "{{office}} — cách {{distance}} m",
       "inside_geofence": "Bạn đang ở trong khu vực được phép chấm công",
       "outside_geofence": "Bạn đang ở ngoài khu vực được phép chấm công",
+      "mocked_location": "Phát hiện vị trí giả lập. Hãy tắt ứng dụng giả mạo GPS rồi định vị lại để chấm công.",
       "shift_meta": "{{weekday}}, {{date}} · {{name}} {{startAt}} – {{endAt}}",
       "shift_office_name": "Ca hành chính",
       "check_in_action": "Chấm công vào ca",

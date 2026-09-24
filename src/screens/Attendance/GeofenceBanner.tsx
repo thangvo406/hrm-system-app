@@ -9,11 +9,28 @@ const BANNER_ICON_SIZE = ScaleSize(16);
 
 type Properties = {
   readonly isInsideGeofence: boolean;
+  readonly isMockedLocation: boolean;
 };
 
-/** Câu trả lời cho câu hỏi duy nhất người dùng có lúc này: chấm công được chưa. */
-function GeofenceBanner({ isInsideGeofence }: Properties) {
+function GeofenceBanner({ isInsideGeofence, isMockedLocation }: Properties) {
   const { t } = useTranslation();
+
+  if (isMockedLocation) {
+    return (
+      <View style={[styles.container, styles.containerMocked]}>
+        <Image
+          color={Colors.red03}
+          height={BANNER_ICON_SIZE}
+          name="ic_warning"
+          type="svg"
+          width={BANNER_ICON_SIZE}
+        />
+        <Text style={[styles.label, styles.labelMocked]}>
+          {t('attendance.mocked_location')}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View
@@ -61,6 +78,9 @@ const styles = StyleSheet.create({
   containerInside: {
     backgroundColor: Colors.green06,
   },
+  containerMocked: {
+    backgroundColor: Colors.red02,
+  },
   containerOutside: {
     backgroundColor: Colors.yellow04,
   },
@@ -71,6 +91,9 @@ const styles = StyleSheet.create({
   },
   labelInside: {
     color: Colors.green08,
+  },
+  labelMocked: {
+    color: Colors.red03,
   },
   labelOutside: {
     color: Colors.orange02,

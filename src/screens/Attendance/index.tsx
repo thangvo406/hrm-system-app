@@ -21,12 +21,14 @@ function Attendance() {
     checkedOutAt,
     currentCoordinates,
     distanceInMeters,
+    enableBtnCheckin,
     geofenceRadius,
     hasCheckedIn,
     hasCheckedOut,
     initialRegion,
     isInsideGeofence,
     isLocating,
+    isMockedLocation,
     logEntries,
     mapRef,
     mode,
@@ -68,16 +70,19 @@ function Attendance() {
               officeName={officeName}
               onPressLocate={onPressLocate}
             />
-            <GeofenceBanner isInsideGeofence={isInsideGeofence} />
+            <GeofenceBanner
+              isInsideGeofence={isInsideGeofence}
+              isMockedLocation={isMockedLocation}
+            />
           </>
         ) : (
           <QrPlaceholder />
         )}
 
         <ClockCard
+          enableBtnCheckin={enableBtnCheckin}
           hasCheckedIn={hasCheckedIn}
           hasCheckedOut={hasCheckedOut}
-          isInsideGeofence={isInsideGeofence}
           onPunch={onPunch}
           shift={shift}
         />

@@ -15,28 +15,23 @@ const CARD_ELEVATION = 3;
 const CTA_ICON_SIZE = ScaleSize(20);
 
 type Properties = {
+  /** Gộp sẵn mọi điều kiện chấm công ở hook — xem `useAttendance`. */
+  readonly enableBtnCheckin: boolean;
   readonly hasCheckedIn: boolean;
   readonly hasCheckedOut: boolean;
-  readonly isInsideGeofence: boolean;
   readonly onPunch: () => void;
   readonly shift: TAttendanceShift;
 };
 
-/**
- * Thẻ giữa màn: đồng hồ hiện tại và nút chấm công.
- *
- * Một nút phục vụ cả ngày công: chưa vào ca thì chấm vào, đã vào ca thì chấm
- * ra, chấm ra rồi thì khoá lại.
- */
 function ClockCard({
+  enableBtnCheckin,
   hasCheckedIn,
   hasCheckedOut,
-  isInsideGeofence,
   onPunch,
   shift,
 }: Properties) {
   const { t } = useTranslation();
-  const isDisabled = hasCheckedOut || !isInsideGeofence;
+  const isDisabled = !enableBtnCheckin;
 
   const getLabelKey = () => {
     if (hasCheckedOut) {
