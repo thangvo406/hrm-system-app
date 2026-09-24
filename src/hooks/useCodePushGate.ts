@@ -1,5 +1,6 @@
 import type { UpdatePackage } from 'react-native-codepush-sdk';
 
+import AppNavigator from '@navigation/AppNavigator';
 import { AppConstants } from '@constants';
 import { AppStorage } from '@services/common/storage';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -133,6 +134,7 @@ export function useCodePushGate({
   const hasStartedRef = useRef(false);
   const isSyncingRef = useRef(false);
   const hasOpenedGateRef = useRef(false);
+  const hasPromptedUpdateRef = useRef(false);
   const isMountedRef = useRef(true);
   // STARTUP_WATCHDOG_MS chỉ nên canh phase 'checking' (initialize +
   // checkForUpdate không có timeout riêng đủ chắc). Một khi đã biết chắc có
@@ -151,69 +153,71 @@ export function useCodePushGate({
   );
 
   /**
-   * Check + download + install. Trả về true nếu vừa cài một bản mới.
+   * BƯỚC 1 — chỉ hỏi server xem có bản mới không, KHÔNG tải gì.
    *
-   * `isBlocking` chỉ để quyết định có hiện progress hay không: lúc startup thì
-   * có (gate đang chặn navigator), lúc resume thì không (người dùng đang dùng
-   * app, không được che UI).
+   * Tách khỏi bước tải vì lúc app quay lại foreground ta chỉ được phép hỏi:
+   * tải là việc tốn mạng và tốn pin, phải đợi người dùng đồng ý đã.
+   *
+   * Trả về bản cập nhật đáng cài, hoặc `undefined` khi không có / đã cài rồi.
    */
-  const syncOnce = useCallback(
-    async (isBlocking: boolean) => {
-      FileManager.appendLog('syncOnce', `first: ${!codePush}`);
-      if (!codePush) {
-        return false;
-      }
-      // checkForUpdate của SDK throw 'Already checking for update' nếu bị gọi
-      // lồng nhau, nên chặn chồng lấn giữa startup và các lần resume.
-      FileManager.appendLog(
-        'syncOnce',
-        `isSyncingRef: ${isSyncingRef.current}`,
+  const checkForUpdate = useCallback(async () => {
+    FileManager.appendLog('checkForUpdate', `first: ${!codePush}`);
+    if (!codePush) {
+      return undefined;
+    }
+    // checkForUpdate của SDK throw 'Already checking for update' nếu bị gọi
+    // lồng nhau, nên chặn chồng lấn giữa startup và các lần resume.
+    FileManager.appendLog(
+      'checkForUpdate',
+      `isSyncingRef: ${isSyncingRef.current}`,
+    );
+    if (isSyncingRef.current) {
+      return undefined;
+    }
+    isSyncingRef.current = true;
+    try {
+      // initialize() phải có timeout: nếu nó treo mà không bọc thì finally
+      // không chạy, isSyncingRef kẹt true và MỌI lần resume sau đều bị chặn.
+      await withTimeout(codePush.initialize(), CHECK_TIMEOUT_MS);
+      FileManager.appendLog('checkForUpdate', 'init done');
+      const current = await codePush.getCurrentPackage();
+      const update = await withTimeout(
+        codePush.checkForUpdate(),
+        CHECK_TIMEOUT_MS,
       );
-      if (isSyncingRef.current) {
+
+      FileManager.appendLog(
+        'current?.packageHash',
+        JSON.stringify({ packageHash: current?.packageHash, update }),
+      );
+      return !update || isAlreadyApplied(update, current?.packageHash)
+        ? undefined
+        : update;
+    } finally {
+      isSyncingRef.current = false;
+    }
+  }, [codePush]);
+
+  /**
+   * BƯỚC 2 — tải và cài một bản đã biết chắc là có. Trả về true nếu cài xong.
+   *
+   * `isBlocking` quyết định có dựng màn tiến độ hay không. Lúc startup thì có
+   * (gate đang chặn navigator); lúc người dùng bấm đồng ý giữa phiên thì cũng
+   * có — họ vừa chủ động chọn cập nhật nên che UI là đúng mong đợi.
+   */
+  const downloadAndInstall = useCallback(
+    async (update: UpdatePackage, isBlocking: boolean) => {
+      if (!codePush || isSyncingRef.current) {
         return false;
       }
       isSyncingRef.current = true;
       try {
-        // initialize() phải có timeout: nếu nó treo mà không bọc thì finally
-        // không chạy, isSyncingRef kẹt true và MỌI lần resume sau đều bị chặn.
-        FileManager.appendLog('syncOnce', `first init`);
-        await withTimeout(codePush.initialize(), CHECK_TIMEOUT_MS);
-        FileManager.appendLog('syncOnce', `init done`);
-        const current = await codePush.getCurrentPackage();
-        FileManager.appendLog(
-          'syncOnce',
-          `getCurrentPackage: ${JSON.stringify(current)}`,
-        );
-        const update = await withTimeout(
-          codePush.checkForUpdate(),
-          CHECK_TIMEOUT_MS,
-        );
-
-        FileManager.appendLog(
-          'current?.packageHash',
-          JSON.stringify({
-            packageHash: current?.packageHash,
-            update,
-          }),
-        );
-        if (!update || isAlreadyApplied(update, current?.packageHash)) {
-          return false;
-        }
-        FileManager.appendLog(
-          'isMountedRef',
-          JSON.stringify({
-            isMountedRef: isMountedRef.current,
-            isBlocking,
-          }),
-        );
         if (isBlocking && isMountedRef.current) {
           // Đã có update thật để tải — huỷ watchdog checking-only ngay từ
           // đây, kẻo nó tự mở cổng giữa chừng download dù mọi thứ đang ổn.
           clearStartupWatchdogRef.current();
-          // Splash native do màn Startup ẩn, mà Startup nằm trong navigator
-          // đang bị chặn — phải tự ẩn ở đây, nếu không progress view bị che.
           setPhase('downloading');
-          SplashScreen.hide();
+          setProgress(0);
         }
 
         const downloadTimeoutMs = getDownloadTimeoutMs(
@@ -221,9 +225,6 @@ export function useCodePushGate({
           minDownloadKbps,
           downloadTimeoutBufferMs,
         );
-        // TODO: log tạm để xác nhận downloadTimeoutMs tính đúng và bắt được
-        // raw rejection reason sớm nhất có thể (trước khi withTimeout can
-        // thiệp) — xoá sau khi điều tra xong cú fail nhanh ở update thứ 2.
         FileManager.appendLog('downloadTimeoutMs', String(downloadTimeoutMs));
         const downloadPromise = codePush.downloadUpdate(
           update,
@@ -270,6 +271,23 @@ export function useCodePushGate({
       }
     },
     [codePush, minDownloadKbps, downloadTimeoutBufferMs],
+  );
+
+  /** Luồng đầy đủ của lần khởi động lạnh: check rồi tải luôn, có chặn UI. */
+  const syncOnce = useCallback(
+    async (isBlocking: boolean) => {
+      const update = await checkForUpdate();
+      if (!update) {
+        return false;
+      }
+      if (isBlocking && isMountedRef.current) {
+        // Splash native do màn Startup ẩn, mà Startup nằm trong navigator đang
+        // bị chặn — phải tự ẩn ở đây, nếu không progress view bị che.
+        SplashScreen.hide();
+      }
+      return downloadAndInstall(update, isBlocking);
+    },
+    [checkForUpdate, downloadAndInstall],
   );
 
   // Startup: chạy đúng một lần, chặn navigator tới khi xong.
@@ -375,29 +393,104 @@ export function useCodePushGate({
     return clearWatchdog;
   }, [codePush, syncOnce]);
 
+  /**
+   * Người dùng đã bấm "Cập nhật ngay": giờ mới tải, và lúc này thì được phép
+   * chặn UI bằng màn tiến độ vì chính họ vừa chọn.
+   *
+   * Cài xong là restart luôn. Bundle JS không hot-swap được trong một RN
+   * instance đang chạy, nên không restart thì họ vừa ngồi xem thanh tiến độ
+   * để đổi lấy đúng con số 0.
+   *
+   * Tải hỏng thì phải trả app lại cho họ (`ready`) chứ không để kẹt ở màn
+   * tiến độ — bundle cũ vẫn chạy tốt. Đồng thời mở lại cờ "đã hỏi" để lần mở
+   * app sau còn được hỏi lại: hỏng vì mạng chập thì thử lại là xong, chứ im
+   * luôn tới hết phiên thì người dùng không có đường nào cập nhật.
+   */
+  const startConfirmedUpdate = useCallback(
+    (update: UpdatePackage) => {
+      if (!codePush) {
+        return;
+      }
+
+      const recover = () => {
+        hasPromptedUpdateRef.current = false;
+        if (isMountedRef.current) {
+          setPhase('ready');
+        }
+      };
+
+      downloadAndInstall(update, true)
+        .then(hasInstalled => {
+          if (hasInstalled) {
+            codePush.restartApp();
+            return;
+          }
+          recover();
+        })
+        .catch((error: unknown) => {
+          FileManager.appendLog(
+            'CodePush confirmed update failed',
+            error instanceof Error
+              ? `${error.message}\n${error.stack ?? ''}`
+              : String(error),
+          );
+          recover();
+        });
+    },
+    [codePush, downloadAndInstall],
+  );
+
+  /**
+   * Hỏi người dùng có muốn cập nhật không. Chỉ hỏi MỘT lần mỗi phiên: đã bấm
+   * "Để sau" thì đừng hỏi lại ở mỗi lần họ mở lại app.
+   */
+  const promptUpdate = useCallback(
+    (update: UpdatePackage) => {
+      if (hasPromptedUpdateRef.current) {
+        return;
+      }
+      hasPromptedUpdateRef.current = true;
+      AppNavigator.showCodePushAvailable({
+        onConfirm: () => {
+          startConfirmedUpdate(update);
+        },
+      });
+    },
+    [startConfirmedUpdate],
+  );
+
   // Subscription phải nằm ở effect riêng: gộp chung với startup thì lần chạy
   // sau của effect sẽ bị hasStartedRef chặn ngay đầu, listener đã bị cleanup gỡ
   // mà không bao giờ được đăng ký lại -> resume check chết im lặng.
   //
   // Mở lại app từ background không phải cold start: JS instance vẫn sống nên
-  // startup không chạy lại. Check ngầm ở đây, không chặn UI và không restart
-  // giữa session — bundle mới áp dụng ở lần mở app kế tiếp.
+  // startup không chạy lại.
+  //
+  // Ở đây CHỈ check, không tải: người dùng đang dùng dở app nên không được tự
+  // ý ngốn mạng của họ, cũng không được che UI. Có bản mới thì hỏi bằng dialog;
+  // họ đồng ý rồi mới sang `startConfirmedUpdate` để tải và hiện màn tiến độ.
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextState => {
       if (nextState === 'active' && hasOpenedGateRef.current) {
-        syncOnce(true).catch((error: unknown) => {
-          FileManager.appendLog(
-            'CodePush resume sync failed',
-            error instanceof Error
-              ? `${error.message}\n${error.stack ?? ''}`
-              : String(error),
-          );
-        });
+        checkForUpdate()
+          .then(update => {
+            if (update && isMountedRef.current) {
+              promptUpdate(update);
+            }
+          })
+          .catch((error: unknown) => {
+            FileManager.appendLog(
+              'CodePush resume check failed',
+              error instanceof Error
+                ? `${error.message}\n${error.stack ?? ''}`
+                : String(error),
+            );
+          });
       }
     });
 
     return () => subscription.remove();
-  }, [syncOnce]);
+  }, [checkForUpdate, promptUpdate]);
 
   return { phase, progress };
 }

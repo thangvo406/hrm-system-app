@@ -1557,10 +1557,10 @@
     },
     "code_push": {
       "installing_title": "Installing the update",
-      "update_ready_title": "Update ready",
-      "update_ready_desc": "The update has finished downloading. Restart the app to apply it now.",
-      "restart_now": "Restart",
-      "restart_later": "Later",
+      "update_available_title": "Update available",
+      "update_available_desc": "A new version of the app is ready. Updating takes a few seconds and the app restarts when it is done.",
+      "update_now": "Update now",
+      "update_later": "Later",
       "updating_title": "Updating the app",
       "updating_description": "Downloading the latest version. The app will restart automatically when it is done."
     }

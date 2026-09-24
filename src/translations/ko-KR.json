@@ -1559,10 +1559,10 @@
     },
     "code_push": {
       "installing_title": "업데이트 설치 중",
-      "update_ready_title": "업데이트 준비 완료",
-      "update_ready_desc": "업데이트 다운로드가 끝났습니다. 앱을 다시 시작하면 바로 적용됩니다.",
-      "restart_now": "다시 시작",
-      "restart_later": "나중에",
+      "update_available_title": "업데이트가 있습니다",
+      "update_available_desc": "새 버전이 준비되었습니다. 업데이트는 몇 초가 걸리며 완료되면 앱이 다시 시작됩니다.",
+      "update_now": "지금 업데이트",
+      "update_later": "나중에",
       "updating_title": "앱 업데이트 중",
       "updating_description": "최신 버전을 다운로드하고 있습니다. 완료되면 앱이 자동으로 다시 시작됩니다."
     }

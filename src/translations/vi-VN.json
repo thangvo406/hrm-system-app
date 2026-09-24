@@ -1556,10 +1556,10 @@
     },
     "code_push": {
       "installing_title": "Đang cài đặt bản cập nhật",
-      "update_ready_title": "Đã có bản cập nhật",
-      "update_ready_desc": "Bản cập nhật đã tải xong. Khởi động lại ứng dụng để áp dụng ngay.",
-      "restart_now": "Khởi động lại",
-      "restart_later": "Để sau",
+      "update_available_title": "Đã có bản cập nhật",
+      "update_available_desc": "Ứng dụng có phiên bản mới. Cập nhật ngay để dùng bản mới nhất; quá trình này mất vài giây và ứng dụng sẽ tự khởi động lại.",
+      "update_now": "Cập nhật ngay",
+      "update_later": "Để sau",
       "updating_title": "Đang cập nhật ứng dụng",
       "updating_description": "Đang tải phiên bản mới nhất. Ứng dụng sẽ tự khởi động lại khi hoàn tất."
     }
