@@ -5,13 +5,16 @@ import type { Profile } from '@services/request/account';
 import { createSlice } from '@reduxjs/toolkit';
 
 import { logoutSuccess } from '@services/slices/auth/authSlice';
+import { IOffice, IRequestGetListOffice } from '@type';
 
 export interface AccountState {
-  profile: Profile | undefined;
+  profile?: Profile;
+  offices?: IOffice[];
 }
 
 const initialState: AccountState = {
   profile: undefined,
+  offices: undefined,
 };
 
 const accountSlice = createSlice({
@@ -25,12 +28,24 @@ const accountSlice = createSlice({
       prepare: (payload: AppCallback<Profile> = {}) => ({ payload }),
       reducer: () => {},
     },
+    getListOfficeSuccess: (state, action: PayloadAction<IOffice[]>) => {
+      state.offices = action.payload;
+    },
     getProfileSuccess: (state, action: PayloadAction<Profile>) => {
       state.profile = action.payload;
+    },
+    getListOfficeRequest: {
+      prepare: (payload: IRequestGetListOffice) => ({ payload }),
+      reducer: () => {},
     },
   },
 });
 
-export const { getProfileRequest, getProfileSuccess } = accountSlice.actions;
+export const {
+  getProfileRequest,
+  getListOfficeSuccess,
+  getListOfficeRequest,
+  getProfileSuccess,
+} = accountSlice.actions;
 
 export const accountReducer = accountSlice.reducer;

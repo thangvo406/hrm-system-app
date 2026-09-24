@@ -458,6 +458,8 @@
       "inside_geofence": "체크 가능 구역 안에 있습니다",
       "outside_geofence": "체크 가능 구역 밖에 있습니다",
       "mocked_location": "위치 조작이 감지되었습니다. 가짜 GPS 앱을 끈 뒤 다시 위치를 확인해 주세요.",
+      "locating": "위치를 가져오는 중…",
+      "location_unavailable": "위치를 가져오지 못했습니다. 위치 버튼을 눌러 다시 시도해 주세요.",
       "shift_meta": "{{weekday}}, {{date}} · {{name}} {{startAt}} – {{endAt}}",
       "shift_office_name": "정규 근무",
       "check_in_action": "출근 체크",

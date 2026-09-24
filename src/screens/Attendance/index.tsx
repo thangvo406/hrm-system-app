@@ -11,35 +11,29 @@ import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useAttendance } from '@hooks';
 import { useTranslation } from 'react-i18next';
+import { EAttendanceMode } from '@constants/config';
 
 const EXPLANATION_ICON_SIZE = ScaleSize(16);
 
 /** Màn Chấm công: chấm bằng định vị GPS hoặc bằng mã QR. */
 function Attendance() {
   const {
-    checkedInAt,
-    checkedOutAt,
-    currentCoordinates,
+    attendanceInfo,
+    currentLocation,
     distanceInMeters,
     enableBtnCheckin,
     geofenceRadius,
-    hasCheckedIn,
-    hasCheckedOut,
-    initialRegion,
-    isInsideGeofence,
-    isLocating,
-    isMockedLocation,
+    isInsideLocation,
     logEntries,
     mapRef,
     mode,
-    officeName,
+    officeInfo,
     onGoBack,
     onPressExplanation,
     onPressHistory,
     onPressLocate,
-    onPunch,
+    onPressAttendance,
     setMode,
-    shift,
   } = useAttendance();
   const { t } = useTranslation();
 
@@ -57,22 +51,20 @@ function Attendance() {
         showsVerticalScrollIndicator={false}
         style={styles.scroll}
       >
-        {mode === 'gps' ? (
+        {mode === EAttendanceMode.GPS ? (
           <>
             <LocationCard
-              currentCoordinates={currentCoordinates}
+              currentLocation={currentLocation}
               distanceInMeters={distanceInMeters}
               geofenceRadius={geofenceRadius}
-              initialRegion={initialRegion}
-              isInsideGeofence={isInsideGeofence}
-              isLocating={isLocating}
+              isInsideLocation={isInsideLocation}
               mapRef={mapRef}
-              officeName={officeName}
+              officeInfo={officeInfo}
               onPressLocate={onPressLocate}
             />
             <GeofenceBanner
-              isInsideGeofence={isInsideGeofence}
-              isMockedLocation={isMockedLocation}
+              isInsideLocation={isInsideLocation}
+              isMocked={currentLocation.isMocked}
             />
           </>
         ) : (
@@ -80,18 +72,13 @@ function Attendance() {
         )}
 
         <ClockCard
+          attendanceInfo={attendanceInfo}
           enableBtnCheckin={enableBtnCheckin}
-          hasCheckedIn={hasCheckedIn}
-          hasCheckedOut={hasCheckedOut}
-          onPunch={onPunch}
-          shift={shift}
+          officeInfo={officeInfo}
+          onPressAttendance={onPressAttendance}
         />
 
-        <TodayLog
-          checkedInAt={checkedInAt}
-          checkedOutAt={checkedOutAt}
-          entries={logEntries}
-        />
+        <TodayLog attendanceInfo={attendanceInfo} entries={logEntries} />
 
         <AppButton
           onPress={onPressExplanation}

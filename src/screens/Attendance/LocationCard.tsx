@@ -1,16 +1,16 @@
 import type MapView from 'react-native-maps';
-import type { LocationUtils } from '@utils';
 import type { RefObject } from 'react';
-import type { Region } from 'react-native-maps';
+import type { TCurrentLocation, TOfficeInfo } from '@type/attendance';
 
 import AppButton from '@components/AppButton';
 import Image from '@components/Image';
 import Map, { Circle, Marker, PROVIDER_DEFAULT } from 'react-native-maps';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import { Colors } from '@constants';
+import { AppConstants, Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { useTranslation } from 'react-i18next';
+import isNumber from 'lodash/isNumber';
 
 const MAP_HEIGHT = ScaleSize(170);
 const MARKER_SIZE = ScaleSize(36);
@@ -25,85 +25,93 @@ const GEOFENCE_STROKE_WIDTH = 2;
 const GEOFENCE_FILL = 'rgba(27, 95, 181, 0.10)';
 const CURRENT_MARKER_SIZE = ScaleSize(18);
 const CURRENT_MARKER_BORDER_WIDTH = 3;
-// Marker mặc định neo ở đáy ảnh (kiểu ghim cắm xuống đất); chấm tròn phải neo
-// đúng tâm, không thì nó lệch lên trên so với toạ độ thật.
 const MARKER_CENTER_ANCHOR = { x: 0.5, y: 0.5 };
 
 type Properties = {
-  /** `undefined` khi chưa lấy được vị trí lần nào. */
-  readonly currentCoordinates?: LocationUtils.TCoordinates;
+  readonly currentLocation: TCurrentLocation;
   readonly distanceInMeters?: number;
   readonly geofenceRadius: number;
-  readonly initialRegion: Region;
-  readonly isInsideGeofence: boolean;
-  readonly isLocating: boolean;
+  readonly isInsideLocation: boolean;
   readonly mapRef: RefObject<MapView | null>;
-  readonly officeName: string;
+  /** `undefined` khi chưa tải được văn phòng nào — bỏ luôn vòng geofence. */
+  readonly officeInfo?: TOfficeInfo;
   readonly onPressLocate: () => void;
 };
 
-/**
- * Thẻ bản đồ: vòng tròn bán kính được phép chấm công quanh văn phòng, kèm chip
- * tên văn phòng và khoảng cách hiện tại.
- *
- * `PROVIDER_DEFAULT` cho ra Apple Maps trên iOS và Google Maps trên Android —
- * react-native-maps chỉ có một implementation Android duy nhất dựng trên Google
- * Maps SDK. Nhờ vậy iOS không cần API key, chỉ Android mới cần.
- */
 function LocationCard({
-  currentCoordinates,
+  currentLocation,
   distanceInMeters,
   geofenceRadius,
-  initialRegion,
-  isInsideGeofence,
-  isLocating,
+  isInsideLocation,
   mapRef,
-  officeName,
+  officeInfo,
   onPressLocate,
 }: Properties) {
   const { t } = useTranslation();
+  const { coordinates, isLocating } = currentLocation;
 
   return (
     <View style={styles.container}>
-      <Map
-        initialRegion={initialRegion}
-        provider={PROVIDER_DEFAULT}
-        ref={mapRef}
-        showsMyLocationButton={false}
-        style={styles.map}
-        testID="AttendanceMap"
-        toolbarEnabled={false}
-      >
-        <Circle
-          center={initialRegion}
-          fillColor={GEOFENCE_FILL}
-          radius={geofenceRadius}
-          strokeColor={Colors.blue04}
-          strokeWidth={GEOFENCE_STROKE_WIDTH}
-        />
-        <Marker coordinate={initialRegion} tracksViewChanges={false}>
-          <View style={styles.marker}>
-            <Image
-              color={Colors.white}
-              height={MARKER_ICON_SIZE}
-              name="ic_home"
-              type="svg"
-              width={MARKER_ICON_SIZE}
-            />
-          </View>
-        </Marker>
+      {coordinates ? (
+        <Map
+          initialRegion={{
+            ...coordinates,
+            latitudeDelta: AppConstants.MAP_REGION_DELTA,
+            longitudeDelta: AppConstants.MAP_REGION_DELTA,
+          }}
+          provider={PROVIDER_DEFAULT}
+          ref={mapRef}
+          showsMyLocationButton={false}
+          style={styles.map}
+          testID="AttendanceMap"
+          toolbarEnabled={false}
+        >
+          {officeInfo ? (
+            <>
+              <Circle
+                center={officeInfo.coordinates}
+                fillColor={GEOFENCE_FILL}
+                radius={geofenceRadius}
+                strokeColor={Colors.blue04}
+                strokeWidth={GEOFENCE_STROKE_WIDTH}
+              />
+              <Marker
+                coordinate={officeInfo.coordinates}
+                tracksViewChanges={false}
+              >
+                <View style={styles.marker}>
+                  <Image
+                    color={Colors.white}
+                    height={MARKER_ICON_SIZE}
+                    name="ic_home"
+                    type="svg"
+                    width={MARKER_ICON_SIZE}
+                  />
+                </View>
+              </Marker>
+            </>
+          ) : undefined}
 
-        {currentCoordinates ? (
           <Marker
             anchor={MARKER_CENTER_ANCHOR}
-            coordinate={currentCoordinates}
+            coordinate={coordinates}
             testID="AttendanceCurrentMarker"
             tracksViewChanges={false}
           >
             <View style={styles.currentMarker} />
           </Marker>
-        ) : undefined}
-      </Map>
+        </Map>
+      ) : (
+        <View style={styles.placeholder} testID="AttendanceMapPlaceholder">
+          <Text style={styles.placeholderLabel}>
+            {t(
+              isLocating
+                ? 'attendance.locating'
+                : 'attendance.location_unavailable',
+            )}
+          </Text>
+        </View>
+      )}
 
       <AppButton
         disabled={isLocating}
@@ -128,17 +136,20 @@ function LocationCard({
         <View
           style={[
             styles.statusDot,
-            isInsideGeofence ? styles.statusDotInside : styles.statusDotOutside,
+            isInsideLocation ? styles.statusDotInside : styles.statusDotOutside,
           ]}
         />
-        <Text numberOfLines={1} style={styles.chipLabel}>
-          {distanceInMeters === undefined
-            ? officeName
-            : t('attendance.office_distance', {
+        <View>
+          <Text numberOfLines={1} style={styles.chipLabel}>
+            {officeInfo?.name}
+          </Text>
+          <Text numberOfLines={1} style={styles.chipLabel}>
+            {isNumber(distanceInMeters) &&
+              t('attendance.office_distance', {
                 distance: Math.round(distanceInMeters),
-                office: officeName,
               })}
-        </Text>
+          </Text>
+        </View>
       </View>
     </View>
   );
@@ -151,7 +162,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'flex-start',
     backgroundColor: Colors.white,
-    borderRadius: ScaleSize(20),
+    borderRadius: ScaleSize(13),
     bottom: ScaleSize(12),
     flexDirection: 'row',
     gap: ScaleSize(8),
@@ -193,6 +204,18 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
+  },
+  placeholder: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: ScaleSize(24),
+  },
+  placeholderLabel: {
+    color: Colors.gray24,
+    fontSize: ScaleSize(13),
+    fontWeight: '600',
+    textAlign: 'center',
   },
   currentMarker: {
     backgroundColor: Colors.blue02,

@@ -2,7 +2,7 @@ import type { TAttendanceShift } from '@type/attendance';
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { getCurrentTime } from '@utils/date';
-import { Colors } from '@constants';
+import { AppConstants, Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -13,24 +13,22 @@ const SECONDS_FORMAT = 'ss';
 const TIME_FORMAT = 'HH:mm';
 
 const WEEKDAY_SEPARATOR = ', ';
-// dayjs().day() đánh số Chủ Nhật = 0, còn `date_range.day_long_display` liệt kê
-// từ Thứ Hai. Dịch chỉ số một nhịp thay vì thêm bộ khoá thứ hai cho tuần.
 const DAYS_PER_WEEK = 7;
 
 type Properties = {
-  readonly shift: TAttendanceShift;
+  /** `undefined` khi chưa biết văn phòng nào — rơi về ca chung của công ty. */
+  readonly shift?: TAttendanceShift;
 };
 
-/**
- * Đồng hồ hiện tại kèm dòng ngày và ca được phân.
- *
- * Nhịp giây nằm ngay trong component này chứ không ở `useAttendance`: để ở hook
- * thì mỗi giây cả màn Chấm công render lại, kéo theo thẻ bản đồ và nhật ký; ở
- * đây chỉ riêng khối chữ này render lại.
- */
 function CurrentTime({ shift }: Properties) {
   const { t } = useTranslation();
   const [now, setNow] = useState(getCurrentTime);
+
+  const officeShift = shift ?? {
+    endWorkingTime: AppConstants.OFFICE_SHIFT.END_AT,
+    name: t('attendance.shift_office_name'),
+    startWorkingTime: AppConstants.OFFICE_SHIFT.START_AT,
+  };
 
   useEffect(() => {
     const timer = setInterval(() => setNow(getCurrentTime()), CLOCK_TICK_MS);
@@ -59,9 +57,9 @@ function CurrentTime({ shift }: Properties) {
       <Text style={styles.meta}>
         {t('attendance.shift_meta', {
           date: now.format(DATE_FORMAT),
-          endAt: shift.endAt,
-          name: shift.name,
-          startAt: shift.startAt,
+          endAt: officeShift.endWorkingTime,
+          name: officeShift.name,
+          startAt: officeShift.startWorkingTime,
           weekday: weekdayLabel,
         })}
       </Text>

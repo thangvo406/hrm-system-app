@@ -6,5 +6,10 @@ export const EndPoints = {
   },
   ACCOUNT: {
     getProfile: 'v1/user/profile',
+    listOffice: 'v1/office',
+  },
+  ATTENDANCE: {
+    checkIn: 'v1/attendance/checkin',
+    checkOut: 'v1/attendance/checkout',
   },
 };

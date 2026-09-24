@@ -21,6 +21,10 @@ const isLeapYear = (year: number): boolean => {
   );
 };
 
+export function getTimeByTimezone(time: string, timezone: string) {
+  return time;
+}
+
 export function isDateInCurrentWeek(
   currentWeek: any,
   date = Globals.currentTime,

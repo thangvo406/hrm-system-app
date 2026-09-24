@@ -192,7 +192,9 @@ export function useProfile() {
 
   const onLogout = useCallback(() => {
     dispatch(logout());
-    AppNavigator.reset(AppStacks.Auth);
+    AppNavigator.reset(AppStacks.Auth, {
+      screen: Paths.Authorization,
+    });
   }, [dispatch]);
 
   const onPressItem = useCallback(

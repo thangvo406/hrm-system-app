@@ -28,18 +28,20 @@ export const DayOfWeek = {
 };
 export const EMPTY_VALUE = '-';
 
-/**
- * Ca hành chính áp dụng chung cho màn Trang chủ và màn Chấm công. `START_AT`
- * cũng là mốc kết luận vào ca đúng giờ hay muộn, nên đổi ở đây là đổi cả hai
- * màn lẫn cách tính badge.
- *
- * Định dạng `HH:mm` 24 giờ, luôn đủ hai chữ số để so sánh chuỗi ra đúng thứ tự
- * thời gian.
- */
 export const OFFICE_SHIFT = {
   END_AT: '18:00',
   START_AT: '09:00',
 };
+
+export const MAP_REGION_DELTA = 0.0012;
+export enum EAttendanceType {
+  CHECK_OUT = 'CHECK_OUT',
+  CHECK_IN = 'CHECK_IN',
+}
+export enum EAttendanceMode {
+  GPS = 'GPS',
+  QR_CODE = 'QR_CODE',
+}
 
 export const COLORS_POINT_AMOUNT: Record<string, string | undefined> = {
   DEBIT: '#E14B4B',

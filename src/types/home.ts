@@ -19,10 +19,10 @@ export type THomeShift = {
   readonly checkInAt?: string;
   /** `undefined` khi chưa chấm công ra ca. */
   readonly checkOutAt?: string;
-  readonly endAt: string;
+  readonly endWorkingTime: string;
   readonly name: string;
   readonly punctuality: TShiftPunctuality;
-  readonly startAt: string;
+  readonly startWorkingTime: string;
 };
 
 /** Màu nền/màu icon của một ô tác vụ nhanh. */

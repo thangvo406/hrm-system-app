@@ -8,14 +8,14 @@ import { useTranslation } from 'react-i18next';
 const BANNER_ICON_SIZE = ScaleSize(16);
 
 type Properties = {
-  readonly isInsideGeofence: boolean;
-  readonly isMockedLocation: boolean;
+  readonly isInsideLocation: boolean;
+  readonly isMocked: boolean;
 };
 
-function GeofenceBanner({ isInsideGeofence, isMockedLocation }: Properties) {
+function GeofenceBanner({ isInsideLocation, isMocked }: Properties) {
   const { t } = useTranslation();
 
-  if (isMockedLocation) {
+  if (isMocked) {
     return (
       <View style={[styles.container, styles.containerMocked]}>
         <Image
@@ -36,24 +36,24 @@ function GeofenceBanner({ isInsideGeofence, isMockedLocation }: Properties) {
     <View
       style={[
         styles.container,
-        isInsideGeofence ? styles.containerInside : styles.containerOutside,
+        isInsideLocation ? styles.containerInside : styles.containerOutside,
       ]}
     >
       <Image
-        color={isInsideGeofence ? Colors.green08 : Colors.yellow03}
+        color={isInsideLocation ? Colors.green08 : Colors.yellow03}
         height={BANNER_ICON_SIZE}
-        name={isInsideGeofence ? 'ic_check' : 'ic_info'}
+        name={isInsideLocation ? 'ic_check' : 'ic_info'}
         type="svg"
         width={BANNER_ICON_SIZE}
       />
       <Text
         style={[
           styles.label,
-          isInsideGeofence ? styles.labelInside : styles.labelOutside,
+          isInsideLocation ? styles.labelInside : styles.labelOutside,
         ]}
       >
         {t(
-          isInsideGeofence
+          isInsideLocation
             ? 'attendance.inside_geofence'
             : 'attendance.outside_geofence',
         )}

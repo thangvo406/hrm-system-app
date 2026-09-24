@@ -96,9 +96,9 @@ function ShiftCard({ onCheckOut, shift }: Properties) {
 
       <Text style={styles.shiftName}>
         {t('home.shift_window', {
-          endAt: shift.endAt,
+          endAt: shift.endWorkingTime,
           name: shift.name,
-          startAt: shift.startAt,
+          startAt: shift.startWorkingTime,
         })}
       </Text>
 

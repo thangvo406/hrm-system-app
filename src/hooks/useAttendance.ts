@@ -1,65 +1,40 @@
 import type MapView from 'react-native-maps';
-import type { Region } from 'react-native-maps';
-import type { TAttendanceLogEntry, TAttendanceMode } from '@type/attendance';
+import type {
+  TAttendanceInfo,
+  TAttendanceLogEntry,
+  TAttendanceMode,
+  TCurrentLocation,
+  TOfficeInfo,
+} from '@type/attendance';
 
 import AppNavigator from '@navigation/AppNavigator';
 import Geolocation from '@react-native-community/geolocation';
+import { AccountSelector, AttendanceSelector } from '@services/selectors';
 import { AppConstants } from '@constants';
-import { AttendanceSelector } from '@services/selectors';
-import { getCurrentTime } from '@utils/date';
+import { getCurrentTime, getTimeByTimezone } from '@utils/date';
 import {
-  checkedIn,
-  checkedOut,
+  checkInRequest,
+  checkOutRequest,
 } from '@services/slices/attendance/attendanceSlice';
 import { DeviceUtils } from '@kits/core/utils';
-import { LocationUtils, PermissionUtils } from '@utils';
+import { AttendanceUtils, LocationUtils, PermissionUtils } from '@utils';
 import { Paths } from '@navigation/paths';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-
-const TIME_FORMAT = 'HH:mm';
-const ISO_DATE_FORMAT = 'YYYY-MM-DD';
+import dayjs from 'dayjs';
+import { getListOfficeRequest } from '@services/slices/account/accountSlice';
+import { EAttendanceMode, EAttendanceType } from '@constants/config';
 
 const POSITION_TIMEOUT_MS = 15_000;
 const POSITION_MAX_AGE_MS = 10_000;
-
-// ─── Mock data ────────────────────────────────────────────────────────────────
-// Dữ liệu dựng UI, chưa nối API. Khi có endpoint thật thì thay các hằng dưới đây
-// bằng saga callback (xem flow ở .cursorrules §5) và bỏ luôn khối này.
-
-const OFFICE_NAME = 'Trụ sở Specom';
-const OFFICE_FLOOR = 'Tầng 8';
-
-// Bán kính được phép chấm công quanh văn phòng, tính bằng mét. Dưới ngưỡng này
-// thì banner báo "trong khu vực" và nút chấm công mở.
-const GEOFENCE_RADIUS_M = 50;
-
-// Delta quyết định mức zoom: 0.0012 ≈ 130 m chiều cao khung nhìn, vừa đủ ôm
-// trọn vòng tròn 50 m (đường kính 100 m). Nới bán kính thì phải nới cả con số
-// này, không thì vòng tròn tràn ra ngoài thẻ bản đồ.
-const OFFICE_REGION: Region = {
-  latitude: 10.807_057_1,
-  latitudeDelta: 0.0012,
-  longitude: 106.709_281_3,
-  longitudeDelta: 0.0012,
-};
-
-// ──────────────────────────────────────────────────────────────────────────────
 
 const getLocationPermission = () =>
   DeviceUtils.isIOS()
     ? PermissionUtils.PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
     : PermissionUtils.PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
 
-/**
- * Toàn bộ logic màn Chấm công: xin quyền vị trí, đo khoảng cách tới văn phòng,
- * chạy đồng hồ giây và ghi nhận giờ chấm công.
- *
- * Bản đồ dùng `initialRegion` + `animateToRegion` chứ KHÔNG dùng prop `region`
- * có kiểm soát: `region` sẽ kéo bản đồ về state sau mỗi lần render, nên người
- * dùng vừa pan xong là bị giật ngược lại.
- */
 export function useAttendance() {
   const mapRef = useRef<MapView>(null);
   const isMountedRef = useRef(true);
@@ -68,21 +43,24 @@ export function useAttendance() {
 
   const storedCheckInAt = useAppSelector(AttendanceSelector.getCheckInAt);
   const storedCheckOutAt = useAppSelector(AttendanceSelector.getCheckOutAt);
+  const offices = useAppSelector(AccountSelector.getOffices) || [];
   const workDate = useAppSelector(AttendanceSelector.getWorkDate);
+  const companyId = useAppSelector(AccountSelector.getProfile)?.companyId;
 
   // Dấu chấm công được persist nên phải chốt theo ngày: mở app sáng hôm sau là
   // ngày công mới, chưa có dấu nào.
-  const isToday = workDate === getCurrentTime().format(ISO_DATE_FORMAT);
+  const isToday =
+    workDate === getCurrentTime().format(AttendanceUtils.ISO_DATE_FORMAT);
   const checkedInAt = isToday ? storedCheckInAt : undefined;
   const checkedOutAt = isToday ? storedCheckOutAt : undefined;
 
-  const [mode, setMode] = useState<TAttendanceMode>('gps');
-  const [hasLocationPermission, setHasLocationPermission] = useState(false);
-  const [distanceInMeters, setDistanceInMeters] = useState<number>();
-  const [isLocating, setIsLocating] = useState(false);
-  const [isMockedLocation, setIsMockedLocation] = useState(false);
-  const [currentCoordinates, setCurrentCoordinates] =
-    useState<LocationUtils.TCoordinates>();
+  const [mode, setMode] = useState<TAttendanceMode>(EAttendanceMode.GPS);
+
+  const [currentLocation, setCurrentLocation] = useState<TCurrentLocation>({
+    hasPermission: false,
+    isLocating: false,
+    isMocked: false,
+  });
 
   useEffect(
     () => () => {
@@ -100,40 +78,38 @@ export function useAttendance() {
     }
 
     const isGranted = result === PermissionUtils.RESULTS.GRANTED;
-    setHasLocationPermission(isGranted);
     if (!isGranted) {
+      setCurrentLocation(previous => ({ ...previous, hasPermission: false }));
       return;
     }
 
-    setIsLocating(true);
+    setCurrentLocation(previous => ({
+      ...previous,
+      hasPermission: true,
+      isLocating: true,
+    }));
     Geolocation.getCurrentPosition(
       position => {
         if (!isMountedRef.current) {
           return;
         }
-        setIsLocating(false);
-        setIsMockedLocation(LocationUtils.isMockedPosition(position));
         const { latitude, longitude } = position.coords;
-        setCurrentCoordinates({ latitude, longitude });
-        setDistanceInMeters(
-          LocationUtils.getDistanceInMeters(
-            { latitude, longitude },
-            OFFICE_REGION,
-          ),
-        );
+        setCurrentLocation(previous => ({
+          ...previous,
+          coordinates: { latitude, longitude },
+          isLocating: false,
+          isMocked: LocationUtils.isMockedPosition(position),
+        }));
         mapRef.current?.animateToRegion({
           latitude,
-          latitudeDelta: OFFICE_REGION.latitudeDelta,
+          latitudeDelta: AppConstants.MAP_REGION_DELTA,
           longitude,
-          longitudeDelta: OFFICE_REGION.longitudeDelta,
+          longitudeDelta: AppConstants.MAP_REGION_DELTA,
         });
       },
-      // Không lấy được vị trí thì bản đồ cứ đứng ở chỗ cũ và khoảng cách giữ
-      // nguyên giá trị lần đo trước — không chặn người dùng vì lỗi định vị.
-      // Nhưng PHẢI tắt cờ loading, nếu không nút kẹt disable vĩnh viễn.
       () => {
         if (isMountedRef.current) {
-          setIsLocating(false);
+          setCurrentLocation(previous => ({ ...previous, isLocating: false }));
         }
       },
       {
@@ -145,73 +121,132 @@ export function useAttendance() {
   }, []);
 
   useEffect(() => {
-    // Quyền do react-native-permissions xin (thống nhất với phần còn lại của
-    // app), nên phải tắt cơ chế tự xin của geolocation để iOS không bật hai
-    // popup chồng nhau.
     Geolocation.setRNConfiguration({
       authorizationLevel: 'whenInUse',
       locationProvider: 'auto',
       skipPermissionRequests: true,
     });
+  }, []);
 
-    void refreshLocation();
-  }, [refreshLocation]);
+  const loadOffices = useCallback(() => {
+    // if (companyId === undefined) {
+    //   return;
+    // }
 
-  const logEntries = useMemo<readonly TAttendanceLogEntry[]>(
-    () => [
-      {
-        at: checkedInAt,
-        icon: 'ic_sign_in',
-        id: 'check-in',
-        place: checkedInAt
-          ? `${OFFICE_NAME} · ${OFFICE_FLOOR}`
-          : t('attendance.log_pending'),
-        // Cách chấm chỉ có nghĩa khi đã chấm thật; chưa chấm thì chỉ nêu tên dấu.
-        title: t(
-          checkedInAt
-            ? 'attendance.log_check_in_method'
-            : 'attendance.log_check_in',
-        ),
-      },
-      {
-        at: checkedOutAt,
-        icon: 'ic_sign_out',
-        id: 'check-out',
-        place: checkedOutAt
-          ? `${OFFICE_NAME} · ${OFFICE_FLOOR}`
-          : t('attendance.log_pending'),
-        title: t('attendance.log_check_out'),
-      },
-    ],
-    [checkedInAt, checkedOutAt, t],
+    dispatch(
+      getListOfficeRequest({
+        // companyId,
+      }),
+    );
+  }, [companyId, dispatch]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadOffices();
+      void refreshLocation();
+    }, [loadOffices, refreshLocation]),
   );
 
-  const isInsideGeofence =
-    distanceInMeters !== undefined && distanceInMeters <= GEOFENCE_RADIUS_M;
+  const attendanceData = useMemo(() => {
+    const { coordinates, isMocked } = currentLocation;
+    const nearestOffice = coordinates
+      ? AttendanceUtils.findNearestOffice(offices, coordinates)
+      : undefined;
+    const office = nearestOffice?.office ?? offices[0];
+    const distanceInMeters = nearestOffice?.distanceInMeters;
+    const officePlace = office
+      ? [office.name, office.floor].filter(Boolean).join(' · ')
+      : '';
 
-  // Ba điều kiện tách riêng vì mỗi cái ứng với một câu thông báo khác nhau ở
-  // banner; gộp sớm thành một cờ là mất luôn lý do bị chặn.
-  const enableBtnCheckin =
-    isInsideGeofence && !isMockedLocation && !checkedOutAt;
+    // Bán kính geofence do server quy định riêng cho từng văn phòng, không còn
+    // là hằng số chung của app.
+    const geofenceRadius = office?.radiusInMeters ?? 0;
+    const isInsideLocation =
+      distanceInMeters !== undefined && distanceInMeters <= geofenceRadius;
 
-  /**
-   * Một nút cho cả hai dấu: chưa vào ca thì chấm vào, đã vào ca thì chấm ra.
-   * Giờ chấm đi thẳng vào redux nên màn Trang chủ đọc lại được ngay.
-   */
-  const onPunch = useCallback(() => {
-    // Chặn lần hai ở đây chứ không chỉ trông vào nút bị disable: nút là UI, còn
-    // đây là chỗ duy nhất thực sự ghi dấu chấm công.
-    if (!enableBtnCheckin) {
+    return {
+      attendanceInfo: { checkedInAt, checkedOutAt } satisfies TAttendanceInfo,
+      distanceInMeters,
+      enableBtnCheckin: isInsideLocation && !isMocked && !checkedOutAt,
+      geofenceRadius,
+      isInsideLocation,
+      logEntries: [
+        {
+          at: checkedInAt,
+          icon: 'ic_sign_in',
+          id: 'check-in',
+          place: checkedInAt ? officePlace : t('attendance.log_pending'),
+          // Cách chấm chỉ có nghĩa khi đã chấm thật; chưa chấm thì chỉ nêu tên
+          // dấu.
+          title: t(
+            checkedInAt
+              ? 'attendance.log_check_in_method'
+              : 'attendance.log_check_in',
+          ),
+        },
+        {
+          at: checkedOutAt,
+          icon: 'ic_sign_out',
+          id: 'check-out',
+          place: checkedOutAt ? officePlace : t('attendance.log_pending'),
+          title: t('attendance.log_check_out'),
+        },
+      ] satisfies readonly TAttendanceLogEntry[],
+      officeInfo: office
+        ? ({
+            coordinates: AttendanceUtils.getOfficeCoordinates(office),
+            name: office.name,
+            // Giờ hành chính đi theo văn phòng chứ không phải hằng số chung
+            // của app — mỗi chi nhánh vào ca một giờ khác nhau là bình thường.
+            shift: {
+              endWorkingTime: getTimeByTimezone(
+                office.endWorkingTime,
+                office.timezone,
+              ),
+              name: t('attendance.shift_office_name'),
+              startWorkingTime: getTimeByTimezone(
+                office.startWorkingTime,
+                office.timezone,
+              ),
+            },
+          } satisfies TOfficeInfo)
+        : undefined,
+    };
+  }, [checkedInAt, checkedOutAt, currentLocation, offices, t]);
+
+  const onPressAttendance = useCallback(() => {
+    if (!attendanceData.enableBtnCheckin) {
       return;
     }
 
-    const now = getCurrentTime();
-    const punch = {
-      at: now.format(TIME_FORMAT),
-      workDate: now.format(ISO_DATE_FORMAT),
+    const { coordinates } = currentLocation;
+    if (!coordinates) {
+      return;
+    }
+
+    const request = {
+      latitude: String(coordinates.latitude),
+      longitude: String(coordinates.longitude),
     };
-    dispatch(checkedInAt ? checkedOut(punch) : checkedIn(punch));
-  }, [checkedInAt, dispatch, enableBtnCheckin]);
+    const executor = checkedInAt ? checkOutRequest : checkInRequest;
+    const type = checkedInAt
+      ? EAttendanceType.CHECK_OUT
+      : EAttendanceType.CHECK_IN;
+    dispatch(
+      executor({
+        ...request,
+        method: mode,
+        type,
+        ...AttendanceUtils.toPunch(dayjs().toISOString()),
+        onFailure: (error: string) => {
+          AppNavigator.showSnackBar({
+            message: error,
+            type: 'failed',
+          });
+        },
+      }),
+    );
+  }, [attendanceData.enableBtnCheckin, checkedInAt, currentLocation, dispatch]);
 
   const onPressHistory = useCallback(() => {
     AppNavigator.navigate(Paths.AttendanceHistories);
@@ -225,40 +260,20 @@ export function useAttendance() {
     AppNavigator.goBack();
   }, []);
 
-  // Bọc lại thành hàm trả void: đưa thẳng một hàm async vào `onPress` là dính
-  // @typescript-eslint/no-misused-promises, và lỗi promise sẽ trôi đi lặng lẽ.
   const onPressLocate = useCallback(() => {
     void refreshLocation();
   }, [refreshLocation]);
 
   return {
-    checkedInAt,
-    checkedOutAt,
-    currentCoordinates,
-    distanceInMeters,
-    enableBtnCheckin,
-    geofenceRadius: GEOFENCE_RADIUS_M,
-    hasCheckedIn: !!checkedInAt,
-    hasCheckedOut: !!checkedOutAt,
-    hasLocationPermission,
-    initialRegion: OFFICE_REGION,
-    isInsideGeofence,
-    isLocating,
-    isMockedLocation,
-    logEntries,
+    ...attendanceData,
+    currentLocation,
     mapRef,
     mode,
-    officeName: OFFICE_NAME,
     onGoBack,
+    onPressAttendance,
     onPressExplanation,
     onPressHistory,
     onPressLocate,
-    onPunch,
     setMode,
-    shift: {
-      endAt: AppConstants.OFFICE_SHIFT.END_AT,
-      name: t('attendance.shift_office_name'),
-      startAt: AppConstants.OFFICE_SHIFT.START_AT,
-    },
   };
 }

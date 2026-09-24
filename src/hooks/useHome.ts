@@ -128,10 +128,10 @@ export function useHome() {
     return {
       checkInAt: todayCheckInAt,
       checkOutAt: isToday ? checkOutAt : undefined,
-      endAt: AppConstants.OFFICE_SHIFT.END_AT,
+      endWorkingTime: AppConstants.OFFICE_SHIFT.END_AT,
       name: t('home.shift_office_name'),
       punctuality: getPunctuality(todayCheckInAt),
-      startAt: AppConstants.OFFICE_SHIFT.START_AT,
+      startWorkingTime: AppConstants.OFFICE_SHIFT.START_AT,
     };
   }, [checkInAt, checkOutAt, t, workDate]);
 

@@ -3,11 +3,21 @@ import type { AppCallback } from '@type/common';
 
 import { call, put, select, takeLatest } from 'redux-saga/effects';
 
-import { getProfile, type Profile } from '@services/request/account';
+import {
+  getListOffice,
+  getProfile,
+  type Profile,
+} from '@services/request/account';
 import { AccountSelector } from '@services/selectors';
 import { refreshTokenRequest } from '@services/slices/auth/authSlice';
 
-import { getProfileRequest, getProfileSuccess } from './accountSlice';
+import {
+  getListOfficeRequest,
+  getProfileRequest,
+  getProfileSuccess,
+  getListOfficeSuccess,
+} from './accountSlice';
+import { IOffice, IRequestGetListOffice } from '@type';
 
 function* getProfileWorker(action: PayloadAction<AppCallback<Profile>>) {
   try {
@@ -27,6 +37,17 @@ function* getProfileWorker(action: PayloadAction<AppCallback<Profile>>) {
   }
 }
 
+function* getListOfficeWorker() {
+  // const { ...request } = action.payload;
+  try {
+    const response: IOffice[] = yield call(getListOffice);
+    yield put(getListOfficeSuccess(response));
+  } catch {
+    // onFailure?.(getErrorMessageApi(error));
+  }
+}
+
 export function* accountSaga() {
   yield takeLatest(getProfileRequest.type, getProfileWorker);
+  yield takeLatest(getListOfficeRequest.type, getListOfficeWorker);
 }

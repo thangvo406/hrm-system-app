@@ -1,4 +1,4 @@
-import type { TAttendanceShift } from '@type/attendance';
+import type { TAttendanceInfo, TOfficeInfo } from '@type/attendance';
 
 import AppButton from '@components/AppButton';
 import CurrentTime from './CurrentTime';
@@ -15,23 +15,24 @@ const CARD_ELEVATION = 3;
 const CTA_ICON_SIZE = ScaleSize(20);
 
 type Properties = {
+  readonly attendanceInfo: TAttendanceInfo;
   /** Gộp sẵn mọi điều kiện chấm công ở hook — xem `useAttendance`. */
   readonly enableBtnCheckin: boolean;
-  readonly hasCheckedIn: boolean;
-  readonly hasCheckedOut: boolean;
-  readonly onPunch: () => void;
-  readonly shift: TAttendanceShift;
+  /** `undefined` khi chưa tải được văn phòng nào — đồng hồ bỏ dòng ca làm. */
+  readonly officeInfo?: TOfficeInfo;
+  readonly onPressAttendance: () => void;
 };
 
 function ClockCard({
+  attendanceInfo,
   enableBtnCheckin,
-  hasCheckedIn,
-  hasCheckedOut,
-  onPunch,
-  shift,
+  officeInfo,
+  onPressAttendance,
 }: Properties) {
   const { t } = useTranslation();
   const isDisabled = !enableBtnCheckin;
+  const hasCheckedIn = !!attendanceInfo.checkedInAt;
+  const hasCheckedOut = !!attendanceInfo.checkedOutAt;
 
   const getLabelKey = () => {
     if (hasCheckedOut) {
@@ -51,11 +52,11 @@ function ClockCard({
 
   return (
     <View style={styles.container}>
-      <CurrentTime shift={shift} />
+      <CurrentTime shift={officeInfo?.shift} />
 
       <AppButton
         disabled={isDisabled}
-        onPress={onPunch}
+        onPress={onPressAttendance}
         style={[styles.cta, isDisabled && styles.ctaDisabled]}
         testID="AttendancePunchButton"
       >

@@ -1,4 +1,4 @@
-import type { TAttendanceLogEntry } from '@type/attendance';
+import type { TAttendanceInfo, TAttendanceLogEntry } from '@type/attendance';
 
 import LogRow from './LogRow';
 import React from 'react';
@@ -13,20 +13,22 @@ const CARD_SHADOW_OPACITY = 0.06;
 const CARD_ELEVATION = 3;
 
 type Properties = {
-  readonly checkedInAt?: string;
-  readonly checkedOutAt?: string;
+  readonly attendanceInfo: TAttendanceInfo;
   readonly entries: readonly TAttendanceLogEntry[];
 };
 
 /** Nhật ký chấm công trong ngày kèm tổng giờ đã làm. */
-function TodayLog({ checkedInAt, checkedOutAt, entries }: Properties) {
+function TodayLog({ attendanceInfo, entries }: Properties) {
   const { t } = useTranslation();
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>{t('attendance.today_log')}</Text>
-        <WorkedTotal checkedInAt={checkedInAt} checkedOutAt={checkedOutAt} />
+        <WorkedTotal
+          checkedInAt={attendanceInfo.checkedInAt}
+          checkedOutAt={attendanceInfo.checkedOutAt}
+        />
       </View>
 
       {entries.map((entry, index) => (

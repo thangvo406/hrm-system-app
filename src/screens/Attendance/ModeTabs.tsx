@@ -8,6 +8,7 @@ import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { EAttendanceMode } from '@constants/config';
 
 const TAB_ICON_SIZE = ScaleSize(18);
 
@@ -16,8 +17,16 @@ const TABS: readonly {
   readonly labelKey: string;
   readonly mode: TAttendanceMode;
 }[] = [
-  { icon: 'ic_location', labelKey: 'attendance.mode_gps', mode: 'gps' },
-  { icon: 'ic_qr_scan', labelKey: 'attendance.mode_qr', mode: 'qr' },
+  {
+    icon: 'ic_location',
+    labelKey: 'attendance.mode_gps',
+    mode: EAttendanceMode.GPS,
+  },
+  {
+    icon: 'ic_qr_scan',
+    labelKey: 'attendance.mode_qr',
+    mode: EAttendanceMode.QR_CODE,
+  },
 ];
 
 type Properties = {
