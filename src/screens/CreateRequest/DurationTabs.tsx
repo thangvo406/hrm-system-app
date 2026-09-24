@@ -9,7 +9,15 @@ import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-const ICON_SIZE = ScaleSize(20);
+// Tỉ lệ lấy theo thiết kế: vòng tròn ≈ 0.54 chiều cao pill, icon ≈ 0.58 đường
+// kính vòng tròn. `ScaleSize` co theo chiều rộng máy (baseline 414pt) nên tỉ lệ
+// giữ nguyên trên mọi máy, chỉ cần vừa ở baseline là vừa ở mọi nơi.
+const CIRCLE_SIZE = ScaleSize(28);
+const ICON_SIZE = ScaleSize(16);
+/** Vệt sáng xanh quanh pill đang chọn. */
+const GLOW_RADIUS = ScaleSize(8);
+const GLOW_OPACITY = 0.25;
+const GLOW_ELEVATION = 2;
 
 const DURATIONS: readonly {
   readonly icon: IconName;
@@ -59,13 +67,15 @@ function DurationTabs({ onChange, value }: Properties) {
               style={[styles.tab, isActive && styles.tabActive]}
               testID={`CreateRequestDuration_${duration.value}`}
             >
-              <Image
-                color={isActive ? Colors.blue02 : Colors.gray17}
-                height={ICON_SIZE}
-                name={duration.icon}
-                type="svg"
-                width={ICON_SIZE}
-              />
+              <View style={[styles.circle, isActive && styles.circleActive]}>
+                <Image
+                  color={isActive ? Colors.blue02 : Colors.gray17}
+                  height={ICON_SIZE}
+                  name={duration.icon}
+                  type="svg"
+                  width={ICON_SIZE}
+                />
+              </View>
               <Text
                 numberOfLines={1}
                 style={[styles.tabLabel, isActive && styles.tabLabelActive]}
@@ -83,6 +93,19 @@ function DurationTabs({ onChange, value }: Properties) {
 export default React.memo(DurationTabs);
 
 const styles = StyleSheet.create({
+  // Vòng tròn nền của icon. Nền đậm hơn nền pill một bậc để vòng tròn đọc
+  // được, chứ không chỉ là một khoảng trống quanh icon.
+  circle: {
+    alignItems: 'center',
+    backgroundColor: Colors.gray19,
+    borderRadius: CIRCLE_SIZE / 2,
+    height: CIRCLE_SIZE,
+    justifyContent: 'center',
+    width: CIRCLE_SIZE,
+  },
+  circleActive: {
+    backgroundColor: Colors.blue06,
+  },
   label: {
     color: Colors.gray17,
     fontSize: ScaleSize(14),
@@ -97,23 +120,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.gray21,
     borderColor: 'transparent',
-    borderRadius: ScaleSize(12),
+    borderRadius: ScaleSize(14),
     borderWidth: 1,
     flex: 1,
     flexDirection: 'row',
-    gap: ScaleSize(6),
+    gap: ScaleSize(8),
     justifyContent: 'center',
+    // Ba pill chia đều một hàng nên chữ là thứ hẹp nhất; đệm ngang để mỏng để
+    // nhãn dài nhất ("Buổi chiều") còn đủ chỗ trên một dòng.
     paddingHorizontal: ScaleSize(6),
-    paddingVertical: ScaleSize(14),
+    paddingVertical: ScaleSize(10),
   },
   tabActive: {
     backgroundColor: Colors.blue07,
-    borderColor: Colors.blue06,
+    borderColor: Colors.blue08,
+    elevation: GLOW_ELEVATION,
+    shadowColor: Colors.blue08,
+    shadowOffset: { height: 0, width: 0 },
+    shadowOpacity: GLOW_OPACITY,
+    shadowRadius: GLOW_RADIUS,
   },
   tabLabel: {
     color: Colors.gray17,
     flexShrink: 1,
-    fontSize: ScaleSize(14),
+    fontSize: ScaleSize(13),
     fontWeight: '600',
   },
   tabLabelActive: {

@@ -69,15 +69,68 @@ export type TApprovalStep = {
   readonly roleKey: string;
 };
 
-/** Nội dung đơn đang soạn ở màn tạo đơn. */
+/** Loại OT, quyết định hệ số tính công. */
+export type TOvertimeKind = 'holiday' | 'weekday' | 'weekend';
+
+/** Nơi ngồi làm khi đăng ký OT. */
+export type TWorkPlace = 'client' | 'home' | 'office';
+
+/** Sự kiện cần giải trình trong đơn giải trình công. */
+export type TAttendanceEventKind =
+  | 'early_leave'
+  | 'forgot_check_in'
+  | 'forgot_check_out'
+  | 'late_arrival';
+
+/**
+ * Một khối nội dung của form tạo đơn.
+ *
+ * Mỗi loại đơn bật một tập khối khác nhau — đơn OT hỏi giờ làm thêm, loại OT và
+ * địa điểm; đơn nghỉ phép hỏi khoảng ngày và trừ vào nguồn phép nào. Giống
+ * `TRequestDetailField` ở màn chi tiết, các khối là DỮ LIỆU chứ không phải bố
+ * cục cứng trong component, để hai màn luôn hỏi và hiện cùng một bộ trường.
+ */
+export type TCreateRequestSection =
+  | 'attachment'
+  | 'balances'
+  | 'date_range'
+  | 'duration'
+  | 'event_kind'
+  | 'leave_kind'
+  | 'note'
+  | 'overtime_kind'
+  | 'place'
+  | 'reason'
+  | 'single_date'
+  | 'summary'
+  | 'time_range';
+
+/**
+ * Nội dung đơn đang soạn ở màn tạo đơn — gộp trường của MỌI loại đơn.
+ *
+ * Trường nào có hiệu lực là do `CREATE_REQUEST_SECTIONS[type]` quyết định; các
+ * trường ngoài tập đó vẫn giữ giá trị mặc định để người dùng đổi qua đổi lại
+ * loại đơn mà không mất những gì đã nhập.
+ */
 export type TCreateRequestDraft = {
+  /** Ngày áp dụng của đơn chỉ nhắm một ngày, dạng `YYYY-MM-DD`. */
+  readonly date: string;
   readonly duration: TLeaveDuration;
   /** Dạng `YYYY-MM-DD`. */
   readonly endDate: string;
-  readonly kind: TLeaveKind;
+  /** Dạng `HH:mm`. */
+  readonly endTime: string;
+  readonly eventKind: TAttendanceEventKind;
+  readonly leaveKind: TLeaveKind;
+  readonly note: string;
+  readonly overtimeKind: TOvertimeKind;
+  readonly place: TWorkPlace;
   readonly reason: string;
   /** Dạng `YYYY-MM-DD`. */
   readonly startDate: string;
+  /** Dạng `HH:mm`. */
+  readonly startTime: string;
+  readonly type: TRequestType;
 };
 
 /** Toàn bộ bộ lọc đang áp cho danh sách đơn. */

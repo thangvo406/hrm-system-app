@@ -217,6 +217,23 @@ function showForceUpdate() {
   });
 }
 
+/**
+ * Popup báo đã tải xong bản OTA khi app quay lại foreground. Khác
+ * `showForceUpdate` ở chỗ nó KHÔNG chặn: bundle mới đã nằm sẵn trên máy, người
+ * dùng chọn khởi động lại ngay hay để lần mở app kế tiếp tự áp dụng.
+ */
+function showCodePushReady({ onRestart }: { onRestart: () => void }) {
+  showDialog({
+    screen: Information,
+    title: 'code_push.update_ready_title',
+    desc: 'code_push.update_ready_desc',
+    confirmTitle: 'code_push.restart_now',
+    cancelTitle: 'code_push.restart_later',
+    needTranslate: true,
+    onConfirm: onRestart,
+  });
+}
+
 function showDialogErrorOpenPhoto() {
   showDialog({
     screen: Information,
@@ -298,6 +315,7 @@ export default {
   popToTop,
   goBack,
   showForceUpdate,
+  showCodePushReady,
   showDialogNetworkError,
   onTrackScreenChange,
   reset,

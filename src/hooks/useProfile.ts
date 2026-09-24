@@ -1,4 +1,4 @@
-import type { SelectionItem } from '@dialogs/Selection';
+import type { TSelectionItem } from '@type/dialog';
 import type { TProfileEmployee, TProfileMenuSection } from '@type/profile';
 
 import AppNavigator from '@navigation/AppNavigator';
@@ -56,20 +56,6 @@ const MENU_SECTIONS: readonly TProfileMenuSection[] = [
   {
     id: 'support',
     items: [
-      // Hai dòng cài đặt đứng trước: chúng đổi được trạng thái của app, còn ba
-      // dòng dưới chỉ để đọc.
-      {
-        icon: 'ic_globe',
-        id: MENU_LANGUAGE_ID,
-        subtitleKey: 'profile.item_language_subtitle',
-        titleKey: 'profile.item_language',
-      },
-      {
-        icon: 'ic_bell',
-        id: MENU_NOTIFICATIONS_ID,
-        subtitleKey: 'profile.item_notifications_subtitle',
-        titleKey: 'profile.item_notifications',
-      },
       {
         icon: 'ic_help',
         id: 'help_center',
@@ -87,6 +73,19 @@ const MENU_SECTIONS: readonly TProfileMenuSection[] = [
         id: 'about',
         subtitleKey: 'profile.item_about_subtitle',
         titleKey: 'profile.item_about',
+      },
+      // dòng dưới chỉ để đọc.
+      {
+        icon: 'ic_globe',
+        id: MENU_LANGUAGE_ID,
+        subtitleKey: 'profile.item_language_subtitle',
+        titleKey: 'profile.item_language',
+      },
+      {
+        icon: 'ic_bell',
+        id: MENU_NOTIFICATIONS_ID,
+        subtitleKey: 'profile.item_notifications_subtitle',
+        titleKey: 'profile.item_notifications',
       },
     ],
     titleKey: 'profile.section_support',
@@ -165,7 +164,7 @@ export function useProfile() {
 
   /** Bộ chọn ngôn ngữ: bottom sheet dùng chung, chọn xong đổi luôn. */
   const onPickLanguage = useCallback(() => {
-    const items: readonly SelectionItem[] = LANGUAGE_OPTIONS.map(language => ({
+    const items: readonly TSelectionItem[] = LANGUAGE_OPTIONS.map(language => ({
       icon: LANGUAGE_FLAGS[language],
       id: language,
       label: LANGUAGE_LABELS[language],
@@ -178,7 +177,7 @@ export function useProfile() {
       // Truyền nguyên item chứ không phải id: bấm "Xác nhận" mà không chọn lại
       // thì `Selection` trả về đúng giá trị khởi tạo này.
       itemSelected: items.find(item => item.id === currentLanguage),
-      onSelect: (item: SelectionItem) => {
+      onSelect: (item: TSelectionItem) => {
         const language = LANGUAGE_OPTIONS.find(option => option === item.id);
         if (language) {
           changeLanguage(language);
@@ -203,8 +202,6 @@ export function useProfile() {
         return;
       }
 
-      // Quyền thông báo do hệ điều hành giữ, app không tự bật tắt được nên chỉ
-      // mở đúng trang cài đặt của app.
       if (id === MENU_NOTIFICATIONS_ID) {
         Linking.openSettings()
           .then(() => undefined)

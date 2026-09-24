@@ -1,15 +1,22 @@
 import type {
+  TAttendanceEventKind,
+  TCreateRequestSection,
+  TLeaveBalanceKind,
+  TLeaveKind,
+  TOvertimeKind,
   TRequestFilters,
   TRequestItem,
   TRequestPeriod,
   TRequestStatusFilter,
+  TRequestType,
   TRequestTypeFilter,
   TLeaveDuration,
   TRequestDateRange,
+  TWorkPlace,
 } from '@type/requests';
 
 import dayjs from 'dayjs';
-import { getCurrentTime } from './date';
+import { getCurrentTime, MINUTES_PER_HOUR, parseMinutes } from './date';
 
 const LAST_MONTHS_COUNT = 3;
 
@@ -158,6 +165,268 @@ export const countLeaveDays = (
  */
 export const formatLeaveDays = (days: number) =>
   days.toFixed(DAY_DECIMALS).replace('.', DECIMAL_SEPARATOR);
+
+// ─── Form tạo đơn ─────────────────────────────────────────────────────────────
+
+/**
+ * Khối nội dung mà form tạo đơn bật lên cho từng loại đơn, suy thẳng từ bộ
+ * trường "Thông tin chung" mà màn Chi tiết đơn hiện cho loại đó.
+ *
+ * Thứ tự trong mảng chỉ để đọc cho dễ đối chiếu; thứ tự vẽ thật do JSX ở
+ * `screens/CreateRequest/index.tsx` quyết định (một trật tự dùng chung cho mọi
+ * loại), nên thêm khối mới thì nhớ chèn vào đúng chỗ trong JSX đó.
+ */
+export const CREATE_REQUEST_SECTIONS: Readonly<
+  Record<TRequestType, readonly TCreateRequestSection[]>
+> = {
+  // Chi tiết: ngày cần giải trình, thời gian, loại sự kiện, lý do, ghi chú.
+  attendance_explanation: [
+    'single_date',
+    'time_range',
+    'event_kind',
+    'reason',
+    'note',
+    'attachment',
+  ],
+  // Chi tiết: ngày về sớm, thời gian, lý do.
+  early_leave: ['single_date', 'time_range', 'reason', 'attachment'],
+  // Chi tiết: ngày đi muộn, thời gian, lý do.
+  late_arrival: ['single_date', 'time_range', 'reason', 'attachment'],
+  // Chi tiết: thời gian nghỉ, số ngày, số ngày còn lại, hình thức, lý do.
+  leave: [
+    'balances',
+    'leave_kind',
+    'date_range',
+    'duration',
+    'summary',
+    'reason',
+    'attachment',
+  ],
+  // Chi tiết: ngày làm thêm, thời gian, lý do, địa điểm, loại OT, ghi chú.
+  overtime: [
+    'single_date',
+    'time_range',
+    'overtime_kind',
+    'place',
+    'reason',
+    'note',
+    'attachment',
+  ],
+};
+
+/**
+ * Khối nào là bắt buộc. Mọi khối còn lại hoặc không nhận nhập liệu
+ * (`balances`, `summary`), hoặc luôn có sẵn một giá trị hợp lệ vì là ô chọn
+ * một-trong-nhiều (`duration`, `leave_kind`, `overtime_kind`, `place`,
+ * `event_kind`), hoặc không bắt buộc theo nghiệp vụ (`note`, `attachment`).
+ */
+const REQUIRED_SECTIONS: ReadonlySet<TCreateRequestSection> = new Set([
+  'date_range',
+  'reason',
+  'single_date',
+  'time_range',
+]);
+
+/** Giá trị cần để chấm xem form đã đủ điều kiện gửi chưa. */
+export type TCreateRequestValues = {
+  /** Ngày của đơn nhắm một ngày, dạng `YYYY-MM-DD`. */
+  readonly date: string;
+  readonly reason: string;
+  readonly totalDays: number;
+  readonly totalHours: number;
+};
+
+/**
+ * Những khối BẮT BUỘC của loại đơn này mà người dùng chưa điền xong.
+ *
+ * Duyệt thẳng `CREATE_REQUEST_SECTIONS[type]` chứ không viết điều kiện riêng
+ * cho từng loại: thêm loại đơn mới chỉ cần khai báo khối, phần kiểm tự đúng
+ * theo. Rỗng nghĩa là gửi được.
+ */
+export const findMissingSections = (
+  type: TRequestType,
+  values: TCreateRequestValues,
+): readonly TCreateRequestSection[] =>
+  CREATE_REQUEST_SECTIONS[type].filter(section => {
+    if (!REQUIRED_SECTIONS.has(section)) {
+      return false;
+    }
+
+    switch (section) {
+      // Khoảng ngày ngược hoặc rỗng đều cho ra 0 ngày.
+      case 'date_range': {
+        return values.totalDays <= 0;
+      }
+      case 'reason': {
+        return values.reason.trim().length === 0;
+      }
+      case 'single_date': {
+        return !dayjs(values.date).isValid();
+      }
+      // Giờ kết thúc không sau giờ bắt đầu thì `countHours` trả về 0.
+      case 'time_range': {
+        return values.totalHours <= 0;
+      }
+      default: {
+        return false;
+      }
+    }
+  });
+
+/** Tiêu đề dải đầu màn tạo đơn, đổi theo loại đơn đang soạn. */
+export const CREATE_REQUEST_TITLE_KEYS: Readonly<Record<TRequestType, string>> =
+  {
+    attendance_explanation: 'create_request.title_attendance_explanation',
+    early_leave: 'create_request.title_early_leave',
+    late_arrival: 'create_request.title_late_arrival',
+    leave: 'create_request.title_leave',
+    overtime: 'create_request.title_overtime',
+  };
+
+/**
+ * Nhãn ô lý do. Màn Chi tiết gọi chung là "Lý do" vì ở đó đã có loại đơn ngay
+ * trên đầu; form thì đang hỏi nên nói rõ hỏi lý do của việc gì.
+ */
+export const CREATE_REQUEST_REASON_LABEL_KEYS: Readonly<
+  Record<TRequestType, string>
+> = {
+  attendance_explanation: 'create_request.reason_label_attendance_explanation',
+  early_leave: 'create_request.reason_label_early_leave',
+  late_arrival: 'create_request.reason_label_late_arrival',
+  leave: 'create_request.reason_label_leave',
+  overtime: 'create_request.reason_label_overtime',
+};
+
+/** Gợi ý trong ô lý do, nhắc đúng thứ người duyệt của loại đơn đó cần biết. */
+export const CREATE_REQUEST_REASON_PLACEHOLDER_KEYS: Readonly<
+  Record<TRequestType, string>
+> = {
+  attendance_explanation:
+    'create_request.reason_placeholder_attendance_explanation',
+  early_leave: 'create_request.reason_placeholder_early_leave',
+  late_arrival: 'create_request.reason_placeholder_late_arrival',
+  leave: 'create_request.reason_placeholder_leave',
+  overtime: 'create_request.reason_placeholder_overtime',
+};
+
+/** Thứ tự loại đơn trong ô chọn ở đầu form. */
+export const CREATE_REQUEST_TYPE_ORDER: readonly TRequestType[] = [
+  'leave',
+  'late_arrival',
+  'early_leave',
+  'overtime',
+  'attendance_explanation',
+];
+
+/**
+ * Nhãn ô ngày của đơn chỉ nhắm một ngày. Dùng chung khoá với màn Chi tiết để
+ * chỗ hỏi và chỗ hiện gọi cùng một tên.
+ */
+export const SINGLE_DATE_LABEL_KEYS: Readonly<Record<TRequestType, string>> = {
+  attendance_explanation: 'request_detail.field_explanation_date',
+  early_leave: 'request_detail.field_early_leave_date',
+  late_arrival: 'request_detail.field_late_arrival_date',
+  leave: 'request_detail.field_period',
+  overtime: 'request_detail.field_overtime_date',
+};
+
+/** Nguồn phép mà từng loại nghỉ sẽ trừ vào. */
+export const LEAVE_KIND_SOURCES: Readonly<
+  Record<TLeaveKind, TLeaveBalanceKind>
+> = {
+  annual: 'annual',
+  compensatory: 'annual',
+  performance: 'performance',
+  unpaid: 'unpaid',
+  wedding: 'annual',
+};
+
+export const LEAVE_KIND_LABEL_KEYS: Readonly<Record<TLeaveKind, string>> = {
+  annual: 'create_request.kind_annual',
+  compensatory: 'create_request.kind_compensatory',
+  performance: 'create_request.kind_performance',
+  unpaid: 'create_request.kind_unpaid',
+  wedding: 'create_request.kind_wedding',
+};
+
+export const LEAVE_KIND_ORDER: readonly TLeaveKind[] = [
+  'annual',
+  'performance',
+  'compensatory',
+  'wedding',
+  'unpaid',
+];
+
+export const BALANCE_LABEL_KEYS: Readonly<Record<TLeaveBalanceKind, string>> = {
+  annual: 'create_request.balance_annual',
+  performance: 'create_request.balance_performance',
+  unpaid: 'create_request.balance_unpaid',
+};
+
+export const OVERTIME_KIND_LABEL_KEYS: Readonly<Record<TOvertimeKind, string>> =
+  {
+    holiday: 'create_request.overtime_kind_holiday',
+    weekday: 'create_request.overtime_kind_weekday',
+    weekend: 'create_request.overtime_kind_weekend',
+  };
+
+export const OVERTIME_KIND_ORDER: readonly TOvertimeKind[] = [
+  'weekday',
+  'weekend',
+  'holiday',
+];
+
+export const WORK_PLACE_LABEL_KEYS: Readonly<Record<TWorkPlace, string>> = {
+  client: 'create_request.place_client',
+  home: 'create_request.place_home',
+  office: 'create_request.place_office',
+};
+
+export const WORK_PLACE_ORDER: readonly TWorkPlace[] = [
+  'office',
+  'home',
+  'client',
+];
+
+export const EVENT_KIND_LABEL_KEYS: Readonly<
+  Record<TAttendanceEventKind, string>
+> = {
+  early_leave: 'create_request.event_early_leave',
+  forgot_check_in: 'create_request.event_forgot_check_in',
+  forgot_check_out: 'create_request.event_forgot_check_out',
+  late_arrival: 'create_request.event_late_arrival',
+};
+
+export const EVENT_KIND_ORDER: readonly TAttendanceEventKind[] = [
+  'late_arrival',
+  'early_leave',
+  'forgot_check_in',
+  'forgot_check_out',
+];
+
+const HOUR_DECIMALS = 1;
+
+/**
+ * Số giờ giữa hai mốc `HH:mm`. Trả về 0 khi mốc kết thúc không nằm sau mốc bắt
+ * đầu — ca qua nửa đêm không thuộc luồng đơn từ này.
+ */
+export const countHours = (startTime: string, endTime: string) => {
+  const start = parseMinutes(startTime);
+  const end = parseMinutes(endTime);
+  if (start === undefined || end === undefined || end <= start) {
+    return 0;
+  }
+  return (end - start) / MINUTES_PER_HOUR;
+};
+
+/**
+ * Số giờ dạng chữ, bỏ phần thập phân khi tròn giờ: `3` → `3`, `1.5` → `1,5`.
+ * Dùng dấu phẩy cố định, giống `formatLeaveDays`.
+ */
+export const formatHours = (hours: number) =>
+  Number.isInteger(hours)
+    ? String(hours)
+    : hours.toFixed(HOUR_DECIMALS).replace('.', DECIMAL_SEPARATOR);
 
 const ISO_DATE_FORMAT = 'YYYY-MM-DD';
 

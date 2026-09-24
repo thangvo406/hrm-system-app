@@ -7,36 +7,51 @@ import { useTranslation } from 'react-i18next';
 export const REASON_MAX_LENGTH = 500;
 
 type Properties = {
+  /** Nhãn và gợi ý đều đổi theo loại đơn, nên không có giá trị mặc định. */
+  readonly labelKey: string;
   readonly onChangeText: (reason: string) => void;
+  readonly placeholderKey: string;
+  /** Ô ghi chú tắt bộ đếm: nó ngắn và không bắt buộc nên đếm chỉ gây nhiễu. */
+  readonly showCounter?: boolean;
+  readonly testID?: string;
   readonly value: string;
 };
 
-/** Ô lý do nhiều dòng, kèm bộ đếm ký tự ở góc dưới phải. */
-function ReasonField({ onChangeText, value }: Properties) {
+/** Ô nhập nhiều dòng, mặc định kèm bộ đếm ký tự ở góc dưới phải. */
+function ReasonField({
+  labelKey,
+  onChangeText,
+  placeholderKey,
+  showCounter = true,
+  testID = 'CreateRequestReason',
+  value,
+}: Properties) {
   const { t } = useTranslation();
 
   return (
     <View>
-      <Text style={styles.label}>{t('create_request.reason_label')}</Text>
+      <Text style={styles.label}>{t(labelKey)}</Text>
 
       <TextInput
         maxLength={REASON_MAX_LENGTH}
         multiline
         onChangeText={onChangeText}
-        placeholder={t('create_request.reason_placeholder')}
+        placeholder={t(placeholderKey)}
         placeholderTextColor={Colors.gray18}
         style={styles.input}
-        testID="CreateRequestReason"
+        testID={testID}
         textAlignVertical="top"
         value={value}
       />
 
-      <Text style={styles.counter}>
-        {t('create_request.reason_counter', {
-          max: REASON_MAX_LENGTH,
-          used: value.length,
-        })}
-      </Text>
+      {showCounter ? (
+        <Text style={styles.counter}>
+          {t('create_request.reason_counter', {
+            max: REASON_MAX_LENGTH,
+            used: value.length,
+          })}
+        </Text>
+      ) : undefined}
     </View>
   );
 }

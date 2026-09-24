@@ -353,7 +353,7 @@ export const getLengthOfMonth = (month: any, year: any) => {
  * never loses a trailing `:00`.
  */
 const SECONDS_PER_MINUTE = 60;
-const MINUTES_PER_HOUR = 60;
+export const MINUTES_PER_HOUR = 60;
 const SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 export const formatTime = (total: number) => {
   const safeTotal = Math.max(total, 0);
@@ -541,4 +541,74 @@ export function convertMinutesToTime(minutes: number): {
 
 export const resetTime = (date: dayjs.ConfigType = Globals.currentTime) => {
   return dayjs(date).utc().hour(17).minute(0).second(0).millisecond(0);
+};
+
+// ─── Mốc giờ `HH:mm` ──────────────────────────────────────────────────────────
+// Toán cho bộ chọn giờ và các đơn tính theo giờ. Khác với nhóm hàm phía trên ở
+// chỗ chúng không đi qua `dayjs`: `dayjs('18:00')` là ngày không hợp lệ, nên
+// giờ-trong-ngày phải tự tách bằng số phút kể từ nửa đêm.
+
+const HOURS_IN_DAY = 24;
+const TIME_PAD_LENGTH = 2;
+const PAD_CHARACTER = '0';
+const TIME_PARTS = 2;
+
+/** Bước phút mặc định của bộ chọn giờ. 5 phút là mức chấm công còn dùng tới. */
+export const DEFAULT_MINUTE_STEP = 5;
+
+/** `8` → `08`. */
+export const padTime = (value: number) =>
+  String(value).padStart(TIME_PAD_LENGTH, PAD_CHARACTER);
+
+/** `HH:mm` thành số phút kể từ nửa đêm; `undefined` nếu chuỗi không hợp lệ. */
+export const parseMinutes = (time: string): number | undefined => {
+  const parts = time.split(':');
+  if (parts.length !== TIME_PARTS) {
+    return undefined;
+  }
+  const hours = Number(parts[0]);
+  const minutes = Number(parts[1]);
+  return Number.isFinite(hours) && Number.isFinite(minutes)
+    ? hours * MINUTES_PER_HOUR + minutes
+    : undefined;
+};
+
+/**
+ * Ghép giờ và phút thành `HH:mm`.
+ *
+ * Tên không phải `formatTime` vì hàm đó đã có ở trên và nhận TỔNG SỐ GIÂY —
+ * hai thứ khác nhau, đặt trùng tên là mời gọi gọi nhầm.
+ */
+export const formatHourMinute = (hour: number, minute: number) =>
+  `${padTime(hour)}:${padTime(minute)}`;
+
+/** Kéo phút lệch bước về mốc gần nhất: 17 với bước 5 → 15. */
+export const toNearestMinuteStep = (minutes: number, step: number) =>
+  Math.min(Math.round(minutes / step) * step, MINUTES_PER_HOUR - step);
+
+/** Các giá trị của cột giờ: 0…23. */
+export const buildHourValues = (): readonly number[] =>
+  Array.from({ length: HOURS_IN_DAY }, (_, index) => index);
+
+/** Các giá trị của cột phút theo bước đã cho, luôn dưới 60. */
+export const buildMinuteValues = (step: number): readonly number[] =>
+  Array.from(
+    { length: Math.ceil(MINUTES_PER_HOUR / step) },
+    (_, index) => index * step,
+  );
+
+/**
+ * Tách `HH:mm` thành giờ và phút, phút đã kéo về đúng bước để luôn trùng một
+ * dòng có thật trong cột. Chuỗi không hợp lệ thì coi như 00:00.
+ *
+ * Khác `convertMinutesToTime` phía trên: hàm đó nhận số phút và chỉ tách khi
+ * lớn hơn 60, còn hàm này nhận chuỗi giờ-trong-ngày và luôn trả về cả hai phần.
+ */
+export const splitTime = (time: string, step: number) => {
+  const minutes = parseMinutes(time) ?? 0;
+
+  return {
+    hour: Math.floor(minutes / MINUTES_PER_HOUR) % HOURS_IN_DAY,
+    minute: toNearestMinuteStep(minutes % MINUTES_PER_HOUR, step),
+  };
 };

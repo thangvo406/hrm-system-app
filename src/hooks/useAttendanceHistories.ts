@@ -1,4 +1,4 @@
-import type { SelectionItem } from '@dialogs/Selection';
+import type { TSelectionItem } from '@type/dialog';
 import type {
   TAttendanceHistoryEntry,
   TAttendanceHistoryFilter,
@@ -175,7 +175,7 @@ export function useAttendanceHistories() {
   const onPickMonth = useCallback(() => {
     // Màn lịch sử nên không liệt kê tháng tương lai; mới nhất xếp trước.
     const latestMonth = getCurrentTime().startOf('month');
-    const items: readonly SelectionItem[] = Array.from(
+    const items: readonly TSelectionItem[] = Array.from(
       { length: MONTH_OPTIONS_COUNT },
       (_, index) => {
         const month = latestMonth.subtract(index, 'month');
@@ -197,7 +197,7 @@ export function useAttendanceHistories() {
       // Truyền nguyên item chứ không phải id: bấm "Xác nhận" mà không chọn lại
       // thì `Selection` trả về đúng giá trị khởi tạo này.
       itemSelected: items.find(item => item.id === selectedId),
-      onSelect: (item: SelectionItem) => {
+      onSelect: (item: TSelectionItem) => {
         setMonthAnchor(dayjs(item.id).format(ISO_DATE_FORMAT));
       },
       pathDisplay: 'label',

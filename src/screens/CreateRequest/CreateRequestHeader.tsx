@@ -15,10 +15,12 @@ const DRAFT_ICON_SIZE = ScaleSize(18);
 type Properties = {
   readonly onGoBack: () => void;
   readonly onSaveDraft: () => void;
+  /** Khoá i18n của tiêu đề; đổi theo loại đơn đang soạn. */
+  readonly titleKey: string;
 };
 
 /** Dải navy đầu màn tạo đơn: nút quay lại, tiêu đề và nút lưu nháp. */
-function CreateRequestHeader({ onGoBack, onSaveDraft }: Properties) {
+function CreateRequestHeader({ onGoBack, onSaveDraft, titleKey }: Properties) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
 
@@ -44,7 +46,7 @@ function CreateRequestHeader({ onGoBack, onSaveDraft }: Properties) {
 
       <View style={styles.titleBox}>
         <Text numberOfLines={1} style={styles.title}>
-          {t('create_request.title')}
+          {t(titleKey)}
         </Text>
       </View>
 
