@@ -3,16 +3,13 @@ import type {
   TAttendancePunch,
   TNearestOffice,
 } from '@type/attendance';
-import dayjs from 'dayjs';
 import * as LocationUtils from './location';
+import { getOnlyDate, getOnlyTime } from './date';
 
-export const TIME_FORMAT = 'HH:mm';
-export const ISO_DATE_FORMAT = 'YYYY-MM-DD';
-
-export const toPunch = (isoTimestamp: string): TAttendancePunch => {
-  const at = dayjs(isoTimestamp);
-  return { at: at.format(TIME_FORMAT), workDate: at.format(ISO_DATE_FORMAT) };
-};
+export const toPunch = (isoTimestamp: string): TAttendancePunch => ({
+  at: getOnlyTime(isoTimestamp),
+  workDate: getOnlyDate(isoTimestamp),
+});
 
 export const getOfficeCoordinates = (
   office: IOffice,

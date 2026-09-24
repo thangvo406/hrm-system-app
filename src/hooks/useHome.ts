@@ -19,6 +19,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { getProfileRequest } from '@services/slices/account/accountSlice';
+import { getAttendanceInfoRequest } from '@services/slices/attendance/attendanceSlice';
 
 const MORNING_END_HOUR = 12;
 const AFTERNOON_END_HOUR = 18;
@@ -149,6 +150,7 @@ export function useHome() {
     useCallback(() => {
       StatusBar.setBarStyle('light-content');
       dispatch(getProfileRequest());
+      dispatch(getAttendanceInfoRequest(null));
       return () => StatusBar.setBarStyle('dark-content');
     }, []),
   );

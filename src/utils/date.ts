@@ -14,6 +14,25 @@ export const getCurrentTime = (): dayjs.Dayjs => {
   );
 };
 
+export const TIME_FORMAT = 'HH:mm';
+export const ISO_DATE_FORMAT = 'YYYY-MM-DD';
+
+export const getOnlyTime = (
+  date: string | undefined,
+  format: string = TIME_FORMAT,
+): string => {
+  const parsed = dayjs(date);
+  return date && parsed.isValid() ? parsed.format(format) : '';
+};
+
+export const getOnlyDate = (
+  date: string | undefined,
+  format: string = ISO_DATE_FORMAT,
+): string => {
+  const parsed = dayjs(date);
+  return date && parsed.isValid() ? parsed.format(format) : '';
+};
+
 const isLeapYear = (year: number): boolean => {
   return (
     (year % 4 === 0 && year % 100 !== 0 && year % 400 !== 0) ||

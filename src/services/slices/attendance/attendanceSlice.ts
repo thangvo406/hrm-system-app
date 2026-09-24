@@ -1,9 +1,14 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { IRequestAttendance, TAttendancePunch } from '@type/attendance';
+import type {
+  IRequestAttendance,
+  IResponseAttendanceInfo,
+  TAttendancePunch,
+} from '@type/attendance';
 
 import { createSlice } from '@reduxjs/toolkit';
 
 import { logoutSuccess } from '@services/slices/auth/authSlice';
+import { AttendanceUtils } from '@utils';
 
 export type AttendanceState = {
   checkInAt: string | undefined;
@@ -39,6 +44,20 @@ const attendanceSlice = createSlice({
       prepare: (payload: IRequestAttendance) => ({ payload }),
       reducer: () => {},
     },
+    getAttendanceInfoSuccess: (
+      state,
+      action: PayloadAction<IResponseAttendanceInfo>,
+    ) => {
+      const checkIn = AttendanceUtils.toPunch(action.payload.checkInTime);
+      const checkOut = AttendanceUtils.toPunch(action.payload.checkOutTime);
+      state.checkOutAt = checkOut.at || state.checkOutAt;
+      state.workDate = checkIn.workDate || state.workDate;
+      state.checkInAt = checkIn.at || state.checkInAt;
+    },
+    getAttendanceInfoRequest: {
+      prepare: () => ({}),
+      reducer: () => {},
+    },
     checkOutRequest: {
       prepare: (payload: IRequestAttendance) => ({ payload }),
       reducer: () => {},
@@ -53,6 +72,8 @@ export const {
   checkoutSuccess,
   checkOutRequest,
   resetAttendance,
+  getAttendanceInfoRequest,
+  getAttendanceInfoSuccess,
 } = attendanceSlice.actions;
 
 export const attendanceReducer = attendanceSlice.reducer;

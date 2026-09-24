@@ -147,7 +147,25 @@ export type TAttendanceInfo = {
   readonly checkedOutAt?: string;
 };
 
-/** Dấu chấm công vào ca mà server đã ghi nhận. */
+export interface IResponseAttendanceInfo {
+  checkInTime: string;
+  checkOutTime: string;
+  checkInLatitude: number;
+  checkInLongitude: number;
+  checkOutLatitude: number;
+  checkOutLongitude: number;
+  checkInMethod: string;
+  checkOutMethod: string;
+  type: string;
+  status: string;
+  note: string;
+  user: IAttendanceUser;
+}
+
+export interface IAttendanceUser {
+  username: string;
+  email: string;
+}
 export interface IResponseAttendance {
   checkInAt: string;
   id: number;

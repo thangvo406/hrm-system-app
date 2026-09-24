@@ -1,14 +1,24 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { IRequestAttendance, IResponseAttendance } from '@type/attendance';
+import type {
+  IRequestAttendance,
+  IResponseAttendance,
+  IResponseAttendanceInfo,
+} from '@type/attendance';
 
 import { call, put, takeLatest } from 'redux-saga/effects';
 
-import { checkIn, checkOut } from '@services/request/attendance';
+import {
+  attendanceInfo,
+  checkIn,
+  checkOut,
+} from '@services/request/attendance';
 import {
   checkInRequest,
   checkinSuccess,
   checkOutRequest,
   checkoutSuccess,
+  getAttendanceInfoRequest,
+  getAttendanceInfoSuccess,
 } from './attendanceSlice';
 import { getErrorMessageApi } from '@utils/common';
 
@@ -36,7 +46,17 @@ function* checkOutWorker(action: PayloadAction<IRequestAttendance>) {
   }
 }
 
+function* attendanceInfoWorker() {
+  try {
+    const response: IResponseAttendanceInfo = yield call(attendanceInfo);
+    yield put(getAttendanceInfoSuccess(response));
+  } catch {
+    //TODO:
+  }
+}
+
 export function* attendanceSaga() {
   yield takeLatest(checkInRequest.type, checkInWorker);
   yield takeLatest(checkOutRequest.type, checkOutWorker);
+  yield takeLatest(getAttendanceInfoRequest.type, attendanceInfoWorker);
 }
