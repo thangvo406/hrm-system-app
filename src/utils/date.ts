@@ -1,4 +1,4 @@
-import { DayOfWeek } from '@constants/config';
+import { EDayOfWeek } from '@constants/config';
 import dayjs from 'dayjs';
 import Globals from './Globals';
 import { Colors } from '@constants';
@@ -16,6 +16,9 @@ export const getCurrentTime = (): dayjs.Dayjs => {
 
 export const TIME_FORMAT = 'HH:mm';
 export const ISO_DATE_FORMAT = 'YYYY-MM-DD';
+
+/** Giờ tường server gửi về: `HH:mm:ss`, và chấp nhận cả `HH:mm`. */
+const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/;
 
 export const getOnlyTime = (
   date: string | undefined,
@@ -40,8 +43,29 @@ const isLeapYear = (year: number): boolean => {
   );
 };
 
-export function getTimeByTimezone(time: string, timezone: string) {
-  return time;
+export function getTimeByTimezone(
+  time?: string,
+  targetTimezone?: string,
+): string {
+  if (!time) {
+    return '';
+  }
+
+  if (!targetTimezone || !TIME_PATTERN.test(time)) {
+    return time;
+  }
+
+  try {
+    const sourceTimezone = dayjs.tz.guess();
+    const today = dayjs().tz(sourceTimezone).format(ISO_DATE_FORMAT);
+    const atSource = dayjs.tz(`${today} ${time}`, sourceTimezone);
+
+    return atSource.isValid()
+      ? atSource.tz(targetTimezone).format(TIME_FORMAT)
+      : time;
+  } catch {
+    return time;
+  }
 }
 
 export function isDateInCurrentWeek(
@@ -346,15 +370,15 @@ export const formatSecondsToTime = (seconds: number): string => {
   return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
 };
 
-export const getDateByDay = (day: string, date: number) => {
-  const MAPPING_DAY = {
-    [DayOfWeek.MONDAY]: 0,
-    [DayOfWeek.TUESDAY]: 1,
-    [DayOfWeek.WEDNESDAY]: 2,
-    [DayOfWeek.THURSDAY]: 3,
-    [DayOfWeek.FRIDAY]: 4,
-    [DayOfWeek.SATURDAY]: 5,
-    [DayOfWeek.SUNDAY]: 6,
+export const getDateByDay = (day: EDayOfWeek, date: number) => {
+  const MAPPING_DAY: Record<EDayOfWeek, number> = {
+    [EDayOfWeek.MONDAY]: 0,
+    [EDayOfWeek.TUESDAY]: 1,
+    [EDayOfWeek.WEDNESDAY]: 2,
+    [EDayOfWeek.THURSDAY]: 3,
+    [EDayOfWeek.FRIDAY]: 4,
+    [EDayOfWeek.SATURDAY]: 5,
+    [EDayOfWeek.SUNDAY]: 6,
   };
   const incrementDay = MAPPING_DAY[day];
   // _monday.setDate(mondayDate + incrementDay);

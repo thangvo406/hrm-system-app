@@ -11,7 +11,6 @@ const storage = createMMKV();
 const reduxPlugin = reactotronRedux();
 
 const reactotron = Reactotron.configure({
-  // host: '192.168.100.104',
   host: 'localhost',
   name: config.name,
   port: 9090,

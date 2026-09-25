@@ -10,7 +10,7 @@ import type {
 import AppNavigator from '@navigation/AppNavigator';
 import { AccountSelector, AttendanceSelector } from '@services/selectors';
 import { AppConstants } from '@constants';
-import { getCurrentTime } from '@utils/date';
+import { getCurrentTime, getTimeByTimezone } from '@utils/date';
 import { getInitials } from '@utils/profile';
 import { Paths } from '@navigation/paths';
 import { StatusBar } from 'react-native';
@@ -108,6 +108,7 @@ export function useHome() {
   const checkOutAt = useAppSelector(AttendanceSelector.getCheckOutAt);
   const workDate = useAppSelector(AttendanceSelector.getWorkDate);
   const profile = useAppSelector(AccountSelector.getProfile);
+  const attendanceInfo = useAppSelector(AttendanceSelector.getAttendanceInfo);
 
   /**
    * Tên và chữ viết tắt lấy thẳng từ redux (`account.profile`, do
@@ -125,16 +126,22 @@ export function useHome() {
   const shift = useMemo<THomeShift>(() => {
     const isToday = workDate === getCurrentTime().format(ISO_DATE_FORMAT);
     const todayCheckInAt = isToday ? checkInAt : undefined;
-
+    const { office } = attendanceInfo || {};
     return {
       checkInAt: todayCheckInAt,
       checkOutAt: isToday ? checkOutAt : undefined,
-      endWorkingTime: AppConstants.OFFICE_SHIFT.END_AT,
+      endWorkingTime: getTimeByTimezone(
+        office?.endWorkingTime,
+        office?.timezone,
+      ),
       name: t('home.shift_office_name'),
       punctuality: getPunctuality(todayCheckInAt),
-      startWorkingTime: AppConstants.OFFICE_SHIFT.START_AT,
+      startWorkingTime: getTimeByTimezone(
+        office?.startWorkingTime,
+        office?.timezone,
+      ),
     };
-  }, [checkInAt, checkOutAt, t, workDate]);
+  }, [checkInAt, checkOutAt, t, attendanceInfo?.office, workDate]);
 
   // Ảnh nền navy phải trải liền từ header xuống dải `HeaderOverlap`, mà hai
   // view đó nằm ở hai cây khác nhau (header ghim cố định, dải nằm trong vùng

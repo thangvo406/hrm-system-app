@@ -31,7 +31,7 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-
+import timezonePlugin from 'dayjs/plugin/timezone';
 import dayjs from 'dayjs';
 import { useAppDispatch } from '@services/common/storeHooks';
 import { getAppConfigRequest } from '@services/slices/app/appSlice';
@@ -45,6 +45,7 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(timezonePlugin);
 
 const Stack = createStackNavigator<RootStackParamList>();
 

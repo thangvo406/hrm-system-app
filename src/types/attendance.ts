@@ -137,6 +137,7 @@ export interface IResponseAttendanceInfo {
   status: string;
   note: string;
   user: IAttendanceUser;
+  office: IOffice;
 }
 
 export interface IAttendanceUser {
