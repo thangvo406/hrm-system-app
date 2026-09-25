@@ -113,6 +113,51 @@ export const matchesRequestFilters = (
   matchesPeriod(item, filters);
 
 /**
+ * Đổi bộ lọc của màn thành khoảng ngày phẳng để gửi lên server.
+ *
+ * Giữ đúng ngữ nghĩa của `matchesPeriod`: `last_3_months` chỉ chặn đầu dưới
+ * (đơn có ngày áp dụng trong tương lai vẫn tính), còn `this_week`/`this_month`
+ * chặn cả hai đầu. `all` và `custom` chưa chọn xong ngày thì không giới hạn gì.
+ */
+export const toRequestDateRange = (
+  filters: TRequestFilters,
+): { readonly fromDate?: string; readonly toDate?: string } => {
+  switch (filters.period) {
+    case 'custom': {
+      return {
+        fromDate: filters.range?.from,
+        toDate: filters.range?.to,
+      };
+    }
+    case 'last_3_months': {
+      return {
+        fromDate: getCurrentTime()
+          .subtract(LAST_MONTHS_COUNT, 'month')
+          .format(ISO_DATE_FORMAT),
+      };
+    }
+    case 'this_month': {
+      const now = getCurrentTime();
+      return {
+        fromDate: now.startOf('month').format(ISO_DATE_FORMAT),
+        toDate: now.endOf('month').format(ISO_DATE_FORMAT),
+      };
+    }
+    case 'this_week': {
+      // Neo vào Thứ hai, giống `matchesPeriod`.
+      const monday = getCurrentTime().startOf('week').add(1, 'day');
+      return {
+        fromDate: monday.format(ISO_DATE_FORMAT),
+        toDate: monday.add(6, 'day').format(ISO_DATE_FORMAT),
+      };
+    }
+    default: {
+      return {};
+    }
+  }
+};
+
+/**
  * Số hiện trên nút "Áp dụng": ĐẾM SỐ BỘ LỌC ĐANG BẬT, không phải số đơn khớp.
  * Mỗi mục chọn một chip khác "Tất cả" thì tính 1, mục để "Tất cả" tính 0 — nên
  * giá trị chỉ chạy từ 0 (chưa lọc gì) tới 3 (cả ba mục đều đang lọc).

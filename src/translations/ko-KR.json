@@ -533,7 +533,17 @@
       "status_pending": "승인 대기",
       "status_approved": "승인됨",
       "status_rejected": "반려됨",
-      "empty": "이 탭에 신청서가 없습니다",
+      "empty": {
+        "all": {
+          "title": "아직 신청서가 없습니다",
+          "description": "작성한 신청서가 없습니다. 연차, 병가 등 필요한 신청서를 작성해 보세요.",
+          "action": "신청서 작성"
+        },
+        "filtered": {
+          "title": "조건에 맞는 신청서가 없습니다",
+          "description": "다른 탭을 선택하거나 필터를 줄이면 더 많은 신청서를 볼 수 있습니다."
+        }
+      },
       "filter_title": "필터",
       "filter_reset": "초기화",
       "filter_all": "전체",

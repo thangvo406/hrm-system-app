@@ -1,3 +1,4 @@
+import type { AppCallback, ListApiResponse } from '@type/common';
 import type { IconName } from '@assets/icons';
 
 /** Loại đơn nhân viên có thể gửi. Nghỉ ốm đã bị bỏ khỏi luồng này. */
@@ -157,6 +158,40 @@ export type TRequestItem = {
   readonly status: TRequestStatus;
   readonly type: TRequestType;
 };
+
+/**
+ * Payload gọi danh sách đơn từ, có phân trang.
+ *
+ * `page` đếm từ 0 như `ListApiResponse.page` server trả về. Các trường lọc để
+ * trống nghĩa là không lọc — `removeEmptyFieldObject` trong hàm request sẽ bỏ
+ * chúng khỏi query string.
+ */
+export interface IRequestGetRequests
+  extends AppCallback<ListApiResponse<TRequestItem[]>> {
+  /** Đầu khoảng lọc, dạng `YYYY-MM-DD`. */
+  fromDate?: string;
+  page: number;
+  size: number;
+  /** Một giá trị của `TRequestStatus`; bỏ trống khi tab đang là `all`. */
+  status?: string;
+  /** Cuối khoảng lọc, dạng `YYYY-MM-DD`. */
+  toDate?: string;
+  /** Một giá trị của `TRequestType`; bỏ trống khi không lọc theo loại. */
+  type?: string;
+}
+
+/** Số đơn của từng tab, không phụ thuộc tab đang chọn. */
+export type TRequestCounts = {
+  readonly all: number;
+  readonly pending: number;
+  readonly processed: number;
+};
+
+export interface IRequestGetRequestCounts extends AppCallback<TRequestCounts> {
+  fromDate?: string;
+  toDate?: string;
+  type?: string;
+}
 
 /** Một nhóm đơn theo tháng trong `SectionList`. */
 export type TRequestSection = {

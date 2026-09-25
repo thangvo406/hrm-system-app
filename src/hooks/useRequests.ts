@@ -4,6 +4,7 @@ import type {
   NativeSyntheticEvent,
 } from 'react-native';
 import type {
+  TRequestCounts,
   TRequestFilters,
   TRequestItem,
   TRequestSection,
@@ -16,14 +17,21 @@ import dayjs from 'dayjs';
 import { Paths } from '@navigation/paths';
 import FilterSheet from '@dialogs/FilterSheet';
 import {
+  countSelectedFilters,
   DEFAULT_REQUEST_FILTERS,
-  matchesRequestFilters,
-  matchesRequestFiltersExceptStatus,
+  toRequestDateRange,
 } from '@utils/requests';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useAppDispatch } from '@services/common/storeHooks';
+import {
+  getRequestCountsRequest,
+  getRequestsRequest,
+} from '@services/slices/requests/requestsSlice';
 import {
   useAnimatedStyle,
   useSharedValue,
+  withDelay,
   withTiming,
 } from 'react-native-reanimated';
 
@@ -42,140 +50,20 @@ const TABS_DURATION = 220;
 const FULLY_SHOWN = 1;
 const FULLY_HIDDEN = 0;
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
-// Dữ liệu dựng UI, chưa nối API. Khi có endpoint thật thì thay khối này bằng
-// saga callback (xem flow ở .cursorrules §5).
+const CONTENT_FADE_OUT_DURATION = 220;
+const CONTENT_FADE_IN_DURATION = 200;
 
-const MOCK_REQUESTS: readonly TRequestItem[] = [
-  {
-    createdAt: '2026-09-18',
-    dayCount: 2,
-    endDate: '2026-09-23',
-    id: 'req-2026-09-22',
-    reason: 'Giải quyết việc gia đình',
-    startDate: '2026-09-22',
-    status: 'pending',
-    type: 'leave',
-  },
-  {
-    createdAt: '2026-09-10',
-    dayCount: 3,
-    endDate: '2026-09-18',
-    id: 'req-2026-09-16',
-    reason: 'Nghỉ du lịch cùng gia đình',
-    startDate: '2026-09-16',
-    status: 'pending',
-    type: 'leave',
-  },
-  {
-    createdAt: '2026-09-15',
-    id: 'req-2026-09-19',
-    reason: 'Chạy kịp bản phát hành cuối quý',
-    startDate: '2026-09-19',
-    status: 'pending',
-    type: 'overtime',
-  },
-  {
-    createdAt: '2026-09-14',
-    id: 'req-2026-09-13',
-    reason: 'Quên quẹt thẻ lúc ra về',
-    startDate: '2026-09-13',
-    status: 'approved',
-    type: 'attendance_explanation',
-  },
-  {
-    createdAt: '2026-09-12',
-    id: 'req-2026-09-12',
-    reason: 'Xe hỏng giữa đường',
-    startDate: '2026-09-12',
-    status: 'approved',
-    type: 'late_arrival',
-  },
-  {
-    createdAt: '2026-09-09',
-    id: 'req-2026-09-09',
-    reason: 'Đưa con đi khám',
-    startDate: '2026-09-09',
-    status: 'approved',
-    type: 'early_leave',
-  },
-  {
-    createdAt: '2026-09-03',
-    id: 'req-2026-09-03',
-    reason: 'Kẹt xe do mưa lớn',
-    startDate: '2026-09-03',
-    status: 'rejected',
-    type: 'late_arrival',
-  },
-  {
-    createdAt: '2026-08-27',
-    id: 'req-2026-08-28',
-    reason: 'Có việc gia đình',
-    startDate: '2026-08-28',
-    status: 'approved',
-    type: 'early_leave',
-  },
-  {
-    createdAt: '2026-08-15',
-    dayCount: 3,
-    endDate: '2026-08-22',
-    id: 'req-2026-08-20',
-    reason: 'Về quê',
-    startDate: '2026-08-20',
-    status: 'approved',
-    type: 'leave',
-  },
-  {
-    createdAt: '2026-08-12',
-    id: 'req-2026-08-12',
-    reason: 'Đi khám sức khoẻ định kỳ',
-    startDate: '2026-08-12',
-    status: 'approved',
-    type: 'late_arrival',
-  },
-  {
-    createdAt: '2026-08-04',
-    id: 'req-2026-08-05',
-    reason: 'Đón người nhà ở sân bay',
-    startDate: '2026-08-05',
-    status: 'rejected',
-    type: 'early_leave',
-  },
-  {
-    createdAt: '2026-07-30',
-    dayCount: 1,
-    id: 'req-2026-08-03',
-    reason: 'Nghỉ phép năm',
-    startDate: '2026-08-03',
-    status: 'approved',
-    type: 'leave',
-  },
-  {
-    createdAt: '2026-07-21',
-    id: 'req-2026-07-21',
-    reason: 'Tàu điện hỏng giờ cao điểm',
-    startDate: '2026-07-21',
-    status: 'approved',
-    type: 'late_arrival',
-  },
-  {
-    createdAt: '2026-07-08',
-    dayCount: 2,
-    endDate: '2026-07-14',
-    id: 'req-2026-07-13',
-    reason: 'Giỗ gia đình',
-    startDate: '2026-07-13',
-    status: 'pending',
-    type: 'leave',
-  },
-];
+const PAGE_SIZE = 20;
+const FIRST_PAGE = 0;
+const PAGE_STEP = 1;
 
-// ──────────────────────────────────────────────────────────────────────────────
+const ALL_FILTER = 'all';
+const NO_FILTER = 0;
+
+const EMPTY_COUNTS: TRequestCounts = { all: 0, pending: 0, processed: 0 };
 
 /** Gom các đơn đã lọc thành từng nhóm tháng, mới nhất xếp trước. */
 const groupByMonth = (items: readonly TRequestItem[]): TRequestSection[] => {
-  // `Map` giữ nguyên thứ tự chèn nên các tháng ra đúng thứ tự của danh sách đã
-  // sắp trước đó, không phải sắp lại lần nữa.
   const buckets = new Map<string, TRequestItem[]>();
 
   for (const item of items) {
@@ -200,68 +88,161 @@ const groupByMonth = (items: readonly TRequestItem[]): TRequestSection[] => {
   });
 };
 
-/**
- * Toàn bộ logic màn Đơn từ: loại đơn và nhóm tab đang lọc, số đơn của từng
- * nhóm và danh sách đơn đã gom theo tháng.
- */
 export function useRequests() {
+  const dispatch = useAppDispatch();
+
   const [filters, setFilters] = useState<TRequestFilters>(
     DEFAULT_REQUEST_FILTERS,
   );
 
-  // Sắp một lần cho cả màn: ngày áp dụng mới nhất lên trước, cùng ngày thì đơn
-  // gửi sau đứng trên.
-  const sortedRequests = useMemo(
-    () =>
-      // Spread đã tạo mảng mới nên sort tại chỗ không đụng vào `MOCK_REQUESTS`;
-      // `toSorted` chưa có trong lib TS/Hermes của dự án.
-      // eslint-disable-next-line unicorn/no-array-sort
-      [...MOCK_REQUESTS].sort((left, right) => {
-        const byStartDate = right.startDate.localeCompare(left.startDate);
-        return byStartDate === 0
-          ? right.createdAt.localeCompare(left.createdAt)
-          : byStartDate;
-      }),
+  const [requests, setRequests] = useState<readonly TRequestItem[]>([]);
+  const [counts, setCounts] = useState<TRequestCounts>(EMPTY_COUNTS);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  const pageRef = useRef(FIRST_PAGE);
+  const isLastRef = useRef(false);
+  const isLoadingRef = useRef(false);
+  const isMountedRef = useRef(true);
+
+  const contentProgress = useSharedValue(FULLY_SHOWN);
+  /** Mốc bắt đầu nhịp mờ đi, để biết còn nợ bao nhiêu mili giây nữa. */
+  const fadeOutStartedAtRef = useRef(0);
+
+  useEffect(
+    () => () => {
+      isMountedRef.current = false;
+    },
     [],
   );
 
-  /**
-   * Hàng tab là cách nhìn hẹp hơn của cùng MỘT trường `status`: bộ lọc tách
-   * riêng "Đã duyệt" và "Đã từ chối", còn tab gộp cả hai thành "Đã xử lý".
-   */
   const tab: TRequestTab = useMemo(() => {
-    if (filters.status === 'all') {
+    if (filters.status === ALL_FILTER) {
       return 'all';
     }
     return filters.status === 'pending' ? 'pending' : 'processed';
   }, [filters.status]);
 
-  // Số đếm trên tab bỏ qua chính trường trạng thái, vì con số phải trả lời
-  // "bấm tab này thì còn bao nhiêu đơn", chứ không phải đếm lại thứ đang xem.
-  const counts = useMemo(() => {
-    const scoped = sortedRequests.filter(item =>
-      matchesRequestFiltersExceptStatus(item, filters),
-    );
-    return {
-      all: scoped.length,
-      pending: scoped.filter(item => item.status === 'pending').length,
-      processed: scoped.filter(item => item.status !== 'pending').length,
-    };
-  }, [filters, sortedRequests]);
+  const scope = useMemo(
+    () => ({
+      ...toRequestDateRange(filters),
+      type: filters.type === ALL_FILTER ? '' : filters.type,
+    }),
+    [filters],
+  );
 
-  const sections = useMemo(
-    () =>
-      groupByMonth(
-        sortedRequests.filter(item => matchesRequestFilters(item, filters)),
-      ),
-    [filters, sortedRequests],
+  const loadRequests = useCallback(
+    (page: number) => {
+      const isFirstPage = page === FIRST_PAGE;
+      isLoadingRef.current = true;
+
+      if (isFirstPage) {
+        pageRef.current = FIRST_PAGE;
+        isLastRef.current = false;
+        setIsLoading(true);
+        fadeOutStartedAtRef.current = Date.now();
+        contentProgress.set(
+          withTiming(FULLY_HIDDEN, { duration: CONTENT_FADE_OUT_DURATION }),
+        );
+      } else {
+        setIsLoadingMore(true);
+      }
+
+      const stopLoading = () => {
+        isLoadingRef.current = false;
+        if (isMountedRef.current) {
+          setIsLoading(false);
+          setIsLoadingMore(false);
+        }
+      };
+
+      const showContent = () => {
+        if (!isFirstPage || !isMountedRef.current) {
+          return;
+        }
+
+        const elapsed = Date.now() - fadeOutStartedAtRef.current;
+        const remaining = Math.max(CONTENT_FADE_OUT_DURATION - elapsed, 0);
+
+        contentProgress.set(
+          withDelay(
+            remaining,
+            withTiming(FULLY_SHOWN, { duration: CONTENT_FADE_IN_DURATION }),
+          ),
+        );
+      };
+
+      dispatch(
+        getRequestsRequest({
+          ...scope,
+          page,
+          size: PAGE_SIZE,
+          status: filters.status === ALL_FILTER ? '' : filters.status,
+          onFailure: () => {
+            stopLoading();
+            // Hiện lại kể cả khi lỗi, không thì màn hình kẹt ở trạng thái mờ.
+            showContent();
+          },
+          onSuccess: response => {
+            stopLoading();
+            if (!isMountedRef.current) {
+              return;
+            }
+            pageRef.current = response.page;
+            isLastRef.current = response.last;
+            setRequests(previous =>
+              isFirstPage
+                ? response.content
+                : [...previous, ...response.content],
+            );
+            showContent();
+          },
+        }),
+      );
+    },
+    [contentProgress, dispatch, filters.status, scope],
+  );
+
+  const loadCounts = useCallback(() => {
+    dispatch(
+      getRequestCountsRequest({
+        ...scope,
+        onSuccess: next => {
+          if (isMountedRef.current) {
+            setCounts(next);
+          }
+        },
+      }),
+    );
+  }, [dispatch, scope]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadRequests(FIRST_PAGE);
+      loadCounts();
+    }, [loadCounts, loadRequests]),
+  );
+
+  const onEndReached = useCallback(() => {
+    if (isLoadingRef.current || isLastRef.current || requests.length === 0) {
+      return;
+    }
+    loadRequests(pageRef.current + PAGE_STEP);
+  }, [loadRequests, requests.length]);
+
+  const sections = useMemo(() => groupByMonth(requests), [requests]);
+
+  // Hàng tab ghi vào `status`, nên `countSelectedFilters` đã bao luôn cả việc
+  // người dùng đang đứng ở tab hẹp chứ không riêng bộ lọc trong bottom sheet.
+  const isFiltered = useMemo(
+    () => countSelectedFilters(filters) > NO_FILTER,
+    [filters],
   );
 
   const onChangeTab = useCallback((next: TRequestTab) => {
     setFilters(current => ({ ...current, status: next }));
   }, []);
 
-  /** Bấm lại đúng loại đang chọn thì bỏ lọc, quay về xem tất cả. */
   const onToggleType = useCallback((next: TRequestType) => {
     setFilters(current => ({
       ...current,
@@ -305,8 +286,6 @@ export function useRequests() {
     setTabsHeight(current => (current === height ? current : height));
   }, []);
 
-  // Đổi bộ lọc khi hàng tab đang ẩn có thể để lại danh sách quá ngắn, không
-  // còn cuộn được để vuốt cho nó hiện lại — nên trả về trạng thái hiện luôn.
   useEffect(() => {
     dragDistance.current = NO_DRAG;
     isTabsHidden.current = false;
@@ -314,14 +293,6 @@ export function useRequests() {
     tabsProgress.set(withTiming(FULLY_SHOWN, { duration: TABS_DURATION }));
   }, [filters, tabsProgress]);
 
-  /**
-   * Handler chạy ở luồng JS chứ không phải `useAnimatedScrollHandler`:
-   * `SectionList` không có bản animated sẵn, phải tự bọc bằng
-   * `createAnimatedComponent` thì handler của reanimated hay không gắn được vào
-   * `ScrollView` bên trong và im lặng không chạy. Ở đây mỗi event chỉ quyết
-   * định ẩn/hiện chứ không nội suy từng frame, nên đi qua JS hoàn toàn ổn —
-   * bản thân animation vẫn do `withTiming` chạy trên luồng UI.
-   */
   const onScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       const offsetY = event.nativeEvent.contentOffset.y;
@@ -339,10 +310,6 @@ export function useRequests() {
         return;
       }
 
-      // Cộng dồn quãng vuốt thay vì xét delta của riêng từng frame: vuốt chậm
-      // thì mỗi frame chỉ nhích vài pixel, không frame nào đủ chạm ngưỡng.
-      // Đổi hướng thì đếm lại từ đầu, không thì quãng xuôi và ngược triệt tiêu
-      // nhau và trạng thái không bao giờ lật.
       const accumulated = dragDistance.current;
       const dragged =
         delta * accumulated < NO_DRAG ? delta : accumulated + delta;
@@ -361,15 +328,6 @@ export function useRequests() {
     [tabsProgress],
   );
 
-  /**
-   * CHỈ `transform` và `opacity` — hai thứ chạy thẳng trên GPU. Bản trước
-   * animate `height`, là layout prop: reanimated phải đi qua đường khác, gây
-   * layout lại mỗi frame và trên Fabric thì không ăn.
-   *
-   * Hàng tab nằm đè tuyệt đối lên đầu danh sách, nên trượt nó lên không đụng
-   * gì tới bố cục; phần danh sách lộ ra bên dưới chính là nội dung vốn đã cuộn
-   * qua chỗ đó, không để lại khoảng trống.
-   */
   const tabsStyle = useAnimatedStyle(
     () => ({
       opacity: tabsProgress.get(),
@@ -383,6 +341,10 @@ export function useRequests() {
     [tabsHeight],
   );
 
+  const contentStyle = useAnimatedStyle(() => ({
+    opacity: contentProgress.get(),
+  }));
+
   /** Chừa đúng chỗ hàng tab đang đè lên, để dòng đầu không bị nó che. */
   const listContentStyle = useMemo(
     () => ({ paddingTop: tabsHeight ?? NO_HEIGHT }),
@@ -390,10 +352,15 @@ export function useRequests() {
   );
 
   return {
+    contentStyle,
     counts,
+    isFiltered,
+    isLoading,
+    isLoadingMore,
     listContentStyle,
     onChangeTab,
     onCreateRequest,
+    onEndReached,
     onOpenDetail,
     onOpenFilter,
     onScroll,

@@ -781,7 +781,17 @@
       "status_pending": "Chờ duyệt",
       "status_approved": "Đã duyệt",
       "status_rejected": "Đã từ chối",
-      "empty": "Chưa có đơn từ nào trong mục này",
+      "empty": {
+        "all": {
+          "title": "Chưa có đơn từ nào",
+          "description": "Bạn chưa tạo đơn từ nào. Hãy tạo đơn từ để gửi yêu cầu nghỉ phép, nghỉ ốm hoặc các loại đơn từ khác.",
+          "action": "Tạo đơn từ"
+        },
+        "filtered": {
+          "title": "Không có đơn từ nào khớp",
+          "description": "Thử chọn tab khác hoặc bỏ bớt bộ lọc để xem thêm đơn từ."
+        }
+      },
       "filter_title": "Bộ lọc",
       "filter_reset": "Đặt lại",
       "filter_all": "Tất cả",

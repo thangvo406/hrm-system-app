@@ -4,17 +4,18 @@ import type { TRequestItem, TRequestSection } from '@type/requests';
 import Animated from 'react-native-reanimated';
 import MonthHeader from './MonthHeader';
 import RequestRow from './RequestRow';
+import RequestsEmpty from './RequestsEmpty';
 import RequestsHeader from './RequestsHeader';
 import RequestTabs from './RequestTabs';
 import TypeFilters from './TypeFilters';
 import { Colors } from '@constants';
-import { SectionList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, SectionList, StyleSheet, View } from 'react-native';
 import { ScaleSize } from '@kits/core';
 import { useCallback } from 'react';
 import { useRequests } from '@hooks';
-import { useTranslation } from 'react-i18next';
 
 const SCROLL_EVENT_THROTTLE = 16;
+const END_REACHED_THRESHOLD = 0.5;
 
 const keyExtractor = (item: TRequestItem) => item.id;
 
@@ -25,10 +26,15 @@ const renderSectionHeader = ({ section }: { section: TRequestSection }) => (
 /** Màn Đơn từ: thẻ tạo nhanh, tab theo trạng thái và danh sách đơn theo tháng. */
 function Requests() {
   const {
+    contentStyle,
     counts,
+    isFiltered,
+    isLoading,
+    isLoadingMore,
     listContentStyle,
     onChangeTab,
     onCreateRequest,
+    onEndReached,
     onOpenDetail,
     onOpenFilter,
     onScroll,
@@ -39,7 +45,6 @@ function Requests() {
     tabsStyle,
     typeFilter,
   } = useRequests();
-  const { t } = useTranslation();
 
   // Bọc trong `useCallback`: hàm dựng dòng mà đổi tham chiếu mỗi lần render
   // thì `SectionList` phải dựng lại toàn bộ dòng đang hiện.
@@ -58,21 +63,47 @@ function Requests() {
         <TypeFilters onToggle={onToggleType} value={typeFilter} />
 
         <View style={styles.listArea}>
-          <SectionList
-            ListEmptyComponent={
-              <Text style={styles.empty}>{t('requests.empty')}</Text>
-            }
-            contentContainerStyle={[styles.content, listContentStyle]}
-            keyExtractor={keyExtractor}
-            onScroll={onScroll}
-            renderItem={renderItem}
-            renderSectionHeader={renderSectionHeader}
-            scrollEventThrottle={SCROLL_EVENT_THROTTLE}
-            sections={sections}
-            showsVerticalScrollIndicator={false}
-            // Đặt tường minh: Android mặc định tắt, iOS mặc định bật.
-            stickySectionHeadersEnabled
-          />
+          {/* Lớp mờ chỉ trùm danh sách, không trùm hàng tab bên dưới. */}
+          <Animated.View
+            // `opacity: 0` trong React Native KHÔNG chặn chạm. Không khoá lại
+            // thì trong lúc nội dung đang mờ, chạm trúng một dòng không nhìn
+            // thấy sẽ mở chi tiết của đơn thuộc tab cũ.
+            pointerEvents={isLoading ? 'none' : 'auto'}
+            style={[styles.listFill, contentStyle]}
+          >
+            <SectionList
+              ListEmptyComponent={
+                // Đang tải trang đầu thì chưa kết luận là rỗng, tránh nháy màn
+                // hình rỗng rồi danh sách mới hiện ra.
+                isLoading ? undefined : (
+                  <RequestsEmpty
+                    isFiltered={isFiltered}
+                    onPressCreate={onCreateRequest}
+                  />
+                )
+              }
+              ListFooterComponent={
+                isLoadingMore ? (
+                  <ActivityIndicator
+                    color={Colors.blue04}
+                    style={styles.loading}
+                  />
+                ) : undefined
+              }
+              contentContainerStyle={[styles.content, listContentStyle]}
+              keyExtractor={keyExtractor}
+              onEndReached={onEndReached}
+              onEndReachedThreshold={END_REACHED_THRESHOLD}
+              onScroll={onScroll}
+              renderItem={renderItem}
+              renderSectionHeader={renderSectionHeader}
+              scrollEventThrottle={SCROLL_EVENT_THROTTLE}
+              sections={sections}
+              showsVerticalScrollIndicator={false}
+              // Đặt tường minh: Android mặc định tắt, iOS mặc định bật.
+              stickySectionHeadersEnabled
+            />
+          </Animated.View>
 
           <Animated.View
             onLayout={onTabsLayout}
@@ -101,17 +132,17 @@ const styles = StyleSheet.create({
   content: {
     paddingBottom: ScaleSize(24),
   },
-  empty: {
-    color: Colors.gray24,
-    fontSize: ScaleSize(14),
-    paddingTop: ScaleSize(32),
-    textAlign: 'center',
-  },
   // Xén phần hàng tab đã trượt ra khỏi mép trên, không cho nó đè lên hàng chip
   // lọc phía trên.
   listArea: {
     flex: 1,
     overflow: 'hidden',
+  },
+  listFill: {
+    flex: 1,
+  },
+  loading: {
+    paddingVertical: ScaleSize(16),
   },
   // Hàng tab đè lên đầu danh sách chứ không chiếm chỗ trong bố cục — có thế mới
   // trượt nó bằng `transform` mà không phải animate chiều cao. Nền đục để nội

@@ -14,6 +14,7 @@ const imageNames = {
   ic_logo_login: 'ic_logo_login',
   ic_network_error: 'ic_network_error',
   ic_outlet_close_white: 'ic_outlet_close_white',
+  ic_request_empty: 'ic_request_empty',
 } as const satisfies Record<string, ImageName>;
 
 export default imageNames;

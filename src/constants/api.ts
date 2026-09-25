@@ -17,4 +17,7 @@ export const EndPoints = {
   HOME: {
     homeInfo: 'v1/home',
   },
+  REQUESTS: {
+    list: (request: string) => `v1/request${request}`,
+  },
 };

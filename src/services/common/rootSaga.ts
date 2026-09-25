@@ -5,6 +5,7 @@ import { appSaga } from '@services/slices/app/appSaga';
 import { attendanceSaga } from '@services/slices/attendance/attendanceSaga';
 import { authSaga } from '@services/slices/auth/authSaga';
 import { homeSaga } from '@services/slices/home/homeSaga';
+import { requestsSaga } from '@services/slices/requests/requestsSaga';
 export function* rootSaga() {
   yield all([
     fork(appSaga),
@@ -12,5 +13,6 @@ export function* rootSaga() {
     fork(accountSaga),
     fork(attendanceSaga),
     fork(homeSaga),
+    fork(requestsSaga),
   ]);
 }

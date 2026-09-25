@@ -781,7 +781,17 @@
       "status_pending": "Pending",
       "status_approved": "Approved",
       "status_rejected": "Rejected",
-      "empty": "No requests in this tab yet",
+      "empty": {
+        "all": {
+          "title": "No requests yet",
+          "description": "You haven't created any requests. Create one to ask for annual leave, sick leave or any other request type.",
+          "action": "Create request"
+        },
+        "filtered": {
+          "title": "No requests match",
+          "description": "Try another tab or clear some filters to see more requests."
+        }
+      },
       "filter_title": "Filters",
       "filter_reset": "Reset",
       "filter_all": "All",
