@@ -11,11 +11,10 @@ import { useHome } from '@hooks';
 
 function Home() {
   const {
-    balance,
+    homeInfo,
     employee,
     greetingKey,
     headerHeight,
-    notifications,
     onCheckOut,
     onHeaderLayout,
     onPressBalance,
@@ -43,9 +42,9 @@ function Home() {
         <HeaderOverlap headerHeight={headerHeight} />
         <ShiftCard onCheckOut={onCheckOut} shift={shift} />
         <QuickActions onPressAction={onPressQuickAction} />
-        <LeaveSummary balance={balance} onPress={onPressBalance} />
+        <LeaveSummary data={homeInfo?.leaveSummary} onPress={onPressBalance} />
         <NotificationsSection
-          notifications={notifications}
+          notifications={homeInfo?.notifications}
           onPressSeeAll={onPressNotificationCenter}
         />
       </ScrollView>

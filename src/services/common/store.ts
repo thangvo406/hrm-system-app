@@ -20,6 +20,7 @@ import { accountReducer } from '@services/slices/account/accountSlice';
 import { appReducer } from '@services/slices/app/appSlice';
 import { attendanceReducer } from '@services/slices/attendance/attendanceSlice';
 import { authReducer } from '@services/slices/auth/authSlice';
+import { homeReducer } from '@services/slices/home/homeSlice';
 
 const reduxStorage: Storage = {
   getItem: key => Promise.resolve(AppStorage.getString(key) ?? undefined),
@@ -38,6 +39,7 @@ const rootReducer = combineReducers({
   app: appReducer,
   attendance: attendanceReducer,
   auth: authReducer,
+  home: homeReducer,
 });
 
 const persistConfig = {

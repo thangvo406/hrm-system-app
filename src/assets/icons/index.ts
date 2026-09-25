@@ -38,6 +38,7 @@ import Ic_mailIcon from './ic_mail.svg';
 import Ic_megaphoneIcon from './ic_megaphone.svg';
 import Ic_messageIcon from './ic_message.svg';
 import Ic_minus_circleIcon from './ic_minus_circle.svg';
+import Ic_notify_grayIcon from './ic_notify_gray.svg';
 import Ic_notify_read_allIcon from './ic_notify_read_all.svg';
 import Ic_paperclipIcon from './ic_paperclip.svg';
 import Ic_phoneIcon from './ic_phone.svg';
@@ -107,6 +108,7 @@ const icons = {
   ic_megaphone: Ic_megaphoneIcon,
   ic_message: Ic_messageIcon,
   ic_minus_circle: Ic_minus_circleIcon,
+  ic_notify_gray: Ic_notify_grayIcon,
   ic_notify_read_all: Ic_notify_read_allIcon,
   ic_paperclip: Ic_paperclipIcon,
   ic_phone: Ic_phoneIcon,

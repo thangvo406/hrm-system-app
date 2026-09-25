@@ -1,10 +1,9 @@
 import type { LayoutChangeEvent } from 'react-native';
-import type {
-  THomeBalance,
-  THomeEmployee,
-  THomeNotification,
-  THomeShift,
-  TShiftPunctuality,
+import {
+  IResponseHomeInfo,
+  type THomeEmployee,
+  type THomeShift,
+  type TShiftPunctuality,
 } from '@type/home';
 
 import AppNavigator from '@navigation/AppNavigator';
@@ -20,6 +19,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { getProfileRequest } from '@services/slices/account/accountSlice';
 import { getAttendanceInfoRequest } from '@services/slices/attendance/attendanceSlice';
+import { getHomeInfoRequest } from '@services/slices/home/homeSlice';
 
 const MORNING_END_HOUR = 12;
 const AFTERNOON_END_HOUR = 18;
@@ -44,32 +44,26 @@ const MOCK_EMPLOYEE: THomeEmployee = {
   unreadNotifications: 3,
 };
 
-const MOCK_BALANCE: THomeBalance = {
-  pendingRequests: 2,
-  remainingLeaveDays: 12,
-  totalLeaveDays: 12,
-};
-
-const MOCK_NOTIFICATIONS: readonly THomeNotification[] = [
-  {
-    icon: 'ic_megaphone',
-    id: 'notify-attendance-policy',
-    needsAction: true,
-    source: 'Phòng Nhân sự',
-    timeAgo: '2 giờ trước',
-    title: 'Quy định chấm công từ 01/10',
-    tone: 'urgent',
-  },
-  {
-    icon: 'ic_check',
-    id: 'notify-leave-approved',
-    needsAction: false,
-    source: 'Trần Quốc Hưng',
-    timeAgo: 'Hôm qua',
-    title: 'Đơn nghỉ phép 24–25/09 đã được duyệt',
-    tone: 'success',
-  },
-];
+// const MOCK_NOTIFICATIONS: readonly THomeNotification[] = [
+//   {
+//     icon: 'ic_megaphone',
+//     id: 'notify-attendance-policy',
+//     needsAction: true,
+//     source: 'Phòng Nhân sự',
+//     timeAgo: '2 giờ trước',
+//     title: 'Quy định chấm công từ 01/10',
+//     tone: 'urgent',
+//   },
+//   {
+//     icon: 'ic_check',
+//     id: 'notify-leave-approved',
+//     needsAction: false,
+//     source: 'Trần Quốc Hưng',
+//     timeAgo: 'Hôm qua',
+//     title: 'Đơn nghỉ phép 24–25/09 đã được duyệt',
+//     tone: 'success',
+//   },
+// ];
 
 // ──────────────────────────────────────────────────────────────────────────────
 
@@ -109,11 +103,8 @@ export function useHome() {
   const workDate = useAppSelector(AttendanceSelector.getWorkDate);
   const profile = useAppSelector(AccountSelector.getProfile);
   const attendanceInfo = useAppSelector(AttendanceSelector.getAttendanceInfo);
+  const [homeInfo, setHomeInfo] = useState<IResponseHomeInfo | undefined>();
 
-  /**
-   * Tên và chữ viết tắt lấy thẳng từ redux (`account.profile`, do
-   * `getProfileRequest` nạp mỗi lần tab này được focus), giống màn Cá nhân.
-   */
   const employee = useMemo<THomeEmployee>(
     () => ({
       ...MOCK_EMPLOYEE,
@@ -143,21 +134,22 @@ export function useHome() {
     };
   }, [checkInAt, checkOutAt, t, attendanceInfo?.office, workDate]);
 
-  // Ảnh nền navy phải trải liền từ header xuống dải `HeaderOverlap`, mà hai
-  // view đó nằm ở hai cây khác nhau (header ghim cố định, dải nằm trong vùng
-  // cuộn). Phải đo header ở đây rồi đưa xuống cả hai để chúng vẽ cùng một khung
-  // ảnh — xem ghi chú ở `screens/Home/layout.ts`.
   const onHeaderLayout = useCallback((event: LayoutChangeEvent) => {
     setHeaderHeight(event.nativeEvent.layout.height);
   }, []);
 
-  // Header nền navy nên status bar phải sáng; trả lại dark-content khi rời tab
-  // để các màn nền trắng không mất chữ.
   useFocusEffect(
     useCallback(() => {
       StatusBar.setBarStyle('light-content');
       dispatch(getProfileRequest());
       dispatch(getAttendanceInfoRequest());
+      dispatch(
+        getHomeInfoRequest({
+          onSuccess: data => {
+            setHomeInfo(data);
+          },
+        }),
+      );
       return () => StatusBar.setBarStyle('dark-content');
     }, []),
   );
@@ -179,16 +171,15 @@ export function useHome() {
   }, []);
 
   return {
-    balance: MOCK_BALANCE,
     employee,
     greetingKey: getGreetingKey(getCurrentTime().hour()),
     headerHeight,
-    notifications: MOCK_NOTIFICATIONS,
     onCheckOut,
     onHeaderLayout,
     onPressBalance,
     onPressNotificationCenter,
     onPressQuickAction,
     shift,
+    homeInfo,
   };
 }

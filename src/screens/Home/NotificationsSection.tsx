@@ -7,9 +7,10 @@ import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import EmptyView from '@components/EmptyView';
 
 type Properties = {
-  readonly notifications: readonly THomeNotification[];
+  readonly notifications?: readonly THomeNotification[];
   readonly onPressSeeAll: () => void;
 };
 
@@ -25,10 +26,17 @@ function NotificationsSection({ notifications, onPressSeeAll }: Properties) {
           <Text style={styles.seeAll}>{t('home.notifications_see_all')}</Text>
         </AppButton>
       </View>
-
-      {notifications.map(notification => (
-        <NotificationRow key={notification.id} notification={notification} />
-      ))}
+      {notifications?.length ? (
+        notifications?.map(notification => (
+          <NotificationRow key={notification.id} notification={notification} />
+        ))
+      ) : (
+        <EmptyView
+          icon="ic_notify_gray"
+          type="svg"
+          desc={t('notifications.empty_home')}
+        />
+      )}
     </View>
   );
 }

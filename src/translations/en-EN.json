@@ -41,7 +41,8 @@
       "action_detail": "Details",
       "action_participate": "Take part",
       "meta": "{{source}} · {{at}}",
-      "empty": "Nothing here right now"
+      "empty": "Nothing here right now",
+      "empty_home": "No new notifications"
     },
     "pay_card": {
       "title": "Coop Pay",
@@ -763,7 +764,6 @@
     },
     "requests": {
       "title": "Requests",
-      "subtitle": "Create and track your requests",
       "create": "New request",
       "type_leave": "Annual leave",
       "type_late_arrival": "Late arrival",

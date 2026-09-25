@@ -516,7 +516,6 @@
     },
     "requests": {
       "title": "신청서",
-      "subtitle": "신청서를 작성하고 진행 상황을 확인하세요",
       "create": "신청서 작성",
       "type_leave": "연차",
       "type_late_arrival": "지각",
@@ -674,7 +673,8 @@
       "action_detail": "자세히",
       "action_participate": "참여",
       "meta": "{{source}} · {{at}}",
-      "empty": "표시할 알림이 없습니다"
+      "empty": "표시할 알림이 없습니다",
+      "empty_home": "새 알림이 없습니다"
     },
     "pay_card": {
       "title": "생협페이",
@@ -1137,7 +1137,6 @@
       },
       "transaction_titles": {
         "balance_charge": "잔액 충전",
-        "order_checkout": "주문 결제",
         "pos_payment": "POS 결제",
         "manual_balance_adjustment": "잔액 조정",
         "pay_money_withdrawal": "출금",
@@ -1241,7 +1240,6 @@
       "show_less": "접기",
       "reorder": "재주문",
       "go_smart_order": "스마트오더 홈",
-      "contact_support": "고객 지원 문의",
       "payment_methods": {
         "pay_money": "생협페이머니",
         "point": "생협 포인트",

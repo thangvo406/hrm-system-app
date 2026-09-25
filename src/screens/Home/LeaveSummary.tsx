@@ -1,4 +1,4 @@
-import type { THomeBalance } from '@type/home';
+import type { IResponseLeaveSummary } from '@type/home';
 
 import AppButton from '@components/AppButton';
 import Image from '@components/Image';
@@ -12,15 +12,15 @@ const CHEVRON_BUTTON_SIZE = ScaleSize(32);
 const CHEVRON_ICON_SIZE = ScaleSize(16);
 
 /** Tiếng Việt dùng dấu phẩy thập phân: 6.5 ngày phép đọc là "6,5". */
-const formatDays = (days: number) => String(days).replace('.', ',');
+const formatDays = (days?: number) => String(days).replace('.', ',');
 
 type Properties = {
-  readonly balance: THomeBalance;
+  readonly data?: IResponseLeaveSummary;
   readonly onPress: () => void;
 };
 
 /** Dải tóm tắt: số ngày phép còn lại và số đơn đang chờ duyệt. */
-function LeaveSummary({ balance, onPress }: Properties) {
+function LeaveSummary({ data, onPress }: Properties) {
   const { t } = useTranslation();
 
   return (
@@ -33,10 +33,10 @@ function LeaveSummary({ balance, onPress }: Properties) {
         <Text style={styles.label}>{t('home.leave_remaining_label')}</Text>
         <View style={styles.valueRow}>
           <Text style={styles.value}>
-            {formatDays(balance.remainingLeaveDays)}
+            {formatDays(data?.remainingLeaveDays)}
           </Text>
           <Text style={styles.unit}>
-            {t('home.leave_remaining_total', { total: balance.totalLeaveDays })}
+            {t('home.leave_remaining_total', { total: data?.totalLeaveDays })}
           </Text>
         </View>
       </View>
@@ -45,7 +45,7 @@ function LeaveSummary({ balance, onPress }: Properties) {
         <Text style={styles.label}>{t('home.pending_requests_label')}</Text>
         <View style={styles.valueRow}>
           <Text style={[styles.value, styles.valuePending]}>
-            {balance.pendingRequests}
+            {data?.pendingRequests}
           </Text>
           <Text style={styles.unit}>{t('home.pending_requests_unit')}</Text>
         </View>

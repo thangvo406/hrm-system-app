@@ -14,4 +14,7 @@ export const EndPoints = {
     attendanceInfo: 'v1/attendance/today',
     histories: (request: string) => `v1/attendance/history${request}`,
   },
+  HOME: {
+    homeInfo: 'v1/home',
+  },
 };

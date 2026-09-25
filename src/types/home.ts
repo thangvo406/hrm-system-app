@@ -1,5 +1,6 @@
 import type { IconName } from '@assets/icons';
 import type { Paths } from '@navigation/paths';
+import { AppCallback } from './common';
 
 /** Nhân viên đang đăng nhập, hiển thị ở header màn Trang chủ. */
 export type THomeEmployee = {
@@ -36,7 +37,7 @@ export type TQuickAction = {
 };
 
 /** Số ngày phép và số đơn đang chờ duyệt. */
-export type THomeBalance = {
+export type IResponseLeaveSummary = {
   readonly pendingRequests: number;
   readonly remainingLeaveDays: number;
   readonly totalLeaveDays: number;
@@ -44,6 +45,12 @@ export type THomeBalance = {
 
 export type THomeNotificationTone = 'success' | 'urgent';
 
+export interface IResponseHomeInfo {
+  readonly leaveSummary?: IResponseLeaveSummary;
+  readonly notifications?: THomeNotification[];
+}
+
+export type IRequestGetHomeInfo = AppCallback<IResponseHomeInfo>;
 export type THomeNotification = {
   readonly icon: IconName;
   readonly id: string;

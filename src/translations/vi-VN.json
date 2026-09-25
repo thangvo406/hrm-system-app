@@ -41,7 +41,8 @@
       "action_detail": "Chi tiết",
       "action_participate": "Tham gia",
       "meta": "{{source}} · {{at}}",
-      "empty": "Không có thông báo nào ở mục này"
+      "empty": "Không có thông báo nào ở mục này",
+      "empty_home": "Không có thông báo mới"
     },
     "pay_card": {
       "title": "Coop Pay",
