@@ -4,25 +4,27 @@ import type { TNotificationItem } from '@type/notifications';
 import NotificationCard from './NotificationCard';
 import NotificationsHeader from './NotificationsHeader';
 import { Colors } from '@constants';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { ScaleSize } from '@kits/core';
 import { useCallback } from 'react';
 import { useNotifications } from '@hooks';
 import { useTranslation } from 'react-i18next';
+import EmptyView from '@components/EmptyView';
+
+const END_REACHED_THRESHOLD = 0.5;
 
 const keyExtractor = (item: TNotificationItem) => item.id;
 
-/**
- * Màn Thông báo. Danh sách giữ nguyên thứ tự thời gian, còn việc thông báo nào
- * cần làm gì thì do chính thẻ thể hiện — xem `NOTIFICATION_ACTION_VIEWS`.
- */
 function Notifications() {
   const {
     counts,
     filter,
+    isLoading,
+    isLoadingMore,
     items,
     onAcknowledge,
     onChangeFilter,
+    onEndReached,
     onOpen,
     onReadAll,
   } = useNotifications();
@@ -49,16 +51,31 @@ function Notifications() {
       />
 
       <View style={styles.sheet}>
-        <FlatList
-          ListEmptyComponent={
-            <Text style={styles.empty}>{t('notifications.empty')}</Text>
-          }
-          contentContainerStyle={styles.content}
-          data={items}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-        />
+        {items?.length > 0 && !isLoading ? (
+          <FlatList
+            ListFooterComponent={
+              isLoadingMore ? (
+                <ActivityIndicator
+                  color={Colors.blue04}
+                  style={styles.loading}
+                />
+              ) : undefined
+            }
+            contentContainerStyle={styles.content}
+            data={items}
+            keyExtractor={keyExtractor}
+            onEndReached={onEndReached}
+            onEndReachedThreshold={END_REACHED_THRESHOLD}
+            renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
+          />
+        ) : (
+          <EmptyView
+            icon="ic_notify_gray"
+            type="svg"
+            desc={t('notifications.empty_home')}
+          />
+        )}
       </View>
     </View>
   );
@@ -81,6 +98,9 @@ const styles = StyleSheet.create({
     fontSize: ScaleSize(14),
     paddingTop: ScaleSize(32),
     textAlign: 'center',
+  },
+  loading: {
+    paddingVertical: ScaleSize(16),
   },
   // Tấm nền bo hai góc trên, trùm lên mép dưới dải navy đúng như thiết kế.
   sheet: {

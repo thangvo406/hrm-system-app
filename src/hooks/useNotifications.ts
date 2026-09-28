@@ -1,137 +1,166 @@
 import type {
+  TNotificationCounts,
   TNotificationFilter,
   TNotificationItem,
 } from '@type/notifications';
 
-import { NOTIFICATION_ACTION_VIEWS } from '@screens/Notifications/notificationActions';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useAppDispatch } from '@services/common/storeHooks';
+import {
+  getNotificationCountsRequest,
+  getNotificationsRequest,
+} from '@services/slices/notifications/notificationsSlice';
 
-// ─── Mock data ────────────────────────────────────────────────────────────────
-// Dữ liệu dựng UI, chưa nối API. Khi có endpoint thật thì thay khối này bằng
-// saga callback (xem flow ở .cursorrules §5).
+const PAGE_SIZE = 20;
+const FIRST_PAGE = 0;
+const PAGE_STEP = 1;
 
-const MOCK_NOTIFICATIONS: readonly TNotificationItem[] = [
-  {
-    action: 'acknowledge',
-    at: '2 giờ trước',
-    body: 'Giờ vào ca linh hoạt 08:00–09:00, bắt buộc chấm công GPS/QR tại văn phòng.',
-    icon: 'ic_megaphone',
-    id: 'notif-policy',
-    isRead: false,
-    title: 'Quy định chấm công & giờ làm linh hoạt từ 01/10',
-    tone: 'red',
-  },
-  {
-    action: 'open',
-    at: 'Hôm qua, 16:40',
-    body: 'Thực nhận 17.857.000 đ · đã chuyển khoản',
-    icon: 'ic_credit_card',
-    id: 'notif-payslip',
-    isRead: false,
-    source: 'Phòng Nhân sự',
-    title: 'Phiếu lương kỳ 08/2026 đã phát hành',
-    tone: 'blue',
-  },
-  {
-    action: 'open',
-    at: 'Hôm qua, 09:12',
-    body: 'Trần Quốc Hưng đã duyệt · quỹ phép còn 6,5 ngày',
-    icon: 'ic_check_circle',
-    id: 'notif-leave',
-    isRead: false,
-    title: 'Đơn nghỉ phép 24–25/09 đã được duyệt',
-    tone: 'green',
-  },
-  {
-    action: 'open',
-    at: '3 ngày trước',
-    body: 'Hình ảnh và chia sẻ từ đội ngũ tại lễ khai trương ngày 12/09.',
-    icon: 'ic_image',
-    id: 'notif-news',
-    isRead: true,
-    source: 'Truyền thông nội bộ',
-    title: 'Specom khai trương văn phòng Đà Nẵng',
-    tone: 'neutral',
-  },
-  {
-    action: 'participate',
-    at: 'Còn 4 ngày · ẩn danh',
-    body: 'Còn 4 ngày · ẩn danh',
-    icon: 'ic_document',
-    id: 'notif-survey',
-    isRead: true,
-    title: 'Khảo sát hài lòng Q3/2026',
-    tone: 'purple',
-  },
-];
+const ALL_FILTER = 'all';
 
-// ──────────────────────────────────────────────────────────────────────────────
-
-const matchesFilter = (
-  item: TNotificationItem,
-  filter: TNotificationFilter,
-) => {
-  switch (filter) {
-    case 'needs_action': {
-      return NOTIFICATION_ACTION_VIEWS[item.action].isBlocking && !item.isRead;
-    }
-    case 'unread': {
-      return !item.isRead;
-    }
-    default: {
-      return true;
-    }
-  }
+const EMPTY_COUNTS: TNotificationCounts = {
+  all: 0,
+  needs_action: 0,
+  unread: 0,
 };
 
 /**
- * Toàn bộ logic màn Thông báo: nhóm đang lọc, số đếm cho từng nhóm và việc
- * đánh dấu đã đọc.
+ * Toàn bộ logic màn Thông báo: nhóm đang lọc, số đếm cho từng nhóm, phân trang
+ * và việc đánh dấu đã đọc.
  */
 export function useNotifications() {
-  const [filter, setFilter] = useState<TNotificationFilter>('all');
+  const dispatch = useAppDispatch();
+
+  const [filter, setFilter] = useState<TNotificationFilter>(ALL_FILTER);
+  const [loaded, setLoaded] = useState<readonly TNotificationItem[]>([]);
+  const [counts, setCounts] = useState<TNotificationCounts>(EMPTY_COUNTS);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  // Đánh dấu đã đọc ngay tại máy thay vì sửa mảng server trả về: dữ liệu tải
+  // xuống phải giữ nguyên để trang sau nối vào không lệch với trang trước.
   const [readIds, setReadIds] = useState<ReadonlySet<string>>(
     () => new Set<string>(),
   );
 
-  // Đọc rồi thì giữ trong một tập id riêng thay vì sửa `MOCK_NOTIFICATIONS`:
-  // dữ liệu gốc phải bất biến để khi nối API chỉ cần thay đúng mảng đó.
-  const notifications = useMemo(
-    () =>
-      MOCK_NOTIFICATIONS.map(item =>
-        readIds.has(item.id) ? { ...item, isRead: true } : item,
-      ),
-    [readIds],
+  const pageRef = useRef(FIRST_PAGE);
+  const isLastRef = useRef(false);
+  const isLoadingRef = useRef(false);
+  const isMountedRef = useRef(true);
+
+  useEffect(
+    () => () => {
+      isMountedRef.current = false;
+    },
+    [],
   );
 
-  const counts = useMemo(
-    () => ({
-      all: notifications.length,
-      needs_action: notifications.filter(item =>
-        matchesFilter(item, 'needs_action'),
-      ).length,
-      unread: notifications.filter(item => matchesFilter(item, 'unread'))
-        .length,
-    }),
-    [notifications],
+  const loadNotifications = useCallback(
+    (page: number) => {
+      const isFirstPage = page === FIRST_PAGE;
+      isLoadingRef.current = true;
+
+      if (isFirstPage) {
+        pageRef.current = FIRST_PAGE;
+        isLastRef.current = false;
+        setIsLoading(true);
+      } else {
+        setIsLoadingMore(true);
+      }
+
+      const stopLoading = () => {
+        // Hạ cờ ref kể cả khi đã unmount, còn state thì chỉ đụng khi còn sống.
+        isLoadingRef.current = false;
+        if (isMountedRef.current) {
+          setIsLoading(false);
+          setIsLoadingMore(false);
+        }
+      };
+
+      dispatch(
+        getNotificationsRequest({
+          filter: filter === ALL_FILTER ? '' : filter,
+          page,
+          size: PAGE_SIZE,
+          onFailure: stopLoading,
+          onSuccess: response => {
+            stopLoading();
+            if (!isMountedRef.current) {
+              return;
+            }
+            pageRef.current = response.page;
+            isLastRef.current = response.last;
+            setLoaded(previous =>
+              isFirstPage
+                ? response.content
+                : [...previous, ...response.content],
+            );
+          },
+        }),
+      );
+    },
+    [dispatch, filter],
   );
+
+  // Con số trên hàng lọc phải trả lời "bấm nhóm này thì còn bao nhiêu", nên nó
+  // không phụ thuộc `filter` và cũng không suy được từ trang đang xem — trang
+  // đó đã bị server lọc theo đúng nhóm đang chọn.
+  const loadCounts = useCallback(() => {
+    dispatch(
+      getNotificationCountsRequest({
+        onSuccess: next => {
+          if (isMountedRef.current) {
+            setCounts(next);
+          }
+        },
+      }),
+    );
+  }, [dispatch]);
+
+  // Tải lại khi mở màn và mỗi lần đổi nhóm lọc — `loadNotifications` đổi theo
+  // `filter`.
+  useFocusEffect(
+    useCallback(() => {
+      loadNotifications(FIRST_PAGE);
+      loadCounts();
+    }, [loadCounts, loadNotifications]),
+  );
+
+  const onEndReached = useCallback(() => {
+    if (isLoadingRef.current || isLastRef.current || loaded.length === 0) {
+      return;
+    }
+    loadNotifications(pageRef.current + PAGE_STEP);
+  }, [loadNotifications, loaded.length]);
 
   const items = useMemo(
-    () => notifications.filter(item => matchesFilter(item, filter)),
-    [filter, notifications],
+    () =>
+      loaded.map(item =>
+        readIds.has(item.id) ? { ...item, isRead: true } : item,
+      ),
+    [loaded, readIds],
   );
 
   const onChangeFilter = useCallback((next: TNotificationFilter) => {
     setFilter(next);
   }, []);
 
-  const onAcknowledge = useCallback((id: string) => {
-    setReadIds(current => new Set([...current, id]));
-  }, []);
+  // Đọc xong là số của nhóm "Chưa đọc" và "Cần xác nhận" đổi theo, mà hai con
+  // số đó nay do server đếm — nên phải hỏi lại chứ không tự trừ ở máy.
+  const onAcknowledge = useCallback(
+    (id: string) => {
+      setReadIds(current => new Set([...current, id]));
+      loadCounts();
+    },
+    [loadCounts],
+  );
 
   const onReadAll = useCallback(() => {
-    setReadIds(new Set(MOCK_NOTIFICATIONS.map(item => item.id)));
-  }, []);
+    setReadIds(
+      current => new Set([...current, ...loaded.map(item => item.id)]),
+    );
+    loadCounts();
+  }, [loadCounts, loaded]);
 
   // Chưa có màn đích cho từng loại thông báo: chỗ nối sẵn cho sau.
   const onOpen = useCallback(() => {}, []);
@@ -139,9 +168,12 @@ export function useNotifications() {
   return {
     counts,
     filter,
+    isLoading,
+    isLoadingMore,
     items,
     onAcknowledge,
     onChangeFilter,
+    onEndReached,
     onOpen,
     onReadAll,
   };

@@ -12,11 +12,7 @@ import AppNavigator from '@navigation/AppNavigator';
 import Geolocation from '@react-native-community/geolocation';
 import { AccountSelector, AttendanceSelector } from '@services/selectors';
 import { AppConstants } from '@constants';
-import {
-  getCurrentTime,
-  getTimeByTimezone,
-  ISO_DATE_FORMAT,
-} from '@utils/date';
+import { getTimeByTimezone, isTodayWorkDate } from '@utils/date';
 import {
   checkInRequest,
   checkOutRequest,
@@ -54,7 +50,7 @@ export function useAttendance() {
 
   // Dấu chấm công được persist nên phải chốt theo ngày: mở app sáng hôm sau là
   // ngày công mới, chưa có dấu nào.
-  const isToday = workDate === getCurrentTime().format(ISO_DATE_FORMAT);
+  const isToday = isTodayWorkDate(workDate);
   const checkedInAt = isToday ? storedCheckInAt : undefined;
   const checkedOutAt = isToday ? storedCheckOutAt : undefined;
 

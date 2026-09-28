@@ -19,9 +19,9 @@ export function AppTabNavigator() {
       initialRouteName={Paths.Home}
       tabBar={renderTabBar}
     >
-      <Tab.Screen component={Screens.Home} name={Paths.Home} />
       <Tab.Screen component={Screens.Attendance} name={Paths.Attendance} />
       <Tab.Screen component={Screens.Requests} name={Paths.Requests} />
+      <Tab.Screen component={Screens.Home} name={Paths.Home} />
       <Tab.Screen
         component={Screens.Notifications}
         name={Paths.Notifications}

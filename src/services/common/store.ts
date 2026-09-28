@@ -21,6 +21,7 @@ import { appReducer } from '@services/slices/app/appSlice';
 import { attendanceReducer } from '@services/slices/attendance/attendanceSlice';
 import { authReducer } from '@services/slices/auth/authSlice';
 import { homeReducer } from '@services/slices/home/homeSlice';
+import { notificationsReducer } from '@services/slices/notifications/notificationsSlice';
 import { requestsReducer } from '@services/slices/requests/requestsSlice';
 
 const reduxStorage: Storage = {
@@ -41,6 +42,7 @@ const rootReducer = combineReducers({
   attendance: attendanceReducer,
   auth: authReducer,
   home: homeReducer,
+  notifications: notificationsReducer,
   requests: requestsReducer,
 });
 

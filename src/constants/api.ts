@@ -20,4 +20,7 @@ export const EndPoints = {
   REQUESTS: {
     list: (request: string) => `v1/request${request}`,
   },
+  NOTIFICATIONS: {
+    list: (request: string) => `v1/notification${request}`,
+  },
 };

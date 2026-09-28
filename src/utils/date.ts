@@ -421,6 +421,9 @@ export const formatTime = (total: number) => {
   return segments.map(segment => String(segment).padStart(2, '0')).join(':');
 };
 
+export const isTodayWorkDate = (workDate?: string) => {
+  return workDate === getCurrentTime().format(ISO_DATE_FORMAT);
+};
 export const isToday = (date: any) => {
   const now = getCurrentTime();
   return (
