@@ -2,8 +2,8 @@ name: iOS Release Build (TestFlight)
 
 on:
   push:
-    branches:
-      - master
+    # branches:
+    #   - master
   # Cho phép chạy lại riêng iOS từ tab Actions mà không kéo theo Android.
   workflow_dispatch:
 

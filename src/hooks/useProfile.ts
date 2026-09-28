@@ -4,12 +4,13 @@ import type { TProfileEmployee, TProfileMenuSection } from '@type/profile';
 import AppNavigator from '@navigation/AppNavigator';
 import Selection from '@dialogs/Selection';
 import { AccountSelector } from '@services/selectors';
-import { AppConstants } from '@constants';
 import { AppState, Linking } from 'react-native';
 import { AppStacks, Paths } from '@navigation/paths';
 import { logout } from '@services/slices/auth/authSlice';
+import { DeviceUtils } from '@kits/core/utils';
 import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCodePush } from 'react-native-codepush-sdk';
 import { useI18n } from '@hooks/language/useI18n';
 import { useTranslation } from 'react-i18next';
 import {
@@ -99,6 +100,7 @@ const MENU_PATHS: Readonly<Record<string, Paths | undefined>> = {
 
 export function useProfile() {
   const dispatch = useAppDispatch();
+  const { codePush } = useCodePush();
   const profile = useAppSelector(AccountSelector.getProfile);
   const { t } = useTranslation();
   const { changeLanguage, currentLanguage } = useI18n();
@@ -106,6 +108,32 @@ export function useProfile() {
   const [isNotificationOn, setIsNotificationOn] = useState<boolean | undefined>(
     undefined,
   );
+
+  const [bundleLabel, setBundleLabel] = useState(
+    DeviceUtils.STORE_BUNDLE_LABEL,
+  );
+  const isMountedRef = useRef(true);
+
+  useEffect(
+    () => () => {
+      isMountedRef.current = false;
+    },
+    [],
+  );
+
+  /**
+   * Nhãn bundle CodePush phải hỏi qua SDK nên là việc bất đồng bộ, còn phiên
+   * bản app thì đọc thẳng được từ bản build.
+   */
+  useEffect(() => {
+    const loadBundleLabel = async () => {
+      const label = await DeviceUtils.getBundleLabel(codePush);
+      if (isMountedRef.current) {
+        setBundleLabel(label);
+      }
+    };
+    void loadBundleLabel();
+  }, [codePush]);
 
   /**
    * Quyền thông báo đọc lại mỗi lần app quay về foreground: dòng "Thông báo"
@@ -157,9 +185,12 @@ export function useProfile() {
                 ? 'profile.notification_on'
                 : 'profile.notification_off',
             ),
-      version: AppConstants.APP_VERSION,
+      version: DeviceUtils.formatAppVersion(
+        DeviceUtils.getAppVersion(),
+        bundleLabel,
+      ),
     }),
-    [currentLanguage, isNotificationOn, t],
+    [bundleLabel, currentLanguage, isNotificationOn, t],
   );
 
   /** Bộ chọn ngôn ngữ: bottom sheet dùng chung, chọn xong đổi luôn. */

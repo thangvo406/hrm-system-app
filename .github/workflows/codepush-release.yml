@@ -1,0 +1,547 @@
+name: Build Beta Release
+
+# Build JS bundle rồi upload lên code-push server, tức phát hành bản vá chỉ-JS
+# tới máy user mà không qua store.
+#
+# Flow:
+#   1. Xin JWT OIDC từ GitHub (không có username/password ở bất cứ đâu).
+#   2. GET /admin/deployments/<key>/releases/latest cho từng platform sắp release.
+#   3. appVersion mới = max(latest của các deployment đó) + 1, ghi vào app.json.
+#   4. ./release.sh bundle + zip + upload (script tự xin OIDC token của riêng nó
+#      ngay trước khi upload, vì token chỉ sống ~5 phút mà bundle thì lâu).
+#
+# app.json bị sửa TRONG workspace của run và không commit ngược về repo — server
+# mới là nơi giữ số thật. Nghĩa là app.json trong git sẽ đứng yên trong khi số
+# trên server tăng dần; ai chạy ./release.sh bằng tay cần tự tăng cho khớp.
+#
+# LƯU Ý về appVersion: đây là SỐ THỨ TỰ BUNDLE tăng dần, không phải version
+# native. Máy chỉ tải khi số của nó nhỏ hơn số này.
+#
+# Cấu hình KHÔNG nằm trong file này mà trong env/.dev | env/.prod:
+#   CODEPUSH_SERVER, DEPLOYMENT_KEY_IOS, DEPLOYMENT_KEY_ANDROID
+#   CODEPUSH_OIDC_AUDIENCE — phải khớp GITHUB_OIDC_AUDIENCE của server
+#   (cả hai bên mặc định "codepush-server")
+#
+# AUTH: job khai báo `permissions: id-token: write`, và phía server phải cho
+# repo/ref này vào GITHUB_OIDC_ALLOWED_REPOS/_REFS với GITHUB_OIDC_AUDIENCE khớp.
+
+on:
+  # Mỗi commit vào dev là một bản OTA dev. Muốn dừng thói quen này thì xoá khối
+  # push, workflow vẫn chạy tay được qua tab Actions.
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform cần release'
+        type: choice
+        default: both
+        options:
+          - both
+          - ios
+          - android
+      environment:
+        description: 'File env lấy cấu hình CodePush (env/.dev | env/.prod)'
+        type: choice
+        default: dev
+        options:
+          - dev
+          - prod
+      description:
+        description: 'Ghi chú của bản update (bỏ trống = subject của commit)'
+        type: string
+        default: ''
+      rollout:
+        description: 'Phần trăm thiết bị nhận update (1-100)'
+        type: string
+        default: '100'
+
+# BẮT BUỘC phải xếp hàng: hai run song song cùng đọc /releases/latest ra N, cả
+# hai cùng tính N+1 và cùng upload — deployment nhận hai bản trùng số.
+concurrency:
+  group: codepush-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Build & upload JS bundle
+    # Bundle JS không cần Xcode: `react-native bundle --platform ios` chỉ là
+    # Metro resolve các file .ios.*, chạy tốt trên Linux và rẻ hơn macOS runner.
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      # Bắt buộc: thiếu dòng này thì GitHub không inject
+      # ACTIONS_ID_TOKEN_REQUEST_URL/_TOKEN, không xin được OIDC token nào cả.
+      id-token: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          # Release note lấy commit non-merge gần nhất. Với fetch-depth mặc định
+          # (1) mà HEAD là merge commit thì `git log --no-merges` trả RỖNG vì
+          # cha của nó không được fetch. 50 đủ để lùi qua một chuỗi merge mà
+          # không phải clone toàn bộ lịch sử.
+          fetch-depth: 50
+
+      # Ghi mốc TRƯỚC bước Slack: bước Slack có thể exit 0 sớm khi chưa khai
+      # webhook, ghi chung vào đó là mất luôn mốc thời gian.
+      - name: Ghi mốc thời gian bắt đầu
+        id: timer
+        run: echo "start_ts=$(date +%s)" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve inputs
+        id: cfg
+        env:
+          # Khi trigger là push thì không có inputs — các biến này rỗng và rơi
+          # về mặc định bên dưới.
+          IN_DESCRIPTION: ${{ inputs.description }}
+          IN_ENVIRONMENT: ${{ inputs.environment }}
+          IN_PLATFORM: ${{ inputs.platform }}
+          IN_ROLLOUT: ${{ inputs.rollout }}
+        run: |
+          set -euo pipefail
+
+          PLATFORM_INPUT="${IN_PLATFORM:-both}"
+          ENVIRONMENT="${IN_ENVIRONMENT:-dev}"
+          ROLLOUT="${IN_ROLLOUT:-100}"
+          DESCRIPTION="${IN_DESCRIPTION:-}"
+
+          case "$PLATFORM_INPUT" in
+            both) PLATFORMS="ios android" ;;
+            ios|android) PLATFORMS="$PLATFORM_INPUT" ;;
+            *) echo "::error::platform không hợp lệ: $PLATFORM_INPUT"; exit 1 ;;
+          esac
+
+          ENV_FILE="env/.$ENVIRONMENT"
+          if [ ! -f "$ENV_FILE" ]; then
+            echo "::error::Không tìm thấy $ENV_FILE"
+            exit 1
+          fi
+
+          case "$ROLLOUT" in
+            ''|*[!0-9]*) echo "::error::rollout phải là số nguyên: $ROLLOUT"; exit 1 ;;
+          esac
+          if [ "$ROLLOUT" -lt 1 ] || [ "$ROLLOUT" -gt 100 ]; then
+            echo "::error::rollout phải nằm trong 1-100 (đang là $ROLLOUT)"
+            exit 1
+          fi
+
+          if [ -z "$DESCRIPTION" ]; then
+            # Commit non-merge gần nhất: merge commit ("Merge pull request #42...")
+            # không nói được bản vá này sửa gì, mà đó lại đúng là thứ user đọc
+            # trong dialog update.
+            DESCRIPTION="$(git log -1 --no-merges --pretty=%s)"
+            if [ -z "$DESCRIPTION" ]; then
+              # Cả 50 commit fetch về đều là merge, hoặc repo chỉ có 1 commit
+              # merge duy nhất — thà lấy subject của HEAD còn hơn để trống.
+              DESCRIPTION="$(git log -1 --pretty=%s)"
+            fi
+          fi
+
+          {
+            echo "ENVIRONMENT=$ENVIRONMENT"
+            echo "ENV_FILE=$ENV_FILE"
+            echo "PLATFORMS=$PLATFORMS"
+            echo "ROLLOUT=$ROLLOUT"
+            echo "DESCRIPTION=$DESCRIPTION"
+          } >> "$GITHUB_ENV"
+
+          echo "env_file=$ENV_FILE" >> "$GITHUB_OUTPUT"
+          echo "Sẽ release [$PLATFORMS] từ $ENV_FILE — rollout ${ROLLOUT}% — \"$DESCRIPTION\""
+
+      # Báo NGAY khi bắt đầu, trước cả bước cài đặt: nếu release chết sớm (sai
+      # deployment key, server không phản hồi) thì vẫn có dấu vết là đã có
+      # người trigger.
+      - name: Slack — bắt đầu release
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          # Chưa khai webhook thì bỏ qua, KHÔNG làm đỏ cả build chỉ vì thiếu
+          # thông báo — notify là phụ trợ, không phải điều kiện release.
+          [ -n "${SLACK_WEBHOOK_URL:-}" ] || { echo "chưa khai SLACK_WEBHOOK_URL, bỏ qua"; exit 0; }
+
+          # printf thay vì chuỗi nhiều dòng: chuỗi nhiều dòng trong YAML block
+          # scalar phụ thuộc indent, IDE tự reformat là message dính dấu cách.
+          MSG=$(printf '*Start Build Bundle App*\nplatform: %s\nenvironment: %s\nbranch: %s\ncommit: %s %s\nrollout: %s%%\n<%s|View details>' \
+            "$PLATFORMS" \
+            "$ENVIRONMENT" \
+            "$GITHUB_REF_NAME" \
+            "${GITHUB_SHA::7}" \
+            "$DESCRIPTION" \
+            "$ROLLOUT" \
+            "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}")
+
+          # attachments thay vì text phẳng: chỉ attachment mới có thanh màu dọc
+          # bên trái. jq dựng JSON thay vì nối chuỗi tay — commit message có thể
+          # chứa dấu " hoặc xuống dòng, nối tay là vỡ payload và Slack trả 400.
+          jq -n --arg text "$MSG" --arg color "#ECB22E" \
+            '{attachments: [{color: $color, text: $text, mrkdwn_in: ["text"]}]}' \
+            | curl -sS -X POST -H 'Content-Type: application/json' -d @- "$SLACK_WEBHOOK_URL"
+
+      - name: Load CodePush config từ ${{ steps.cfg.outputs.env_file }}
+        id: load
+        run: |
+          set -euo pipefail
+
+          # KHÔNG `source` file env: giá trị có khoảng trắng (APP_NAME=HRM system
+          # app) sẽ thành lệnh shell. Đọc từng key theo đúng kiểu dotenv thay vì vậy.
+          read_key() {
+            sed -n "s/^[[:space:]]*$1[[:space:]]*=[[:space:]]*//p" "$ENV_FILE" \
+              | tr -d '\r' \
+              | head -n 1 \
+              | sed -e 's/[[:space:]]*$//' -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'\$/\1/"
+          }
+
+          SERVER="$(read_key CODEPUSH_SERVER)"
+          DEPLOYMENT_KEY_IOS="$(read_key DEPLOYMENT_KEY_IOS)"
+          DEPLOYMENT_KEY_ANDROID="$(read_key DEPLOYMENT_KEY_ANDROID)"
+          # Phải khớp GITHUB_OIDC_AUDIENCE phía server; để trống thì dùng mặc
+          # định "codepush-server" (cũng là mặc định của release.sh).
+          OIDC_AUDIENCE="$(read_key CODEPUSH_OIDC_AUDIENCE)"
+
+          # Deployment key nằm trên URL upload, che trước khi bất cứ lệnh nào
+          # có cơ hội in ra.
+          for secret in "$DEPLOYMENT_KEY_IOS" "$DEPLOYMENT_KEY_ANDROID"; do
+            if [ -n "$secret" ]; then
+              echo "::add-mask::$secret"
+            fi
+          done
+
+          missing=""
+          [ -n "$SERVER" ] || missing="$missing CODEPUSH_SERVER"
+
+          # Deployment key tách theo platform: chỉ đòi key của platform sắp release.
+          for platform in $PLATFORMS; do
+            case "$platform" in
+              ios)     [ -n "$DEPLOYMENT_KEY_IOS" ]     || missing="$missing DEPLOYMENT_KEY_IOS" ;;
+              android) [ -n "$DEPLOYMENT_KEY_ANDROID" ] || missing="$missing DEPLOYMENT_KEY_ANDROID" ;;
+            esac
+          done
+
+          if [ -n "$missing" ]; then
+            echo "::error::Thiếu key trong $ENV_FILE:$missing"
+            exit 1
+          fi
+
+          # Kiểm tra ngay ở đây thay vì để bước sau chết với lỗi curl khó hiểu.
+          if [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
+            echo "::error::Không thấy ACTIONS_ID_TOKEN_REQUEST_URL — job thiếu 'permissions: id-token: write'"
+            exit 1
+          fi
+
+          {
+            echo "SERVER=${SERVER%/}"
+            echo "DEPLOYMENT_KEY_IOS=$DEPLOYMENT_KEY_IOS"
+            echo "DEPLOYMENT_KEY_ANDROID=$DEPLOYMENT_KEY_ANDROID"
+            echo "OIDC_AUDIENCE=${OIDC_AUDIENCE:-codepush-server}"
+          } >> "$GITHUB_ENV"
+
+          echo "Server: ${SERVER%/} (auth: GitHub OIDC, audience=${OIDC_AUDIENCE:-codepush-server})"
+
+      - name: Tính appVersion mới từ /releases/latest
+        id: version
+        run: |
+          set -euo pipefail
+
+          # Vừa in ra log runner vừa ghi vào file, để bước báo Slack khi thất
+          # bại đọc được lỗi thật (Slack không thấy log của GitHub).
+          exec > >(tee -a "$RUNNER_TEMP/release-output.log") 2>&1
+
+          # ── Token OIDC cho các lệnh GET của workflow ────────────────────────
+          # release.sh tự xin token riêng ngay trước khi upload; token ở đây chỉ
+          # dùng cho bước đọc latest nên hết hạn trước lúc upload cũng không sao.
+          echo "==> Xin OIDC token từ GitHub (audience=$OIDC_AUDIENCE)..."
+          OIDC_RESPONSE=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$OIDC_AUDIENCE")
+          TOKEN=$(printf '%s' "$OIDC_RESPONSE" \
+            | python3 -c 'import sys,json; print(json.load(sys.stdin).get("value",""))' 2>/dev/null || true)
+          if [ -z "$TOKEN" ]; then
+            # Không in OIDC_RESPONSE: nếu có token thì nó nằm trong đó.
+            echo "::error::Không xin được OIDC token từ GitHub"
+            exit 1
+          fi
+          echo "::add-mask::$TOKEN"
+
+          # Contract route GET .../releases/latest):
+          #   200 { app: {...}, deployment: {...}, release: { label, appVersion, ... } }
+          #   200 ... "release": null  -> deployment mới, CHƯA có release nào
+          #   404                      -> deploymentKey không tồn tại (lỗi cấu hình)
+          # Server cố tình không trả 404 cho "chưa có release" để CI khỏi phải
+          # phân biệt với sai key, nên đừng gộp hai trường hợp đó lại.
+          cat > "$RUNNER_TEMP/pick_app_version.py" <<'PY'
+          import json
+          import sys
+
+          raw = sys.stdin.read().strip()
+          if not raw:
+              print('unparsable')
+              sys.exit(0)
+
+          try:
+              data = json.loads(raw)
+          except json.JSONDecodeError:
+              print('unparsable')
+              sys.exit(0)
+
+          if not isinstance(data, dict) or 'release' not in data:
+              print('unparsable')
+              sys.exit(0)
+
+          release = data['release']
+          if release is None:
+              print('empty')
+              sys.exit(0)
+
+          try:
+              print(int(str(release.get('appVersion')).strip()))
+          except (AttributeError, TypeError, ValueError):
+              print('unparsable')
+          PY
+
+          MAX_LATEST=0
+          SUMMARY_LATEST=""
+
+          for platform in $PLATFORMS; do
+            case "$platform" in
+              ios)     DEPLOYMENT_KEY="$DEPLOYMENT_KEY_IOS" ;;
+              android) DEPLOYMENT_KEY="$DEPLOYMENT_KEY_ANDROID" ;;
+            esac
+
+            echo "==> GET $SERVER/admin/deployments/***/releases/latest ($platform)"
+            RESPONSE=$(curl -sS -w $'\n%{http_code}' \
+              -H "Authorization: Bearer $TOKEN" \
+              "$SERVER/admin/deployments/$DEPLOYMENT_KEY/releases/latest")
+            STATUS="${RESPONSE##*$'\n'}"
+            BODY="${RESPONSE%$'\n'*}"
+
+            if [ "$STATUS" = "404" ]; then
+              # KHÔNG phải "chưa có release" (cái đó là 200 + release:null) mà là
+              # sai deploymentKey. Coi nhẹ thành 0 sẽ đẩy appVersion=1 lên một
+              # deployment không tồn tại và chẳng ai nhận ra.
+              echo "::error::deploymentKey của $platform không tồn tại trên $SERVER — kiểm tra DEPLOYMENT_KEY_$(echo "$platform" | tr '[:lower:]' '[:upper:]') trong $ENV_FILE"
+              exit 1
+            elif [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 300 ]; then
+              PICKED=$(printf '%s' "$BODY" | python3 "$RUNNER_TEMP/pick_app_version.py")
+              case "$PICKED" in
+                empty)
+                  # release: null — deployment mới tinh, bắt đầu từ 0.
+                  LATEST=0
+                  ;;
+                unparsable)
+                  echo "::error::Không tìm thấy \"appVersion\" trong response /releases/latest của $platform"
+                  echo "Response: $BODY"
+                  exit 1
+                  ;;
+                *)
+                  LATEST="$PICKED"
+                  ;;
+              esac
+            else
+              echo "::error::GET /releases/latest cho $platform thất bại (HTTP $STATUS)"
+              echo "Response: $BODY"
+              exit 1
+            fi
+
+            echo "    latest($platform) = $LATEST"
+            SUMMARY_LATEST="$SUMMARY_LATEST $platform=$LATEST"
+            if [ "$LATEST" -gt "$MAX_LATEST" ]; then
+              MAX_LATEST="$LATEST"
+            fi
+          done
+
+          # app.json chỉ có MỘT appVersion nên hai platform luôn đi chung số:
+          # lấy max rồi +1, không bao giờ đụng lại số đã phát hành của bên nào.
+          APP_VERSION=$((MAX_LATEST + 1))
+
+          PREVIOUS=$(python3 -c 'import json; print(json.load(open("app.json")).get("appVersion", ""))')
+          python3 - "$APP_VERSION" <<'PY'
+          import json
+          import sys
+
+          with open('app.json', encoding='utf-8') as handle:
+              app = json.load(handle)
+
+          # Giữ nguyên kiểu string như file gốc: release.sh đọc bằng
+          # `node -p require('./app.json').appVersion` rồi so sánh bằng test -lt.
+          app['appVersion'] = sys.argv[1]
+
+          with open('app.json', 'w', encoding='utf-8') as handle:
+              json.dump(app, handle, ensure_ascii=False, indent=2)
+              handle.write('\n')
+          PY
+
+          echo "APP_VERSION=$APP_VERSION" >> "$GITHUB_ENV"
+          echo "LATEST_SUMMARY=$SUMMARY_LATEST" >> "$GITHUB_ENV"
+          echo "==> app.json: appVersion $PREVIOUS -> $APP_VERSION (latest trên server:$SUMMARY_LATEST)"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+
+      - name: Enable Corepack (Yarn 3.6)
+        run: |
+          corepack enable
+          corepack prepare yarn@3.6.4 --activate
+          yarn --version
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+
+      - name: Install Dependencies
+        run: yarn install --no-immutable
+
+      - name: Build bundle & upload lên CodePush server
+        id: release
+        run: |
+          set -euo pipefail
+
+          exec > >(tee -a "$RUNNER_TEMP/release-output.log") 2>&1
+
+          for platform in $PLATFORMS; do
+            case "$platform" in
+              ios)     DEPLOYMENT_KEY="$DEPLOYMENT_KEY_IOS" ;;
+              android) DEPLOYMENT_KEY="$DEPLOYMENT_KEY_ANDROID" ;;
+            esac
+
+            # Không truyền ADMIN_USER/ADMIN_PASSWORD: release.sh thấy
+            # ACTIONS_ID_TOKEN_REQUEST_URL (do id-token: write) là tự xin OIDC
+            # token cho riêng lần upload này. appVersion nó đọc từ app.json mà
+            # bước trên vừa ghi.
+            echo "::group::release $platform (appVersion=$APP_VERSION)"
+            SERVER="$SERVER" \
+            DEPLOYMENT_KEY="$DEPLOYMENT_KEY" \
+            CODEPUSH_OIDC_AUDIENCE="$OIDC_AUDIENCE" \
+            ./release.sh "$platform" "$DESCRIPTION" "$ROLLOUT"
+            echo "::endgroup::"
+          done
+
+      - name: Upload bundle artifact
+        # Giữ lại đúng thứ đã đẩy lên server để còn đối chiếu khi bản OTA lỗi.
+        if: always() && hashFiles('codepush_build/*.zip') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: codepush-${{ env.ENVIRONMENT }}-v${{ env.APP_VERSION }}-${{ github.run_number }}
+          path: codepush_build/*.zip
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Build summary
+        if: always()
+        run: |
+          {
+            echo "## 🚀 CodePush Release"
+            echo ""
+            echo "- **Environment**: ${ENVIRONMENT:-?} (\`${ENV_FILE:-?}\`)"
+            echo "- **Platform**: ${PLATFORMS:-?}"
+            echo "- **appVersion**: ${APP_VERSION:-?} (latest trên server trước khi release:${LATEST_SUMMARY:- ?})"
+            echo "- **Rollout**: ${ROLLOUT:-?}%"
+            echo "- **Description**: ${DESCRIPTION:-?}"
+            echo ""
+            echo "> app.json chỉ được sửa trong run này, không commit về repo."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Slack — release xong
+        if: success()
+        env:
+          BUILD_START_TS: ${{ steps.timer.outputs.start_ts }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          [ -n "${SLACK_WEBHOOK_URL:-}" ] || { echo "chưa khai SLACK_WEBHOOK_URL, bỏ qua"; exit 0; }
+
+          if [ -n "${BUILD_START_TS:-}" ]; then
+            SEC=$(( $(date +%s) - BUILD_START_TS ))
+            if [ "$SEC" -lt 60 ]; then
+              DURATION="${SEC}s"
+            else
+              DURATION="$((SEC / 60))m $((SEC % 60))s"
+            fi
+          else
+            DURATION="unknown"
+          fi
+
+          MSG=$(printf '*Success Build Bundle App*\nplatform: %s\nenvironment: %s\nappVersion: %s (trước đó trên server:%s)\nrollout: %s%%\nbranch: %s\ncommit: %s %s\nbuild time: %s\n<%s|View details>' \
+            "$PLATFORMS" \
+            "$ENVIRONMENT" \
+            "$APP_VERSION" \
+            "$LATEST_SUMMARY" \
+            "$ROLLOUT" \
+            "$GITHUB_REF_NAME" \
+            "${GITHUB_SHA::7}" \
+            "$DESCRIPTION" \
+            "$DURATION" \
+            "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}")
+
+          jq -n --arg text "$MSG" --arg color "#2EB67D" \
+            '{attachments: [{color: $color, text: $text, mrkdwn_in: ["text"]}]}' \
+            | curl -sS -X POST -H 'Content-Type: application/json' -d @- "$SLACK_WEBHOOK_URL"
+
+      # Release OTA hỏng mà im lặng thì nguy hiểm: appVersion đã bị đẩy lên số
+      # mới trong khi máy user không nhận được gì, và lần chạy sau lại đọc ra
+      # số cũ trên server.
+      - name: Slack — release thất bại
+        if: failure()
+        env:
+          BUILD_START_TS: ${{ steps.timer.outputs.start_ts }}
+          CFG_OUTCOME: ${{ steps.cfg.outcome }}
+          LOAD_OUTCOME: ${{ steps.load.outcome }}
+          RELEASE_OUTCOME: ${{ steps.release.outcome }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          VERSION_OUTCOME: ${{ steps.version.outcome }}
+        run: |
+          [ -n "${SLACK_WEBHOOK_URL:-}" ] || exit 0
+
+          # Bước nào hỏng — quan trọng hơn cả log vì nó khoanh vùng ngay: load
+          # config hỏng là thiếu key trong env, version hỏng là server/OIDC,
+          # release hỏng là bundle hoặc upload.
+          FAILED_STEP="unknown (see runner log)"
+          [ "$CFG_OUTCOME" = "failure" ]     && FAILED_STEP="Resolve inputs"
+          [ "$LOAD_OUTCOME" = "failure" ]    && FAILED_STEP="Load CodePush config (env file)"
+          [ "$VERSION_OUTCOME" = "failure" ] && FAILED_STEP="Đọc /releases/latest + bump appVersion"
+          [ "$RELEASE_OUTCOME" = "failure" ] && FAILED_STEP="Bundle & upload (release.sh)"
+
+          # Lọc secret TRƯỚC KHI gửi: GitHub tự che secret trong log CỦA NÓ,
+          # nhưng file này do tee ghi thẳng nên chưa qua bộ lọc đó, và Slack thì
+          # không che gì cả — payload rời khỏi GitHub là mất kiểm soát.
+          LOG_FILE="$RUNNER_TEMP/release-output.log"
+          if [ -s "$LOG_FILE" ]; then
+            ERR=$(tail -n 25 "$LOG_FILE" \
+              | grep -viE 'password|secret|token|authorization|bearer|deploymentkey|_key=' \
+              | tail -c 2500)
+          else
+            ERR="(no output captured)"
+          fi
+          [ -n "$ERR" ] || ERR="(last lines filtered out — may contain secrets)"
+
+          if [ -n "${BUILD_START_TS:-}" ]; then
+            SEC=$(( $(date +%s) - BUILD_START_TS ))
+            if [ "$SEC" -lt 60 ]; then
+              DURATION="${SEC}s"
+            else
+              DURATION="$((SEC / 60))m $((SEC % 60))s"
+            fi
+          else
+            DURATION="unknown"
+          fi
+
+          MSG=$(printf '*FAILED Build Bundle App*\nplatform: %s\nenvironment: %s\nbranch: %s\ncommit: %s %s\nfailed step: %s\nduration: %s\n\n```\n%s\n```\n<%s|View full log>' \
+            "${PLATFORMS:-?}" \
+            "${ENVIRONMENT:-?}" \
+            "$GITHUB_REF_NAME" \
+            "${GITHUB_SHA::7}" \
+            "${DESCRIPTION:-?}" \
+            "$FAILED_STEP" \
+            "$DURATION" \
+            "$ERR" \
+            "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}")
+
+          jq -n --arg text "$MSG" --arg color "#E01E5A" \
+            '{attachments: [{color: $color, text: $text, mrkdwn_in: ["text"]}]}' \
+            | curl -sS -X POST -H 'Content-Type: application/json' -d @- "$SLACK_WEBHOOK_URL"

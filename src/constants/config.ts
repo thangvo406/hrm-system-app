@@ -50,7 +50,3 @@ export const INIT_SCREEN_START_UP_KEY = 'INIT_SCREEN_START_UP_KEY' as const;
 export const CODE_PUSH_LAST_RESTART_HASH_KEY =
   'CODE_PUSH_LAST_RESTART_HASH_KEY' as const;
 export const REMEMBERED_EMAIL_KEY = 'REMEMBERED_EMAIL_KEY' as const;
-
-// Phiên bản hiện ở mục "Giới thiệu ứng dụng". Đang khai báo tay vì dự án chưa
-// có `react-native-device-info`; nhớ sửa cùng lúc với `package.json`.
-export const APP_VERSION = '1.2.0';

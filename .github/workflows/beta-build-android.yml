@@ -2,8 +2,8 @@ name: Android Beta Build (Firebase)
 
 on:
   push:
-    branches:
-      - dev
+    # branches:
+    #   - dev
   # Cho phép chạy lại riêng Android từ tab Actions mà không kéo theo iOS.
   workflow_dispatch:
 

@@ -4,15 +4,21 @@
 #
 # Cách dùng (chạy trong thư mục gốc của app React Native):
 #   SERVER=https://your-server.com \
-#   ADMIN_USER=your-username \
-#   ADMIN_PASSWORD=your-password \
 #   DEPLOYMENT_KEY=xxxx \
 #   ./release.sh android "Fix crash màn hình home"
 #
 #   ./release.sh <platform: ios|android> [description] [rollout]
 #
-# Server không còn nhận token tĩnh — script tự login lấy token ngắn hạn.
-# Trong CI, đặt ADMIN_USER/ADMIN_PASSWORD làm secret của pipeline.
+# AUTH — script tự chọn theo môi trường:
+#   - Trong GitHub Actions (có ACTIONS_ID_TOKEN_REQUEST_URL): xin JWT OIDC từ
+#     GitHub, KHÔNG cần secret nào. Job phải khai báo:
+#         permissions:
+#           id-token: write
+#           contents: read
+#     và repo/ref phải nằm trong GITHUB_OIDC_ALLOWED_REPOS/_REFS của server.
+#     CODEPUSH_OIDC_AUDIENCE phải khớp GITHUB_OIDC_AUDIENCE của server
+#     (mặc định cả hai là "codepush-server").
+#   - Chạy tay trên máy / CI khác: login bằng ADMIN_USER + ADMIN_PASSWORD.
 #
 # KHÔNG còn tham số version: đọc thẳng từ file của app để không ai gõ nhầm và
 # để giá trị luôn khớp với binary đang phát hành.
@@ -41,22 +47,7 @@ if [ "$APP_VERSION" -lt 1 ] 2>/dev/null; then
 fi
 
 SERVER="${SERVER:?Cần biến môi trường SERVER}"
-ADMIN_USER="${ADMIN_USER:?Cần biến môi trường ADMIN_USER}"
-ADMIN_PASSWORD="${ADMIN_PASSWORD:?Cần biến môi trường ADMIN_PASSWORD}"
 DEPLOYMENT_KEY="${DEPLOYMENT_KEY:?Cần biến môi trường DEPLOYMENT_KEY}"
-
-echo "==> Đăng nhập $SERVER..."
-LOGIN_RESPONSE=$(curl -sS -X POST "$SERVER/admin/login" \
-  -H "Content-Type: application/json" \
-  -d "{\"username\":\"$ADMIN_USER\",\"password\":\"$ADMIN_PASSWORD\"}")
-
-ADMIN_TOKEN=$(printf '%s' "$LOGIN_RESPONSE" \
-  | python3 -c 'import sys,json; print(json.load(sys.stdin).get("token",""))' 2>/dev/null || true)
-
-if [ -z "$ADMIN_TOKEN" ]; then
-  echo "Login thất bại: $LOGIN_RESPONSE" >&2
-  exit 1
-fi
 
 OUT_DIR="codepush_build/$PLATFORM"
 rm -rf "$OUT_DIR"
@@ -80,6 +71,39 @@ echo "==> Nén zip..."
 ZIP_FILE="codepush_build/${PLATFORM}_release.zip"
 rm -f "$ZIP_FILE"
 (cd "$OUT_DIR" && zip -r "../${PLATFORM}_release.zip" . >/dev/null)
+
+# Lấy token NGAY TRƯỚC khi upload, không phải đầu script: JWT OIDC của GitHub
+# chỉ sống ~5 phút, bước bundle RN có thể lâu hơn thế.
+if [ -n "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
+  AUDIENCE="${CODEPUSH_OIDC_AUDIENCE:-codepush-server}"
+  echo "==> Xin OIDC token từ GitHub (audience=$AUDIENCE)..."
+  # ACTIONS_ID_TOKEN_REQUEST_URL đã có sẵn query string nên nối bằng '&'.
+  OIDC_RESPONSE=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+    "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$AUDIENCE")
+  ADMIN_TOKEN=$(printf '%s' "$OIDC_RESPONSE" \
+    | python3 -c 'import sys,json; print(json.load(sys.stdin).get("value",""))' 2>/dev/null || true)
+  if [ -z "$ADMIN_TOKEN" ]; then
+    # Không in OIDC_RESPONSE: nếu có token thì nó nằm trong đó.
+    echo "Không xin được OIDC token — job đã khai báo 'permissions: id-token: write' chưa?" >&2
+    exit 1
+  fi
+else
+  ADMIN_USER="${ADMIN_USER:?Cần ADMIN_USER (hoặc chạy trong GitHub Actions để dùng OIDC)}"
+  ADMIN_PASSWORD="${ADMIN_PASSWORD:?Cần ADMIN_PASSWORD (hoặc chạy trong GitHub Actions để dùng OIDC)}"
+
+  echo "==> Đăng nhập $SERVER..."
+  LOGIN_RESPONSE=$(curl -sS -X POST "$SERVER/admin/login" \
+    -H "Content-Type: application/json" \
+    -d "{\"username\":\"$ADMIN_USER\",\"password\":\"$ADMIN_PASSWORD\"}")
+
+  ADMIN_TOKEN=$(printf '%s' "$LOGIN_RESPONSE" \
+    | python3 -c 'import sys,json; print(json.load(sys.stdin).get("token",""))' 2>/dev/null || true)
+
+  if [ -z "$ADMIN_TOKEN" ]; then
+    echo "Login thất bại: $LOGIN_RESPONSE" >&2
+    exit 1
+  fi
+fi
 
 echo "==> Upload lên $SERVER (appVersion=$APP_VERSION, minPlatformVersion=${MIN_PLATFORM_VERSION:-<không giới hạn>})..."
 curl -sS -X POST "$SERVER/admin/deployments/$DEPLOYMENT_KEY/releases" \

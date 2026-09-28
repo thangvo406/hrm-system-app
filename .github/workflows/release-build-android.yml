@@ -2,8 +2,8 @@ name: Android Release Build (AAB)
 
 on:
   push:
-    branches:
-      - master
+    # branches:
+    #   - master
   # Cho phép chạy lại riêng Android từ tab Actions mà không kéo theo iOS.
   workflow_dispatch:
 

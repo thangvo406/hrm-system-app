@@ -184,6 +184,35 @@ const getAppVersion = () => {
   return DeviceInfo.getVersion();
 };
 
+/** Bundle đang chạy là bản kèm theo store, chưa nhận OTA nào. */
+const STORE_BUNDLE_LABEL = '';
+
+type CodePushLike = {
+  getCurrentPackage: () => Promise<{ label?: string } | null>;
+};
+
+const getBundleLabel = async (
+  codePush: CodePushLike | null,
+): Promise<string> => {
+  if (!codePush) {
+    return STORE_BUNDLE_LABEL;
+  }
+
+  try {
+    const current = await codePush.getCurrentPackage();
+    return current?.label ?? STORE_BUNDLE_LABEL;
+  } catch {
+    // Đọc được phiên bản app là đủ dùng; thiếu nhãn bundle không đáng để hỏng
+    // cả dòng hiển thị.
+    return STORE_BUNDLE_LABEL;
+  }
+};
+
+const formatAppVersion = (appVersion: string, bundleLabel: string): string =>
+  bundleLabel === STORE_BUNDLE_LABEL
+    ? appVersion
+    : `${appVersion} (${bundleLabel})`;
+
 export const isIphonePro = () => {
   const model = DeviceInfo.getModel();
   return model.split(' ')?.slice(-1)?.toString()?.toLocaleLowerCase() == 'pro';
@@ -199,6 +228,9 @@ export const DeviceUtils = {
   isIphonePro,
   isTablet,
   getAppVersion,
+  getBundleLabel,
+  formatAppVersion,
+  STORE_BUNDLE_LABEL,
   isIPadOrTablet,
   isLargeDevice,
   isDevicePixel,
