@@ -318,10 +318,26 @@ jobs:
             BODY="${RESPONSE%$'\n'*}"
 
             if [ "$STATUS" = "404" ]; then
-              # KHÔNG phải "chưa có release" (cái đó là 200 + release:null) mà là
-              # sai deploymentKey. Coi nhẹ thành 0 sẽ đẩy appVersion=1 lên một
-              # deployment không tồn tại và chẳng ai nhận ra.
-              echo "::error::deploymentKey của $platform không tồn tại trên $SERVER — kiểm tra DEPLOYMENT_KEY_$(echo "$platform" | tr '[:lower:]' '[:upper:]') trong $ENV_FILE"
+              # 404 ở đây KHÔNG phải "chưa có release" (cái đó là 200 +
+              # release:null). Có đúng hai nguyên nhân, và chúng đòi hai cách
+              # sửa hoàn toàn khác nhau nên phải phân biệt bằng body:
+              #   - route trả JSON {"error":"deploymentKey không tồn tại"} -> sai key
+              #   - 404 HTML mặc định của Express -> server chưa có route này.
+              #     Route có tồn tại thì requireAdminOrCi đã chặn bằng 401 rồi.
+              case "$BODY" in
+                *deploymentKey*)
+                  echo "::error::deploymentKey của $platform không tồn tại trên $SERVER — kiểm tra DEPLOYMENT_KEY_$(echo "$platform" | tr '[:lower:]' '[:upper:]') trong $ENV_FILE"
+                  ;;
+                *)
+                  echo "::error::$SERVER không có route GET /admin/deployments/:key/releases/latest — server đang chạy bản CŨ. Deploy lại backend (phần GitHub OIDC + route latest chưa được release)."
+                  ;;
+              esac
+              printf 'Response: %s\n' "$(printf '%s' "$BODY" | tr -d '\n' | head -c 300)"
+              exit 1
+            elif [ "$STATUS" = "401" ] || [ "$STATUS" = "403" ]; then
+              # Server có route nhưng từ chối OIDC token.
+              echo "::error::Server từ chối OIDC token (HTTP $STATUS) — kiểm tra GITHUB_OIDC_ALLOWED_REPOS / _REFS / _AUDIENCE phía server so với CODEPUSH_OIDC_AUDIENCE trong $ENV_FILE"
+              printf 'Response: %s\n' "$(printf '%s' "$BODY" | tr -d '\n' | head -c 300)"
               exit 1
             elif [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 300 ]; then
               PICKED=$(printf '%s' "$BODY" | python3 "$RUNNER_TEMP/pick_app_version.py")
