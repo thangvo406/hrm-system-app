@@ -75,13 +75,6 @@ const MENU_SECTIONS: readonly TProfileMenuSection[] = [
         subtitleKey: 'profile.item_about_subtitle',
         titleKey: 'profile.item_about',
       },
-      // dòng dưới chỉ để đọc.
-      {
-        icon: 'ic_globe',
-        id: MENU_LANGUAGE_ID,
-        subtitleKey: 'profile.item_language_subtitle',
-        titleKey: 'profile.item_language',
-      },
       {
         icon: 'ic_bell',
         id: MENU_NOTIFICATIONS_ID,
@@ -252,8 +245,10 @@ export function useProfile() {
 
   return {
     employee,
+    languageLabel: LANGUAGE_LABELS[currentLanguage],
     menuValues,
     onLogout,
+    onPickLanguage,
     onPressItem,
     sections: MENU_SECTIONS,
   };

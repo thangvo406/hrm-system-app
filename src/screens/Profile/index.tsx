@@ -8,8 +8,15 @@ import { useProfile } from '@hooks';
 
 /** Màn Cá nhân: danh tính, dải liên hệ, hai nhóm menu và nút đăng xuất. */
 function Profile() {
-  const { employee, menuValues, onLogout, onPressItem, sections } =
-    useProfile();
+  const {
+    employee,
+    languageLabel,
+    menuValues,
+    onLogout,
+    onPickLanguage,
+    onPressItem,
+    sections,
+  } = useProfile();
 
   return (
     <View style={styles.container} testID="ProfileScreen">
@@ -19,7 +26,11 @@ function Profile() {
       >
         {/* Header cuộn cùng nội dung: nó là danh tính chứ không phải thanh
             điều hướng, ghim lại chỉ tốn chỗ khi người dùng xem menu bên dưới. */}
-        <ProfileHeader employee={employee} />
+        <ProfileHeader
+          employee={employee}
+          languageLabel={languageLabel}
+          onPressLanguage={onPickLanguage}
+        />
 
         <View style={styles.body}>
           {sections.map(section => (

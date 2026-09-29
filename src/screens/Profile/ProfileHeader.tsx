@@ -2,6 +2,7 @@ import type { TProfileEmployee } from '@type/profile';
 
 import images from '@assets/images';
 import Image from '@components/Image';
+import LanguagePill from './LanguagePill';
 import React from 'react';
 import { Colors } from '@constants';
 import { Image as BackgroundImage, StyleSheet, Text, View } from 'react-native';
@@ -16,6 +17,8 @@ const BACKGROUND_RATIO = 2.261;
 
 type Properties = {
   readonly employee: TProfileEmployee;
+  readonly languageLabel: string;
+  readonly onPressLanguage: () => void;
 };
 
 /**
@@ -25,19 +28,21 @@ type Properties = {
  * Danh tính nằm hẳn trong header chứ không phải thẻ trắng riêng — đây là màn
  * "về bạn", nên tên là thứ mở màn, không phải một tiêu đề.
  */
-function ProfileHeader({ employee }: Properties) {
+function ProfileHeader({
+  employee,
+  languageLabel,
+  onPressLanguage,
+}: Properties) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
 
   return (
     <View style={[styles.container, { paddingTop: 0 }]}>
-      {/*
-        Neo ảnh vào mép PHẢI và giữ đúng tỉ lệ gốc, để cao bằng header rồi cho
-        tràn sang trái. Ảnh rộng 2.26:1 mà header thì gần vuông — dùng
-        `resizeMode="cover"` sẽ cắt đều hai bên và mất mấy toà nhà nằm sát mép
-        phải, trong khi phần trái chỉ là sóng mờ, cắt đi không tiếc.
-      */}
       <BackgroundImage source={images.bg_profile} style={styles.background} />
+
+      <View style={[styles.languageSlot, { top: insets.top + ScaleSize(8) }]}>
+        <LanguagePill label={languageLabel} onPress={onPressLanguage} />
+      </View>
 
       <View style={[styles.avatar, { marginTop: insets.top + ScaleSize(24) }]}>
         <Text style={styles.initials}>{employee.initials}</Text>
@@ -46,8 +51,6 @@ function ProfileHeader({ employee }: Properties) {
       <Text numberOfLines={1} style={styles.name}>
         {employee.fullName}
       </Text>
-      {/* Hồ sơ từ API chưa có chức danh/phòng ban; bỏ hẳn dòng thay vì để
-          một khoảng trống giữa tên và câu khẩu hiệu. */}
       {employee.jobTitle ? (
         <Text numberOfLines={1} style={styles.jobTitle}>
           {employee.jobTitle}
@@ -119,6 +122,11 @@ const styles = StyleSheet.create({
     fontSize: ScaleSize(14),
     marginTop: ScaleSize(6),
     textAlign: 'center',
+  },
+  // `top` set trong JSX vì phụ thuộc safe-area inset của từng máy.
+  languageSlot: {
+    position: 'absolute',
+    right: ScaleSize(16),
   },
   name: {
     color: Colors.navy04,
