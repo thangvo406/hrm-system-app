@@ -138,17 +138,23 @@ export function formatDateTime(d: any) {
   return `${year}-${month}-${day}`;
 }
 
-export function calculateDaysBetweenDates(startDate: string, endDate: string) {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+/** Số ngày một khoảng trải qua, TÍNH CẢ HAI ĐẦU: 01/10 → 03/10 là 3. */
+const INCLUSIVE_OFFSET = 1;
 
-  // Calculate the difference in milliseconds
-  const differenceInTime = end - start;
+export function calculateDaysBetweenDates(
+  startDate: dayjs.ConfigType,
+  endDate: dayjs.ConfigType,
+): number {
+  const start = dayjs(startDate);
+  const end = dayjs(endDate);
 
-  // Convert milliseconds to days
-  const differenceInDays = differenceInTime / (1000 * 60 * 60 * 24);
+  if (!start.isValid() || !end.isValid() || end.isBefore(start, 'day')) {
+    return 0;
+  }
 
-  return differenceInDays;
+  return (
+    end.startOf('day').diff(start.startOf('day'), 'day') + INCLUSIVE_OFFSET
+  );
 }
 
 export function getDaysUntil(
@@ -206,15 +212,17 @@ export function getRangeDateByRange(selectedDates: any) {
     const min = Math.min(...dates);
     const max = Math.max(...dates);
     const minDate = new Date(min);
-    const duration = Math.round(calculateDaysBetweenDates(min, max));
 
-    for (let index = 0; index <= duration; index++) {
+    const dayCount = calculateDaysBetweenDates(min, max);
+    const lastIndex = dayCount - 1;
+
+    for (let index = 0; index <= lastIndex; index++) {
       const startDate = new Date(min);
       startDate.setDate(minDate.getDate() + index);
       const formatTime = formatDateTime(startDate);
       results[formatTime] = {
         startingDay: index == 0,
-        endingDay: index == duration,
+        endingDay: index === lastIndex,
         color: Colors.blue02,
         textColor: Colors.white,
         customTextStyle: {

@@ -1,4 +1,5 @@
-import type { TRequestType, TRequestTypeFilter } from '@type/requests';
+import type { TRequestTypeFilter } from '@type/requests';
+import type { TRequestTypeStyle } from './requestTypes';
 
 import AppButton from '@components/AppButton';
 import Image from '@components/Image';
@@ -14,8 +15,32 @@ const ICON_SIZE = ScaleSize(20);
 
 const CARD_WIDTH = ScaleSize(104);
 
+const DRAFT_CARD: {
+  readonly style: TRequestTypeStyle;
+  readonly value: TRequestTypeFilter;
+} = {
+  style: {
+    icon: 'ic_document',
+    ink: Colors.blue04,
+    labelKey: 'requests.type_draft',
+    tint: Colors.blue07,
+  },
+  value: 'draft',
+};
+
+const FILTER_CARDS: readonly {
+  readonly style: TRequestTypeStyle;
+  readonly value: TRequestTypeFilter;
+}[] = [
+  DRAFT_CARD,
+  ...REQUEST_TYPE_ORDER.map(type => ({
+    style: REQUEST_TYPE_STYLES[type],
+    value: type,
+  })),
+];
+
 type Properties = {
-  readonly onToggle: (type: TRequestType) => void;
+  readonly onToggle: (type: TRequestTypeFilter) => void;
   readonly value: TRequestTypeFilter;
 };
 
@@ -29,21 +54,20 @@ function TypeFilters({ onToggle, value }: Properties) {
       showsHorizontalScrollIndicator={false}
       style={styles.container}
     >
-      {REQUEST_TYPE_ORDER.map(type => {
-        const tone = REQUEST_TYPE_STYLES[type];
-        const isActive = type === value;
+      {FILTER_CARDS.map(({ style: tone, value: cardValue }) => {
+        const isActive = cardValue === value;
 
         return (
           <AppButton
-            key={type}
+            key={cardValue}
             onPress={() => {
-              onToggle(type);
+              onToggle(cardValue);
             }}
             style={[
               styles.card,
               isActive && { backgroundColor: tone.tint, borderColor: tone.ink },
             ]}
-            testID={`RequestsTypeFilter_${type}`}
+            testID={`RequestsTypeFilter_${cardValue}`}
           >
             <View
               style={[

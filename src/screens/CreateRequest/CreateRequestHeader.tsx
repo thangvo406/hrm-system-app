@@ -15,11 +15,9 @@ const DRAFT_ICON_SIZE = ScaleSize(18);
 type Properties = {
   readonly onGoBack: () => void;
   readonly onSaveDraft: () => void;
-  /** Khoá i18n của tiêu đề; đổi theo loại đơn đang soạn. */
   readonly titleKey: string;
 };
 
-/** Dải navy đầu màn tạo đơn: nút quay lại, tiêu đề và nút lưu nháp. */
 function CreateRequestHeader({ onGoBack, onSaveDraft, titleKey }: Properties) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
@@ -91,8 +89,12 @@ const styles = StyleSheet.create({
   },
   draftButton: {
     alignItems: 'center',
+    backgroundColor: Colors.navy06,
+    borderRadius: ScaleSize(18),
     flexDirection: 'row',
     gap: ScaleSize(6),
+    paddingHorizontal: ScaleSize(12),
+    paddingVertical: ScaleSize(10),
   },
   draftLabel: {
     color: Colors.white,

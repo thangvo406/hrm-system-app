@@ -47,6 +47,7 @@ const STATUS_LABELS: Readonly<Record<TRequestStatusFilter, string>> = {
 };
 
 const TYPE_LABELS: Readonly<Record<TRequestTypeFilter, string>> = {
+  draft: 'requests.type_draft',
   all: 'requests.filter_all',
   attendance_explanation: 'requests.type_attendance_explanation',
   early_leave: 'requests.type_early_leave',

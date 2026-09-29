@@ -26,6 +26,12 @@ const STATUS_STYLES: Record<
     icon: 'ic_check_circle',
     labelKey: 'requests.status_approved',
   },
+  draft: {
+    background: Colors.blue07,
+    foreground: Colors.blue04,
+    icon: 'ic_document',
+    labelKey: 'requests.status_draft',
+  },
   pending: {
     background: Colors.yellow06,
     foreground: Colors.yellow03,

@@ -2,6 +2,7 @@ import type { SectionListRenderItemInfo } from 'react-native';
 import type { TRequestItem, TRequestSection } from '@type/requests';
 
 import Animated from 'react-native-reanimated';
+import DraftsBanner from './DraftsBanner';
 import MonthHeader from './MonthHeader';
 import RequestRow from './RequestRow';
 import RequestsEmpty from './RequestsEmpty';
@@ -28,7 +29,9 @@ function Requests() {
   const {
     contentStyle,
     counts,
+    draftCount,
     hasLoaded,
+    isDraftMode,
     isFiltered,
     isLoading,
     isLoadingMore,
@@ -60,6 +63,7 @@ function Requests() {
       <RequestsHeader onPressCreate={onCreateRequest} />
 
       <View style={styles.sheet}>
+        {draftCount > 0 ? <DraftsBanner count={draftCount} /> : undefined}
         <TypeFilters onToggle={onToggleType} value={typeFilter} />
 
         <View style={styles.listArea}>
@@ -105,6 +109,7 @@ function Requests() {
           >
             <RequestTabs
               counts={counts}
+              isDraftMode={isDraftMode}
               onChange={onChangeTab}
               onOpenFilter={onOpenFilter}
               value={tab}

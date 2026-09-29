@@ -2,32 +2,38 @@ import ApprovalFlow from './ApprovalFlow';
 import AttachmentBox from './AttachmentBox';
 import BalanceCards from './BalanceCards';
 import CreateRequestHeader from './CreateRequestHeader';
+import DraftBanner from './DraftBanner';
 import DurationTabs from './DurationTabs';
 import FormActions from './FormActions';
 import FormField from './FormField';
 import HoursHint from './HoursHint';
 import ReasonField from './ReasonField';
 import SummaryBanner from './SummaryBanner';
+import type { RootScreenProps } from '@navigation/types';
+
 import { Colors } from '@constants';
+import { Paths } from '@navigation/paths';
 import { ScaleSize } from '@kits/core';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useCreateRequest } from '@hooks';
 
-function CreateRequest() {
+function CreateRequest(props: RootScreenProps<Paths.CreateRequest>) {
   const {
     approvers,
     balances,
     canSubmit,
-    dateLabel,
+    formKey,
+    hasDraft,
+    keys,
+    labels,
     duration,
-    endDateLabel,
     endTime,
-    eventKindLabel,
-    leaveKindLabel,
     note,
     onGoBack,
+    onApplyDraft,
     onPickAttachment,
-    onPickDate,
+    onPickDateRange,
+    onPickSingleDate,
     onPickEndTime,
     onPickEventKind,
     onPickLeaveKind,
@@ -36,48 +42,35 @@ function CreateRequest() {
     onPickType,
     onSaveDraft,
     onSubmit,
-    placeLabel,
     reason,
-    reasonLabelKey,
-    reasonPlaceholderKey,
     remainingDays,
     sections,
-    setDuration,
-    setNote,
-    setReason,
-    singleDateLabelKey,
+    setField,
     source,
-    sourceLabelKey,
-    startDateLabel,
     startTime,
-    titleKey,
     totalDays,
     totalHours,
-    typeLabel,
-  } = useCreateRequest();
+  } = useCreateRequest(props);
 
   return (
     <View style={styles.container} testID="CreateRequestScreen">
       <CreateRequestHeader
         onGoBack={onGoBack}
         onSaveDraft={onSaveDraft}
-        titleKey={titleKey}
+        titleKey={keys.title}
       />
 
       <View style={styles.sheet}>
-        {/*
-          Không dùng `KeyboardAvoidingView` dùng chung ở đây: nó dịch cả khối
-          bằng `translateY`, hợp với màn đăng nhập nơi nó nằm BÊN TRONG một
-          `ScrollView`. Màn này ngược lại — `ScrollView` cuộn được sẵn và có
-          thanh nút ghim đáy — nên để chính `ScrollView` chừa chỗ cho bàn phím,
-          thanh nút vẫn ghim đúng đáy vùng còn lại.
-        */}
         <ScrollView
           automaticallyAdjustKeyboardInsets
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
+          {hasDraft ? (
+            <DraftBanner onApply={onApplyDraft} typeLabel={labels.type} />
+          ) : undefined}
+
           {sections.has('balances') ? (
             <BalanceCards balances={balances} source={source} />
           ) : undefined}
@@ -88,7 +81,7 @@ function CreateRequest() {
             onPress={onPickType}
             showChevron
             testID="CreateRequestType"
-            value={typeLabel}
+            value={labels.type}
           />
 
           {sections.has('leave_kind') ? (
@@ -98,17 +91,17 @@ function CreateRequest() {
               onPress={onPickLeaveKind}
               showChevron
               testID="CreateRequestLeaveKind"
-              value={leaveKindLabel}
+              value={labels.leaveKind}
             />
           ) : undefined}
 
           {sections.has('single_date') ? (
             <FormField
               icon="ic_calendar"
-              labelKey={singleDateLabelKey}
-              onPress={onPickDate('single')}
+              labelKey={keys.singleDateLabel}
+              onPress={onPickSingleDate}
               testID="CreateRequestDate"
-              value={dateLabel}
+              value={labels.date}
             />
           ) : undefined}
 
@@ -117,18 +110,18 @@ function CreateRequest() {
               <FormField
                 icon="ic_calendar"
                 labelKey="create_request.start_date_label"
-                onPress={onPickDate('range')}
+                onPress={onPickDateRange}
                 style={styles.flex}
                 testID="CreateRequestStartDate"
-                value={startDateLabel}
+                value={labels.startDate}
               />
               <FormField
                 icon="ic_calendar"
                 labelKey="create_request.end_date_label"
-                onPress={onPickDate('range')}
+                onPress={onPickDateRange}
                 style={styles.flex}
                 testID="CreateRequestEndDate"
-                value={endDateLabel}
+                value={labels.endDate}
               />
             </View>
           ) : undefined}
@@ -159,7 +152,7 @@ function CreateRequest() {
           ) : undefined}
 
           {sections.has('duration') ? (
-            <DurationTabs onChange={setDuration} value={duration} />
+            <DurationTabs onChange={setField('duration')} value={duration} />
           ) : undefined}
 
           {sections.has('event_kind') ? (
@@ -169,7 +162,7 @@ function CreateRequest() {
               onPress={onPickEventKind}
               showChevron
               testID="CreateRequestEventKind"
-              value={eventKindLabel}
+              value={labels.eventKind}
             />
           ) : undefined}
 
@@ -180,35 +173,37 @@ function CreateRequest() {
               onPress={onPickPlace}
               showChevron
               testID="CreateRequestPlace"
-              value={placeLabel}
+              value={labels.place}
             />
           ) : undefined}
 
           {sections.has('summary') ? (
             <SummaryBanner
               remainingDays={remainingDays}
-              sourceLabelKey={sourceLabelKey}
+              sourceLabelKey={keys.sourceLabel}
               totalDays={totalDays}
             />
           ) : undefined}
 
           {sections.has('reason') ? (
             <ReasonField
-              labelKey={reasonLabelKey}
-              onChangeText={setReason}
-              placeholderKey={reasonPlaceholderKey}
-              value={reason}
+              defaultValue={reason}
+              key={`reason-${formKey}`}
+              labelKey={keys.reasonLabel}
+              onChangeText={setField('reason')}
+              placeholderKey={keys.reasonPlaceholder}
             />
           ) : undefined}
 
           {sections.has('note') ? (
             <ReasonField
+              defaultValue={note}
+              key={`note-${formKey}`}
               labelKey="create_request.note_label"
-              onChangeText={setNote}
+              onChangeText={setField('note')}
               placeholderKey="create_request.note_placeholder"
               showCounter={false}
               testID="CreateRequestNote"
-              value={note}
             />
           ) : undefined}
 
@@ -216,8 +211,6 @@ function CreateRequest() {
             <AttachmentBox onPress={onPickAttachment} />
           ) : undefined}
 
-          {/* Luồng duyệt do server trả; chưa có thì ẩn cả khối chứ không để
-              lại một tiêu đề trên thẻ trắng. */}
           {approvers.length > 0 ? (
             <ApprovalFlow steps={approvers} />
           ) : undefined}

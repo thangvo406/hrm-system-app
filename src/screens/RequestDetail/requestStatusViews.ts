@@ -30,6 +30,14 @@ export const REQUEST_STATUS_VIEWS: Record<
     showCancel: false,
     titleKey: 'request_detail.banner_approved_title',
   },
+  draft: {
+    background: Colors.blue07,
+    foreground: Colors.blue04,
+    icon: 'ic_document',
+    messageKey: 'request_detail.banner_draft_message',
+    showCancel: false,
+    titleKey: 'request_detail.banner_draft_title',
+  },
   pending: {
     background: Colors.yellow06,
     foreground: Colors.yellow03,

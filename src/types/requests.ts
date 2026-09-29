@@ -10,14 +10,18 @@ export type TRequestType =
   | 'overtime';
 
 /** Kết luận duyệt của một đơn. */
-export type TRequestStatus = 'approved' | 'pending' | 'rejected';
+
+export type TRequestStatus = 'approved' | 'draft' | 'pending' | 'rejected';
 
 /** Nhóm đơn hiển thị trên hàng tab ở đầu danh sách. */
 export type TRequestTab = 'all' | 'pending' | 'processed';
 
-export type TRequestStatusFilter = 'all' | 'processed' | TRequestStatus;
+export type TRequestStatusFilter =
+  | 'all'
+  | 'processed'
+  | Exclude<TRequestStatus, 'draft'>;
 
-export type TRequestTypeFilter = 'all' | TRequestType;
+export type TRequestTypeFilter = 'all' | 'draft' | TRequestType;
 
 export type TRequestPeriod =
   | 'all'
@@ -64,7 +68,6 @@ export type TApprovalStep = {
   readonly roleKey: string;
 };
 
-/** Loại OT, quyết định hệ số tính công. */
 /** Nơi ngồi làm khi đăng ký OT. */
 export type TWorkPlace = 'client' | 'home' | 'office';
 
@@ -89,13 +92,6 @@ export type TCreateRequestSection =
   | 'summary'
   | 'time_range';
 
-/**
- * Nội dung đơn đang soạn ở màn tạo đơn — gộp trường của MỌI loại đơn.
- *
- * Trường nào có hiệu lực là do `CREATE_REQUEST_SECTIONS[type]` quyết định; các
- * trường ngoài tập đó vẫn giữ giá trị mặc định để người dùng đổi qua đổi lại
- * loại đơn mà không mất những gì đã nhập.
- */
 export type TCreateRequestDraft = {
   /** Ngày áp dụng của đơn chỉ nhắm một ngày, dạng `YYYY-MM-DD`. */
   readonly date: string;
@@ -115,6 +111,22 @@ export type TCreateRequestDraft = {
   readonly startTime: string;
   readonly type: TRequestType;
 };
+
+export type TCreateRequestFormValues = Omit<TCreateRequestDraft, 'type'>;
+
+export type TCreateRequestFormState = {
+  readonly byType: Readonly<Record<TRequestType, TCreateRequestFormValues>>;
+  readonly revision: number;
+  readonly type: TRequestType;
+};
+
+export type TCreateRequestAction =
+  | { readonly action: 'apply_draft'; readonly draft: TCreateRequestDraft }
+  | { readonly action: 'change_type'; readonly requestType: TRequestType }
+  | {
+      readonly action: 'patch';
+      readonly values: Partial<TCreateRequestFormValues>;
+    };
 
 /** Toàn bộ bộ lọc đang áp cho danh sách đơn. */
 export type TRequestFilters = {
@@ -141,13 +153,6 @@ export type TRequestItem = {
   readonly type: TRequestType;
 };
 
-/**
- * Payload gọi danh sách đơn từ, có phân trang.
- *
- * `page` đếm từ 0 như `ListApiResponse.page` server trả về. Các trường lọc để
- * trống nghĩa là không lọc — `removeEmptyFieldObject` trong hàm request sẽ bỏ
- * chúng khỏi query string.
- */
 export interface IRequestGetRequests
   extends AppCallback<ListApiResponse<TRequestItem[]>> {
   /** Đầu khoảng lọc, dạng `YYYY-MM-DD`. */

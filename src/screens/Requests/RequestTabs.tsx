@@ -21,6 +21,9 @@ const FILTER_ICON_SIZE = ScaleSize(22);
 const TRACK_PADDING = ScaleSize(4);
 const PILL_RADIUS = ScaleSize(12);
 
+/** Ô duy nhất còn nghĩa khi đang xem nháp. */
+const ALL_TAB: TRequestTab = 'all';
+
 const SLIDE_DURATION = 220;
 const FIRST_TAB = 0;
 const UNMEASURED = 0;
@@ -41,12 +44,19 @@ const BOUNDARIES = TABS.map((_, index) => index).filter(
 
 type Properties = {
   readonly counts: Record<TRequestTab, number>;
+  readonly isDraftMode: boolean;
   readonly onChange: (tab: TRequestTab) => void;
   readonly onOpenFilter: () => void;
   readonly value: TRequestTab;
 };
 
-function RequestTabs({ counts, onChange, onOpenFilter, value }: Properties) {
+function RequestTabs({
+  counts,
+  isDraftMode,
+  onChange,
+  onOpenFilter,
+  value,
+}: Properties) {
   const { t } = useTranslation();
   const [trackWidth, setTrackWidth] = useState(UNMEASURED);
 
@@ -94,6 +104,7 @@ function RequestTabs({ counts, onChange, onOpenFilter, value }: Properties) {
             key={tab.value}
             index={index}
             isActive={tab.value === value}
+            isDisabled={isDraftMode ? tab.value !== ALL_TAB : false}
             label={t(tab.labelKey, { total: counts[tab.value] })}
             onChange={onChange}
             progress={progress}

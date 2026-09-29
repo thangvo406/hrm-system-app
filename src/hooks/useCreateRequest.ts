@@ -1,24 +1,32 @@
+import type { RootScreenProps } from '@navigation/types';
 import type { TSelectionItem } from '@type/dialog';
 import type {
   TApprovalStep,
-  TAttendanceEventKind,
+  TCreateRequestFormValues,
   TCreateRequestSection,
   TDatePickMode,
   TLeaveBalance,
-  TLeaveDuration,
-  TLeaveKind,
   TRequestDateRange,
   TRequestType,
-  TWorkPlace,
 } from '@type/requests';
 
 import AppNavigator from '@navigation/AppNavigator';
+import { Paths } from '@navigation/paths';
 import DateRangeSheet from '@dialogs/DateRangeSheet';
 import dayjs from 'dayjs';
 import Selection from '@dialogs/Selection';
-import { getCurrentTime } from '@utils/date';
 import { REQUEST_TYPE_STYLES } from '@screens/Requests/requestTypes';
-import { useCallback, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from 'react';
+import { RequestsSelector } from '@services/selectors';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
+import { saveDraftRequest } from '@services/slices/requests/requestsSlice';
 import { useTranslation } from 'react-i18next';
 import {
   BALANCE_LABEL_KEYS,
@@ -29,25 +37,26 @@ import {
   CREATE_REQUEST_SECTIONS,
   CREATE_REQUEST_TITLE_KEYS,
   CREATE_REQUEST_TYPE_ORDER,
+  createInitialCreateRequestForm,
+  createRequestFormReducer,
   EVENT_KIND_LABEL_KEYS,
   EVENT_KIND_ORDER,
   findMissingSections,
   LEAVE_KIND_LABEL_KEYS,
   LEAVE_KIND_ORDER,
   LEAVE_KIND_SOURCES,
+  listCreateRequestDrafts,
+  parseCreateRequestDraft,
   SINGLE_DATE_LABEL_KEYS,
+  toCreateRequestDraft,
   WORK_PLACE_LABEL_KEYS,
   WORK_PLACE_ORDER,
 } from '@utils/requests';
 
 const DISPLAY_DATE_FORMAT = 'DD/MM/YYYY';
-const ISO_DATE_FORMAT = 'YYYY-MM-DD';
 
 const BALANCES: readonly TLeaveBalance[] = [];
 const APPROVERS: readonly TApprovalStep[] = [];
-
-const DEFAULT_START_TIME = '18:00';
-const DEFAULT_END_TIME = '21:00';
 
 /** Khối chỉ dựng được khi đã có số dư phép từ server. */
 const BALANCE_DEPENDENT_SECTIONS: readonly TCreateRequestSection[] = [
@@ -55,24 +64,52 @@ const BALANCE_DEPENDENT_SECTIONS: readonly TCreateRequestSection[] = [
   'summary',
 ];
 
-export function useCreateRequest() {
+type Properties = RootScreenProps<Paths.CreateRequest>;
+
+export function useCreateRequest(props: Properties) {
+  const { type: initialType } = AppNavigator.getParams(props) as {
+    type?: TRequestType;
+  };
+
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
 
-  const today = useMemo(() => getCurrentTime().format(ISO_DATE_FORMAT), []);
+  const [form, dispatchForm] = useReducer(
+    createRequestFormReducer,
+    undefined,
+    createInitialCreateRequestForm,
+  );
 
-  const [type, setType] = useState<TRequestType>('leave');
-  const [leaveKind, setLeaveKind] = useState<TLeaveKind>('annual');
-  const [startDate, setStartDate] = useState(today);
-  const [endDate, setEndDate] = useState(today);
-  const [date, setDate] = useState(today);
-  const [startTime, setStartTime] = useState(DEFAULT_START_TIME);
-  const [endTime, setEndTime] = useState(DEFAULT_END_TIME);
-  const [duration, setDuration] = useState<TLeaveDuration>('full_day');
-  const [place, setPlace] = useState<TWorkPlace>('office');
-  const [eventKind, setEventKind] =
-    useState<TAttendanceEventKind>('late_arrival');
-  const [reason, setReason] = useState('');
-  const [note, setNote] = useState('');
+  const { byType, revision, type } = form;
+  const {
+    date,
+    duration,
+    endDate,
+    endTime,
+    eventKind,
+    leaveKind,
+    note,
+    place,
+    reason,
+    startDate,
+    startTime,
+  } = byType[type];
+
+  const setField = useCallback(
+    <K extends keyof TCreateRequestFormValues>(field: K) =>
+      (value: TCreateRequestFormValues[K]) => {
+        dispatchForm({ action: 'patch', values: { [field]: value } });
+      },
+    [],
+  );
+
+  const setType = useCallback((requestType: TRequestType) => {
+    dispatchForm({ action: 'change_type', requestType });
+  }, []);
+
+  const [dismissedTypes, setDismissedTypes] = useState<
+    ReadonlySet<TRequestType>
+  >(() => new Set());
 
   const sections = useMemo(() => {
     const enabled = new Set<TCreateRequestSection>(
@@ -104,11 +141,6 @@ export function useCreateRequest() {
     return balance?.days === undefined ? 0 : balance.days - totalDays;
   }, [source, totalDays]);
 
-  /**
-   * Mở một bottom sheet chọn-một-giá-trị. Gói lại vì form này có tới năm ô
-   * cùng kiểu (loại đơn, loại nghỉ, loại OT, địa điểm, loại sự kiện) — viết
-   * tay từng cái thì năm lần lặp lại đúng một khối tham số.
-   */
   const openPicker = useCallback(
     <T extends string>(
       options: readonly T[],
@@ -128,8 +160,7 @@ export function useCreateRequest() {
         screen: Selection,
         popupType: 'bottomSheet',
         items,
-        // Truyền nguyên item chứ không phải id: bấm "Xác nhận" mà không chọn
-        // lại thì `Selection` trả về đúng giá trị khởi tạo này.
+
         itemSelected: items.find(item => item.id === selected),
         onSelect: (item: TSelectionItem) => {
           const picked = options.find(option => option === item.id);
@@ -175,54 +206,65 @@ export function useCreateRequest() {
       LEAVE_KIND_ORDER,
       LEAVE_KIND_LABEL_KEYS,
       leaveKind,
-      setLeaveKind,
+      setField('leaveKind'),
       t('create_request.kind_label'),
     );
-  }, [leaveKind, openPicker, t]);
+  }, [leaveKind, openPicker, setField, t]);
 
   const onPickPlace = useCallback(() => {
     openPicker(
       WORK_PLACE_ORDER,
       WORK_PLACE_LABEL_KEYS,
       place,
-      setPlace,
+      setField('place'),
       t('create_request.place_label'),
     );
-  }, [openPicker, place, t]);
+  }, [openPicker, place, setField, t]);
 
   const onPickEventKind = useCallback(() => {
     openPicker(
       EVENT_KIND_ORDER,
       EVENT_KIND_LABEL_KEYS,
       eventKind,
-      setEventKind,
+      setField('eventKind'),
       t('create_request.event_label'),
     );
-  }, [eventKind, openPicker, t]);
+  }, [eventKind, openPicker, setField, t]);
 
-  const onPickDate = (mode: TDatePickMode) => () => {
-    const isSingle = mode === 'single';
+  const openDateSheet = useCallback(
+    (mode: TDatePickMode) => {
+      const isSingle = mode === 'single';
 
-    AppNavigator.showDialog({
-      screen: DateRangeSheet,
-      dateType: mode,
-      popupType: 'bottomSheet',
-      onConfirm: (range: TRequestDateRange) => {
-        if (isSingle) {
-          setDate(range.from);
-          return;
-        }
-        setStartDate(range.from);
-        setEndDate(range.to);
-      },
-      title: isSingle
-        ? t(SINGLE_DATE_LABEL_KEYS[type])
-        : t('create_request.date_range_label'),
-      value: isSingle
-        ? { from: date, to: date }
-        : { from: startDate, to: endDate },
-    });
-  };
+      AppNavigator.showDialog({
+        screen: DateRangeSheet,
+        dateType: mode,
+        popupType: 'bottomSheet',
+        onConfirm: (range: TRequestDateRange) => {
+          dispatchForm({
+            action: 'patch',
+            values: isSingle
+              ? { date: range.from }
+              : { endDate: range.to, startDate: range.from },
+          });
+        },
+        title: isSingle
+          ? t(SINGLE_DATE_LABEL_KEYS[type])
+          : t('create_request.date_range_label'),
+        value: isSingle
+          ? { from: date, to: date }
+          : { from: startDate, to: endDate },
+      });
+    },
+    [date, endDate, startDate, t, type],
+  );
+
+  const onPickSingleDate = useCallback(() => {
+    openDateSheet('single');
+  }, [openDateSheet]);
+
+  const onPickDateRange = useCallback(() => {
+    openDateSheet('range');
+  }, [openDateSheet]);
 
   /** Cùng `Selection` với các ô chọn khác, chỉ khác nhánh `timeSheet`. */
   const openTimeSheet = useCallback(
@@ -242,23 +284,83 @@ export function useCreateRequest() {
   const onPickStartTime = useCallback(() => {
     openTimeSheet(
       startTime,
-      setStartTime,
+      setField('startTime'),
       t('create_request.start_time_label'),
     );
-  }, [openTimeSheet, startTime, t]);
+  }, [openTimeSheet, setField, startTime, t]);
 
   const onPickEndTime = useCallback(() => {
-    openTimeSheet(endTime, setEndTime, t('create_request.end_time_label'));
-  }, [endTime, openTimeSheet, t]);
+    openTimeSheet(
+      endTime,
+      setField('endTime'),
+      t('create_request.end_time_label'),
+    );
+  }, [endTime, openTimeSheet, setField, t]);
 
   const onGoBack = useCallback(() => {
     AppNavigator.goBack();
   }, []);
 
-  // Chưa có API tạo đơn: ba hành động dưới đây mới chỉ là chỗ nối sẵn.
-  const onSaveDraft = useCallback(() => {}, []);
+  const onSaveDraft = useCallback(() => {
+    dispatch(saveDraftRequest(toCreateRequestDraft(form)));
+    AppNavigator.showSnackBar({
+      message: 'Lưu nháp thành công',
+      type: 'success',
+    });
+    AppNavigator.goBack();
+  }, [dispatch, form, type]);
+
   const onPickAttachment = useCallback(() => {}, []);
   const onSubmit = useCallback(() => {}, []);
+
+  const storedDraft = useAppSelector(RequestsSelector.getDraft(type));
+  const allDrafts = useAppSelector(RequestsSelector.getDrafts);
+
+  const initialDrafts = useMemo(
+    () => listCreateRequestDrafts(allDrafts),
+    [allDrafts],
+  );
+
+  const savedDraft = useMemo(
+    () => parseCreateRequestDraft(storedDraft),
+    [storedDraft],
+  );
+
+  const onApplyDraft = useCallback(() => {
+    if (!savedDraft) {
+      return;
+    }
+    dispatchForm({ action: 'apply_draft', draft: savedDraft });
+
+    setDismissedTypes(previous => new Set(previous).add(savedDraft.type));
+  }, [savedDraft]);
+
+  /**
+   * Mở màn kèm `type` (bấm một nháp ở màn danh sách đơn) thì đặt luôn loại đó
+   * và nạp nháp của nó — người dùng không phải bấm "Cập nhật" thêm lần nữa.
+   *
+   * `useRef` chốt lại để chỉ chạy đúng một lần: thiếu nó thì mỗi lần
+   * `savedDraft` đổi (tức là mỗi lần bấm Lưu nháp) form lại bị nạp đè.
+   */
+  const hasAppliedInitialRef = useRef(false);
+
+  useEffect(() => {
+    if (hasAppliedInitialRef.current || initialType === undefined) {
+      return;
+    }
+    hasAppliedInitialRef.current = true;
+
+    const initialDraft = initialDrafts.find(
+      draft => draft.type === initialType,
+    );
+
+    dispatchForm(
+      initialDraft
+        ? { action: 'apply_draft', draft: initialDraft }
+        : { action: 'change_type', requestType: initialType },
+    );
+    setDismissedTypes(previous => new Set(previous).add(initialType));
+  }, [initialDrafts, initialType]);
 
   const missingSections = useMemo(
     () => findMissingSections(type, { date, reason, totalDays, totalHours }),
@@ -269,41 +371,48 @@ export function useCreateRequest() {
     approvers: APPROVERS,
     balances: BALANCES,
     canSubmit: missingSections.length === 0,
-    dateLabel: dayjs(date).format(DISPLAY_DATE_FORMAT),
+    formKey: revision,
+    hasDraft: savedDraft !== undefined && !dismissedTypes.has(type),
+    keys: {
+      reasonLabel: CREATE_REQUEST_REASON_LABEL_KEYS[type],
+      reasonPlaceholder: CREATE_REQUEST_REASON_PLACEHOLDER_KEYS[type],
+      singleDateLabel: SINGLE_DATE_LABEL_KEYS[type],
+      sourceLabel: BALANCE_LABEL_KEYS[source],
+      title: CREATE_REQUEST_TITLE_KEYS[type],
+    },
+    /** Chữ đã dịch sẵn, hiển thị thẳng được. */
+    labels: {
+      date: dayjs(date).format(DISPLAY_DATE_FORMAT),
+      endDate: dayjs(endDate).format(DISPLAY_DATE_FORMAT),
+      eventKind: t(EVENT_KIND_LABEL_KEYS[eventKind]),
+      leaveKind: t(LEAVE_KIND_LABEL_KEYS[leaveKind]),
+      place: t(WORK_PLACE_LABEL_KEYS[place]),
+      startDate: dayjs(startDate).format(DISPLAY_DATE_FORMAT),
+      type: t(REQUEST_TYPE_STYLES[type].labelKey),
+    },
     duration,
-    endDateLabel: dayjs(endDate).format(DISPLAY_DATE_FORMAT),
     endTime,
-    eventKindLabel: t(EVENT_KIND_LABEL_KEYS[eventKind]),
-    leaveKindLabel: t(LEAVE_KIND_LABEL_KEYS[leaveKind]),
     note,
     onGoBack,
     onPickAttachment,
-    onPickDate,
+    onPickDateRange,
+    onPickSingleDate,
     onPickEndTime,
     onPickEventKind,
     onPickLeaveKind,
     onPickPlace,
     onPickStartTime,
+    onApplyDraft,
     onPickType,
     onSaveDraft,
     onSubmit,
-    placeLabel: t(WORK_PLACE_LABEL_KEYS[place]),
     reason,
-    reasonLabelKey: CREATE_REQUEST_REASON_LABEL_KEYS[type],
-    reasonPlaceholderKey: CREATE_REQUEST_REASON_PLACEHOLDER_KEYS[type],
     remainingDays,
     sections,
-    setDuration,
-    setNote,
-    setReason,
-    singleDateLabelKey: SINGLE_DATE_LABEL_KEYS[type],
+    setField,
     source,
-    sourceLabelKey: BALANCE_LABEL_KEYS[source],
-    startDateLabel: dayjs(startDate).format(DISPLAY_DATE_FORMAT),
     startTime,
-    titleKey: CREATE_REQUEST_TITLE_KEYS[type],
     totalDays,
     totalHours,
-    typeLabel: t(REQUEST_TYPE_STYLES[type].labelKey),
   };
 }

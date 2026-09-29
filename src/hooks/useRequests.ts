@@ -10,16 +10,18 @@ import type {
   TRequestItem,
   TRequestSection,
   TRequestTab,
-  TRequestType,
+  TRequestTypeFilter,
 } from '@type/requests';
 
 import AppNavigator from '@navigation/AppNavigator';
 import dayjs from 'dayjs';
 import { Paths } from '@navigation/paths';
 import FilterSheet from '@dialogs/FilterSheet';
+
 import {
   countSelectedFilters,
   DEFAULT_REQUEST_FILTERS,
+  listCreateRequestDrafts,
   toRequestDateRange,
 } from '@utils/requests';
 import {
@@ -31,7 +33,8 @@ import {
   useState,
 } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { useAppDispatch } from '@services/common/storeHooks';
+import { RequestsSelector } from '@services/selectors';
+import { useAppDispatch, useAppSelector } from '@services/common/storeHooks';
 import {
   getRequestCountsRequest,
   getRequestsRequest,
@@ -46,11 +49,8 @@ import {
 const MONTH_ID_FORMAT = 'YYYY-MM';
 const MONTH_OFFSET = 1;
 
-/** Dưới mốc cuộn này thì hàng tab luôn hiện, khỏi phải vuốt ngược lên. */
 const TABS_ALWAYS_VISIBLE_OFFSET = 24;
-/** Quãng vuốt xuôi phải cộng dồn được trước khi thu hàng tab lại. */
 const TABS_HIDE_DISTANCE = 24;
-/** Vuốt ngược lên thì cho hiện sớm hơn, vì người dùng đang muốn đổi bộ lọc. */
 const TABS_SHOW_DISTANCE = 12;
 const NO_DRAG = 0;
 const NO_HEIGHT = 0;
@@ -68,6 +68,7 @@ const FIRST_PAGE = 0;
 const PAGE_STEP = 1;
 
 const ALL_FILTER = 'all';
+const DRAFT_FILTER = 'draft';
 const NO_FILTER = 0;
 
 const EMPTY_COUNTS: TRequestCounts = { all: 0, pending: 0, processed: 0 };
@@ -173,6 +174,10 @@ export function useRequests() {
 
   const loadRequests = useCallback(
     (page: number) => {
+      if (filters.type === DRAFT_FILTER) {
+        return;
+      }
+
       const isFirstPage = page === FIRST_PAGE;
       isLoadingRef.current = true;
 
@@ -208,8 +213,6 @@ export function useRequests() {
               return;
             }
             setHasLoaded(true);
-            // Lỗi thì không có dữ liệu mới để chờ commit — hiện lại ngay, không
-            // thì màn hình kẹt ở trạng thái mờ.
             showContent();
           },
           onSuccess: response => {
@@ -227,15 +230,20 @@ export function useRequests() {
 
             if (isFirstPage) {
               setHasLoaded(true);
-              // Việc hiện lại do useLayoutEffect bên trên lo, sau khi danh sách
-              // mới đã commit trong cùng một nhịp render với bộ đếm này.
               setContentRevision(previous => previous + ONE_REVISION);
             }
           },
         }),
       );
     },
-    [contentProgress, dispatch, filters.status, scope, showContent],
+    [
+      contentProgress,
+      dispatch,
+      filters.status,
+      filters.type,
+      scope,
+      showContent,
+    ],
   );
 
   const loadCounts = useCallback(() => {
@@ -265,10 +273,44 @@ export function useRequests() {
     loadRequests(pageRef.current + PAGE_STEP);
   }, [loadRequests, requests.length]);
 
-  const sections = useMemo(() => groupByMonth(requests), [requests]);
+  // ─── Nháp đang lưu ──────────────────────────────────────────────────────────
 
-  // Hàng tab ghi vào `status`, nên `countSelectedFilters` đã bao luôn cả việc
-  // người dùng đang đứng ở tab hẹp chứ không riêng bộ lọc trong bottom sheet.
+  const storedDrafts = useAppSelector(RequestsSelector.getDrafts);
+
+  const drafts = useMemo(
+    () => listCreateRequestDrafts(storedDrafts),
+    [storedDrafts],
+  );
+
+  const isDraftMode = filters.type === DRAFT_FILTER;
+
+  const draftItems = useMemo<readonly TRequestItem[]>(
+    () =>
+      drafts.map(draft => ({
+        createdAt: draft.type === 'leave' ? draft.startDate : draft.date,
+        endDate: draft.type === 'leave' ? draft.endDate : undefined,
+        id: `draft-${draft.type}`,
+        reason: draft.reason,
+        startDate: draft.type === 'leave' ? draft.startDate : draft.date,
+        status: 'draft',
+        type: draft.type,
+      })),
+    [drafts],
+  );
+
+  const visibleCounts = useMemo<TRequestCounts>(
+    () =>
+      isDraftMode
+        ? { all: draftItems.length, pending: 0, processed: 0 }
+        : counts,
+    [counts, draftItems.length, isDraftMode],
+  );
+
+  const sections = useMemo(
+    () => groupByMonth(isDraftMode ? draftItems : requests),
+    [draftItems, isDraftMode, requests],
+  );
+
   const isFiltered = useMemo(
     () => countSelectedFilters(filters) > NO_FILTER,
     [filters],
@@ -278,14 +320,24 @@ export function useRequests() {
     setFilters(current => ({ ...current, status: next }));
   }, []);
 
-  const onToggleType = useCallback((next: TRequestType) => {
-    setFilters(current => ({
-      ...current,
-      type: current.type === next ? 'all' : next,
-    }));
+  const onToggleType = useCallback((next: TRequestTypeFilter) => {
+    setFilters(current => {
+      const type = current.type === next ? ALL_FILTER : next;
+
+      return {
+        ...current,
+        status: type === DRAFT_FILTER ? ALL_FILTER : current.status,
+        type,
+      };
+    });
   }, []);
 
   const onOpenDetail = useCallback((item: TRequestItem) => {
+    if (item.status === 'draft') {
+      AppNavigator.navigate(Paths.CreateRequest, { type: item.type });
+      return;
+    }
+
     AppNavigator.navigate(Paths.RequestDetail, {
       id: item.id,
       type: item.type,
@@ -305,15 +357,10 @@ export function useRequests() {
     });
   }, [filters]);
 
-  // ─── Thu gọn hàng tab theo hướng cuộn ───────────────────────────────────────
-
-  /** Chiều cao thật của hàng tab, `undefined` khi chưa đo xong. */
   const [tabsHeight, setTabsHeight] = useState<number | undefined>();
-  /** 1 là hiện đủ, 0 là đã thu hết. Chỉ giá trị này chạy trên luồng UI. */
   const tabsProgress = useSharedValue(FULLY_SHOWN);
   const isTabsHidden = useRef(false);
   const lastOffsetY = useRef(0);
-  /** Quãng vuốt cộng dồn theo một hướng; dương là đang đi xuống. */
   const dragDistance = useRef(NO_DRAG);
 
   const onTabsLayout = useCallback((event: LayoutChangeEvent) => {
@@ -388,8 +435,10 @@ export function useRequests() {
 
   return {
     contentStyle,
-    counts,
+    counts: visibleCounts,
     hasLoaded,
+    draftCount: drafts.length,
+    isDraftMode,
     isFiltered,
     isLoading,
     isLoadingMore,
@@ -400,9 +449,9 @@ export function useRequests() {
     onEndReached,
     onOpenDetail,
     onOpenFilter,
+    onToggleType,
     onScroll,
     onTabsLayout,
-    onToggleType,
     sections,
     tab,
     tabsStyle,

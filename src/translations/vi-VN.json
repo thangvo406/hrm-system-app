@@ -763,8 +763,12 @@
       }
     },
     "requests": {
+      "drafts_banner": "Bạn có {{total}} bản nháp",
+      "drafts_title": "Bản nháp",
       "title": "Đơn từ",
       "create": "Tạo đơn",
+      "status_draft": "Nháp",
+      "type_draft": "Nháp",
       "type_leave": "Nghỉ phép",
       "type_late_arrival": "Đi muộn",
       "type_early_leave": "Về sớm",
@@ -806,6 +810,8 @@
       "tab_processed_short": "Đã xử lý"
     },
     "create_request": {
+      "draft_banner": "Bạn có 1 đơn {{type}} nháp",
+      "draft_restore": "Cập nhật",
       "title_leave": "Tạo đơn nghỉ phép",
       "title_late_arrival": "Tạo đơn đi muộn",
       "title_early_leave": "Tạo đơn về sớm",
@@ -869,6 +875,8 @@
       "note_placeholder": "Thông tin thêm gửi người duyệt (không bắt buộc)"
     },
     "request_detail": {
+      "banner_draft_message": "Đơn này chưa được gửi đi.",
+      "banner_draft_title": "Bản nháp",
       "title": "Chi tiết đơn từ",
       "code": "Mã đơn: {{code}}",
       "created_by": "Tạo ngày {{date}} • Bởi {{name}}",

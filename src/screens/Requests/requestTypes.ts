@@ -3,23 +3,14 @@ import type { TRequestType } from '@type/requests';
 
 import { Colors } from '@constants';
 
-/**
- * Bộ nhận diện của từng loại đơn: icon, màu mực và nền nhạt phía sau. Dùng
- * chung cho thẻ lọc ở đầu màn và ô icon của mỗi dòng đơn, để cùng một loại
- * đơn luôn hiện cùng một màu ở mọi chỗ.
- *
- * Mỗi loại một họ màu riêng — năm loại đứng cạnh nhau trong lưới lọc nên màu
- * là thứ phân biệt chúng nhanh hơn cả icon lẫn chữ.
- */
-export const REQUEST_TYPE_STYLES: Record<
-  TRequestType,
-  {
-    readonly icon: IconName;
-    readonly ink: string;
-    readonly labelKey: string;
-    readonly tint: string;
-  }
-> = {
+export type TRequestTypeStyle = {
+  readonly icon: IconName;
+  readonly ink: string;
+  readonly labelKey: string;
+  readonly tint: string;
+};
+
+export const REQUEST_TYPE_STYLES: Record<TRequestType, TRequestTypeStyle> = {
   attendance_explanation: {
     icon: 'ic_document',
     ink: Colors.teal01,

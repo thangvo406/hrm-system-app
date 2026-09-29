@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 export const REASON_MAX_LENGTH = 500;
 
 type Properties = {
+  readonly defaultValue: string;
   /** Nhãn và gợi ý đều đổi theo loại đơn, nên không có giá trị mặc định. */
   readonly labelKey: string;
   readonly onChangeText: (reason: string) => void;
@@ -14,41 +15,51 @@ type Properties = {
   /** Ô ghi chú tắt bộ đếm: nó ngắn và không bắt buộc nên đếm chỉ gây nhiễu. */
   readonly showCounter?: boolean;
   readonly testID?: string;
-  readonly value: string;
 };
 
-/** Ô nhập nhiều dòng, mặc định kèm bộ đếm ký tự ở góc dưới phải. */
 function ReasonField({
+  defaultValue,
   labelKey,
   onChangeText,
   placeholderKey,
   showCounter = true,
   testID = 'CreateRequestReason',
-  value,
 }: Properties) {
   const { t } = useTranslation();
+
+  const [usedLength, setUsedLength] = useState(defaultValue.length);
+
+  const handleChangeText = useCallback(
+    (next: string) => {
+      if (showCounter) {
+        setUsedLength(next.length);
+      }
+      onChangeText(next);
+    },
+    [onChangeText, showCounter],
+  );
 
   return (
     <View>
       <Text style={styles.label}>{t(labelKey)}</Text>
 
       <TextInput
+        defaultValue={defaultValue}
         maxLength={REASON_MAX_LENGTH}
         multiline
-        onChangeText={onChangeText}
+        onChangeText={handleChangeText}
         placeholder={t(placeholderKey)}
         placeholderTextColor={Colors.gray18}
         style={styles.input}
         testID={testID}
         textAlignVertical="top"
-        value={value}
       />
 
       {showCounter ? (
         <Text style={styles.counter}>
           {t('create_request.reason_counter', {
             max: REASON_MAX_LENGTH,
-            used: value.length,
+            used: usedLength,
           })}
         </Text>
       ) : undefined}

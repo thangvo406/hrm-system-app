@@ -15,12 +15,15 @@ import { StyleSheet } from 'react-native';
 const ACTIVE_COLOR = Colors.white;
 const INACTIVE_COLOR = Colors.gray17;
 
+const DISABLED_OPACITY = 0.4;
+
 const FULLY_ACTIVE = 1;
 const FULLY_INACTIVE = 0;
 
 type Properties = {
   readonly index: number;
   readonly isActive: boolean;
+  readonly isDisabled: boolean;
   readonly label: string;
   readonly onChange: (tab: TRequestTab) => void;
   readonly progress: SharedValue<number>;
@@ -31,6 +34,7 @@ type Properties = {
 function RequestTab({
   index,
   isActive,
+  isDisabled,
   label,
   onChange,
   progress,
@@ -52,7 +56,12 @@ function RequestTab({
   }));
 
   return (
-    <AppButton onPress={onPress} style={styles.tab} testID={testID}>
+    <AppButton
+      disabled={isDisabled}
+      onPress={onPress}
+      style={[styles.tab, isDisabled && styles.tabDisabled]}
+      testID={testID}
+    >
       <Animated.Text
         numberOfLines={1}
         style={[styles.label, isActive && styles.labelActive, labelStyle]}
@@ -72,6 +81,9 @@ const styles = StyleSheet.create({
   },
   labelActive: {
     fontWeight: '700',
+  },
+  tabDisabled: {
+    opacity: DISABLED_OPACITY,
   },
   tab: {
     alignItems: 'center',

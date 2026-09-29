@@ -1,5 +1,9 @@
 import type {
   TAttendanceEventKind,
+  TCreateRequestAction,
+  TCreateRequestDraft,
+  TCreateRequestFormState,
+  TCreateRequestFormValues,
   TCreateRequestSection,
   TLeaveBalanceKind,
   TLeaveKind,
@@ -14,6 +18,7 @@ import type {
   TWorkPlace,
 } from '@type/requests';
 
+import * as z from 'zod';
 import dayjs from 'dayjs';
 import { getCurrentTime, MINUTES_PER_HOUR, parseMinutes } from './date';
 
@@ -482,4 +487,151 @@ export const toOrderedDateRange = (
     from: (isReversed ? end : start).format(ISO_DATE_FORMAT),
     to: (isReversed ? start : end).format(ISO_DATE_FORMAT),
   };
+};
+
+const CREATE_REQUEST_DRAFT_SCHEMA: z.ZodType<TCreateRequestDraft> = z.object({
+  date: z.string(),
+  duration: z.enum(['afternoon', 'full_day', 'morning']),
+  endDate: z.string(),
+  endTime: z.string(),
+  eventKind: z.enum([
+    'early_leave',
+    'forgot_check_in',
+    'forgot_check_out',
+    'late_arrival',
+  ]),
+  leaveKind: z.enum([
+    'annual',
+    'compensatory',
+    'performance',
+    'unpaid',
+    'wedding',
+  ]),
+  note: z.string(),
+  place: z.enum(['client', 'home', 'office']),
+  reason: z.string(),
+  startDate: z.string(),
+  startTime: z.string(),
+  type: z.enum([
+    'attendance_explanation',
+    'early_leave',
+    'late_arrival',
+    'leave',
+    'overtime',
+  ]),
+});
+
+export const parseCreateRequestDraft = (
+  value: unknown,
+): TCreateRequestDraft | undefined => {
+  const parsed = CREATE_REQUEST_DRAFT_SCHEMA.safeParse(value);
+  return parsed.success ? parsed.data : undefined;
+};
+
+// ──────────────────────────────────────────────────────────────────────────────
+// State của form tạo đơn
+// ──────────────────────────────────────────────────────────────────────────────
+
+const DEFAULT_START_TIME = '18:00';
+const DEFAULT_END_TIME = '21:00';
+const DEFAULT_CREATE_REQUEST_TYPE: TRequestType = 'leave';
+const FIRST_REVISION = 0;
+const ONE_REVISION = 1;
+
+const createDefaultValues = (today: string): TCreateRequestFormValues => ({
+  date: today,
+  duration: 'full_day',
+  endDate: today,
+  endTime: DEFAULT_END_TIME,
+  eventKind: 'late_arrival',
+  leaveKind: 'annual',
+  note: '',
+  place: 'office',
+  reason: '',
+  startDate: today,
+  startTime: DEFAULT_START_TIME,
+});
+
+export const createInitialCreateRequestForm = (): TCreateRequestFormState => {
+  const values = createDefaultValues(getCurrentTime().format(ISO_DATE_FORMAT));
+
+  return {
+    byType: {
+      attendance_explanation: values,
+      early_leave: values,
+      late_arrival: values,
+      leave: values,
+      overtime: values,
+    },
+    revision: FIRST_REVISION,
+    type: DEFAULT_CREATE_REQUEST_TYPE,
+  };
+};
+
+/** Ảnh chụp để lưu nháp — đúng format đã ghi xuống MMKV. */
+export const toCreateRequestDraft = (
+  state: TCreateRequestFormState,
+): TCreateRequestDraft => ({
+  ...state.byType[state.type],
+  type: state.type,
+});
+
+const withCurrentValues = (
+  state: TCreateRequestFormState,
+  values: TCreateRequestFormValues,
+): TCreateRequestFormState => ({
+  ...state,
+  byType: { ...state.byType, [state.type]: values },
+});
+
+export const createRequestFormReducer = (
+  state: TCreateRequestFormState,
+  action: TCreateRequestAction,
+): TCreateRequestFormState => {
+  switch (action.action) {
+    case 'apply_draft': {
+      const { type, ...values } = action.draft;
+      return {
+        byType: { ...state.byType, [type]: values },
+        revision: state.revision + ONE_REVISION,
+        type,
+      };
+    }
+
+    // Đổi loại là thay cả bộ giá trị đang hiện → phải bump `revision`.
+    case 'change_type': {
+      return state.type === action.requestType
+        ? state
+        : {
+            ...state,
+            revision: state.revision + ONE_REVISION,
+            type: action.requestType,
+          };
+    }
+
+    case 'patch': {
+      return withCurrentValues(state, {
+        ...state.byType[state.type],
+        ...action.values,
+      });
+    }
+
+    default: {
+      return state;
+    }
+  }
+};
+
+export const listCreateRequestDrafts = (
+  drafts: unknown,
+): readonly TCreateRequestDraft[] => {
+  if (typeof drafts !== 'object' || drafts === null) {
+    return [];
+  }
+
+  const byType = drafts as Readonly<Record<string, unknown>>;
+
+  return CREATE_REQUEST_TYPE_ORDER.map(type =>
+    parseCreateRequestDraft(byType[type]),
+  ).filter((draft): draft is TCreateRequestDraft => draft !== undefined);
 };

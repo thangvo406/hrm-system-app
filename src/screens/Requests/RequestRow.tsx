@@ -10,6 +10,7 @@ import { REQUEST_TYPE_STYLES } from './requestTypes';
 import { ScaleSize } from '@kits/core';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { calculateDaysBetweenDates } from '@utils/date';
 
 const CHEVRON_SIZE = ScaleSize(20);
 const CIRCLE_SIZE = ScaleSize(44);
@@ -25,7 +26,6 @@ type Properties = {
   readonly onPress: (item: TRequestItem) => void;
 };
 
-/** Một đơn từ trong danh sách: loại đơn, thời gian áp dụng, lý do và trạng thái. */
 function RequestRow({ item, onPress }: Properties) {
   const { t } = useTranslation();
   const tone = REQUEST_TYPE_STYLES[item.type];
@@ -34,7 +34,7 @@ function RequestRow({ item, onPress }: Properties) {
   let periodLabel = startLabel;
   if (item.endDate) {
     periodLabel = t('requests.period_range', {
-      days: item.dayCount,
+      days: calculateDaysBetweenDates(item.startDate, item.endDate),
       end: dayjs(item.endDate).format(DATE_FORMAT),
       start: startLabel,
     });

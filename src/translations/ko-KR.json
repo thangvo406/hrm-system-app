@@ -515,8 +515,12 @@
       }
     },
     "requests": {
+      "drafts_banner": "작성 중인 신청서 {{total}}건",
+      "drafts_title": "임시저장",
       "title": "신청서",
       "create": "신청서 작성",
+      "status_draft": "임시저장",
+      "type_draft": "임시저장",
       "type_leave": "연차",
       "type_late_arrival": "지각",
       "type_early_leave": "조퇴",
@@ -558,6 +562,8 @@
       "tab_processed_short": "처리 완료"
     },
     "create_request": {
+      "draft_banner": "작성 중인 {{type}} 신청서가 1건 있습니다",
+      "draft_restore": "불러오기",
       "title_leave": "휴가 신청서 작성",
       "title_late_arrival": "지각 신청서 작성",
       "title_early_leave": "조퇴 신청서 작성",
@@ -621,6 +627,8 @@
       "note_placeholder": "승인자에게 전달할 추가 내용 (선택)"
     },
     "request_detail": {
+      "banner_draft_message": "아직 제출되지 않은 신청서입니다.",
+      "banner_draft_title": "임시저장",
       "title": "신청서 상세",
       "code": "신청 번호: {{code}}",
       "created_by": "{{date}} 작성 • {{name}}",

@@ -1,4 +1,5 @@
-import type { Storage } from 'redux-persist';
+import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
+import type { PersistConfig, Storage } from 'redux-persist';
 
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import {
@@ -46,8 +47,11 @@ const rootReducer = combineReducers({
   requests: requestsReducer,
 });
 
-const persistConfig = {
+type TRootState = ReturnType<typeof rootReducer>;
+
+const persistConfig: PersistConfig<TRootState> = {
   key: 'root',
+  stateReconciler: autoMergeLevel2,
   storage: reduxStorage,
   // whitelist: ['app', 'auth'],
 };
@@ -77,4 +81,4 @@ sagaMiddleware.run(rootSaga);
 export const persistor = persistStore(store);
 
 export type AppDispatch = typeof store.dispatch;
-export type RootState = ReturnType<typeof rootReducer>;
+export type RootState = TRootState;

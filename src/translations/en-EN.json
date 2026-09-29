@@ -763,8 +763,12 @@
       }
     },
     "requests": {
+      "drafts_banner": "You have {{total}} draft(s)",
+      "drafts_title": "Drafts",
       "title": "Requests",
       "create": "New request",
+      "status_draft": "Draft",
+      "type_draft": "Drafts",
       "type_leave": "Annual leave",
       "type_late_arrival": "Late arrival",
       "type_early_leave": "Early leave",
@@ -806,6 +810,8 @@
       "tab_processed_short": "Processed"
     },
     "create_request": {
+      "draft_banner": "You have 1 draft {{type}} request",
+      "draft_restore": "Restore",
       "title_leave": "New leave request",
       "title_late_arrival": "New late arrival request",
       "title_early_leave": "New early leave request",
@@ -869,6 +875,8 @@
       "note_placeholder": "Anything else the approver should know (optional)"
     },
     "request_detail": {
+      "banner_draft_message": "This request has not been submitted yet.",
+      "banner_draft_title": "Draft",
       "title": "Request details",
       "code": "Request no. {{code}}",
       "created_by": "Created {{date}} • By {{name}}",
