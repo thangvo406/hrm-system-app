@@ -1,3 +1,4 @@
+import Animated, { FadeIn } from 'react-native-reanimated';
 import AppButton from '@components/AppButton';
 import AttendanceHeader from './AttendanceHeader';
 import ClockCard from './ClockCard';
@@ -14,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { EAttendanceMode } from '@constants/config';
 
 const EXPLANATION_ICON_SIZE = ScaleSize(16);
+const MODE_FADE_DURATION = 220;
 
 /** Màn Chấm công: chấm bằng định vị GPS hoặc bằng mã QR. */
 function Attendance() {
@@ -51,25 +53,30 @@ function Attendance() {
         showsVerticalScrollIndicator={false}
         style={styles.scroll}
       >
-        {mode === EAttendanceMode.GPS ? (
-          <>
-            <LocationCard
-              currentLocation={currentLocation}
-              distanceInMeters={distanceInMeters}
-              geofenceRadius={geofenceRadius}
-              isInsideLocation={isInsideLocation}
-              mapRef={mapRef}
-              officeInfo={officeInfo}
-              onPressLocate={onPressLocate}
-            />
-            <GeofenceBanner
-              isInsideLocation={isInsideLocation}
-              isMocked={currentLocation.isMocked}
-            />
-          </>
-        ) : (
-          <QrPlaceholder />
-        )}
+        <Animated.View
+          entering={FadeIn.duration(MODE_FADE_DURATION)}
+          key={mode}
+        >
+          {mode === EAttendanceMode.GPS ? (
+            <>
+              <LocationCard
+                currentLocation={currentLocation}
+                distanceInMeters={distanceInMeters}
+                geofenceRadius={geofenceRadius}
+                isInsideLocation={isInsideLocation}
+                mapRef={mapRef}
+                officeInfo={officeInfo}
+                onPressLocate={onPressLocate}
+              />
+              <GeofenceBanner
+                isInsideLocation={isInsideLocation}
+                isMocked={currentLocation.isMocked}
+              />
+            </>
+          ) : (
+            <QrPlaceholder />
+          )}
+        </Animated.View>
 
         <ClockCard
           attendanceInfo={attendanceInfo}

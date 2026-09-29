@@ -1,17 +1,14 @@
 import type { IconName } from '@assets/icons';
 import type { TAttendanceHistoryFilter } from '@type/attendance';
 
-import AppButton from '@components/AppButton';
-import Image from '@components/Image';
+import FilterChip from './FilterChip';
 import React from 'react';
 import { AttendanceUtils } from '@utils';
 import { Colors } from '@constants';
 import { EAttendanceStatus } from '@constants/config';
 import { ScaleSize } from '@kits/core';
-import { ScrollView, StyleSheet, Text } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-
-const CHIP_ICON_SIZE = ScaleSize(17);
 
 const FILTERS: readonly {
   readonly icon: IconName;
@@ -62,28 +59,18 @@ function FilterChips({ onChange, value }: Properties) {
       showsHorizontalScrollIndicator={false}
       style={styles.container}
     >
-      {FILTERS.map(filter => {
-        const isActive = filter.value === value;
-        return (
-          <AppButton
-            key={filter.value}
-            onPress={() => onChange(filter.value)}
-            style={[styles.chip, isActive && styles.chipActive]}
-            testID={`AttendanceHistoriesFilter_${filter.value}`}
-          >
-            <Image
-              color={isActive ? Colors.white : filter.iconColor}
-              height={CHIP_ICON_SIZE}
-              name={filter.icon}
-              type="svg"
-              width={CHIP_ICON_SIZE}
-            />
-            <Text style={[styles.label, isActive && styles.labelActive]}>
-              {t(filter.labelKey)}
-            </Text>
-          </AppButton>
-        );
-      })}
+      {FILTERS.map(filter => (
+        <FilterChip
+          key={filter.value}
+          icon={filter.icon}
+          iconColor={filter.iconColor}
+          isActive={filter.value === value}
+          label={t(filter.labelKey)}
+          onChange={onChange}
+          testID={`AttendanceHistoriesFilter_${filter.value}`}
+          value={filter.value}
+        />
+      ))}
     </ScrollView>
   );
 }
@@ -91,37 +78,12 @@ function FilterChips({ onChange, value }: Properties) {
 export default React.memo(FilterChips);
 
 const styles = StyleSheet.create({
-  chip: {
-    alignItems: 'center',
-    backgroundColor: Colors.white,
-    borderColor: Colors.gray27,
-    borderRadius: ScaleSize(22),
-    borderWidth: 1,
-    flexDirection: 'row',
-    gap: ScaleSize(8),
-    paddingHorizontal: ScaleSize(16),
-    paddingVertical: ScaleSize(10),
-  },
-  chipActive: {
-    backgroundColor: Colors.blue02,
-    borderColor: Colors.blue02,
-  },
   container: {
-    // ScrollView ngang mà không chốt `flexGrow: 0` thì nó ăn hết chiều cao còn
-    // lại của cha, đẩy danh sách bên dưới ra khỏi màn hình.
     flexGrow: 0,
     marginTop: ScaleSize(14),
   },
   content: {
     gap: ScaleSize(10),
     paddingHorizontal: ScaleSize(16),
-  },
-  label: {
-    color: Colors.gray17,
-    fontSize: ScaleSize(14),
-    fontWeight: '600',
-  },
-  labelActive: {
-    color: Colors.white,
   },
 });

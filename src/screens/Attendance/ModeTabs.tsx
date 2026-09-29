@@ -1,16 +1,26 @@
 import type { IconName } from '@assets/icons';
 import type { TAttendanceMode } from '@type/attendance';
+import type { LayoutChangeEvent } from 'react-native';
 
-import AppButton from '@components/AppButton';
-import Image from '@components/Image';
-import React from 'react';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import ModeTab from './ModeTab';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { EAttendanceMode } from '@constants/config';
 
-const TAB_ICON_SIZE = ScaleSize(18);
+const TRACK_PADDING = ScaleSize(4);
+const PILL_RADIUS = ScaleSize(11);
+
+const SLIDE_DURATION = 220;
+const FIRST_TAB = 0;
+const UNMEASURED = 0;
 
 const TABS: readonly {
   readonly icon: IconName;
@@ -34,34 +44,50 @@ type Properties = {
   readonly onChangeMode: (mode: TAttendanceMode) => void;
 };
 
-/** Bộ chuyển giữa chấm công bằng định vị và bằng mã QR. */
 function ModeTabs({ mode, onChangeMode }: Properties) {
   const { t } = useTranslation();
+  const [trackWidth, setTrackWidth] = useState(UNMEASURED);
+
+  const activeIndex = Math.max(
+    TABS.findIndex(tab => tab.mode === mode),
+    FIRST_TAB,
+  );
+
+  const progress = useSharedValue(activeIndex);
+
+  useEffect(() => {
+    progress.set(withTiming(activeIndex, { duration: SLIDE_DURATION }));
+  }, [activeIndex, progress]);
+
+  const onLayout = useCallback((event: LayoutChangeEvent) => {
+    setTrackWidth(event.nativeEvent.layout.width - TRACK_PADDING * 2);
+  }, []);
+
+  const tabWidth = trackWidth / TABS.length;
+
+  const pillStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: progress.get() * tabWidth }],
+    width: tabWidth,
+  }));
 
   return (
-    <View style={styles.container}>
-      {TABS.map(tab => {
-        const isActive = tab.mode === mode;
-        return (
-          <AppButton
-            key={tab.mode}
-            onPress={() => onChangeMode(tab.mode)}
-            style={[styles.tab, isActive && styles.tabActive]}
-            testID={`AttendanceMode_${tab.mode}`}
-          >
-            <Image
-              color={isActive ? Colors.navy04 : Colors.blue05}
-              height={TAB_ICON_SIZE}
-              name={tab.icon}
-              type="svg"
-              width={TAB_ICON_SIZE}
-            />
-            <Text style={[styles.label, isActive && styles.labelActive]}>
-              {t(tab.labelKey)}
-            </Text>
-          </AppButton>
-        );
-      })}
+    <View onLayout={onLayout} style={styles.container}>
+      {trackWidth > UNMEASURED ? (
+        <Animated.View style={[styles.pill, pillStyle]} />
+      ) : undefined}
+
+      {TABS.map((tab, index) => (
+        <ModeTab
+          key={tab.mode}
+          icon={tab.icon}
+          index={index}
+          label={t(tab.labelKey)}
+          mode={tab.mode}
+          onChangeMode={onChangeMode}
+          progress={progress}
+          testID={`AttendanceMode_${tab.mode}`}
+        />
+      ))}
     </View>
   );
 }
@@ -74,26 +100,14 @@ const styles = StyleSheet.create({
     borderRadius: ScaleSize(14),
     flexDirection: 'row',
     marginTop: ScaleSize(16),
-    padding: ScaleSize(4),
+    padding: TRACK_PADDING,
   },
-  label: {
-    color: Colors.blue05,
-    fontSize: ScaleSize(14),
-    fontWeight: '600',
-  },
-  labelActive: {
-    color: Colors.navy04,
-  },
-  tab: {
-    alignItems: 'center',
-    borderRadius: ScaleSize(11),
-    flex: 1,
-    flexDirection: 'row',
-    gap: ScaleSize(8),
-    justifyContent: 'center',
-    paddingVertical: ScaleSize(11),
-  },
-  tabActive: {
+  pill: {
     backgroundColor: Colors.white,
+    borderRadius: PILL_RADIUS,
+    bottom: TRACK_PADDING,
+    left: TRACK_PADDING,
+    position: 'absolute',
+    top: TRACK_PADDING,
   },
 });

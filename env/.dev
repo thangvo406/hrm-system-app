@@ -1,6 +1,6 @@
 BASE_URL=https://crm-mobile-api.allaindev.site/
 SOCKET_URL=wss://crm-mobile-api.allaindev.site/ws
-APP_NAME=HRM system app
+APP_NAME=HRM system
 APP_ID=com.hrm.system.dev
 APP_IOS_ID=com.hrm.system.dev
 ONE_SIGNAL_ID=027a3d1e-406d-4233-955d-06e5869d7374

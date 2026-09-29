@@ -3,6 +3,7 @@ import type { TNotificationFilter } from '@type/notifications';
 import AppButton from '@components/AppButton';
 import images from '@assets/images';
 import Image from '@components/Image';
+import NotificationFilterChip from './NotificationFilterChip';
 import React from 'react';
 import { Colors } from '@constants';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
@@ -68,35 +69,25 @@ function NotificationsHeader({
       </View>
 
       <View style={styles.filters}>
-        {FILTERS.map(item => {
-          const isActive = item.value === filter;
-          const count = counts[item.value];
-
-          return (
-            <AppButton
-              key={item.value}
-              onPress={() => {
-                onChangeFilter(item.value);
-              }}
-              style={[styles.chip, isActive && styles.chipActive]}
-              testID={`NotificationsFilter_${item.value}`}
-            >
-              <Text
-                numberOfLines={1}
-                style={[styles.chipLabel, isActive && styles.chipLabelActive]}
-              >
-                {/* Nhóm "Tất cả" không kèm số: nó là mặc định, đếm lại chỉ
-                    lặp đúng độ dài danh sách ngay bên dưới. */}
-                {item.value === 'all'
-                  ? t(item.labelKey)
-                  : t('notifications.filter_with_count', {
-                      label: t(item.labelKey),
-                      total: count,
-                    })}
-              </Text>
-            </AppButton>
-          );
-        })}
+        {FILTERS.map(item => (
+          <NotificationFilterChip
+            key={item.value}
+            isActive={item.value === filter}
+            label={
+              // Nhóm "Tất cả" không kèm số: nó là mặc định, đếm lại chỉ lặp
+              // đúng độ dài danh sách ngay bên dưới.
+              item.value === 'all'
+                ? t(item.labelKey)
+                : t('notifications.filter_with_count', {
+                    label: t(item.labelKey),
+                    total: counts[item.value],
+                  })
+            }
+            onChangeFilter={onChangeFilter}
+            testID={`NotificationsFilter_${item.value}`}
+            value={item.value}
+          />
+        ))}
       </View>
     </ImageBackground>
   );
@@ -105,24 +96,6 @@ function NotificationsHeader({
 export default React.memo(NotificationsHeader);
 
 const styles = StyleSheet.create({
-  chip: {
-    backgroundColor: Colors.navy06,
-    borderRadius: ScaleSize(20),
-    paddingHorizontal: ScaleSize(16),
-    paddingVertical: ScaleSize(10),
-  },
-  chipActive: {
-    backgroundColor: Colors.white,
-  },
-  chipLabel: {
-    color: Colors.blue05,
-    fontSize: ScaleSize(13),
-    fontWeight: '600',
-  },
-  chipLabelActive: {
-    color: Colors.navy04,
-    fontWeight: '700',
-  },
   container: {
     // Nền dự phòng cho khung hình đầu tiên, trước khi ảnh kịp decode.
     backgroundColor: Colors.navy05,

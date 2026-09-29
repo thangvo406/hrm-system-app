@@ -2,6 +2,7 @@ import type {
   LayoutChangeEvent,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  SectionList,
 } from 'react-native';
 import type {
   TRequestCounts,
@@ -21,7 +22,14 @@ import {
   DEFAULT_REQUEST_FILTERS,
   toRequestDateRange,
 } from '@utils/requests';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { useAppDispatch } from '@services/common/storeHooks';
 import {
@@ -109,6 +117,15 @@ export function useRequests() {
   /** Mốc bắt đầu nhịp mờ đi, để biết còn nợ bao nhiêu mili giây nữa. */
   const fadeOutStartedAtRef = useRef(0);
 
+  const listRef = useRef<SectionList<TRequestItem, TRequestSection>>(null);
+  /** Bật khi dữ liệu trang đầu vừa về và còn chờ commit xong mới cho hiện lại. */
+  const pendingShowRef = useRef(false);
+  /**
+   * Đã chạy xong lần tải đầu tiên chưa. Chỉ sau mốc đó mới được kết luận "rỗng"
+   * — trước đó danh sách trống chỉ có nghĩa là chưa có dữ liệu.
+   */
+  const [hasLoaded, setHasLoaded] = useState(false);
+
   useEffect(
     () => () => {
       isMountedRef.current = false;
@@ -130,6 +147,32 @@ export function useRequests() {
     }),
     [filters],
   );
+
+  const scrollToTop = useCallback(() => {
+    listRef.current?.getScrollResponder()?.scrollTo({ animated: false, y: 0 });
+  }, []);
+
+  const showContent = useCallback(() => {
+    const elapsed = Date.now() - fadeOutStartedAtRef.current;
+    const remaining = Math.max(CONTENT_FADE_OUT_DURATION - elapsed, 0);
+
+    contentProgress.set(
+      withDelay(
+        remaining,
+        withTiming(FULLY_SHOWN, { duration: CONTENT_FADE_IN_DURATION }),
+      ),
+    );
+  }, [contentProgress]);
+
+  useLayoutEffect(() => {
+    if (!pendingShowRef.current) {
+      return;
+    }
+    pendingShowRef.current = false;
+
+    scrollToTop();
+    showContent();
+  }, [requests, scrollToTop, showContent]);
 
   const loadRequests = useCallback(
     (page: number) => {
@@ -156,22 +199,6 @@ export function useRequests() {
         }
       };
 
-      const showContent = () => {
-        if (!isFirstPage || !isMountedRef.current) {
-          return;
-        }
-
-        const elapsed = Date.now() - fadeOutStartedAtRef.current;
-        const remaining = Math.max(CONTENT_FADE_OUT_DURATION - elapsed, 0);
-
-        contentProgress.set(
-          withDelay(
-            remaining,
-            withTiming(FULLY_SHOWN, { duration: CONTENT_FADE_IN_DURATION }),
-          ),
-        );
-      };
-
       dispatch(
         getRequestsRequest({
           ...scope,
@@ -180,7 +207,13 @@ export function useRequests() {
           status: filters.status === ALL_FILTER ? '' : filters.status,
           onFailure: () => {
             stopLoading();
-            // Hiện lại kể cả khi lỗi, không thì màn hình kẹt ở trạng thái mờ.
+            if (!isFirstPage || !isMountedRef.current) {
+              return;
+            }
+            setHasLoaded(true);
+            // Lỗi thì không có dữ liệu mới để chờ commit — hiện lại ngay, không
+            // thì màn hình kẹt ở trạng thái mờ.
+            pendingShowRef.current = false;
             showContent();
           },
           onSuccess: response => {
@@ -195,12 +228,18 @@ export function useRequests() {
                 ? response.content
                 : [...previous, ...response.content],
             );
-            showContent();
+
+            if (isFirstPage) {
+              setHasLoaded(true);
+              // Việc hiện lại do useLayoutEffect bên trên lo, sau khi danh sách
+              // mới đã commit.
+              pendingShowRef.current = true;
+            }
           },
         }),
       );
     },
-    [contentProgress, dispatch, filters.status, scope],
+    [contentProgress, dispatch, filters.status, scope, showContent],
   );
 
   const loadCounts = useCallback(() => {
@@ -354,10 +393,12 @@ export function useRequests() {
   return {
     contentStyle,
     counts,
+    hasLoaded,
     isFiltered,
     isLoading,
     isLoadingMore,
     listContentStyle,
+    listRef,
     onChangeTab,
     onCreateRequest,
     onEndReached,

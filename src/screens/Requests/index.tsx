@@ -28,10 +28,12 @@ function Requests() {
   const {
     contentStyle,
     counts,
+    hasLoaded,
     isFiltered,
     isLoading,
     isLoadingMore,
     listContentStyle,
+    listRef,
     onChangeTab,
     onCreateRequest,
     onEndReached,
@@ -63,24 +65,18 @@ function Requests() {
         <TypeFilters onToggle={onToggleType} value={typeFilter} />
 
         <View style={styles.listArea}>
-          {/* Lớp mờ chỉ trùm danh sách, không trùm hàng tab bên dưới. */}
           <Animated.View
-            // `opacity: 0` trong React Native KHÔNG chặn chạm. Không khoá lại
-            // thì trong lúc nội dung đang mờ, chạm trúng một dòng không nhìn
-            // thấy sẽ mở chi tiết của đơn thuộc tab cũ.
             pointerEvents={isLoading ? 'none' : 'auto'}
             style={[styles.listFill, contentStyle]}
           >
             <SectionList
               ListEmptyComponent={
-                // Đang tải trang đầu thì chưa kết luận là rỗng, tránh nháy màn
-                // hình rỗng rồi danh sách mới hiện ra.
-                isLoading ? undefined : (
+                hasLoaded ? (
                   <RequestsEmpty
                     isFiltered={isFiltered}
                     onPressCreate={onCreateRequest}
                   />
-                )
+                ) : undefined
               }
               ListFooterComponent={
                 isLoadingMore ? (
@@ -95,12 +91,12 @@ function Requests() {
               onEndReached={onEndReached}
               onEndReachedThreshold={END_REACHED_THRESHOLD}
               onScroll={onScroll}
+              ref={listRef}
               renderItem={renderItem}
               renderSectionHeader={renderSectionHeader}
               scrollEventThrottle={SCROLL_EVENT_THROTTLE}
               sections={sections}
               showsVerticalScrollIndicator={false}
-              // Đặt tường minh: Android mặc định tắt, iOS mặc định bật.
               stickySectionHeadersEnabled
             />
           </Animated.View>

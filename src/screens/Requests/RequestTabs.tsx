@@ -1,14 +1,29 @@
 import type { TRequestTab } from '@type/requests';
+import type { LayoutChangeEvent } from 'react-native';
 
 import AppButton from '@components/AppButton';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import Image from '@components/Image';
-import React from 'react';
+import RequestTab from './RequestTab';
+import RequestTabDivider from './RequestTabDivider';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Colors } from '@constants';
 import { ScaleSize } from '@kits/core';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 const FILTER_ICON_SIZE = ScaleSize(22);
+
+const TRACK_PADDING = ScaleSize(4);
+const PILL_RADIUS = ScaleSize(12);
+
+const SLIDE_DURATION = 220;
+const FIRST_TAB = 0;
+const UNMEASURED = 0;
 
 const TABS: readonly {
   readonly labelKey: string;
@@ -19,6 +34,11 @@ const TABS: readonly {
   { labelKey: 'requests.tab_processed', value: 'processed' },
 ];
 
+/** Ranh giới giữa các ô: [1, 2] với ba tab. */
+const BOUNDARIES = TABS.map((_, index) => index).filter(
+  index => index > FIRST_TAB,
+);
+
 type Properties = {
   readonly counts: Record<TRequestTab, number>;
   readonly onChange: (tab: TRequestTab) => void;
@@ -26,38 +46,61 @@ type Properties = {
   readonly value: TRequestTab;
 };
 
-/** Hàng tab lọc theo trạng thái duyệt, kèm nút bộ lọc nâng cao bên phải. */
 function RequestTabs({ counts, onChange, onOpenFilter, value }: Properties) {
   const { t } = useTranslation();
+  const [trackWidth, setTrackWidth] = useState(UNMEASURED);
+
+  const activeIndex = Math.max(
+    TABS.findIndex(tab => tab.value === value),
+    FIRST_TAB,
+  );
+
+  const progress = useSharedValue(activeIndex);
+
+  useEffect(() => {
+    progress.set(withTiming(activeIndex, { duration: SLIDE_DURATION }));
+  }, [activeIndex, progress]);
+
+  const onLayout = useCallback((event: LayoutChangeEvent) => {
+    setTrackWidth(event.nativeEvent.layout.width - TRACK_PADDING * 2);
+  }, []);
+
+  const tabWidth = trackWidth / TABS.length;
+
+  const pillStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: progress.get() * tabWidth }],
+    width: tabWidth,
+  }));
 
   return (
     <View style={styles.container}>
-      <View style={styles.track}>
-        {TABS.map((tab, index) => {
-          const isActive = tab.value === value;
-          const hasDivider =
-            index > 0 && !isActive && TABS[index - 1]?.value !== value;
+      <View onLayout={onLayout} style={styles.track}>
+        {trackWidth > UNMEASURED ? (
+          <>
+            <Animated.View style={[styles.pill, pillStyle]} />
+            {BOUNDARIES.map(boundary => (
+              <RequestTabDivider
+                key={boundary}
+                boundary={boundary}
+                left={TRACK_PADDING + boundary * tabWidth}
+                progress={progress}
+              />
+            ))}
+          </>
+        ) : undefined}
 
-          return (
-            <React.Fragment key={tab.value}>
-              {hasDivider ? <View style={styles.divider} /> : undefined}
-              <AppButton
-                onPress={() => {
-                  onChange(tab.value);
-                }}
-                style={[styles.tab, isActive && styles.tabActive]}
-                testID={`RequestsTab_${tab.value}`}
-              >
-                <Text
-                  numberOfLines={1}
-                  style={[styles.label, isActive && styles.labelActive]}
-                >
-                  {t(tab.labelKey, { total: counts[tab.value] })}
-                </Text>
-              </AppButton>
-            </React.Fragment>
-          );
-        })}
+        {TABS.map((tab, index) => (
+          <RequestTab
+            key={tab.value}
+            index={index}
+            isActive={tab.value === value}
+            label={t(tab.labelKey, { total: counts[tab.value] })}
+            onChange={onChange}
+            progress={progress}
+            testID={`RequestsTab_${tab.value}`}
+            value={tab.value}
+          />
+        ))}
       </View>
 
       <AppButton
@@ -87,40 +130,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: ScaleSize(16),
     paddingTop: ScaleSize(16),
   },
-  // Vạch ngăn mảnh giữa hai tab không được chọn, giống thiết kế.
-  divider: {
-    alignSelf: 'center',
-    backgroundColor: Colors.gray19,
-    height: ScaleSize(20),
-    width: 1,
-  },
   filterButton: {
     alignItems: 'center',
     height: ScaleSize(44),
     justifyContent: 'center',
     width: ScaleSize(32),
   },
-  // 13pt chứ không phải 14: ba nhãn đều kèm số đếm trong ngoặc, ở máy 5.4"
-  // thì 14pt đã đủ dài để "Chờ duyệt (3)" bị cắt mất đuôi.
-  label: {
-    color: Colors.gray17,
-    fontSize: ScaleSize(13),
-    fontWeight: '600',
-  },
-  labelActive: {
-    color: Colors.white,
-    fontWeight: '700',
-  },
-  tab: {
-    alignItems: 'center',
-    borderRadius: ScaleSize(12),
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: ScaleSize(4),
-    paddingVertical: ScaleSize(12),
-  },
-  tabActive: {
+  pill: {
     backgroundColor: Colors.blue02,
+    borderRadius: PILL_RADIUS,
+    bottom: TRACK_PADDING,
+    left: TRACK_PADDING,
+    position: 'absolute',
+    top: TRACK_PADDING,
   },
   track: {
     alignItems: 'center',
@@ -128,6 +150,6 @@ const styles = StyleSheet.create({
     borderRadius: ScaleSize(16),
     flex: 1,
     flexDirection: 'row',
-    padding: ScaleSize(4),
+    padding: TRACK_PADDING,
   },
 });
