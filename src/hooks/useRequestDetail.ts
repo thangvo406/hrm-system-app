@@ -379,12 +379,6 @@ const MOCK_DETAILS: Readonly<Record<TRequestType, TRequestDetail>> = {
         value: 'Văn phòng',
       },
       {
-        icon: 'ic_tag',
-        id: 'overtime_kind',
-        labelKey: 'request_detail.field_overtime_kind',
-        value: 'OT ngày thường',
-      },
-      {
         icon: 'ic_document',
         id: 'note',
         labelKey: 'request_detail.field_note',

@@ -3,10 +3,10 @@ import type {
   TApprovalStep,
   TAttendanceEventKind,
   TCreateRequestSection,
+  TDatePickMode,
   TLeaveBalance,
   TLeaveDuration,
   TLeaveKind,
-  TOvertimeKind,
   TRequestDateRange,
   TRequestType,
   TWorkPlace,
@@ -35,8 +35,6 @@ import {
   LEAVE_KIND_LABEL_KEYS,
   LEAVE_KIND_ORDER,
   LEAVE_KIND_SOURCES,
-  OVERTIME_KIND_LABEL_KEYS,
-  OVERTIME_KIND_ORDER,
   SINGLE_DATE_LABEL_KEYS,
   WORK_PLACE_LABEL_KEYS,
   WORK_PLACE_ORDER,
@@ -45,21 +43,9 @@ import {
 const DISPLAY_DATE_FORMAT = 'DD/MM/YYYY';
 const ISO_DATE_FORMAT = 'YYYY-MM-DD';
 
-/**
- * Số dư phép và luồng phê duyệt là dữ liệu của server, mà chưa có endpoint tạo
- * đơn nên chưa lấy được. Để rỗng chứ KHÔNG dựng số giả: số dư phép giả dẫn tới
- * câu tổng kết "còn lại N ngày" sai, mà đó đúng là thứ người dùng đọc để quyết
- * định có gửi đơn hay không.
- *
- * Khi có endpoint: thay hai hằng này bằng state nạp qua saga callback (xem flow
- * ở .cursorrules §5), phần còn lại của hook không phải đổi — `sections` đã tự
- * ẩn các khối chưa có dữ liệu.
- */
 const BALANCES: readonly TLeaveBalance[] = [];
 const APPROVERS: readonly TApprovalStep[] = [];
 
-// Giờ mặc định của ô thời gian: một ca OT buổi tối điển hình. Người dùng nào
-// cũng sẽ đổi, nhưng mở sẵn ở đây thì cuộn ngắn hơn là mở từ 00:00.
 const DEFAULT_START_TIME = '18:00';
 const DEFAULT_END_TIME = '21:00';
 
@@ -69,19 +55,9 @@ const BALANCE_DEPENDENT_SECTIONS: readonly TCreateRequestSection[] = [
   'summary',
 ];
 
-/**
- * Toàn bộ logic màn Tạo đơn.
- *
- * LOẠI ĐƠN là trạng thái gốc: nó quyết định form hỏi những gì
- * (`CREATE_REQUEST_SECTIONS`), điều kiện gửi được, và câu tổng kết. Đổi loại
- * không xoá những gì đã nhập — mọi trường của mọi loại cùng sống trong hook
- * này, nên bấm nhầm loại rồi quay lại thì lý do vừa gõ vẫn còn.
- */
 export function useCreateRequest() {
   const { t } = useTranslation();
 
-  // Form mở ra ở NGÀY HÔM NAY, không phải một ngày dựng sẵn. Lấy giờ đã đồng
-  // bộ với server (`getCurrentTime`) chứ không phải giờ máy, giống các màn khác.
   const today = useMemo(() => getCurrentTime().format(ISO_DATE_FORMAT), []);
 
   const [type, setType] = useState<TRequestType>('leave');
@@ -92,20 +68,12 @@ export function useCreateRequest() {
   const [startTime, setStartTime] = useState(DEFAULT_START_TIME);
   const [endTime, setEndTime] = useState(DEFAULT_END_TIME);
   const [duration, setDuration] = useState<TLeaveDuration>('full_day');
-  const [overtimeKind, setOvertimeKind] = useState<TOvertimeKind>('weekday');
   const [place, setPlace] = useState<TWorkPlace>('office');
   const [eventKind, setEventKind] =
     useState<TAttendanceEventKind>('late_arrival');
   const [reason, setReason] = useState('');
   const [note, setNote] = useState('');
 
-  /**
-   * Khối form của loại đơn đang chọn, đã trừ đi những khối chưa có dữ liệu.
-   *
-   * Lọc ở đây chứ không ở JSX: màn hình chỉ cần biết "khối này có bật không",
-   * còn lý do tắt (loại đơn không cần, hay server chưa trả số dư) là việc của
-   * hook. Khi nối API xong thì chỉ bỏ điều kiện này, JSX không phải sửa.
-   */
   const sections = useMemo(() => {
     const enabled = new Set<TCreateRequestSection>(
       CREATE_REQUEST_SECTIONS[type],
@@ -212,16 +180,6 @@ export function useCreateRequest() {
     );
   }, [leaveKind, openPicker, t]);
 
-  const onPickOvertimeKind = useCallback(() => {
-    openPicker(
-      OVERTIME_KIND_ORDER,
-      OVERTIME_KIND_LABEL_KEYS,
-      overtimeKind,
-      setOvertimeKind,
-      t('create_request.overtime_kind_label'),
-    );
-  }, [openPicker, overtimeKind, t]);
-
   const onPickPlace = useCallback(() => {
     openPicker(
       WORK_PLACE_ORDER,
@@ -242,35 +200,29 @@ export function useCreateRequest() {
     );
   }, [eventKind, openPicker, t]);
 
-  /**
-   * Một lịch duy nhất cho cả hai ô ngày của đơn nghỉ phép: bấm ô nào cũng mở
-   * đúng sheet này, và "Xác nhận" ghi lại cả ngày bắt đầu lẫn ngày kết thúc.
-   */
-  const onPickDates = useCallback(() => {
+  const onPickDate = (mode: TDatePickMode) => () => {
+    const isSingle = mode === 'single';
+
     AppNavigator.showDialog({
       screen: DateRangeSheet,
+      dateType: mode,
       popupType: 'bottomSheet',
       onConfirm: (range: TRequestDateRange) => {
+        if (isSingle) {
+          setDate(range.from);
+          return;
+        }
         setStartDate(range.from);
         setEndDate(range.to);
       },
-      title: t('create_request.date_range_label'),
-      value: { from: startDate, to: endDate },
+      title: isSingle
+        ? t(SINGLE_DATE_LABEL_KEYS[type])
+        : t('create_request.date_range_label'),
+      value: isSingle
+        ? { from: date, to: date }
+        : { from: startDate, to: endDate },
     });
-  }, [endDate, startDate, t]);
-
-  /** Đơn theo giờ chỉ nhắm một ngày, nên dùng lại lịch với hai đầu trùng nhau. */
-  const onPickDate = useCallback(() => {
-    AppNavigator.showDialog({
-      screen: DateRangeSheet,
-      popupType: 'bottomSheet',
-      onConfirm: (range: TRequestDateRange) => {
-        setDate(range.from);
-      },
-      title: t(SINGLE_DATE_LABEL_KEYS[type]),
-      value: { from: date, to: date },
-    });
-  }, [date, t, type]);
+  };
 
   /** Cùng `Selection` với các ô chọn khác, chỉ khác nhánh `timeSheet`. */
   const openTimeSheet = useCallback(
@@ -308,13 +260,6 @@ export function useCreateRequest() {
   const onPickAttachment = useCallback(() => {}, []);
   const onSubmit = useCallback(() => {}, []);
 
-  /**
-   * Trường bắt buộc còn thiếu, chấm theo đúng bộ khối của loại đơn đang chọn
-   * chứ không phải một chuỗi `if` viết tay cho từng loại.
-   *
-   * Trả về danh sách thay vì một cờ boolean vì đây là thứ cần để chỉ cho người
-   * dùng biết còn thiếu gì — hiện màn mới chỉ dùng nó để khoá nút gửi.
-   */
   const missingSections = useMemo(
     () => findMissingSections(type, { date, reason, totalDays, totalHours }),
     [date, reason, totalDays, totalHours, type],
@@ -334,17 +279,14 @@ export function useCreateRequest() {
     onGoBack,
     onPickAttachment,
     onPickDate,
-    onPickDates,
     onPickEndTime,
     onPickEventKind,
     onPickLeaveKind,
-    onPickOvertimeKind,
     onPickPlace,
     onPickStartTime,
     onPickType,
     onSaveDraft,
     onSubmit,
-    overtimeKindLabel: t(OVERTIME_KIND_LABEL_KEYS[overtimeKind]),
     placeLabel: t(WORK_PLACE_LABEL_KEYS[place]),
     reason,
     reasonLabelKey: CREATE_REQUEST_REASON_LABEL_KEYS[type],

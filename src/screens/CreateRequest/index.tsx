@@ -28,17 +28,14 @@ function CreateRequest() {
     onGoBack,
     onPickAttachment,
     onPickDate,
-    onPickDates,
     onPickEndTime,
     onPickEventKind,
     onPickLeaveKind,
-    onPickOvertimeKind,
     onPickPlace,
     onPickStartTime,
     onPickType,
     onSaveDraft,
     onSubmit,
-    overtimeKindLabel,
     placeLabel,
     reason,
     reasonLabelKey,
@@ -109,7 +106,7 @@ function CreateRequest() {
             <FormField
               icon="ic_calendar"
               labelKey={singleDateLabelKey}
-              onPress={onPickDate}
+              onPress={onPickDate('single')}
               testID="CreateRequestDate"
               value={dateLabel}
             />
@@ -120,7 +117,7 @@ function CreateRequest() {
               <FormField
                 icon="ic_calendar"
                 labelKey="create_request.start_date_label"
-                onPress={onPickDates}
+                onPress={onPickDate('range')}
                 style={styles.flex}
                 testID="CreateRequestStartDate"
                 value={startDateLabel}
@@ -128,7 +125,7 @@ function CreateRequest() {
               <FormField
                 icon="ic_calendar"
                 labelKey="create_request.end_date_label"
-                onPress={onPickDates}
+                onPress={onPickDate('range')}
                 style={styles.flex}
                 testID="CreateRequestEndDate"
                 value={endDateLabel}
@@ -173,17 +170,6 @@ function CreateRequest() {
               showChevron
               testID="CreateRequestEventKind"
               value={eventKindLabel}
-            />
-          ) : undefined}
-
-          {sections.has('overtime_kind') ? (
-            <FormField
-              icon="ic_tag"
-              labelKey="create_request.overtime_kind_label"
-              onPress={onPickOvertimeKind}
-              showChevron
-              testID="CreateRequestOvertimeKind"
-              value={overtimeKindLabel}
             />
           ) : undefined}
 

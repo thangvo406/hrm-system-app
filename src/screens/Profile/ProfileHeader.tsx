@@ -21,13 +21,6 @@ type Properties = {
   readonly onPressLanguage: () => void;
 };
 
-/**
- * Dải đầu màn Cá nhân: ảnh nền `bg_profile`, danh tính canh giữa và một câu
- * ngắn về nơi làm việc.
- *
- * Danh tính nằm hẳn trong header chứ không phải thẻ trắng riêng — đây là màn
- * "về bạn", nên tên là thứ mở màn, không phải một tiêu đề.
- */
 function ProfileHeader({
   employee,
   languageLabel,
@@ -100,7 +93,7 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: 'center',
-    // Nền dự phòng cho khung hình đầu tiên, trước khi ảnh kịp decode.
+
     backgroundColor: Colors.blue07,
     overflow: 'hidden',
     paddingBottom: ScaleSize(24),
@@ -123,7 +116,7 @@ const styles = StyleSheet.create({
     marginTop: ScaleSize(6),
     textAlign: 'center',
   },
-  // `top` set trong JSX vì phụ thuộc safe-area inset của từng máy.
+
   languageSlot: {
     position: 'absolute',
     right: ScaleSize(16),

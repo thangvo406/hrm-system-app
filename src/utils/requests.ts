@@ -3,7 +3,6 @@ import type {
   TCreateRequestSection,
   TLeaveBalanceKind,
   TLeaveKind,
-  TOvertimeKind,
   TRequestFilters,
   TRequestItem,
   TRequestPeriod,
@@ -247,11 +246,10 @@ export const CREATE_REQUEST_SECTIONS: Readonly<
     'reason',
     'attachment',
   ],
-  // Chi tiết: ngày làm thêm, thời gian, lý do, địa điểm, loại OT, ghi chú.
+  // Chi tiết: ngày làm thêm, thời gian, lý do, địa điểm, ghi chú.
   overtime: [
     'single_date',
     'time_range',
-    'overtime_kind',
     'place',
     'reason',
     'note',
@@ -262,7 +260,7 @@ export const CREATE_REQUEST_SECTIONS: Readonly<
 /**
  * Khối nào là bắt buộc. Mọi khối còn lại hoặc không nhận nhập liệu
  * (`balances`, `summary`), hoặc luôn có sẵn một giá trị hợp lệ vì là ô chọn
- * một-trong-nhiều (`duration`, `leave_kind`, `overtime_kind`, `place`,
+ * một-trong-nhiều (`duration`, `leave_kind`, `place`,
  * `event_kind`), hoặc không bắt buộc theo nghiệp vụ (`note`, `attachment`).
  */
 const REQUIRED_SECTIONS: ReadonlySet<TCreateRequestSection> = new Set([
@@ -407,19 +405,6 @@ export const BALANCE_LABEL_KEYS: Readonly<Record<TLeaveBalanceKind, string>> = {
   performance: 'create_request.balance_performance',
   unpaid: 'create_request.balance_unpaid',
 };
-
-export const OVERTIME_KIND_LABEL_KEYS: Readonly<Record<TOvertimeKind, string>> =
-  {
-    holiday: 'create_request.overtime_kind_holiday',
-    weekday: 'create_request.overtime_kind_weekday',
-    weekend: 'create_request.overtime_kind_weekend',
-  };
-
-export const OVERTIME_KIND_ORDER: readonly TOvertimeKind[] = [
-  'weekday',
-  'weekend',
-  'holiday',
-];
 
 export const WORK_PLACE_LABEL_KEYS: Readonly<Record<TWorkPlace, string>> = {
   client: 'create_request.place_client',

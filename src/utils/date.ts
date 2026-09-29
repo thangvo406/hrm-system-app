@@ -195,11 +195,11 @@ export function getRangeDateByRange(selectedDates: any) {
     results[formatTime] = {
       startingDay: true,
       endingDay: true,
-      color: Colors.green03,
-      textColor: Colors.primary,
+      color: Colors.blue02,
+      textColor: Colors.white,
       customTextStyle: {
         fontWeight: 'bold',
-        color: Colors.primary,
+        color: Colors.white,
       },
     };
   } else {
@@ -215,11 +215,11 @@ export function getRangeDateByRange(selectedDates: any) {
       results[formatTime] = {
         startingDay: index == 0,
         endingDay: index == duration,
-        color: Colors.green03,
-        textColor: Colors.primary,
+        color: Colors.blue02,
+        textColor: Colors.white,
         customTextStyle: {
           fontWeight: 'bold',
-          color: Colors.primary,
+          color: Colors.white,
         },
       };
     }

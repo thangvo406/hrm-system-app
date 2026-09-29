@@ -15,17 +15,10 @@ export type TRequestStatus = 'approved' | 'pending' | 'rejected';
 /** Nhóm đơn hiển thị trên hàng tab ở đầu danh sách. */
 export type TRequestTab = 'all' | 'pending' | 'processed';
 
-/**
- * Trạng thái đang lọc. Hàng tab và nhóm "Trạng thái" trong bộ lọc cùng ghi vào
- * MỘT trường này, nên nó gộp cả `processed` (nhóm rộng của tab) lẫn từng kết
- * luận cụ thể (lựa chọn hẹp hơn trong bộ lọc).
- */
 export type TRequestStatusFilter = 'all' | 'processed' | TRequestStatus;
 
-/** Loại đơn đang lọc; `all` là không lọc theo loại. */
 export type TRequestTypeFilter = 'all' | TRequestType;
 
-/** Khoảng thời gian đang lọc. `custom` là tự chọn ngày trên lịch. */
 export type TRequestPeriod =
   | 'all'
   | 'custom'
@@ -33,11 +26,12 @@ export type TRequestPeriod =
   | 'this_month'
   | 'this_week';
 
-/** Khoảng ngày tự chọn, hai đầu đều dạng `YYYY-MM-DD`. */
 export type TRequestDateRange = {
   readonly from: string;
   readonly to: string;
 };
+
+export type TDatePickMode = 'range' | 'single';
 
 /** Nguồn ngày nghỉ mà đơn sẽ trừ vào. */
 export type TLeaveBalanceKind = 'annual' | 'performance' | 'unpaid';
@@ -71,8 +65,6 @@ export type TApprovalStep = {
 };
 
 /** Loại OT, quyết định hệ số tính công. */
-export type TOvertimeKind = 'holiday' | 'weekday' | 'weekend';
-
 /** Nơi ngồi làm khi đăng ký OT. */
 export type TWorkPlace = 'client' | 'home' | 'office';
 
@@ -83,14 +75,6 @@ export type TAttendanceEventKind =
   | 'forgot_check_out'
   | 'late_arrival';
 
-/**
- * Một khối nội dung của form tạo đơn.
- *
- * Mỗi loại đơn bật một tập khối khác nhau — đơn OT hỏi giờ làm thêm, loại OT và
- * địa điểm; đơn nghỉ phép hỏi khoảng ngày và trừ vào nguồn phép nào. Giống
- * `TRequestDetailField` ở màn chi tiết, các khối là DỮ LIỆU chứ không phải bố
- * cục cứng trong component, để hai màn luôn hỏi và hiện cùng một bộ trường.
- */
 export type TCreateRequestSection =
   | 'attachment'
   | 'balances'
@@ -99,7 +83,6 @@ export type TCreateRequestSection =
   | 'event_kind'
   | 'leave_kind'
   | 'note'
-  | 'overtime_kind'
   | 'place'
   | 'reason'
   | 'single_date'
@@ -124,7 +107,6 @@ export type TCreateRequestDraft = {
   readonly eventKind: TAttendanceEventKind;
   readonly leaveKind: TLeaveKind;
   readonly note: string;
-  readonly overtimeKind: TOvertimeKind;
   readonly place: TWorkPlace;
   readonly reason: string;
   /** Dạng `YYYY-MM-DD`. */
