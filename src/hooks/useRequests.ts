@@ -60,6 +60,8 @@ const FULLY_HIDDEN = 0;
 
 const CONTENT_FADE_OUT_DURATION = 220;
 const CONTENT_FADE_IN_DURATION = 200;
+const NO_REVISION = 0;
+const ONE_REVISION = 1;
 
 const PAGE_SIZE = 20;
 const FIRST_PAGE = 0;
@@ -118,20 +120,16 @@ export function useRequests() {
   const fadeOutStartedAtRef = useRef(0);
 
   const listRef = useRef<SectionList<TRequestItem, TRequestSection>>(null);
-  /** Bật khi dữ liệu trang đầu vừa về và còn chờ commit xong mới cho hiện lại. */
-  const pendingShowRef = useRef(false);
-  /**
-   * Đã chạy xong lần tải đầu tiên chưa. Chỉ sau mốc đó mới được kết luận "rỗng"
-   * — trước đó danh sách trống chỉ có nghĩa là chưa có dữ liệu.
-   */
+  const [contentRevision, setContentRevision] = useState(0);
+
   const [hasLoaded, setHasLoaded] = useState(false);
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
       isMountedRef.current = false;
-    },
-    [],
-  );
+    };
+  }, []);
 
   const tab: TRequestTab = useMemo(() => {
     if (filters.status === ALL_FILTER) {
@@ -165,14 +163,13 @@ export function useRequests() {
   }, [contentProgress]);
 
   useLayoutEffect(() => {
-    if (!pendingShowRef.current) {
+    if (contentRevision === NO_REVISION) {
       return;
     }
-    pendingShowRef.current = false;
 
     scrollToTop();
     showContent();
-  }, [requests, scrollToTop, showContent]);
+  }, [contentRevision, scrollToTop, showContent]);
 
   const loadRequests = useCallback(
     (page: number) => {
@@ -213,7 +210,6 @@ export function useRequests() {
             setHasLoaded(true);
             // Lỗi thì không có dữ liệu mới để chờ commit — hiện lại ngay, không
             // thì màn hình kẹt ở trạng thái mờ.
-            pendingShowRef.current = false;
             showContent();
           },
           onSuccess: response => {
@@ -232,8 +228,8 @@ export function useRequests() {
             if (isFirstPage) {
               setHasLoaded(true);
               // Việc hiện lại do useLayoutEffect bên trên lo, sau khi danh sách
-              // mới đã commit.
-              pendingShowRef.current = true;
+              // mới đã commit trong cùng một nhịp render với bộ đếm này.
+              setContentRevision(previous => previous + ONE_REVISION);
             }
           },
         }),

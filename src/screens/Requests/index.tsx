@@ -48,8 +48,6 @@ function Requests() {
     typeFilter,
   } = useRequests();
 
-  // Bọc trong `useCallback`: hàm dựng dòng mà đổi tham chiếu mỗi lần render
-  // thì `SectionList` phải dựng lại toàn bộ dòng đang hiện.
   const renderItem = useCallback(
     ({ item }: SectionListRenderItemInfo<TRequestItem, TRequestSection>) => (
       <RequestRow item={item} onPress={onOpenDetail} />
@@ -71,12 +69,12 @@ function Requests() {
           >
             <SectionList
               ListEmptyComponent={
-                hasLoaded ? (
+                isLoading && !hasLoaded ? undefined : (
                   <RequestsEmpty
                     isFiltered={isFiltered}
                     onPressCreate={onCreateRequest}
                   />
-                ) : undefined
+                )
               }
               ListFooterComponent={
                 isLoadingMore ? (
@@ -128,8 +126,6 @@ const styles = StyleSheet.create({
   content: {
     paddingBottom: ScaleSize(24),
   },
-  // Xén phần hàng tab đã trượt ra khỏi mép trên, không cho nó đè lên hàng chip
-  // lọc phía trên.
   listArea: {
     flex: 1,
     overflow: 'hidden',
@@ -140,9 +136,6 @@ const styles = StyleSheet.create({
   loading: {
     paddingVertical: ScaleSize(16),
   },
-  // Hàng tab đè lên đầu danh sách chứ không chiếm chỗ trong bố cục — có thế mới
-  // trượt nó bằng `transform` mà không phải animate chiều cao. Nền đục để nội
-  // dung cuộn qua bên dưới không lộ ra.
   tabsOverlay: {
     backgroundColor: Colors.gray21,
     left: 0,
@@ -150,7 +143,6 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
   },
-  // Tấm nền xám bo hai góc trên, trùm lên mép dưới dải navy đúng như thiết kế.
   sheet: {
     backgroundColor: Colors.gray21,
     borderTopLeftRadius: ScaleSize(22),
