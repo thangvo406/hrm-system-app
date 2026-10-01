@@ -5,14 +5,9 @@ declare module 'react-native-config' {
     APP_NAME?: string;
     BASE_URL?: string;
     DOMAIN_CDN?: string;
-    IS_DEV: string;
-    URL_GET_ADDRESS?: string;
+    ENV: string;
     GET_ADDRESS_KEY?: string;
     ONE_SIGNAL_ID?: string;
-    DEPLOYMENT_KEY_ANDROID?: string;
-    CODEPUSH_SERVER?: string;
-    DEPLOYMENT_KEY_IOS?: string;
-    DEPLOYMENT_KEY_IOS?: string;
     SOCKET_URL?: string;
   };
 

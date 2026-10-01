@@ -15,6 +15,7 @@ const imageNames = {
   ic_network_error: 'ic_network_error',
   ic_outlet_close_white: 'ic_outlet_close_white',
   ic_request_empty: 'ic_request_empty',
+  ic_upload_doc: 'ic_upload_doc',
 } as const satisfies Record<string, ImageName>;
 
 export default imageNames;

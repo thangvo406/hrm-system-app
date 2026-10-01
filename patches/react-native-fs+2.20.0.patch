@@ -1,0 +1,48 @@
+diff --git a/node_modules/react-native-fs/RNFSManager.m b/node_modules/react-native-fs/RNFSManager.m
+--- a/node_modules/react-native-fs/RNFSManager.m
++++ b/node_modules/react-native-fs/RNFSManager.m
+@@ -525,7 +525,7 @@
+ 
+   if (hasBeginCallback) {
+     params.beginCallback = ^(NSNumber* statusCode, NSNumber* contentLength, NSDictionary* headers) {
+-        if (self.bridge != nil)
++        if (self.callableJSModules != nil)
+             [self sendEventWithName:@"DownloadBegin" body:@{@"jobId": jobId,
+                                                                                             @"statusCode": statusCode,
+                                                                                             @"contentLength": contentLength,
+@@ -535,7 +535,7 @@
+ 
+   if (hasProgressCallback) {
+     params.progressCallback = ^(NSNumber* contentLength, NSNumber* bytesWritten) {
+-        if (self.bridge != nil)
++        if (self.callableJSModules != nil)
+           [self sendEventWithName:@"DownloadProgress"
+                                                   body:@{@"jobId": jobId,
+                                                           @"contentLength": contentLength,
+@@ -545,7 +545,7 @@
+ 
+   if (hasResumableCallback) {
+     params.resumableCallback = ^() {
+-        if (self.bridge != nil)
++        if (self.callableJSModules != nil)
+             [self sendEventWithName:@"DownloadResumable" body:@{@"jobId": jobId}];
+     };
+   }
+@@ -648,7 +648,7 @@
+ 
+   if (hasBeginCallback) {
+     params.beginCallback = ^() {
+-        if (self.bridge != nil)
++        if (self.callableJSModules != nil)
+           [self sendEventWithName:@"UploadBegin"
+                                                   body:@{@"jobId": jobId}];
+     };
+@@ -656,7 +656,7 @@
+ 
+   if (hasProgressCallback) {
+     params.progressCallback = ^(NSNumber* totalBytesExpectedToSend, NSNumber* totalBytesSent) {
+-        if (self.bridge != nil)
++        if (self.callableJSModules != nil)
+             [self sendEventWithName:@"UploadProgress"
+                                                   body:@{@"jobId": jobId,
+                                                           @"totalBytesExpectedToSend": totalBytesExpectedToSend,

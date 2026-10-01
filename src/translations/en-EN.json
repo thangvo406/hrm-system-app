@@ -15,7 +15,12 @@
         "btn_open_setting": "Open Settings",
         "btn_close": "Close",
         "choose_bank": "Choose bank <bold>{{bank}}</bold>",
-        "error_limit_size_file": "File size must be less than 50MB"
+        "error_limit_size_file": "File size must be less than 50MB",
+        "upload_file": {
+          "audio": "Photo/Video",
+          "file": "Document",
+          "title": "Select document type"
+        }
       }
     },
     "qr_voucher": {

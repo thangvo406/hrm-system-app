@@ -1,6 +1,18 @@
 {
   "name": "hrm_system",
-  "displayName": "HRM system app",
-  "appVersion": "8",
-  "minPlatformVersion": "1.0.0"
+  "displayName": "HRM System Test",
+  "appVersion": "12",
+  "minPlatformVersion": "1.0.1",
+  "deployments": {
+    "staging": {
+      "ios": "dcef92158de76153296ac18a92ecd2eb290108763ee7ede8",
+      "android": "7def6cbec16e645b66e54c89a93c16c207d8afc718410ea9"
+    },
+    "production": {
+      "ios": "4bfe325ab671fd4c1282e83478d63c805868cc82b2ac8ced",
+      "android": "de730d479600bd3884b4deedfbb9d550d368845cd1fc3a6d"
+    }
+  },
+  "server": "https://code-push.allaindev.site",
+  "oidc_audience": "codepush-server"
 }

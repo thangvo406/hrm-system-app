@@ -56,10 +56,121 @@ export const isEmail = (value: string) => {
   return emailRegex.test(value);
 };
 
+function getFileName(uri: string): string {
+  if (!uri?.trim()) {
+    return '';
+  }
+
+  try {
+    // Handle file:// URIs
+    if (uri.startsWith('file://')) {
+      const path = uri.replace('file://', '');
+      const fileName = path.split('/').pop();
+      return fileName || '';
+    }
+
+    // Handle content:// URIs
+    if (uri.startsWith('content://')) {
+      const path = uri.replace('content://', '');
+      const fileName = path.split('/').pop();
+      return fileName || '';
+    }
+
+    // Handle http/https URIs
+    if (uri.startsWith('http://') || uri.startsWith('https://')) {
+      const path = uri.replace('http://', '').replace('https://', '');
+      const fileName = path.split('/').pop();
+      return fileName || '';
+    }
+
+    // Handle other URI schemes or plain paths
+    const fileName = uri.split('/').pop();
+    return fileName || '';
+  } catch {
+    return '';
+  }
+}
+
+const bytesToSize = (bytes: number) => {
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes == 0) {
+    return 'n/a';
+  }
+  const i = Number.parseInt(
+    Math.floor(Math.log(bytes) / Math.log(1e6)).toString(),
+    10,
+  );
+  // if (i == 0) {
+  //    return bytes + ' ' + sizes[i];
+  // }
+  return {
+    value: (bytes / Math.pow(1e6, i)).toFixed(1),
+    unit: sizes[i],
+  };
+};
+
+const getExtensionFile = (link: string) => {
+  const s = link?.split('/');
+  const lastPart = s?.at(-1);
+  if (!lastPart) {
+    return '';
+  }
+
+  const files = lastPart.split('.');
+  if (files.length > 1) {
+    return files?.at(-1) || '';
+  }
+  return '';
+};
+
+const checkValidFile = (data: any) => {
+  const size = bytesToSize(data?.size);
+  let isLimitSize = true;
+  if (size != 'n/a' && typeof size == 'object' && 'unit' in size) {
+    isLimitSize =
+      size.unit == 'KB' ? Number.parseFloat(size.value) >= 100 : false;
+  }
+  if (isLimitSize) {
+    return {
+      type: 'limit',
+    };
+  }
+  return null;
+  const extension = getExtensionFile(data?.name);
+  // PPT, PPTX, DOC, DOCX, XLS, XLSX, JPG, PNG, JPEG, PDF, ZIP, RAR, MP3, MP4
+  if (
+    !extension ||
+    ![
+      'ppt',
+      'pptx',
+      'doc',
+      'docx',
+      'xls',
+      'xlsx',
+      'jpg',
+      'png',
+      'jpeg',
+      'pdf',
+      'zip',
+      'rar',
+      'mp3',
+      'mp4',
+    ].includes(extension?.toLowerCase?.())
+  ) {
+    return {
+      type: 'extension',
+    };
+  }
+  return null;
+};
+
 export const ValidateUtils = {
   getImageSource,
   mergeStyle,
   isEmail,
+  getFileName,
+  checkValidFile,
+  getExtensionFile,
   isNumber,
   isImageUrl,
   isPhoneNumber,

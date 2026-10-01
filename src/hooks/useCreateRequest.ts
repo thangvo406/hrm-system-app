@@ -52,9 +52,13 @@ import {
   WORK_PLACE_LABEL_KEYS,
   WORK_PLACE_ORDER,
 } from '@utils/requests';
+import imageNames from '@assets/images/names';
+import { ImagePicker } from '@utils/imagePicker';
+import { ValidateUtils } from '@kits/core/utils';
+import { pick } from '@react-native-documents/picker';
 
 const DISPLAY_DATE_FORMAT = 'DD/MM/YYYY';
-
+const { checkValidFile, getFileName } = ValidateUtils;
 const BALANCES: readonly TLeaveBalance[] = [];
 const APPROVERS: readonly TApprovalStep[] = [];
 
@@ -79,6 +83,8 @@ export function useCreateRequest(props: Properties) {
     undefined,
     createInitialCreateRequestForm,
   );
+  const [, setErrorUploadFile] = useState<any>(null);
+  const [filesUpload, setFileUpload] = useState<any>({});
 
   const { byType, revision, type } = form;
   const {
@@ -102,6 +108,23 @@ export function useCreateRequest(props: Properties) {
       },
     [],
   );
+
+  const DATA_SELECTION_DOCUMENT = useMemo(() => {
+    return [
+      {
+        title: t('common.popup.upload_file.audio'),
+        type: 'image',
+        icon: imageNames.ic_gallery_gray,
+        imageType: 'image',
+      },
+      {
+        title: t('common.popup.upload_file.file'),
+        type: 'file',
+        imageType: 'image',
+        icon: imageNames.ic_upload_doc,
+      },
+    ];
+  }, [t]);
 
   const setType = useCallback((requestType: TRequestType) => {
     dispatchForm({ action: 'change_type', requestType });
@@ -310,7 +333,86 @@ export function useCreateRequest(props: Properties) {
     AppNavigator.goBack();
   }, [dispatch, form, type]);
 
-  const onPickAttachment = useCallback(() => {}, []);
+  const onExecuteCheckFileUpload = (res: any, isPhoto = false) => {
+    const error = checkValidFile(res);
+    if (error) {
+      if (error.type == 'limit') {
+        AppNavigator.showToast({
+          message: t('onus_detail.limit_size_error'),
+          type: 'error',
+        });
+      }
+      if (error.type == 'extension') {
+        AppNavigator.showToast({
+          message: t('onus_detail.error_file_extension'),
+          type: 'error',
+        });
+      }
+      return;
+    }
+    setErrorUploadFile(null);
+    //  setEnableBtnSubmit(true);
+    setFileUpload((prev: any) => {
+      res._name = isPhoto ? res.filename : res.name;
+      return { ...prev, ...res };
+    });
+  };
+
+  const handleDocumentItemSelected = (item: any) => {
+    if (item?.type == 'image') {
+      ImagePicker.openLibrary()
+        .then(result => {
+          const fileName = result?.filename || getFileName(result?.path);
+          onExecuteCheckFileUpload(
+            {
+              // fileName: fileName,
+              filename: fileName,
+              name: fileName,
+              type: result?.mime || result?.mimeType || result?.type,
+              size: result?.size,
+              uri: result?.path,
+            },
+            true,
+          );
+        })
+        .catch(() => {});
+    } else {
+      pick({
+        mode: 'open',
+        // type: [
+        //   types.zip,
+        //   types.audio,
+        //   types.video,
+        //   types.images,
+        //   types.pdf,
+        //   types.docx,
+        //   types.doc,
+        //   types.xls,
+        //   types.xlsx,
+        //   types.ppt,
+        //   types.pptx,
+        // ],
+      })
+        .then(result => {
+          const [res] = result || [];
+          onExecuteCheckFileUpload(res);
+        })
+        .catch(() => {});
+    }
+  };
+
+  const onPickAttachment = useCallback(() => {
+    AppNavigator.showDialog({
+      screen: Selection,
+      popupType: 'bottomSheet',
+      items: DATA_SELECTION_DOCUMENT,
+      pathDisplay: 'title',
+      pathSelected: 'title',
+      onSelect: handleDocumentItemSelected,
+      showSearchBar: false,
+      title: t('common.popup.upload_file.title'),
+    });
+  }, []);
   const onSubmit = useCallback(() => {}, []);
 
   const storedDraft = useAppSelector(RequestsSelector.getDraft(type));
@@ -380,7 +482,6 @@ export function useCreateRequest(props: Properties) {
       sourceLabel: BALANCE_LABEL_KEYS[source],
       title: CREATE_REQUEST_TITLE_KEYS[type],
     },
-    /** Chữ đã dịch sẵn, hiển thị thẳng được. */
     labels: {
       date: dayjs(date).format(DISPLAY_DATE_FORMAT),
       endDate: dayjs(endDate).format(DISPLAY_DATE_FORMAT),
@@ -392,6 +493,7 @@ export function useCreateRequest(props: Properties) {
     },
     duration,
     endTime,
+    filesUpload,
     note,
     onGoBack,
     onPickAttachment,

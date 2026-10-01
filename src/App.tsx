@@ -15,6 +15,7 @@ import AppNavigator from '@navigation/AppNavigator';
 import { StatusBar, StyleSheet } from 'react-native';
 import { CodePushProvider } from 'react-native-codepush-sdk';
 import { FileManager } from '@kits/core/utils/FileManager';
+import { Environment } from '@constants';
 
 void FileManager.checkExistAndCreateLog();
 
@@ -25,11 +26,11 @@ const CODEPUSH_GATE_DOWNLOAD_TIMEOUT_BUFFER_MS = 30_000;
 
 const CODEPUSH_CONFIG: ComponentProps<typeof CodePushProvider>['config'] = {
   checkFrequency: 'ON_APP_START',
-  deploymentKeyAndroid: '7def6cbec16e645b66e54c89a93c16c207d8afc718410ea9',
-  deploymentKeyIOS: 'dcef92158de76153296ac18a92ecd2eb290108763ee7ede8',
+  deploymentKeyAndroid: Environment.DEPLOYMENT_KEY_ANDROID,
+  deploymentKeyIOS: Environment.DEPLOYMENT_KEY_IOS,
   downloadReadTimeoutMs: CODEPUSH_DOWNLOAD_READ_TIMEOUT_MS,
   installMode: 'ON_NEXT_RESTART',
-  serverUrl: 'https://code-push.allaindev.site', // KHÔNG có dấu / cuối
+  serverUrl: Environment.CODEPUSH_SERVER, // KHÔNG có dấu / cuối
   // serverUrl: 'http://172.20.10.2:3000', // KHÔNG có dấu / cuối
 };
 

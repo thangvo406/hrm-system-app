@@ -229,9 +229,16 @@ export function useCodePushGate({
         const downloadPromise = codePush.downloadUpdate(
           update,
           ({ receivedBytes, totalBytes }) => {
-            if (isBlocking && totalBytes > 0 && isMountedRef.current) {
+            // Response gzip/chunked không có Content-Length nên native báo
+            // totalBytes = -1 — lấy packageSize server trả làm mẫu số thay thế.
+            const expectedBytes =
+              totalBytes > 0 ? totalBytes : update.packageSize;
+            if (isBlocking && expectedBytes > 0 && isMountedRef.current) {
               setProgress(
-                Math.round((receivedBytes / totalBytes) * PERCENT_MAX),
+                Math.min(
+                  PERCENT_MAX,
+                  Math.round((receivedBytes / expectedBytes) * PERCENT_MAX),
+                ),
               );
             }
           },

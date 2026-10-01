@@ -15,7 +15,12 @@
         "btn_open_setting": "Mở Cài đặt",
         "btn_close": "Đóng",
         "choose_bank": "Chọn ngân hàng <bold>{{bank}}</bold>",
-        "error_limit_size_file": "Dung lượng tệp phải nhỏ hơn 50MB"
+        "error_limit_size_file": "Dung lượng tệp phải nhỏ hơn 50MB",
+        "upload_file": {
+          "audio": "Ảnh/Video",
+          "file": "Tài liệu",
+          "title": "Chọn loại tài liệu"
+        }
       }
     },
     "qr_voucher": {

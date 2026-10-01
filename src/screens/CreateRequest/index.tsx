@@ -28,6 +28,7 @@ function CreateRequest(props: RootScreenProps<Paths.CreateRequest>) {
     labels,
     duration,
     endTime,
+    filesUpload,
     note,
     onGoBack,
     onApplyDraft,
@@ -208,7 +209,7 @@ function CreateRequest(props: RootScreenProps<Paths.CreateRequest>) {
           ) : undefined}
 
           {sections.has('attachment') ? (
-            <AttachmentBox onPress={onPickAttachment} />
+            <AttachmentBox file={filesUpload} onPress={onPickAttachment} />
           ) : undefined}
 
           {approvers.length > 0 ? (

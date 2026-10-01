@@ -47,17 +47,12 @@ function OptionRow({
       testID={`selection-option-${item.id}`}
     >
       <View style={styles.content}>
-        {/*
-          Icon dẫn đầu luôn tô `primary`. Không tô thì mỗi SVG rơi về màu mặc
-          định của chính nó và danh sách ra năm màu khác nhau. Cờ quốc gia
-          không bị ảnh hưởng: chúng dùng `fill` cố định chứ không `currentColor`.
-        */}
         {item.icon === undefined ? undefined : (
           <Image
             color={Colors.primary}
             height={LEADING_ICON_SIZE}
             name={item.icon}
-            type="svg"
+            type={item.iconType}
             width={LEADING_ICON_SIZE}
           />
         )}

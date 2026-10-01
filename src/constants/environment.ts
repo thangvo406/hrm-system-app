@@ -1,14 +1,14 @@
 import Config from 'react-native-config';
+import appInfo from '../../app.json';
+const { deployments } = appInfo || {};
+const deployment = deployments[Config.ENV == 'dev' ? 'staging' : 'production'];
 export const Environment = {
-  IS_DEV: Config.IS_DEV == 'true',
   BASE_URL: Config.BASE_URL,
   SOCKET_URL: Config.SOCKET_URL,
   ONE_SIGNAL_ID: Config.ONE_SIGNAL_ID,
   APP_NAME: Config.APP_NAME,
   DOMAIN_CDN: Config.DOMAIN_CDN,
-  GET_ADDRESS_KEY: Config.GET_ADDRESS_KEY,
-  URL_GET_ADDRESS: Config.URL_GET_ADDRESS,
-  DEPLOYMENT_KEY_IOS: Config.DEPLOYMENT_KEY_IOS,
-  DEPLOYMENT_KEY_ANDROID: Config.DEPLOYMENT_KEY_ANDROID,
-  CODEPUSH_SERVER: Config.CODEPUSH_SERVER,
+  DEPLOYMENT_KEY_IOS: deployment.ios,
+  DEPLOYMENT_KEY_ANDROID: deployment.android,
+  CODEPUSH_SERVER: appInfo.server,
 };

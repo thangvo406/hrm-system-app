@@ -116,13 +116,6 @@ export const matchesRequestFilters = (
   matchesStatus(item, filters.status) &&
   matchesPeriod(item, filters);
 
-/**
- * Đổi bộ lọc của màn thành khoảng ngày phẳng để gửi lên server.
- *
- * Giữ đúng ngữ nghĩa của `matchesPeriod`: `last_3_months` chỉ chặn đầu dưới
- * (đơn có ngày áp dụng trong tương lai vẫn tính), còn `this_week`/`this_month`
- * chặn cả hai đầu. `all` và `custom` chưa chọn xong ngày thì không giới hạn gì.
- */
 export const toRequestDateRange = (
   filters: TRequestFilters,
 ): { readonly fromDate?: string; readonly toDate?: string } => {
@@ -148,7 +141,6 @@ export const toRequestDateRange = (
       };
     }
     case 'this_week': {
-      // Neo vào Thứ hai, giống `matchesPeriod`.
       const monday = getCurrentTime().startOf('week').add(1, 'day');
       return {
         fromDate: monday.format(ISO_DATE_FORMAT),
@@ -161,20 +153,11 @@ export const toRequestDateRange = (
   }
 };
 
-/**
- * Số hiện trên nút "Áp dụng": ĐẾM SỐ BỘ LỌC ĐANG BẬT, không phải số đơn khớp.
- * Mỗi mục chọn một chip khác "Tất cả" thì tính 1, mục để "Tất cả" tính 0 — nên
- * giá trị chỉ chạy từ 0 (chưa lọc gì) tới 3 (cả ba mục đều đang lọc).
- */
 export const countSelectedFilters = (filters: TRequestFilters) =>
   (filters.type === 'all' ? 0 : 1) +
   (filters.status === 'all' ? 0 : 1) +
   (filters.period === 'all' ? 0 : 1);
 
-/**
- * Phần lọc KHÔNG phụ thuộc trạng thái — dùng để đếm số đơn cho từng tab, vì
- * con số trên tab phải là "nếu bấm tab này thì còn bao nhiêu đơn".
- */
 export const matchesRequestFiltersExceptStatus = (
   item: TRequestItem,
   filters: TRequestFilters,
@@ -206,25 +189,9 @@ export const countLeaveDays = (
   return duration === 'full_day' ? spannedDays : spannedDays * HALF_DAY;
 };
 
-/**
- * Số ngày nghỉ dạng chữ, luôn một chữ số thập phân: `2` → `2,0`.
- *
- * Dùng dấu phẩy cố định theo cách viết tiếng Việt chứ không theo locale đang
- * bật — bản en/ko sẽ thấy dấu phẩy thay vì dấu chấm.
- */
 export const formatLeaveDays = (days: number) =>
   days.toFixed(DAY_DECIMALS).replace('.', DECIMAL_SEPARATOR);
 
-// ─── Form tạo đơn ─────────────────────────────────────────────────────────────
-
-/**
- * Khối nội dung mà form tạo đơn bật lên cho từng loại đơn, suy thẳng từ bộ
- * trường "Thông tin chung" mà màn Chi tiết đơn hiện cho loại đó.
- *
- * Thứ tự trong mảng chỉ để đọc cho dễ đối chiếu; thứ tự vẽ thật do JSX ở
- * `screens/CreateRequest/index.tsx` quyết định (một trật tự dùng chung cho mọi
- * loại), nên thêm khối mới thì nhớ chèn vào đúng chỗ trong JSX đó.
- */
 export const CREATE_REQUEST_SECTIONS: Readonly<
   Record<TRequestType, readonly TCreateRequestSection[]>
 > = {
@@ -262,12 +229,6 @@ export const CREATE_REQUEST_SECTIONS: Readonly<
   ],
 };
 
-/**
- * Khối nào là bắt buộc. Mọi khối còn lại hoặc không nhận nhập liệu
- * (`balances`, `summary`), hoặc luôn có sẵn một giá trị hợp lệ vì là ô chọn
- * một-trong-nhiều (`duration`, `leave_kind`, `place`,
- * `event_kind`), hoặc không bắt buộc theo nghiệp vụ (`note`, `attachment`).
- */
 const REQUIRED_SECTIONS: ReadonlySet<TCreateRequestSection> = new Set([
   'date_range',
   'reason',
@@ -284,13 +245,6 @@ export type TCreateRequestValues = {
   readonly totalHours: number;
 };
 
-/**
- * Những khối BẮT BUỘC của loại đơn này mà người dùng chưa điền xong.
- *
- * Duyệt thẳng `CREATE_REQUEST_SECTIONS[type]` chứ không viết điều kiện riêng
- * cho từng loại: thêm loại đơn mới chỉ cần khai báo khối, phần kiểm tự đúng
- * theo. Rỗng nghĩa là gửi được.
- */
 export const findMissingSections = (
   type: TRequestType,
   values: TCreateRequestValues,
@@ -465,16 +419,6 @@ export const formatHours = (hours: number) =>
 
 const ISO_DATE_FORMAT = 'YYYY-MM-DD';
 
-/**
- * Sắp hai đầu của một khoảng ngày về đúng thứ tự, `from` luôn không sau `to`.
- *
- * Lịch dùng chung cho chạm hai ngày theo thứ tự tuỳ ý và chỉ `push` vào mảng
- * chứ không sắp lại, nên chạm ngày muộn trước sẽ trả về khoảng ngược. Khoảng
- * ngược làm mọi phép so sánh sau đó ra rỗng: số ngày nghỉ thành 0, bộ lọc
- * không khớp đơn nào.
- *
- * Hai đầu trùng nhau là hợp lệ — đó là đơn nghỉ đúng một ngày.
- */
 export const toOrderedDateRange = (
   first: dayjs.ConfigType,
   second: dayjs.ConfigType,
@@ -527,10 +471,6 @@ export const parseCreateRequestDraft = (
   const parsed = CREATE_REQUEST_DRAFT_SCHEMA.safeParse(value);
   return parsed.success ? parsed.data : undefined;
 };
-
-// ──────────────────────────────────────────────────────────────────────────────
-// State của form tạo đơn
-// ──────────────────────────────────────────────────────────────────────────────
 
 const DEFAULT_START_TIME = '18:00';
 const DEFAULT_END_TIME = '21:00';

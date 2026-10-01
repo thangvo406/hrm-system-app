@@ -10,12 +10,12 @@ const ICON_SIZE = ScaleSize(22);
 
 type Properties = {
   readonly onPress: () => void;
+  readonly file?: any;
 };
 
 /** Vùng đính kèm giấy tờ, viền đứt để phân biệt với các ô nhập bắt buộc. */
-function AttachmentBox({ onPress }: Properties) {
+function AttachmentBox({ file, onPress }: Properties) {
   const { t } = useTranslation();
-
   return (
     <AppButton
       onPress={onPress}
@@ -31,13 +31,14 @@ function AttachmentBox({ onPress }: Properties) {
           width={ICON_SIZE}
         />
         <Text numberOfLines={1} style={styles.label}>
-          {t('create_request.attachment_label')}
+          {file?.name || t('create_request.attachment_label')}
         </Text>
       </View>
-
-      <Text numberOfLines={1} style={styles.hint}>
-        {t('create_request.attachment_hint')}
-      </Text>
+      {!!file && (
+        <Text numberOfLines={1} style={styles.hint}>
+          {t('create_request.attachment_hint')}
+        </Text>
+      )}
     </AppButton>
   );
 }

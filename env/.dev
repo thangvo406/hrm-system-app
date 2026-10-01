@@ -1,3 +1,4 @@
+ENV=dev
 BASE_URL=https://crm-mobile-api.allaindev.site/
 SOCKET_URL=wss://crm-mobile-api.allaindev.site/ws
 APP_NAME=HRM system
@@ -5,10 +6,5 @@ APP_ID=com.hrm.system.dev
 APP_IOS_ID=com.hrm.system.dev
 ONE_SIGNAL_ID=027a3d1e-406d-4233-955d-06e5869d7374
 URL_GET_ADDRESS=https://dapi.kakao.com/v2/local/search/address.json
-GET_ADDRESS_KEY=KakaoAK bea5d2654a8b2952032d74128f9a0033
 DOMAIN_CDN=https://coop-cdn-dev.specominc.com/coop-app/dev/
 GOOGLE_MAPS_API_KEY=AIzaSyAc0ybo-kEviDiIiy8z8kOSh_WyoCjAkts
-CODEPUSH_SERVER=https://code-push.allaindev.site
-CODEPUSH_OIDC_AUDIENCE=codepush-server
-DEPLOYMENT_KEY_IOS=dcef92158de76153296ac18a92ecd2eb290108763ee7ede8
-DEPLOYMENT_KEY_ANDROID=7def6cbec16e645b66e54c89a93c16c207d8afc718410ea9

@@ -14,6 +14,7 @@ const images = {
   ic_network_error: require('./ic_network_error.png') as number,
   ic_outlet_close_white: require('./ic_outlet_close_white.png') as number,
   ic_request_empty: require('./ic_request_empty.png') as number,
+  ic_upload_doc: require('./ic_upload_doc.png') as number,
 } as const;
 
 export type ImageName = keyof typeof images;
